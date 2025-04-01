@@ -1,0 +1,189 @@
+/* Import fonts - updated with more stylish options */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+/* Base styles */
+:root {
+    --primary-green: #16a34a;
+    --border-gray: #e5e7eb;
+    --text-dark: #1f2937;
+    --text-gray: #4b5563;
+    --body-font: 'DM Sans', sans-serif;
+    --heading-font: 'Space Grotesk', sans-serif;
+}
+
+body {
+    font-family: var(--body-font);
+    color: var(--text-dark);
+}
+
+/* Typography */
+h1 {
+    font-family: var(--heading-font);
+    font-size: 2.5rem !important;
+    font-weight: 600;
+    color: var(--primary-green);
+}
+
+h2 {
+    font-family: var(--heading-font);
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--primary-green);
+}
+
+.explanation-text {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: var(--text-gray);
+}
+
+/* Cluster Cards */
+.cluster-card {
+    transition: all 0.2s ease-in-out;
+    border: 1px solid var(--border-gray);
+    overflow: hidden;
+}
+
+.cluster-card:hover {
+    transform: translateX(10px);
+    border-color: var(--primary-green);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.cluster-card h3 {
+    font-family: var(--heading-font);
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--primary-green);
+}
+
+.cluster-card h4 {
+    font-family: var(--body-font);
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--text-dark);
+}
+
+.cluster-card:hover h4 {
+    color: var(--primary-green);
+}
+
+.cluster-card ul li {
+    font-family: var(--body-font);
+    font-size: 0.8rem;
+    letter-spacing: -0.01em;
+    line-height: 1.5;
+    color: var(--text-gray);
+}
+
+/* Warning Box */
+.warning-box {
+    background-color: #fff7ed;
+    border-left: 4px solid #f97316;
+    padding: 1rem;
+}
+
+.warning-box strong {
+    color: #c2410c;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem !important;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    .cluster-card h3 {
+        font-size: 1.1rem;
+    }
+    
+    .cluster-card h4 {
+        font-size: 0.95rem;
+    }
+}
+
+/* Footer Styles */
+footer {
+    position: relative;
+    overflow: hidden;
+}
+
+footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.2) 25%,
+        rgba(255,255,255,0.2) 75%,
+        rgba(255,255,255,0) 100%);
+}
+
+footer a {
+    transition: all 0.2s ease-in-out;
+}
+
+footer a:hover {
+    transform: translateX(5px);
+}
+
+footer ul li a,
+footer ul li span {
+    font-size: 0.95rem;
+}
+
+footer h3 {
+    position: relative;
+    display: inline-block;
+}
+
+footer h3::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 768px) {
+    footer .grid {
+        gap: 2rem;
+    }
+    
+    footer h3 {
+        margin-bottom: 1rem;
+    }
+}
+
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(34, 197, 94, 0.8);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(34, 197, 94, 0.5);
+    }
+}
+
+.print-button {
+    animation: glow 2s infinite;
+}
+
+@media print {
+    .print-button {
+        display: none;
+    }
+} 

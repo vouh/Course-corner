@@ -1,0 +1,597 @@
+{
+  "institution": "Kenya Medical Training College (KMTC)",
+  "description": "Medical training programs offered by KMTC with their respective grade requirements",
+  "courses": [
+    {
+      "course_name": "Diploma in Nutrition & Dietetics",
+      "mean_grade": "C-",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "D+"
+        },
+        {
+          "subject_2": "BIO/GRP2/CHE",
+          "grade": "D+"
+        },
+        {
+          "subject_3": "HSC/AGRI/MAT/PHY/CHE",
+          "grade": "D"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Clinical Medicine & Surgery",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "BIO/GRP2",
+          "grade": "C"
+        },
+        {
+          "subject_3": "CHE/PHY",
+          "grade": "C-"
+        },
+        {
+          "subject_4": "MAT/PHY",
+          "grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Health Records and Information Technology",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "BIO/GRP2",
+          "grade": "D+"
+        },
+        {
+          "subject_3": "MAT",
+          "grade": "C-"
+        },
+        {
+          "subject_4": "PHY/CHE/CSC/AGRI/HSC/ECO/GEO/COM/BUS",
+          "grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Medical Laboratory Sciences",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "C"
+        },
+        {
+          "subject_3": "MAT/CHE/PHY",
+          "grade": "C"
+        },
+        {
+          "subject_4": "PHY/GRP2/MAT",
+          "grade": "C"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Physiotherapy",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "C-"
+        },
+        {
+          "subject_3": "CHE/MAT/GRP2",
+          "grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Medical Engineering",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "MAT/GRP2",
+          "grade": "C"
+        },
+        {
+          "subject_3": "BIO/CHE/ELEC/MET/TD",
+          "grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Public Health",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "C"
+        },
+        {
+          "subject_3": "MAT/PHY/CHE/BIO",
+          "grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Health Promotion",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "C-"
+        },
+        {
+          "subject_3": "MAT/PHY/CHE",
+          "grade": "D+"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Medical Social Work",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "C-"
+        },
+        {
+          "subject_3": "CHE/PHY/MAT/HSC/AGRI/BUS/GEO/HIS/CRE/IRE",
+          "grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Occupational Therapy",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "C-"
+        },
+        {
+          "subject_3": "PHY/CHE/MAT/AGRI/HSC",
+          "grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Community Oral Health",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "C"
+        },
+        {
+          "subject_3": "PHY/CHE/BIO/MAT",
+          "grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Dental Technology",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "PHY/CHE/BIO",
+          "grade": "C"
+        },
+        {
+          "subject_3": "BIO",
+          "grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Optometry",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "MAT",
+          "grade": "C"
+        },
+        {
+          "subject_3": "BIO/PHY/CHE",
+          "grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Kenya Registered Nursing & Midwifery",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "C"
+        },
+        {
+          "subject_3": "CHE/PHY/MAT",
+          "grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Radiography & Imaging (Medical Imaging Sciences)",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "PHY/BIO/CHE",
+          "grade": "C"
+        },
+        {
+          "subject_3": "MAT/CHE",
+          "grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Pharmacy",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "CHE/PHY",
+          "grade": "C"
+        },
+        {
+          "subject_3": "BIO",
+          "grade": "C"
+        },
+        {
+          "subject_4": "PHY/BIO/CHE",
+          "grade": "C"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Registered Nursing, Mental Health & Psychiatry",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "C"
+        },
+        {
+          "subject_3": "CHE/PHY/MAT",
+          "grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Orthopaedic & Trauma Medicine",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "C"
+        },
+        {
+          "subject_3": "PHY/CHE/MAT",
+          "grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Orthopaedic Technology",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "C-"
+        },
+        {
+          "subject_3": "PHY/CHE/MAT/WWK/MWK/TD",
+          "grade": "D+"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Health Counselling",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "D+"
+        },
+        {
+          "subject_3": "HIS/CRE",
+          "grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Community Health Nursing",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "C"
+        },
+        {
+          "subject_3": "CHE/PHY/MAT",
+          "grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Community Health",
+      "mean_grade": "C",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C-"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "D+"
+        },
+        {
+          "subject_3": "MAT/CHE/HSC/AGRI/PHY",
+          "grade": "D"
+        }
+      ]
+    },
+    {
+      "course_name": "Certificate in Health Records and Information Technology (For Form 4 leavers)",
+      "mean_grade": "C-",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C-"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "D"
+        },
+        {
+          "subject_3": "MAT",
+          "grade": "D-"
+        },
+        {
+          "subject_4": "PHY/CHE/CMP/AGRI/HSC/BST",
+          "grade": "D"
+        },
+        {
+          "subject_5": "PHY/CHE/CSC/AGRI/HSC/ECO/GEO/COM/BUS",
+          "grade": "D+"
+        }
+      ]
+    },
+    {
+      "course_name": "Certificate in Health Records and Information Technology (In Service category)",
+      "mean_grade": "D+",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "D+"
+        },
+        {
+          "subject_2": "MAT",
+          "grade": "D-"
+        }
+      ]
+    },
+    {
+      "course_name": "Certificate in Nutrition & Dietetics",
+      "mean_grade": "D+",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "D+"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "D"
+        },
+        {
+          "subject_3": "CHE/PHY",
+          "grade": "D"
+        },
+        {
+          "subject_4": "HSC/AGRI/MAT/PHY",
+          "grade": "D"
+        }
+      ]
+    },
+    {
+      "course_name": "Certificate in Medical Engineering",
+      "mean_grade": "C-",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C-"
+        },
+        {
+          "subject_2": "MAT",
+          "grade": "D"
+        },
+        {
+          "subject_3": "PHY/BIO/CHE",
+          "grade": "D-"
+        },
+        {
+          "subject_4": "CHE/BIO/ELEC/MET/TD",
+          "grade": "D"
+        }
+      ]
+    },
+    {
+      "course_name": "Certificate in Public Health",
+      "mean_grade": "C-",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C-"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "D+"
+        },
+        {
+          "subject_3": "MAT",
+          "grade": "D"
+        },
+        {
+          "subject_4": "HSC/PHY/CHE/AGRI/BC/TD/EL/WW",
+          "grade": "D"
+        }
+      ]
+    },
+    {
+      "course_name": "Certificate in Orthopaedic Trauma Medicine",
+      "mean_grade": "C-",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C-"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "C-"
+        },
+        {
+          "subject_3": "MAT/PHY/CHE/AGRI",
+          "grade": "D+"
+        }
+      ]
+    },
+    {
+      "course_name": "Certificate in Community Health Nursing",
+      "mean_grade": "C-",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "C-"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "C-"
+        },
+        {
+          "subject_3": "CHE/PHY/MAT",
+          "grade": "D+"
+        }
+      ]
+    },
+    {
+      "course_name": "Certificate in Community Health Assistant",
+      "mean_grade": "C-",
+      "requirements": [
+        {
+          "subject_1": "ENG/KIS",
+          "grade": "D+"
+        },
+        {
+          "subject_2": "BIO",
+          "grade": "D"
+        },
+        {
+          "subject_3": "MAT/PHY/CHE/AGRI/HSC",
+          "grade": "D"
+        }
+      ]
+    },
+    {
+      "course_name": "Certificate in Medical Emergency Technician",
+      "mean_grade": "C-",
+      "requirements": [
+        {
+          "mean_grade": "C-"
+        }
+      ]
+    },
+    {
+      "course_name": "Diploma in Mortuary Science (NEW)",
+      "mean_grade": "C-",
+      "requirements": [
+        {
+          "mean_grade": "C-"
+        }
+      ]
+    }
+  ]
+}
+  

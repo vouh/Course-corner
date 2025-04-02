@@ -1,37 +1,27 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset
-      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
-            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
-
-
+<?xml version="1.0" encoding="UTF-8"?> 
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"> 
 <url>
-  <loc>https://course-corner.netlify.app/</loc>
-  <lastmod>2025-04-02T19:36:38+00:00</lastmod>
-  <priority>1.00</priority>
+  <loc>http://course-corner.netlify.app/about</loc>
 </url>
 <url>
-  <loc>https://course-corner.netlify.app/about</loc>
-  <lastmod>2025-04-02T19:36:38+00:00</lastmod>
-  <priority>0.80</priority>
+  <loc>http://course-corner.netlify.app/cluster-points</loc>
 </url>
 <url>
-  <loc>https://course-corner.netlify.app/cluster-points</loc>
-  <lastmod>2025-04-02T19:36:38+00:00</lastmod>
-  <priority>0.80</priority>
+  <loc>http://course-corner.netlify.app/application-process</loc>
 </url>
 <url>
-  <loc>https://course-corner.netlify.app/application-process</loc>
-  <lastmod>2025-04-02T19:36:38+00:00</lastmod>
-  <priority>0.80</priority>
+  <loc>http://course-corner.netlify.app/contact</loc>
 </url>
 <url>
-  <loc>https://course-corner.netlify.app/contact</loc>
-  <lastmod>2025-04-02T19:36:38+00:00</lastmod>
-  <priority>0.80</priority>
+  <loc>http://course-corner.netlify.app/index3.html</loc>
 </url>
-
-
+<url>
+  <loc>http://course-corner.netlify.app/index3.html#calculator</loc>
+</url>
+<url>
+  <loc>http://course-corner.netlify.app/</loc>
+</url>
+<url>
+  <loc></loc>
+</url>
 </urlset>

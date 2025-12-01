@@ -472,6 +472,24 @@ router.get('/admin/stats', async (req, res) => {
   }
 });
 
+// Debug Firebase environment (admin) - shows which env vars are set
+router.get('/admin/debug-firebase', async (req, res) => {
+  const envCheck = {
+    FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID ? `SET (${process.env.FIREBASE_PROJECT_ID})` : 'NOT SET',
+    FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL ? `SET (${process.env.FIREBASE_CLIENT_EMAIL.substring(0, 20)}...)` : 'NOT SET',
+    FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY ? `SET (length: ${process.env.FIREBASE_PRIVATE_KEY.length}, starts: ${process.env.FIREBASE_PRIVATE_KEY.substring(0, 30)}...)` : 'NOT SET',
+    FIREBASE_PRIVATE_KEY_ID: process.env.FIREBASE_PRIVATE_KEY_ID ? 'SET' : 'NOT SET',
+    FIREBASE_CLIENT_ID: process.env.FIREBASE_CLIENT_ID ? 'SET' : 'NOT SET',
+    FIREBASE_CERT_URL: process.env.FIREBASE_CERT_URL ? 'SET' : 'NOT SET'
+  };
+  
+  res.json({
+    success: true,
+    message: 'Firebase environment check',
+    env: envCheck
+  });
+});
+
 // Test Firebase connection (admin)
 router.get('/admin/test-firebase', async (req, res) => {
   try {

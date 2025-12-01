@@ -284,5 +284,24 @@
             });
         });
     </script>
+
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
+            authDomain: "course-corner.firebaseapp.com",
+            projectId: "course-corner",
+            storageBucket: "course-corner.firebasestorage.app",
+            messagingSenderId: "961706784572",
+            appId: "1:961706784572:web:7aa6c24946570ffda59039",
+            measurementId: "G-QGJ7NZ31Z0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+    </script>
 </body>
 </html> 

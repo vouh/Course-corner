@@ -2,7 +2,7 @@
 // Manages all payment interactions with the backend
 
 class PaymentHandler {
-    constructor(serverUrl = 'http://localhost:8080/api') {
+    constructor(serverUrl = 'https://course-corner-server.vercel.app/api') {
         this.serverUrl = serverUrl;
         this.sessionId = localStorage.getItem('paymentSessionId') || null;
         this.isPaymentCompleted = false;

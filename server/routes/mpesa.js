@@ -3,6 +3,7 @@ const router = express.Router();
 const { initiateSTKPush, querySTKPushStatus } = require('../utils/mpesaUtil');
 const PaymentStore = require('../models/PaymentStore');
 const { generateSessionId } = require('../utils/helpers');
+const { savePaymentTransaction, updatePaymentTransaction, getAllTransactions, getTransactionStats } = require('../utils/firebaseAdmin');
 
 // Payment amounts for each category
 const PAYMENT_AMOUNTS = {
@@ -52,6 +53,17 @@ router.post('/stkpush', async (req, res) => {
       stkResult.merchantRequestId,
       stkResult.responseCode
     );
+
+    // Save transaction to Firebase
+    await savePaymentTransaction({
+      sessionId,
+      phoneNumber,
+      amount,
+      category,
+      status: 'pending',
+      checkoutRequestId: stkResult.checkoutRequestId,
+      merchantRequestId: stkResult.merchantRequestId
+    });
 
     res.json({
       success: true,
@@ -120,7 +132,7 @@ router.get('/status/:sessionId?', (req, res) => {
 });
 
 // M-Pesa Callback Handler
-router.post('/callback', (req, res) => {
+router.post('/callback', async (req, res) => {
   try {
     const callbackData = req.body;
     console.log('📱 M-Pesa Callback Received:', new Date().toISOString());
@@ -159,12 +171,29 @@ router.post('/callback', (req, res) => {
 
         PaymentStore.updatePaymentStatus(payment.sessionId, 'completed', resultDesc, metadata);
         
+        // Update Firebase with success status and transaction details
+        await updatePaymentTransaction(checkoutRequestID, {
+          status: 'completed',
+          resultDesc,
+          mpesaReceiptNumber: metadata.MpesaReceiptNumber || null,
+          transactionCode: metadata.MpesaReceiptNumber || null,
+          transactionDate: metadata.TransactionDate || null,
+          metadata
+        });
+        
         console.log('💾 Payment data saved:', metadata);
       } else {
         // Payment failed
         console.log('❌ Payment failed for session:', payment.sessionId);
         console.log('Reason:', resultDesc);
         PaymentStore.updatePaymentStatus(payment.sessionId, 'failed', resultDesc);
+        
+        // Update Firebase with failed status
+        await updatePaymentTransaction(checkoutRequestID, {
+          status: 'failed',
+          resultDesc,
+          resultCode
+        });
       }
     } else {
       console.warn('⚠️ Payment session not found for checkout ID:', checkoutRequestID);
@@ -245,12 +274,44 @@ router.post('/verify', async (req, res) => {
 });
 
 // Get all completed payments (admin)
-router.get('/admin/completed', (req, res) => {
+router.get('/admin/completed', async (req, res) => {
   try {
-    const payments = PaymentStore.getCompletedPayments();
+    // Get from Firebase
+    const firebaseTransactions = await getAllTransactions(100, 'completed');
+    
+    // Fallback to in-memory store if Firebase is empty
+    if (firebaseTransactions.length === 0) {
+      const payments = PaymentStore.getCompletedPayments();
+      return res.json({
+        success: true,
+        source: 'memory',
+        data: payments
+      });
+    }
+    
     res.json({
       success: true,
-      data: payments
+      source: 'firebase',
+      data: firebaseTransactions
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// Get all transactions (admin) - includes all statuses
+router.get('/admin/transactions', async (req, res) => {
+  try {
+    const { limit = 100, status } = req.query;
+    const transactions = await getAllTransactions(parseInt(limit), status || null);
+    
+    res.json({
+      success: true,
+      count: transactions.length,
+      data: transactions
     });
   } catch (error) {
     res.status(500).json({
@@ -261,12 +322,25 @@ router.get('/admin/completed', (req, res) => {
 });
 
 // Get payment statistics (admin)
-router.get('/admin/stats', (req, res) => {
+router.get('/admin/stats', async (req, res) => {
   try {
-    const stats = PaymentStore.getStatistics();
+    // Get from Firebase
+    const firebaseStats = await getTransactionStats();
+    
+    // Fallback to in-memory store
+    if (!firebaseStats) {
+      const stats = PaymentStore.getStatistics();
+      return res.json({
+        success: true,
+        source: 'memory',
+        data: stats
+      });
+    }
+    
     res.json({
       success: true,
-      data: stats
+      source: 'firebase',
+      data: firebaseStats
     });
   } catch (error) {
     res.status(500).json({

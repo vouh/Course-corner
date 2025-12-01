@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Course Corner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" href="../assets/images/1.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .stat-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .status-completed { background-color: #10b981; }
+        .status-pending { background-color: #f59e0b; }
+        .status-failed { background-color: #ef4444; }
+        .table-row:hover { background-color: #f3f4f6; }
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #16a34a;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-green-600 text-white shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <img src="../assets/images/1.png" alt="Logo" class="h-10 w-auto mr-3">
+                    <span class="text-xl font-bold">Course Corner Admin</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="refreshData()" class="bg-white text-green-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh
+                    </button>
+                    <a href="../index.html" class="hover:text-green-200">
+                        <i class="fas fa-home mr-1"></i> Back to Site
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto px-4 py-8">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Transactions -->
+            <div class="stat-card bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Total Transactions</p>
+                        <p id="stat-total" class="text-3xl font-bold text-gray-800">-</p>
+                    </div>
+                    <div class="bg-blue-100 p-3 rounded-full">
+                        <i class="fas fa-receipt text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Completed -->
+            <div class="stat-card bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Completed</p>
+                        <p id="stat-completed" class="text-3xl font-bold text-green-600">-</p>
+                    </div>
+                    <div class="bg-green-100 p-3 rounded-full">
+                        <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Failed -->
+            <div class="stat-card bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Failed</p>
+                        <p id="stat-failed" class="text-3xl font-bold text-red-600">-</p>
+                    </div>
+                    <div class="bg-red-100 p-3 rounded-full">
+                        <i class="fas fa-times-circle text-red-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Revenue -->
+            <div class="stat-card bg-white rounded-xl shadow-md p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Total Revenue</p>
+                        <p id="stat-revenue" class="text-3xl font-bold text-gray-800">-</p>
+                    </div>
+                    <div class="bg-yellow-100 p-3 rounded-full">
+                        <i class="fas fa-coins text-yellow-600 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-white rounded-xl shadow-md p-4 mb-6">
+            <div class="flex flex-wrap items-center gap-4">
+                <div>
+                    <label class="text-sm text-gray-600 mr-2">Filter by Status:</label>
+                    <select id="status-filter" onchange="filterTransactions()" class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="">All</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-sm text-gray-600 mr-2">Limit:</label>
+                    <select id="limit-filter" onchange="filterTransactions()" class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                        <option value="50">50</option>
+                        <option value="100" selected>100</option>
+                        <option value="200">200</option>
+                        <option value="500">500</option>
+                    </select>
+                </div>
+                <div class="ml-auto">
+                    <span id="last-updated" class="text-sm text-gray-500"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transactions Table -->
+        <div class="bg-white rounded-xl shadow-md overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-xl font-bold text-gray-800">
+                    <i class="fas fa-list mr-2"></i>Transaction Logs
+                </h2>
+            </div>
+            
+            <!-- Loading State -->
+            <div id="loading" class="flex justify-center items-center py-12">
+                <div class="loader"></div>
+                <span class="ml-3 text-gray-500">Loading transactions...</span>
+            </div>
+
+            <!-- Table -->
+            <div id="table-container" class="hidden overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transaction Code</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactions-body" class="divide-y divide-gray-200">
+                        <!-- Transactions will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-12">
+                <i class="fas fa-inbox text-gray-300 text-5xl mb-4"></i>
+                <p class="text-gray-500">No transactions found</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Detail Modal -->
+    <div id="detail-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-gray-800">Transaction Details</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="modal-content" class="p-6">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Server URL
+        const SERVER_URL = 'https://course-corner-server.vercel.app/api';
+        
+        let allTransactions = [];
+
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleString('en-KE', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Format phone number
+        function formatPhone(phone) {
+            if (!phone) return '-';
+            return phone.replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4');
+        }
+
+        // Format category
+        function formatCategory(category) {
+            const categories = {
+                'calculate-cluster-points': 'Cluster Points',
+                'courses-only': 'Courses Only',
+                'point-and-courses': 'Points & Courses'
+            };
+            return categories[category] || category;
+        }
+
+        // Get status badge
+        function getStatusBadge(status) {
+            const badges = {
+                'completed': '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Completed</span>',
+                'pending': '<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">Pending</span>',
+                'failed': '<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Failed</span>'
+            };
+            return badges[status] || `<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">${status}</span>`;
+        }
+
+        // Load statistics
+        async function loadStats() {
+            try {
+                const response = await fetch(`${SERVER_URL}/mpesa/admin/stats`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.data;
+                    document.getElementById('stat-total').textContent = stats.total || 0;
+                    document.getElementById('stat-completed').textContent = stats.completed || 0;
+                    document.getElementById('stat-failed').textContent = stats.failed || 0;
+                    document.getElementById('stat-revenue').textContent = `KSH ${(stats.completedAmount || 0).toLocaleString()}`;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        // Load transactions
+        async function loadTransactions(status = '', limit = 100) {
+            const loading = document.getElementById('loading');
+            const tableContainer = document.getElementById('table-container');
+            const emptyState = document.getElementById('empty-state');
+            
+            loading.classList.remove('hidden');
+            tableContainer.classList.add('hidden');
+            emptyState.classList.add('hidden');
+
+            try {
+                let url = `${SERVER_URL}/mpesa/admin/transactions?limit=${limit}`;
+                if (status) url += `&status=${status}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                loading.classList.add('hidden');
+                
+                if (data.success && data.data.length > 0) {
+                    allTransactions = data.data;
+                    renderTransactions(data.data);
+                    tableContainer.classList.remove('hidden');
+                } else {
+                    emptyState.classList.remove('hidden');
+                }
+                
+                // Update last updated time
+                document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+                
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                loading.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+            }
+        }
+
+        // Render transactions table
+        function renderTransactions(transactions) {
+            const tbody = document.getElementById('transactions-body');
+            tbody.innerHTML = '';
+            
+            transactions.forEach((tx, index) => {
+                const row = document.createElement('tr');
+                row.className = 'table-row cursor-pointer';
+                row.onclick = () => showDetail(index);
+                
+                row.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${formatDate(tx.createdAt)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${formatPhone(tx.phoneNumber)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">KSH ${tx.amount || 0}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${formatCategory(tx.category)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">${getStatusBadge(tx.status)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${tx.mpesaReceiptNumber || tx.transactionCode || '-'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <button class="text-green-600 hover:text-green-800">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        // Show transaction detail
+        function showDetail(index) {
+            const tx = allTransactions[index];
+            const modal = document.getElementById('detail-modal');
+            const content = document.getElementById('modal-content');
+            
+            content.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center pb-4 border-b">
+                        <span class="text-gray-500">Status</span>
+                        ${getStatusBadge(tx.status)}
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Phone Number</p>
+                            <p class="font-medium">${formatPhone(tx.phoneNumber)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Amount</p>
+                            <p class="font-medium">KSH ${tx.amount || 0}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Category</p>
+                            <p class="font-medium">${formatCategory(tx.category)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Transaction Code</p>
+                            <p class="font-medium">${tx.mpesaReceiptNumber || tx.transactionCode || '-'}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Session ID</p>
+                            <p class="font-medium text-xs">${tx.sessionId || '-'}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Checkout ID</p>
+                            <p class="font-medium text-xs">${tx.checkoutRequestId || '-'}</p>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t">
+                        <p class="text-sm text-gray-500">Result Description</p>
+                        <p class="font-medium">${tx.resultDesc || '-'}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 pt-4 border-t">
+                        <div>
+                            <p class="text-sm text-gray-500">Created</p>
+                            <p class="font-medium text-sm">${formatDate(tx.createdAt)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Updated</p>
+                            <p class="font-medium text-sm">${formatDate(tx.updatedAt)}</p>
+                        </div>
+                    </div>
+                    ${tx.metadata ? `
+                    <div class="pt-4 border-t">
+                        <p class="text-sm text-gray-500 mb-2">Metadata</p>
+                        <pre class="bg-gray-100 p-3 rounded text-xs overflow-x-auto">${JSON.stringify(tx.metadata, null, 2)}</pre>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        // Close modal
+        function closeModal() {
+            const modal = document.getElementById('detail-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // Filter transactions
+        function filterTransactions() {
+            const status = document.getElementById('status-filter').value;
+            const limit = document.getElementById('limit-filter').value;
+            loadTransactions(status, limit);
+        }
+
+        // Refresh data
+        function refreshData() {
+            loadStats();
+            filterTransactions();
+        }
+
+        // Close modal on outside click
+        document.getElementById('detail-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Initial load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            loadTransactions();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(refreshData, 30000);
+        });
+    </script>
+</body>
+</html>

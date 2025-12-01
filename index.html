@@ -15,6 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="download-handler.js"></script>
+    <script src="paymentHandler.js"></script>
     <style>
         @keyframes blink {
             0% { opacity: 1; }
@@ -747,17 +748,36 @@
 
                 <!-- Replace the single Calculate Button with these three buttons -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                    <button id="calculateBtn" class="blink-button w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-500 transition transform hover:scale-105">
+                    <button id="calculateBtn" class="blink-button payment-btn w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-500 transition transform hover:scale-105" data-category="calculate-cluster-points" data-amount="150">
+                        <i class="fas fa-calculator mr-2"></i>
                         Calculate Cluster Points
+                        <small class="block text-xs mt-1">KSH 150</small>
                     </button>
                     
-                    <button id="calculateBtn2" class="blink-button w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-500 transition transform hover:scale-105">
+                    <button id="calculateBtn2" class="blink-button payment-btn w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-500 transition transform hover:scale-105" data-category="courses-only" data-amount="150">
+                        <i class="fas fa-book mr-2"></i>
                         Courses Only
+                        <small class="block text-xs mt-1">KSH 150</small>
                     </button>
                     
-                    <button id="calculateBtn3" class="blink-button w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-500 transition transform hover:scale-105">
+                    <button id="calculateBtn3" class="blink-button payment-btn w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-500 transition transform hover:scale-105" data-category="point-and-courses" data-amount="160">
+                        <i class="fas fa-star mr-2"></i>
                         Point & Courses
+                        <small class="block text-xs mt-1">KSH 160</small>
                     </button>
+                </div>
+
+                <!-- Payment Status Section -->
+                <div id="paymentStatus" class="mt-6 p-4 bg-blue-50 border border-blue-300 rounded-lg hidden">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <h3 class="font-bold text-lg text-blue-900">Payment Processing</h3>
+                            <p id="paymentMessage" class="text-sm text-blue-700 mt-1">Processing your payment...</p>
+                        </div>
+                        <div class="animate-spin">
+                            <i class="fas fa-spinner text-blue-600 text-2xl"></i>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Results Section -->
@@ -1555,6 +1575,163 @@
                 });
             }
         }
+    </script>
+
+    <!-- Payment Button Handlers -->
+    <script>
+        // Initialize Payment Handler with your server URL
+        // For local development: http://localhost:8080/api
+        // For production: https://your-vercel-domain.vercel.app/api
+        const SERVER_URL = window.location.hostname === 'localhost' 
+            ? 'http://localhost:8080/api'
+            : 'https://your-vercel-domain.vercel.app/api'; // Change this when deploying
+
+        const paymentHandler = new PaymentHandler(SERVER_URL);
+
+        // Handle all payment button clicks
+        document.querySelectorAll('.payment-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                
+                const category = btn.getAttribute('data-category');
+                const amount = btn.getAttribute('data-amount');
+                
+                try {
+                    // Get phone number from user
+                    const { value: phoneNumber } = await Swal.fire({
+                        title: 'Enter Your Phone Number',
+                        text: `Payment Amount: KSH ${amount}`,
+                        input: 'text',
+                        inputLabel: 'Your M-Pesa phone number',
+                        inputPlaceholder: '0712345678 or 254712345678',
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'Continue',
+                        confirmButtonColor: '#16a34a',
+                        cancelButtonText: 'Cancel',
+                        inputValidator: (value) => {
+                            if (!value) {
+                                return 'Phone number is required!';
+                            }
+                            // Simple validation - must contain digits
+                            if (!/\d{9,}/.test(value.replace(/[^\d]/g, ''))) {
+                                return 'Please enter a valid phone number';
+                            }
+                        }
+                    });
+
+                    if (!phoneNumber) return; // User cancelled
+
+                    // Show payment processing message
+                    Swal.fire({
+                        title: 'Processing Payment',
+                        text: `Amount: KSH ${amount}\nPhone: ${phoneNumber}\n\nInitiating M-Pesa STK push...`,
+                        icon: 'info',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Initiate payment
+                    const result = await paymentHandler.initiatePayment(phoneNumber, category);
+
+                    // Show STK prompt message
+                    await Swal.fire({
+                        icon: 'info',
+                        title: 'Check Your Phone!',
+                        text: `An M-Pesa prompt has been sent to ${phoneNumber}.\n\nEnter your M-Pesa PIN to complete the payment.\n\nDo NOT close this window.`,
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        confirmButtonText: 'I Entered The PIN',
+                        confirmButtonColor: '#16a34a'
+                    });
+
+                    // Show payment status
+                    const paymentStatusDiv = document.getElementById('paymentStatus');
+                    const paymentMessage = document.getElementById('paymentMessage');
+                    paymentStatusDiv.classList.remove('hidden');
+                    paymentMessage.textContent = 'Waiting for M-Pesa confirmation... This may take up to 2 minutes.';
+
+                    // Poll for payment completion
+                    Swal.fire({
+                        title: 'Waiting for Payment Confirmation',
+                        text: 'Please wait while we verify your payment...',
+                        icon: 'info',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    try {
+                        // Wait for payment
+                        await paymentHandler.pollPaymentStatus();
+
+                        // Payment successful - approve access
+                        await paymentHandler.approveAccess();
+
+                        // Hide payment status
+                        paymentStatusDiv.classList.add('hidden');
+
+                        // Show success message
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Payment Successful! ✅',
+                            text: `Your payment of KSH ${amount} has been confirmed!\n\nYour results are now unlocked.`,
+                            confirmButtonText: 'View Results',
+                            confirmButtonColor: '#16a34a'
+                        });
+
+                        // Show results
+                        document.getElementById('results').classList.remove('hidden');
+                        
+                        // Scroll to results
+                        setTimeout(() => {
+                            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+                        }, 300);
+
+                    } catch (error) {
+                        paymentStatusDiv.classList.add('hidden');
+                        
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Payment Failed',
+                            text: error.message || 'An error occurred during payment verification',
+                            confirmButtonColor: '#dc2626'
+                        });
+                        
+                        paymentHandler.clearSession();
+                    }
+
+                } catch (error) {
+                    console.error('Payment Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: error.message || 'An unexpected error occurred'
+                    });
+                    paymentHandler.clearSession();
+                }
+            });
+        });
+
+        // Check if user already has paid access on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            const sessionId = localStorage.getItem('paymentSessionId');
+            if (sessionId) {
+                try {
+                    const access = await paymentHandler.hasAccessToCategory();
+                    if (access.hasAccess) {
+                        // User already paid, show results
+                        document.getElementById('results').classList.remove('hidden');
+                    }
+                } catch (error) {
+                    console.log('Access check skipped:', error.message);
+                }
+            }
+        });
     </script>
 </body>
 </html>

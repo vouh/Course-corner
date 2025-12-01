@@ -1645,53 +1645,41 @@
                 // Initiate payment
                 await window.paymentHandler.initiatePayment(phoneNumber, category);
 
-                // Show STK prompt message
-                await Swal.fire({
-                    icon: 'info',
+                // Show payment status and start polling immediately
+                const paymentStatusDiv = document.getElementById('paymentStatus');
+                const paymentMessage = document.getElementById('paymentMessage');
+                paymentStatusDiv.classList.remove('hidden');
+                paymentMessage.textContent = 'Waiting for M-Pesa confirmation...';
+
+                // Show waiting for M-Pesa with real-time status updates (no button click required)
+                Swal.fire({
                     title: '📱 Check Your Phone!',
                     html: `
-                        <div class="text-left">
+                        <div class="text-center">
                             <p class="mb-3">An M-Pesa prompt has been sent to:</p>
-                            <p class="text-lg font-bold text-green-600 mb-3">${phoneNumber}</p>
-                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-3">
+                            <p class="text-xl font-bold text-green-600 mb-4">${phoneNumber}</p>
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-4 text-left">
                                 <p class="text-sm text-yellow-800">
                                     <strong>Enter your M-Pesa PIN</strong> on your phone to complete the payment.
                                 </p>
                             </div>
-                            <p class="text-sm text-gray-500">Do NOT close this window until payment is confirmed.</p>
-                        </div>
-                    `,
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
-                    confirmButtonText: 'I Entered The PIN',
-                    confirmButtonColor: '#16a34a'
-                });
-
-                // Show payment status
-                const paymentStatusDiv = document.getElementById('paymentStatus');
-                const paymentMessage = document.getElementById('paymentMessage');
-                paymentStatusDiv.classList.remove('hidden');
-                paymentMessage.textContent = 'Waiting for M-Pesa confirmation... This may take up to 2 minutes.';
-
-                // Poll for payment completion with real-time status updates
-                Swal.fire({
-                    title: 'Verifying Payment...',
-                    html: `
-                        <p class="text-gray-600 mb-2">Please wait while we confirm your payment with M-Pesa...</p>
-                        <div id="swal-status-container" class="mt-3">
-                            <div class="flex items-center justify-center">
-                                <span class="inline-block w-3 h-3 bg-yellow-500 rounded-full animate-pulse mr-2"></span>
-                                <span id="swal-status-text" class="text-sm text-gray-500">Waiting for response...</span>
+                            <div id="swal-status-container" class="mt-4 p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center justify-center mb-2">
+                                    <span class="inline-block w-3 h-3 bg-yellow-500 rounded-full animate-pulse mr-2"></span>
+                                    <span id="swal-status-text" class="text-sm font-medium text-gray-700">Waiting for your PIN entry...</span>
+                                </div>
+                                <p id="swal-attempt-text" class="text-xs text-gray-400">Listening for M-Pesa response...</p>
                             </div>
-                            <p id="swal-attempt-text" class="text-xs text-gray-400 mt-2">Checking payment status...</p>
+                            <p class="text-xs text-gray-400 mt-3">Do NOT close this window</p>
                         </div>
                     `,
                     allowOutsideClick: false,
                     allowEscapeKey: false,
+                    showConfirmButton: false,
                     didOpen: () => Swal.showLoading()
                 });
 
-                // Wait for payment with status callback
+                // Wait for payment with status callback (starts immediately, no button click needed)
                 await window.paymentHandler.pollPaymentStatus(40, 3000, (status, attempt, maxAttempts) => {
                     const statusText = document.getElementById('swal-status-text');
                     const attemptText = document.getElementById('swal-attempt-text');
@@ -1699,14 +1687,14 @@
                         if (status === 'pending') {
                             statusText.textContent = 'Waiting for M-Pesa confirmation...';
                         } else if (status === 'completed') {
-                            statusText.textContent = 'Payment confirmed!';
+                            statusText.textContent = 'Payment confirmed! ✅';
                         } else if (status === 'failed') {
-                            statusText.textContent = 'Payment failed';
+                            statusText.textContent = 'Payment failed ❌';
                         }
                     }
                     if (attemptText) {
                         const timeRemaining = Math.max(0, (maxAttempts - attempt) * 3);
-                        attemptText.textContent = `Check ${attempt}/${maxAttempts} • Timeout in ~${timeRemaining}s`;
+                        attemptText.textContent = `Checking... ${attempt}/${maxAttempts} • Timeout in ~${timeRemaining}s`;
                     }
                 });
 

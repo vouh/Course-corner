@@ -1,15 +1,14 @@
 const axios = require('axios');
-const crypto = require('crypto');
 
 const CONSUMER_KEY = process.env.CONSUMER_KEY;
 const CONSUMER_SECRET = process.env.CONSUMER_SECRET;
 const BUSINESS_SHORT_CODE = process.env.BusinessShortCode;
 const MPESA_PASSKEY = process.env.MPESA_PASSKEY;
 
-// M-Pesa URLs (Sandbox)
-const AUTH_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
-const STK_PUSH_URL = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
-const QUERY_URL = 'https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query';
+// M-Pesa URLs - PRODUCTION (Live)
+const AUTH_URL = 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+const STK_PUSH_URL = 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
+const QUERY_URL = 'https://api.safaricom.co.ke/mpesa/stkpushquery/v1/query';
 
 // Get M-Pesa Access Token
 async function getMpesaToken() {

@@ -1584,19 +1584,70 @@
             window.paymentHandler = new PaymentHandler(SERVER_URL);
         }
 
+        // Validate student subjects before payment
+        function validateSubjects() {
+            const errors = [];
+            
+            // Check compulsory subjects
+            const english = document.getElementById('english')?.value;
+            const kiswahili = document.getElementById('kiswahili')?.value;
+            const mathematics = document.getElementById('mathematics')?.value;
+            
+            if (!english) errors.push('English');
+            if (!kiswahili) errors.push('Kiswahili');
+            if (!mathematics) errors.push('Mathematics');
+            
+            // Count total subjects selected
+            let totalSubjects = 0;
+            document.querySelectorAll('.grade-select').forEach(select => {
+                if (select.value) totalSubjects++;
+            });
+            
+            return {
+                valid: errors.length === 0 && totalSubjects >= 7,
+                missingCompulsory: errors,
+                totalSubjects: totalSubjects,
+                needMore: Math.max(0, 7 - totalSubjects)
+            };
+        }
+
         // Main payment processing function
         async function processPayment(category, amount) {
             const grades = getStudentGrades ? getStudentGrades() : {};
             const overallGrade = document.getElementById('overallGrade').value;
             
-            // Validate grades before payment
-            if (!overallGrade || parseInt(overallGrade) < 7) {
+            // Validate subjects before showing payment window
+            const validation = validateSubjects();
+            
+            if (!validation.valid) {
+                let errorHtml = '<div class="text-left">';
+                
+                if (validation.missingCompulsory.length > 0) {
+                    errorHtml += `<p class="mb-2"><strong>Missing compulsory subjects:</strong></p>`;
+                    errorHtml += `<ul class="list-disc list-inside mb-3 text-red-600">`;
+                    validation.missingCompulsory.forEach(subj => {
+                        errorHtml += `<li>${subj}</li>`;
+                    });
+                    errorHtml += `</ul>`;
+                }
+                
+                if (validation.needMore > 0) {
+                    errorHtml += `<p class="text-gray-600">You need <strong>${validation.needMore} more subject(s)</strong> (minimum 7 required).</p>`;
+                    errorHtml += `<p class="text-sm text-gray-500 mt-2">Currently selected: ${validation.totalSubjects} subjects</p>`;
+                }
+                
+                errorHtml += '</div>';
+                
                 Swal.fire({
                     icon: 'warning',
-                    title: 'Please Enter Your Grades First',
-                    text: 'You need to fill in at least 7 subjects before calculating results.',
-                    confirmButtonColor: '#16a34a'
+                    title: 'Please Complete Your Grades',
+                    html: errorHtml,
+                    confirmButtonColor: '#16a34a',
+                    confirmButtonText: 'Fill Grades'
                 });
+                
+                // Scroll to the grades section
+                document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth' });
                 return false;
             }
 
@@ -1704,17 +1755,26 @@
                 // Hide payment status
                 paymentStatusDiv.classList.add('hidden');
 
-                // Show success message
-                await Swal.fire({
+                // Show brief success message then auto-redirect to results
+                Swal.fire({
                     icon: 'success',
                     title: 'Payment Successful! ✅',
                     html: `
                         <p class="text-green-600 mb-2">Your payment of <strong>KSH ${amount}</strong> has been confirmed!</p>
-                        <p class="text-gray-600">Calculating your results now...</p>
+                        <p class="text-gray-600">Loading your results...</p>
                     `,
-                    confirmButtonText: 'View Results',
-                    confirmButtonColor: '#16a34a'
+                    showConfirmButton: false,
+                    timer: 2000,
+                    timerProgressBar: true
                 });
+
+                // Auto-show results after brief delay
+                setTimeout(() => {
+                    showResultsAfterPayment(category);
+                    
+                    // Scroll to results section
+                    document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
+                }, 2000);
 
                 return true; // Payment successful
 

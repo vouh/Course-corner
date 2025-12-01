@@ -112,6 +112,22 @@ class PaymentStore {
     }
     return cleared;
   }
+
+  // Delete payment by ID/sessionId
+  deletePayment(id) {
+    if (this.payments.has(id)) {
+      this.payments.delete(id);
+      return true;
+    }
+    // Also try to find by sessionId
+    for (let [sessionId, payment] of this.payments.entries()) {
+      if (payment.sessionId === id) {
+        this.payments.delete(sessionId);
+        return true;
+      }
+    }
+    return false;
+  }
 }
 
 // Export singleton instance

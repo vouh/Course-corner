@@ -540,4 +540,43 @@ router.get('/admin/test-firebase', async (req, res) => {
   }
 });
 
+// Delete a transaction (admin)
+router.delete('/admin/transactions/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    if (!id) {
+      return res.status(400).json({
+        success: false,
+        message: 'Transaction ID is required'
+      });
+    }
+    
+    // Delete from Firebase
+    const { deleteTransaction } = require('../utils/firebaseAdmin');
+    const deleted = await deleteTransaction(id);
+    
+    // Also delete from in-memory store if exists
+    PaymentStore.deletePayment(id);
+    
+    if (deleted) {
+      res.json({
+        success: true,
+        message: 'Transaction deleted successfully'
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'Transaction not found'
+      });
+    }
+  } catch (error) {
+    console.error('Delete transaction error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
 module.exports = router;

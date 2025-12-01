@@ -185,11 +185,31 @@ const getTransactionStats = async () => {
   }
 };
 
+// Delete a transaction by ID
+const deleteTransaction = async (transactionId) => {
+  try {
+    const db = getFirestore();
+    const docRef = db.collection('transactions').doc(transactionId);
+    const doc = await docRef.get();
+    
+    if (doc.exists) {
+      await docRef.delete();
+      console.log('🗑️ Transaction deleted from Firebase:', transactionId);
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error deleting transaction from Firebase:', error.message);
+    return false;
+  }
+};
+
 module.exports = {
   initializeFirebase,
   getFirestore,
   savePaymentTransaction,
   updatePaymentTransaction,
   getAllTransactions,
-  getTransactionStats
+  getTransactionStats,
+  deleteTransaction
 };

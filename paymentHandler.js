@@ -81,12 +81,12 @@ class PaymentHandler {
                 console.log(`Polling attempt ${attempts}/${maxAttempts}`);
 
                 try {
-                    const response = await fetch(`${this.serverUrl}/mpesa/status/${this.sessionId}`);
+                    const response = await fetch(`${this.serverUrl}/mpesa/status?sessionId=${this.sessionId}`);
                     const data = await response.json();
 
-                    console.log('Poll response:', data.data.status);
+                    console.log('Poll response:', data.data?.status);
 
-                    if (data.data.status === 'completed') {
+                    if (data.data?.status === 'completed') {
                         clearInterval(pollInterval);
                         this.isPaymentCompleted = true;
                         console.log('Payment completed!');
@@ -95,7 +95,7 @@ class PaymentHandler {
                             status: 'completed',
                             data: data.data
                         });
-                    } else if (data.data.status === 'failed') {
+                    } else if (data.data?.status === 'failed') {
                         clearInterval(pollInterval);
                         console.log('Payment failed!');
                         reject(new Error('Payment was declined by M-Pesa'));

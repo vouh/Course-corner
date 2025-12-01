@@ -133,19 +133,26 @@ router.get('/status/:sessionId?', async (req, res) => {
         }
         // Check the result code - ResultCode 0 = Success
         else if (queryResult.ResultCode === '0' || queryResult.ResultCode === 0) {
-          // Payment successful
-          console.log('✅ M-Pesa confirms payment successful');
-          PaymentStore.updatePaymentStatus(sessionId, 'completed', queryResult.ResultDesc || 'Payment successful');
+          // Payment successful - extract M-Pesa receipt number
+          const mpesaReceiptNumber = queryResult.MpesaReceiptNumber || null;
+          console.log('✅ M-Pesa confirms payment successful, Receipt:', mpesaReceiptNumber);
           
-          // Update Firebase
+          // Update PaymentStore with receipt number
+          PaymentStore.updatePaymentStatus(sessionId, 'completed', queryResult.ResultDesc || 'Payment successful', {
+            mpesaReceiptNumber: mpesaReceiptNumber
+          });
+          
+          // Update Firebase with receipt number
           await updatePaymentTransaction(payment.checkoutRequestId, {
             status: 'completed',
             resultDesc: queryResult.ResultDesc,
-            mpesaReceiptNumber: queryResult.MpesaReceiptNumber || null
+            mpesaReceiptNumber: mpesaReceiptNumber,
+            transactionCode: mpesaReceiptNumber
           });
           
           payment.status = 'completed';
           payment.resultDesc = queryResult.ResultDesc || 'Payment successful';
+          payment.mpesaReceiptNumber = mpesaReceiptNumber;
         } 
         // ResultCode 1032 = Cancelled by user
         else if (queryResult.ResultCode === '1032' || queryResult.ResultCode === 1032) {
@@ -187,18 +194,21 @@ router.get('/status/:sessionId?', async (req, res) => {
           payment.status = 'failed';
           payment.resultDesc = 'Insufficient M-Pesa balance';
         }
-        // ResultCode 2001 = Wrong PIN
-        else if (queryResult.ResultCode === '2001' || queryResult.ResultCode === 2001) {
+        // ResultCode 2001 or 1025 = Wrong PIN
+        else if (queryResult.ResultCode === '2001' || queryResult.ResultCode === 2001 || 
+                 queryResult.ResultCode === '1025' || queryResult.ResultCode === 1025 ||
+                 (queryResult.ResultDesc && queryResult.ResultDesc.toLowerCase().includes('wrong pin'))) {
           console.log('🔐 Wrong PIN entered');
-          PaymentStore.updatePaymentStatus(sessionId, 'failed', 'Wrong M-Pesa PIN entered');
+          PaymentStore.updatePaymentStatus(sessionId, 'failed', 'WRONG_PIN: You entered the wrong M-Pesa PIN. Please try again.');
           
           await updatePaymentTransaction(payment.checkoutRequestId, {
             status: 'failed',
-            resultDesc: 'Wrong PIN'
+            resultDesc: 'Wrong PIN entered',
+            resultCode: queryResult.ResultCode
           });
           
           payment.status = 'failed';
-          payment.resultDesc = 'Wrong M-Pesa PIN entered';
+          payment.resultDesc = 'WRONG_PIN: You entered the wrong M-Pesa PIN. Please try again.';
         }
         // Any other non-zero ResultCode is a failure (but NOT if still processing)
         else if (queryResult.ResultCode && queryResult.ResultCode !== '0' && queryResult.ResultCode !== 0 && queryResult.ResultCode !== 'pending') {
@@ -239,6 +249,8 @@ router.get('/status/:sessionId?', async (req, res) => {
         status: payment.status,
         resultDesc: payment.resultDesc || null,
         errorMessage: payment.errorMessage || null,
+        mpesaReceiptNumber: payment.mpesaReceiptNumber || payment.metadata?.mpesaReceiptNumber || null,
+        transactionCode: payment.mpesaReceiptNumber || payment.metadata?.mpesaReceiptNumber || payment.metadata?.MpesaReceiptNumber || null,
         createdAt: payment.createdAt,
         updatedAt: payment.updatedAt,
         metadata: payment.metadata

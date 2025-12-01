@@ -175,7 +175,8 @@
 
             <!-- Filters & Actions -->
             <div class="bg-white rounded-xl shadow-md p-4 mb-6">
-                <div class="flex flex-wrap items-center gap-4">
+                <!-- Row 1: Search and Main Filters -->
+                <div class="flex flex-wrap items-center gap-4 mb-4">
                     <!-- Search -->
                     <div class="flex-1 min-w-[200px]">
                         <div class="relative">
@@ -190,12 +191,23 @@
                     
                     <!-- Status Filter -->
                     <div>
-                        <select id="status-filter" onchange="filterTransactions()" 
+                        <select id="status-filter" onchange="applyAllFilters()" 
                             class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
                             <option value="">All Status</option>
                             <option value="completed">Completed</option>
                             <option value="pending">Pending</option>
                             <option value="failed">Failed</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Category Filter -->
+                    <div>
+                        <select id="category-filter" onchange="applyAllFilters()" 
+                            class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <option value="">All Categories</option>
+                            <option value="calculate-cluster-points">Cluster Points</option>
+                            <option value="courses-only">Courses Only</option>
+                            <option value="point-and-courses">Points & Courses</option>
                         </select>
                     </div>
                     
@@ -209,6 +221,30 @@
                             <option value="500">500 rows</option>
                         </select>
                     </div>
+                </div>
+                
+                <!-- Row 2: Date Filters and Actions -->
+                <div class="flex flex-wrap items-center gap-4">
+                    <!-- Date From -->
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm text-gray-600">From:</label>
+                        <input type="date" id="date-from" onchange="applyAllFilters()"
+                            class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    
+                    <!-- Date To -->
+                    <div class="flex items-center gap-2">
+                        <label class="text-sm text-gray-600">To:</label>
+                        <input type="date" id="date-to" onchange="applyAllFilters()"
+                            class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
+                    </div>
+                    
+                    <!-- Clear Filters -->
+                    <button onclick="clearAllFilters()" class="text-gray-500 hover:text-gray-700 px-3 py-2">
+                        <i class="fas fa-times mr-1"></i>Clear Filters
+                    </button>
+                    
+                    <div class="flex-1"></div>
                     
                     <!-- Export Buttons -->
                     <div class="flex gap-2">
@@ -547,13 +583,20 @@
         // ==================== SEARCH & FILTER ====================
 
         function handleSearch() {
+            applyAllFilters();
+        }
+
+        function applyAllFilters() {
             const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            const statusFilter = document.getElementById('status-filter').value;
+            const categoryFilter = document.getElementById('category-filter').value;
+            const dateFrom = document.getElementById('date-from').value;
+            const dateTo = document.getElementById('date-to').value;
             
-            if (!searchTerm) {
-                filteredTransactions = [...allTransactions];
-            } else {
-                filteredTransactions = allTransactions.filter(tx => {
-                    return (
+            filteredTransactions = allTransactions.filter(tx => {
+                // Search filter
+                if (searchTerm) {
+                    const matchesSearch = (
                         (tx.phoneNumber && tx.phoneNumber.toLowerCase().includes(searchTerm)) ||
                         (tx.mpesaReceiptNumber && tx.mpesaReceiptNumber.toLowerCase().includes(searchTerm)) ||
                         (tx.transactionCode && tx.transactionCode.toLowerCase().includes(searchTerm)) ||
@@ -561,18 +604,59 @@
                         (tx.status && tx.status.toLowerCase().includes(searchTerm)) ||
                         (tx.sessionId && tx.sessionId.toLowerCase().includes(searchTerm))
                     );
-                });
-            }
+                    if (!matchesSearch) return false;
+                }
+                
+                // Status filter
+                if (statusFilter && tx.status !== statusFilter) {
+                    return false;
+                }
+                
+                // Category filter
+                if (categoryFilter && tx.category !== categoryFilter) {
+                    return false;
+                }
+                
+                // Date range filter
+                if (dateFrom || dateTo) {
+                    const txDate = new Date(tx.createdAt);
+                    if (isNaN(txDate.getTime())) return true; // Include if no valid date
+                    
+                    if (dateFrom) {
+                        const fromDate = new Date(dateFrom);
+                        fromDate.setHours(0, 0, 0, 0);
+                        if (txDate < fromDate) return false;
+                    }
+                    
+                    if (dateTo) {
+                        const toDate = new Date(dateTo);
+                        toDate.setHours(23, 59, 59, 999);
+                        if (txDate > toDate) return false;
+                    }
+                }
+                
+                return true;
+            });
             
             renderTransactions(filteredTransactions);
             updateResultsCount();
         }
 
-        function filterTransactions() {
-            const status = document.getElementById('status-filter').value;
-            const limit = document.getElementById('limit-filter').value;
+        function clearAllFilters() {
             document.getElementById('search-input').value = '';
-            loadTransactions(status, limit);
+            document.getElementById('status-filter').value = '';
+            document.getElementById('category-filter').value = '';
+            document.getElementById('date-from').value = '';
+            document.getElementById('date-to').value = '';
+            
+            filteredTransactions = [...allTransactions];
+            renderTransactions(filteredTransactions);
+            updateResultsCount();
+        }
+
+        function filterTransactions() {
+            const limit = document.getElementById('limit-filter').value;
+            loadTransactions('', limit);
         }
 
         function updateResultsCount() {

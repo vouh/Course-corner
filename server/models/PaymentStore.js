@@ -42,7 +42,16 @@ class PaymentStore {
     if (payment) {
       payment.status = status;
       if (resultDesc) payment.resultDesc = resultDesc;
-      if (metadata) payment.metadata = metadata;
+      if (metadata) {
+        payment.metadata = { ...payment.metadata, ...metadata };
+        // Also store mpesaReceiptNumber at top level for easy access
+        if (metadata.mpesaReceiptNumber) {
+          payment.mpesaReceiptNumber = metadata.mpesaReceiptNumber;
+        }
+        if (metadata.MpesaReceiptNumber) {
+          payment.mpesaReceiptNumber = metadata.MpesaReceiptNumber;
+        }
+      }
       payment.updatedAt = new Date();
     }
     return payment;

@@ -141,12 +141,18 @@ class PaymentHandler {
     getMpesaErrorMessage(resultDesc) {
         if (!resultDesc) return 'Payment failed. Please try again.';
         
+        // Check for WRONG_PIN prefix first (from server)
+        if (resultDesc.startsWith('WRONG_PIN:')) {
+            return '🔐 Wrong M-Pesa PIN entered! Please try again with the correct PIN.';
+        }
+        
         const errorMessages = {
             'Request cancelled by user': 'You cancelled the payment request.',
             'The initiator information is invalid': 'Payment service error. Please try again.',
             'DS timeout': 'M-Pesa request timed out. Please try again.',
             'insufficient_balance': 'Insufficient M-Pesa balance.',
-            'Wrong Pin': 'Wrong M-Pesa PIN entered. Please try again.',
+            'Wrong Pin': '🔐 Wrong M-Pesa PIN entered! Please try again with the correct PIN.',
+            'wrong pin': '🔐 Wrong M-Pesa PIN entered! Please try again with the correct PIN.',
             'Invalid MSISDN': 'Invalid phone number. Please check and try again.',
             'The service request is processed successfully': 'Payment successful!',
             'The balance is insufficient': 'Insufficient M-Pesa balance. Please top up and try again.',
@@ -155,9 +161,9 @@ class PaymentHandler {
             'System internal error': 'M-Pesa system error. Please try again later.',
             '1032': 'You cancelled the payment request.',
             '1': 'Insufficient M-Pesa balance.',
-            '2001': 'Wrong M-Pesa PIN entered.',
+            '2001': '🔐 Wrong M-Pesa PIN entered! Please try again with the correct PIN.',
+            '1025': '🔐 Wrong M-Pesa PIN entered! Please try again with the correct PIN.',
             '1037': 'M-Pesa request timed out. No response received.',
-            '1025': 'Transaction limit exceeded.',
             '1019': 'Transaction expired. Please try again.'
         };
 

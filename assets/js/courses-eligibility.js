@@ -3,9 +3,9 @@ let diplomaData = null;
 let technicalCoursesData = null;
 
 Promise.all([
-    fetch('courses.json').then(response => response.json()),
-    fetch('diploma.json').then(response => response.json()),
-    fetch('dip.json').then(response => response.json())
+    fetch('data/courses.json').then(response => response.json()),
+    fetch('data/diploma.json').then(response => response.json()),
+    fetch('data/dip.json').then(response => response.json())
 ])
 .then(([courses, diploma, technical]) => {
     coursesData = courses;

@@ -3,172 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Corner</title>
+    <title>Contact Us - Course Corner</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="icon" type="image/x-icon" href="1.png">
-    <link rel="stylesheet" href="application-process.css">
+    <link rel="icon" type="image/x-icon" href="../assets/images/1.png">
+    <link rel="stylesheet" href="../assets/css/contact.css">
 </head>
 <body class="bg-gray-50">
-    <!-- Navigation -->
+    <!-- Navigation (same as other pages) -->
     <nav class="bg-white shadow-lg">
         <div class="container mx-auto px-4">
             <div class="flex justify-between items-center py-4">
                 <div class="flex items-center">
-                    <img src="1.png" alt="Logo" class="h-16 w-auto">
+                    <img src="../assets/images/1.png" alt="Logo" class="h-16 w-auto">
                     <span class="ml-3 text-2xl font-bold text-green-600">Course Corner</span>
                 </div>
-                <!-- Add mobile menu button -->
                 <button id="mobile-menu-button" class="md:hidden flex items-center px-3 py-2 border rounded text-gray-500 border-gray-500 hover:text-green-600 hover:border-green-600">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
-                <!-- Modify the navigation links div -->
                 <div id="mobile-menu" class="hidden md:flex md:space-x-8 absolute md:relative top-20 md:top-0 left-0 right-0 bg-white md:bg-transparent shadow-lg md:shadow-none p-4 md:p-0">
                     <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8">
-                        <a href="index.html" class="nav-link">Home</a>
+                        <a href="../index.html" class="nav-link">Home</a>
                         <a href="about.html" class="nav-link">About Us</a>
                         <a href="cluster-points.html" class="nav-link">Cluster Points Guide</a>
-                        <a href="#" class="nav-link active">Application Process</a>
-                        <a href="contact.html" class="nav-link">Contact</a>
+                        <a href="application-process.html" class="nav-link">Application Process</a>
+                        <a href="contact.html" class="nav-link active">Contact</a>
                     </div>
                 </div>
             </div>
         </div>
     </nav>
 
+    <!-- Hero Section -->
+    <div class="contact-hero">
+        <h1>Get in Touch</h1>
+        <p class="text-lg">We're here to help with your KUCCPS and HELB application queries</p>
+    </div>
+
     <!-- Main Content -->
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-4xl font-bold text-center text-green-600 mb-12">KUCCPS Application Process</h1>
-        
-        <div class="max-w-4xl mx-auto">
-            <!-- Process Steps -->
-            <div class="process-steps">
-                <!-- Step 1 -->
-                <div class="process-card">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <h3 class="step-title">Eligibility Check</h3>
-                        <ul class="step-list">
-                            <li>Ensure you meet the minimum KCSE requirements for your desired program</li>
-                            <li>Verify that you sat the KCSE exam between 2000 and 2023</li>
-                        </ul>
-                    </div>
+    <div class="contact-container">
+        <!-- Contact Cards -->
+        <div class="contact-grid">
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
                 </div>
-
-                <!-- Step 2 -->
-                <div class="process-card">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <h3 class="step-title">Create an Account</h3>
-                        <ul class="step-list">
-                            <li>Visit the KUCCPS Student's Portal (students.kuccps.net)</li>
-                            <li>Create an account with your personal details and KCSE results</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Step 3 -->
-                <div class="process-card">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <h3 class="step-title">Log In to the Portal</h3>
-                        <ul class="step-list">
-                            <li>Use your account credentials to log in to the KUCCPS Student's Portal</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Step 4 -->
-                <div class="process-card">
-                    <div class="step-number">4</div>
-                    <div class="step-content">
-                        <h3 class="step-title">Select Programs</h3>
-                        <ul class="step-list">
-                            <li>Browse through available programs at universities, colleges, and TVET institutions</li>
-                            <li>Select preferred programs based on KCSE grades and interests</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Additional steps... -->
-                <div class="process-card">
-                    <div class="step-number">5</div>
-                    <div class="step-content">
-                        <h3 class="step-title">Submit Application</h3>
-                        <ul class="step-list">
-                            <li>Complete the application form with all required details</li>
-                            <li>Review your application thoroughly before submission</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="process-card">
-                    <div class="step-number">6</div>
-                    <div class="step-content">
-                        <h3 class="step-title">Make Payment</h3>
-                        <ul class="step-list">
-                            <li>Follow payment instructions on the portal</li>
-                            <li>Ensure you receive payment confirmation</li>
-                        </ul>
-                    </div>
-                </div>
+                <h3 class="text-xl font-semibold mb-2">Email Us</h3>
+                <p class="text-gray-600">support@coursecorner.com</p>
+                <p class="text-gray-600">info@coursecorner.com</p>
             </div>
 
-            <!-- Support Section -->
-            <div class="bg-white rounded-lg shadow-md p-6 mt-8">
-                <h2 class="text-2xl font-bold text-green-600 mb-4">Need Help?</h2>
-                <p class="text-gray-600 mb-4">If you encounter any issues or have questions during the application process, our support team is here to help.</p>
-                <div class="flex flex-col md:flex-row gap-4">
-                    <a target="_blank" href="https://www.kuccps.net/sites/default/files/FAQ%20Brochure.pdf" class="support-button">
-                        Visit FAQ Page
-                    </a>
-                    <a target="_blank" href="https://www.kuccps.net/index.php?q=Contact" class="support-button">
-                        contact support
-                    </a>
-                    <button onclick="window.print()" class="support-button">
-                        <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                        </svg>
-                        Print Guide
-                    </button>
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                    </svg>
                 </div>
+                <h3 class="text-xl font-semibold mb-2">Call Us</h3>
+                <p class="text-gray-600">+254 700 000000</p>
+                <p class="text-gray-600">Mon - Fri, 8:00 - 17:00</p>
             </div>
+
+            <div class="contact-card">
+                <div class="contact-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-semibold mb-2">Social Media</h3>
+                <p class="text-gray-600">WhatsApp: +254 700 000000</p>
+                <p class="text-gray-600">TikTok: @coursecorner</p>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="contact-form">
+            <h2 class="text-2xl font-semibold mb-4">Send us a Message</h2>
+            <form id="contactForm">
+                <div class="form-group">
+                    <input type="text" class="form-input" placeholder="Your Name" required>
+                </div>
+                <div class="form-group">
+                    <input type="email" class="form-input" placeholder="Your Email" required>
+                </div>
+                <div class="form-group">
+                    <select class="form-input">
+                        <option value="">Select Topic</option>
+                        <option value="kuccps">KUCCPS Application</option>
+                        <option value="helb">HELB Services</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <textarea class="form-input" rows="4" placeholder="Your Message" required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Send Message</button>
+                <div id="successMessage" class="success-message">
+                    Thank you for your message! We'll get back to you soon.
+                </div>
+            </form>
         </div>
     </div>
 
-    <script>
-        // Existing year range code
-        document.addEventListener('DOMContentLoaded', function() {
-            const yearElement = document.querySelector('.step-list li:nth-child(2)');
-            const currentYear = new Date().getFullYear();
-            yearElement.textContent = `Verify that you sat the KCSE exam between 2000 and ${currentYear}`;
-            
-            // Mobile menu toggle
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-
-            // Close mobile menu when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
-                    mobileMenu.classList.add('hidden');
-                }
-            });
-
-            // Close mobile menu when window is resized to desktop size
-            window.addEventListener('resize', () => {
-                if (window.innerWidth >= 768) { // 768px is the md breakpoint in Tailwind
-                    mobileMenu.classList.add('hidden');
-                }
-            });
-        });
-    </script>
-
-    <!-- Footer - Add this before closing body tag in all HTML files -->
+    <!-- Footer -->
     <footer class="bg-green-600 text-white py-12 mt-16">
         <div class="container mx-auto px-4">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
@@ -228,7 +168,7 @@
                     </ul>
                 </div>
 
-                <!-- Contact Information -->
+                <!-- Contact Us -->
                 <div>
                     <h3 class="text-xl font-bold mb-4">Contact Us</h3>
                     <ul class="space-y-2">
@@ -245,6 +185,12 @@
                             </svg>
                             <span>+254 700 000000</span>
                         </li>
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
+                            </svg>
+                            <span>Get Updates</span>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -256,29 +202,69 @@
         </div>
     </footer>
 
-    <!-- Add this script before closing body tag -->
     <script>
         // Update copyright year
         document.getElementById('currentYear').textContent = new Date().getFullYear();
+    
+
+    
+        // Mobile menu toggle
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Form submission handling
+            const contactForm = document.getElementById('contactForm');
+            const successMessage = document.getElementById('successMessage');
+
+            contactForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                // Simulate form submission
+                successMessage.style.display = 'block';
+                contactForm.reset();
+                
+                // Hide success message after 3 seconds
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 10000);
+            });
+        });
     </script>
 
     <script src="https://unpkg.com/scrollreveal"></script>
     <script>
-        // Existing scripts...
-
         // Initialize ScrollReveal
         const sr = ScrollReveal({
             origin: 'bottom',
             distance: '60px',
             duration: 1000,
-            delay: 200
+            delay: 200,
+            mobile: false,
+            viewFactor: 0.2,
+            reset: false
         });
 
         // Reveal elements
-        sr.reveal('.process-card', { interval: 200 });
-        sr.reveal('.support-button', { origin: 'left' });
-        sr.reveal('.contact-hero', { origin: 'top' });
-        sr.reveal('footer div', { interval: 100 });
+        sr.reveal('.contact-hero', { 
+            origin: 'top',
+            mobile: true 
+        });
+        sr.reveal('.contact-card', { 
+            interval: 200,
+            mobile: false 
+        });
+        sr.reveal('.contact-form', { 
+            origin: 'right',
+            mobile: false 
+        });
+        sr.reveal('footer div', { 
+            interval: 100,
+            mobile: false 
+        });
     </script>
 </body>
 </html> 

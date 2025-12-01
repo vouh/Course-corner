@@ -130,6 +130,8 @@ async function querySTKPushStatus(checkoutRequestId) {
       CheckoutRequestID: checkoutRequestId
     };
 
+    console.log('📡 Querying M-Pesa with:', JSON.stringify(queryRequest, null, 2));
+
     const response = await axios.post(QUERY_URL, queryRequest, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
@@ -138,9 +140,31 @@ async function querySTKPushStatus(checkoutRequestId) {
       timeout: 10000
     });
 
+    console.log('📡 M-Pesa Query Raw Response:', JSON.stringify(response.data, null, 2));
     return response.data;
   } catch (error) {
-    console.error('STK Query Error:', error.message);
+    // M-Pesa returns errors in different formats
+    // Check if this is a "still processing" error vs actual failure
+    const errorData = error.response?.data;
+    console.log('📡 M-Pesa Query Error Response:', JSON.stringify(errorData || error.message, null, 2));
+    
+    if (errorData) {
+      // M-Pesa error code 500.001.1001 means "The transaction is being processed"
+      // Return it as a pending status rather than throwing
+      if (errorData.errorCode === '500.001.1001' || 
+          errorData.ResultCode === '1' ||
+          (errorData.errorMessage && errorData.errorMessage.includes('processing'))) {
+        return {
+          ResultCode: 'pending',
+          ResultDesc: 'Transaction is still being processed',
+          status: 'pending'
+        };
+      }
+      
+      // Return the error data so caller can check the result code
+      return errorData;
+    }
+    
     throw new Error('Failed to query payment status: ' + error.message);
   }
 }

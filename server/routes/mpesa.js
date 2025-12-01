@@ -55,7 +55,8 @@ router.post('/stkpush', async (req, res) => {
     );
 
     // Save transaction to Firebase
-    await savePaymentTransaction({
+    console.log('💾 Saving transaction to Firebase...');
+    const firebaseId = await savePaymentTransaction({
       sessionId,
       phoneNumber,
       amount,
@@ -64,6 +65,7 @@ router.post('/stkpush', async (req, res) => {
       checkoutRequestId: stkResult.checkoutRequestId,
       merchantRequestId: stkResult.merchantRequestId
     });
+    console.log('💾 Firebase save result:', firebaseId ? `Success (${firebaseId})` : 'Failed or skipped');
 
     res.json({
       success: true,
@@ -117,9 +119,13 @@ router.get('/status/:sessionId?', async (req, res) => {
         const queryResult = await querySTKPushStatus(payment.checkoutRequestId);
         console.log('📋 M-Pesa Query Result:', JSON.stringify(queryResult, null, 2));
         
-        // Check the result code
-        // ResultCode 0 = Success, 1032 = Cancelled, other = failed
-        if (queryResult.ResultCode === '0' || queryResult.ResultCode === 0) {
+        // Handle "pending" status - transaction still being processed
+        if (queryResult.ResultCode === 'pending' || queryResult.status === 'pending') {
+          console.log('⏳ Transaction still processing...');
+          // Keep status as pending, don't update anything
+        }
+        // Check the result code - ResultCode 0 = Success
+        else if (queryResult.ResultCode === '0' || queryResult.ResultCode === 0) {
           // Payment successful
           console.log('✅ M-Pesa confirms payment successful');
           PaymentStore.updatePaymentStatus(sessionId, 'completed', queryResult.ResultDesc || 'Payment successful');
@@ -133,7 +139,9 @@ router.get('/status/:sessionId?', async (req, res) => {
           
           payment.status = 'completed';
           payment.resultDesc = queryResult.ResultDesc || 'Payment successful';
-        } else if (queryResult.ResultCode === '1032' || queryResult.ResultCode === 1032) {
+        } 
+        // ResultCode 1032 = Cancelled by user
+        else if (queryResult.ResultCode === '1032' || queryResult.ResultCode === 1032) {
           // User cancelled
           console.log('❌ User cancelled the payment');
           PaymentStore.updatePaymentStatus(sessionId, 'failed', 'Request cancelled by user');
@@ -145,7 +153,48 @@ router.get('/status/:sessionId?', async (req, res) => {
           
           payment.status = 'failed';
           payment.resultDesc = 'Request cancelled by user';
-        } else if (queryResult.ResultCode && queryResult.ResultCode !== '0') {
+        } 
+        // ResultCode 1037 = Timeout (user didn't respond in time)
+        else if (queryResult.ResultCode === '1037' || queryResult.ResultCode === 1037) {
+          console.log('⏰ Payment request timed out');
+          PaymentStore.updatePaymentStatus(sessionId, 'failed', 'Payment request timed out. Please try again.');
+          
+          await updatePaymentTransaction(payment.checkoutRequestId, {
+            status: 'failed',
+            resultDesc: 'Payment request timed out'
+          });
+          
+          payment.status = 'failed';
+          payment.resultDesc = 'Payment request timed out. Please try again.';
+        }
+        // ResultCode 1 = Insufficient balance
+        else if (queryResult.ResultCode === '1' || queryResult.ResultCode === 1) {
+          console.log('💰 Insufficient balance');
+          PaymentStore.updatePaymentStatus(sessionId, 'failed', 'Insufficient M-Pesa balance');
+          
+          await updatePaymentTransaction(payment.checkoutRequestId, {
+            status: 'failed',
+            resultDesc: 'Insufficient balance'
+          });
+          
+          payment.status = 'failed';
+          payment.resultDesc = 'Insufficient M-Pesa balance';
+        }
+        // ResultCode 2001 = Wrong PIN
+        else if (queryResult.ResultCode === '2001' || queryResult.ResultCode === 2001) {
+          console.log('🔐 Wrong PIN entered');
+          PaymentStore.updatePaymentStatus(sessionId, 'failed', 'Wrong M-Pesa PIN entered');
+          
+          await updatePaymentTransaction(payment.checkoutRequestId, {
+            status: 'failed',
+            resultDesc: 'Wrong PIN'
+          });
+          
+          payment.status = 'failed';
+          payment.resultDesc = 'Wrong M-Pesa PIN entered';
+        }
+        // Any other non-zero ResultCode is a failure
+        else if (queryResult.ResultCode && queryResult.ResultCode !== '0' && queryResult.ResultCode !== 0) {
           // Other failure
           console.log('❌ Payment failed with code:', queryResult.ResultCode);
           PaymentStore.updatePaymentStatus(sessionId, 'failed', queryResult.ResultDesc || 'Payment failed');
@@ -159,7 +208,10 @@ router.get('/status/:sessionId?', async (req, res) => {
           payment.status = 'failed';
           payment.resultDesc = queryResult.ResultDesc || 'Payment failed';
         }
-        // If no ResultCode, the transaction is still processing
+        // If no ResultCode at all, the transaction is still processing
+        else {
+          console.log('⏳ No definitive result yet, keeping pending status');
+        }
       } catch (queryError) {
         console.log('⏳ M-Pesa query pending or error:', queryError.message);
         // Don't fail - just return current status, transaction might still be processing
@@ -404,6 +456,41 @@ router.get('/admin/stats', async (req, res) => {
     res.status(500).json({
       success: false,
       message: error.message
+    });
+  }
+});
+
+// Test Firebase connection (admin)
+router.get('/admin/test-firebase', async (req, res) => {
+  try {
+    const { initializeFirebase, getFirestore } = require('../utils/firebaseAdmin');
+    
+    // Initialize Firebase
+    const admin = initializeFirebase();
+    const db = getFirestore();
+    
+    // Test write
+    const testDoc = await db.collection('test').add({
+      message: 'Firebase connection test',
+      timestamp: new Date().toISOString()
+    });
+    
+    // Test read
+    const readDoc = await testDoc.get();
+    
+    // Clean up
+    await testDoc.delete();
+    
+    res.json({
+      success: true,
+      message: 'Firebase connection successful!',
+      testData: readDoc.data()
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Firebase connection failed: ' + error.message,
+      error: error.code || error.name
     });
   }
 });

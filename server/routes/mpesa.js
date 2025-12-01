@@ -495,15 +495,22 @@ router.get('/admin/test-firebase', async (req, res) => {
   try {
     const { initializeFirebase, getFirestore } = require('../utils/firebaseAdmin');
     
+    console.log('Testing Firebase connection...');
+    
     // Initialize Firebase
     const admin = initializeFirebase();
+    console.log('Firebase Admin initialized');
+    
     const db = getFirestore();
+    console.log('Got Firestore instance');
     
     // Test write
+    console.log('Attempting to write test document...');
     const testDoc = await db.collection('test').add({
       message: 'Firebase connection test',
       timestamp: new Date().toISOString()
     });
+    console.log('Test document created:', testDoc.id);
     
     // Test read
     const readDoc = await testDoc.get();
@@ -517,10 +524,13 @@ router.get('/admin/test-firebase', async (req, res) => {
       testData: readDoc.data()
     });
   } catch (error) {
+    console.error('Firebase test error:', error);
     res.status(500).json({
       success: false,
       message: 'Firebase connection failed: ' + error.message,
-      error: error.code || error.name
+      error: error.code || error.name,
+      details: error.details || null,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
     });
   }
 });

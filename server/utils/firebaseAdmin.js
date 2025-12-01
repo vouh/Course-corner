@@ -49,6 +49,11 @@ const initializeFirebase = () => {
 // Get Firestore instance
 const getFirestore = () => {
   initializeFirebase();
+  // Use custom database ID if specified, otherwise use default
+  const databaseId = process.env.FIREBASE_DATABASE_ID || '(default)';
+  if (databaseId !== '(default)') {
+    return admin.firestore().databaseId(databaseId);
+  }
   return admin.firestore();
 };
 

@@ -2,12 +2,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize grade selects
     initializeGradeSelects();
     
-    // Add calculate button event listener
-    const calculateBtn = document.getElementById('calculateBtn');
-    if (calculateBtn) {
-        calculateBtn.addEventListener('click', calculateClusterPoints);
-    }
-
+    // NOTE: Payment buttons are handled by paymentHandler.js
+    // Direct calculation is ONLY done after payment is confirmed
+    // Do NOT add click listener to calculateBtn here
+    
     // Get all grade select dropdowns
     const gradeSelects = document.querySelectorAll('.grade-select');
     

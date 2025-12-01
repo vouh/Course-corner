@@ -1684,11 +1684,21 @@
                         Swal.fire({
                             icon: 'success',
                             title: 'Payment Successful! ✅',
-                            text: `Your payment of KSH ${amount} has been confirmed!\n\nYour results are now unlocked.`,
+                            text: `Your payment of KSH ${amount} has been confirmed!\n\nCalculating your results...`,
                             confirmButtonText: 'View Results',
                             confirmButtonColor: '#16a34a'
                         });
 
+                        // NOW calculate and show results based on category
+                        if (typeof calculateClusterPoints === 'function') {
+                            try {
+                                calculateClusterPoints();
+                                console.log('Results calculated after payment confirmation');
+                            } catch (error) {
+                                console.error('Error calculating results:', error);
+                            }
+                        }
+                        
                         // Show results
                         document.getElementById('results').classList.remove('hidden');
                         

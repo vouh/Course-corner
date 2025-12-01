@@ -67,27 +67,42 @@ async function initiateSTKPush(phoneNumber, amount, accountReference, transactio
     const timestamp = getTimestamp();
     const password = generatePassword(timestamp);
 
+    console.log('📱 STK Push Request Details:');
+    console.log('Phone:', formattedPhone);
+    console.log('Amount:', amount);
+    console.log('BusinessShortCode:', BUSINESS_SHORT_CODE);
+    console.log('Timestamp:', timestamp);
+
+    // Determine transaction type based on short code length
+    // Till numbers (Buy Goods) are typically 5-7 digits
+    // Paybills are typically 5-6 digits but registered differently
+    const transactionType = 'CustomerBuyGoodsOnline'; // Use this for Till Numbers
+
     const stkPushRequest = {
       BusinessShortCode: BUSINESS_SHORT_CODE,
       Password: password,
       Timestamp: timestamp,
-      TransactionType: 'CustomerPayBillOnline',
+      TransactionType: transactionType,
       Amount: amount,
       PartyA: formattedPhone,
       PartyB: BUSINESS_SHORT_CODE,
       PhoneNumber: formattedPhone,
-      CallBackURL: `${process.env.CALLBACK_URL || 'https://mpesa-api.vercel.app'}/api/mpesa/callback`,
-      AccountReference: accountReference,
-      TransactionDesc: transactionDesc
+      CallBackURL: process.env.CALLBACK_URL || 'https://course-corner-server.vercel.app/api/mpesa/callback',
+      AccountReference: accountReference.substring(0, 12), // Max 12 chars for Till
+      TransactionDesc: transactionDesc.substring(0, 13) // Max 13 chars
     };
+
+    console.log('📤 Sending STK Push request...');
 
     const response = await axios.post(STK_PUSH_URL, stkPushRequest, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
         'Content-Type': 'application/json'
       },
-      timeout: 10000
+      timeout: 30000
     });
+
+    console.log('✅ STK Push Response:', response.data);
 
     return {
       success: true,
@@ -97,8 +112,8 @@ async function initiateSTKPush(phoneNumber, amount, accountReference, transactio
       merchantRequestId: response.data.MerchantRequestID
     };
   } catch (error) {
-    console.error('STK Push Error:', error.response?.data || error.message);
-    throw new Error('Failed to initiate payment: ' + (error.response?.data?.errorMessage || error.message));
+    console.error('❌ STK Push Error:', error.response?.data || error.message);
+    throw new Error('Failed to initiate payment: ' + (error.response?.data?.errorMessage || error.response?.data?.errorCode || error.message));
   }
 }
 

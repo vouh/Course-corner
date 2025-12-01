@@ -88,7 +88,8 @@ router.post('/stkpush', async (req, res) => {
 });
 
 // Query Payment Status (supports both path param and query param)
-router.get('/status/:sessionId?', (req, res) => {
+// Now actively queries M-Pesa if status is still pending
+router.get('/status/:sessionId?', async (req, res) => {
   try {
     const sessionId = req.params.sessionId || req.query.sessionId;
     
@@ -106,6 +107,63 @@ router.get('/status/:sessionId?', (req, res) => {
         success: false,
         message: 'Payment session not found'
       });
+    }
+
+    // If payment is still pending and we have a checkout ID, query M-Pesa directly
+    if (payment.status === 'pending' && payment.checkoutRequestId) {
+      console.log('🔍 Querying M-Pesa for status of:', payment.checkoutRequestId);
+      
+      try {
+        const queryResult = await querySTKPushStatus(payment.checkoutRequestId);
+        console.log('📋 M-Pesa Query Result:', JSON.stringify(queryResult, null, 2));
+        
+        // Check the result code
+        // ResultCode 0 = Success, 1032 = Cancelled, other = failed
+        if (queryResult.ResultCode === '0' || queryResult.ResultCode === 0) {
+          // Payment successful
+          console.log('✅ M-Pesa confirms payment successful');
+          PaymentStore.updatePaymentStatus(sessionId, 'completed', queryResult.ResultDesc || 'Payment successful');
+          
+          // Update Firebase
+          await updatePaymentTransaction(payment.checkoutRequestId, {
+            status: 'completed',
+            resultDesc: queryResult.ResultDesc,
+            mpesaReceiptNumber: queryResult.MpesaReceiptNumber || null
+          });
+          
+          payment.status = 'completed';
+          payment.resultDesc = queryResult.ResultDesc || 'Payment successful';
+        } else if (queryResult.ResultCode === '1032' || queryResult.ResultCode === 1032) {
+          // User cancelled
+          console.log('❌ User cancelled the payment');
+          PaymentStore.updatePaymentStatus(sessionId, 'failed', 'Request cancelled by user');
+          
+          await updatePaymentTransaction(payment.checkoutRequestId, {
+            status: 'failed',
+            resultDesc: 'Request cancelled by user'
+          });
+          
+          payment.status = 'failed';
+          payment.resultDesc = 'Request cancelled by user';
+        } else if (queryResult.ResultCode && queryResult.ResultCode !== '0') {
+          // Other failure
+          console.log('❌ Payment failed with code:', queryResult.ResultCode);
+          PaymentStore.updatePaymentStatus(sessionId, 'failed', queryResult.ResultDesc || 'Payment failed');
+          
+          await updatePaymentTransaction(payment.checkoutRequestId, {
+            status: 'failed',
+            resultDesc: queryResult.ResultDesc,
+            resultCode: queryResult.ResultCode
+          });
+          
+          payment.status = 'failed';
+          payment.resultDesc = queryResult.ResultDesc || 'Payment failed';
+        }
+        // If no ResultCode, the transaction is still processing
+      } catch (queryError) {
+        console.log('⏳ M-Pesa query pending or error:', queryError.message);
+        // Don't fail - just return current status, transaction might still be processing
+      }
     }
 
     res.json({

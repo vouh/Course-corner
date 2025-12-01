@@ -23,6 +23,10 @@ const PAYMENT_AMOUNTS = {
 
 // Get M-Pesa Access Token
 async function getMpesaToken() {
+  if (!CONSUMER_KEY || !CONSUMER_SECRET) {
+    throw new Error('M-Pesa credentials not configured. Please set CONSUMER_KEY and CONSUMER_SECRET environment variables.');
+  }
+  
   const auth = Buffer.from(`${CONSUMER_KEY}:${CONSUMER_SECRET}`).toString('base64');
   const response = await axios.get(AUTH_URL, {
     headers: {

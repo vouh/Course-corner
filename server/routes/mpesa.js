@@ -6,8 +6,8 @@ const { generateSessionId } = require('../utils/helpers');
 
 // Payment amounts for each category
 const PAYMENT_AMOUNTS = {
-  'calculate-cluster-points': 150,
-  'courses-only': 150,
+  'calculate-cluster-points': 1,
+  'courses-only': 1,
   'point-and-courses': 160
 };
 
@@ -75,10 +75,18 @@ router.post('/stkpush', async (req, res) => {
   }
 });
 
-// Query Payment Status
-router.get('/status/:sessionId', (req, res) => {
+// Query Payment Status (supports both path param and query param)
+router.get('/status/:sessionId?', (req, res) => {
   try {
-    const { sessionId } = req.params;
+    const sessionId = req.params.sessionId || req.query.sessionId;
+    
+    if (!sessionId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Session ID is required'
+      });
+    }
+    
     const payment = PaymentStore.getPaymentBySessionId(sessionId);
 
     if (!payment) {
@@ -95,6 +103,8 @@ router.get('/status/:sessionId', (req, res) => {
         category: payment.category,
         amount: payment.amount,
         status: payment.status,
+        resultDesc: payment.resultDesc || null,
+        errorMessage: payment.errorMessage || null,
         createdAt: payment.createdAt,
         updatedAt: payment.updatedAt,
         metadata: payment.metadata

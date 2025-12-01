@@ -749,16 +749,16 @@
 
                 <!-- Replace the single Calculate Button with these three buttons -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                    <button id="calculateBtn" class="blink-button payment-btn w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-500 transition transform hover:scale-105" data-category="calculate-cluster-points" data-amount="150">
+                    <button id="calculateBtn" class="blink-button payment-btn w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-500 transition transform hover:scale-105" data-category="calculate-cluster-points" data-amount="1">
                         <i class="fas fa-calculator mr-2"></i>
                         Calculate Cluster Points
-                        <small class="block text-xs mt-1">KSH 150</small>
+                        <small class="block text-xs mt-1">KSH 1</small>
                     </button>
                     
-                    <button id="calculateBtn2" class="blink-button payment-btn w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-500 transition transform hover:scale-105" data-category="courses-only" data-amount="150">
+                    <button id="calculateBtn2" class="blink-button payment-btn w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-500 transition transform hover:scale-105" data-category="courses-only" data-amount="1">
                         <i class="fas fa-book mr-2"></i>
                         Courses Only
-                        <small class="block text-xs mt-1">KSH 150</small>
+                        <small class="block text-xs mt-1">KSH 1</small>
                     </button>
                     
                     <button id="calculateBtn3" class="blink-button payment-btn w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-500 transition transform hover:scale-105" data-category="point-and-courses" data-amount="160">
@@ -938,7 +938,7 @@
                 setTimeout(() => {
                     preloader.style.display = 'none';
                 }, 500);
-            }, 1500);
+            }, 10);
         });
     </script>
 
@@ -1673,17 +1673,42 @@
                 paymentStatusDiv.classList.remove('hidden');
                 paymentMessage.textContent = 'Waiting for M-Pesa confirmation... This may take up to 2 minutes.';
 
-                // Poll for payment completion
+                // Poll for payment completion with real-time status updates
                 Swal.fire({
                     title: 'Verifying Payment...',
-                    html: '<p class="text-gray-600">Please wait while we confirm your payment with M-Pesa...</p>',
+                    html: `
+                        <p class="text-gray-600 mb-2">Please wait while we confirm your payment with M-Pesa...</p>
+                        <div id="swal-status-container" class="mt-3">
+                            <div class="flex items-center justify-center">
+                                <span class="inline-block w-3 h-3 bg-yellow-500 rounded-full animate-pulse mr-2"></span>
+                                <span id="swal-status-text" class="text-sm text-gray-500">Waiting for response...</span>
+                            </div>
+                            <p id="swal-attempt-text" class="text-xs text-gray-400 mt-2">Checking payment status...</p>
+                        </div>
+                    `,
                     allowOutsideClick: false,
                     allowEscapeKey: false,
                     didOpen: () => Swal.showLoading()
                 });
 
-                // Wait for payment
-                await window.paymentHandler.pollPaymentStatus();
+                // Wait for payment with status callback
+                await window.paymentHandler.pollPaymentStatus(40, 3000, (status, attempt, maxAttempts) => {
+                    const statusText = document.getElementById('swal-status-text');
+                    const attemptText = document.getElementById('swal-attempt-text');
+                    if (statusText) {
+                        if (status === 'pending') {
+                            statusText.textContent = 'Waiting for M-Pesa confirmation...';
+                        } else if (status === 'completed') {
+                            statusText.textContent = 'Payment confirmed!';
+                        } else if (status === 'failed') {
+                            statusText.textContent = 'Payment failed';
+                        }
+                    }
+                    if (attemptText) {
+                        const timeRemaining = Math.max(0, (maxAttempts - attempt) * 3);
+                        attemptText.textContent = `Check ${attempt}/${maxAttempts} • Timeout in ~${timeRemaining}s`;
+                    }
+                });
 
                 // Payment successful - approve access
                 await window.paymentHandler.approveAccess();
@@ -1708,11 +1733,34 @@
             } catch (error) {
                 document.getElementById('paymentStatus').classList.add('hidden');
                 
+                // Determine icon and title based on error message
+                let icon = 'error';
+                let title = 'Payment Failed';
+                const errorMsg = error.message || 'An error occurred during payment verification';
+                
+                if (errorMsg.toLowerCase().includes('cancel')) {
+                    icon = 'warning';
+                    title = 'Payment Cancelled';
+                } else if (errorMsg.toLowerCase().includes('pin') || errorMsg.toLowerCase().includes('wrong')) {
+                    icon = 'error';
+                    title = 'Wrong PIN';
+                } else if (errorMsg.toLowerCase().includes('insufficient') || errorMsg.toLowerCase().includes('balance')) {
+                    icon = 'warning';
+                    title = 'Insufficient Balance';
+                } else if (errorMsg.toLowerCase().includes('timeout') || errorMsg.toLowerCase().includes('timed out')) {
+                    icon = 'info';
+                    title = 'Request Timed Out';
+                }
+                
                 Swal.fire({
-                    icon: 'error',
-                    title: 'Payment Failed',
-                    text: error.message || 'An error occurred during payment verification',
-                    confirmButtonColor: '#dc2626'
+                    icon: icon,
+                    title: title,
+                    html: `
+                        <p class="mb-3">${errorMsg}</p>
+                        <p class="text-sm text-gray-500">You can try again by clicking the button.</p>
+                    `,
+                    confirmButtonText: 'Try Again',
+                    confirmButtonColor: '#16a34a'
                 });
                 
                 window.paymentHandler.clearSession();

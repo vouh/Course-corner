@@ -11,8 +11,8 @@ class PaymentHandler {
 
     // Payment amounts mapping
     static AMOUNTS = {
-        'calculate-cluster-points': 150,
-        'courses-only': 150,
+        'calculate-cluster-points': 1,
+        'courses-only': 1,
         'point-and-courses': 160
     };
 
@@ -66,8 +66,8 @@ class PaymentHandler {
         }
     }
 
-    // Poll payment status
-    async pollPaymentStatus(maxAttempts = 40, interval = 3000) {
+    // Poll payment status with real-time feedback
+    async pollPaymentStatus(maxAttempts = 40, interval = 3000, onStatusUpdate = null) {
         if (!this.sessionId) {
             throw new Error('No active payment session');
         }
@@ -84,7 +84,12 @@ class PaymentHandler {
                     const response = await fetch(`${this.serverUrl}/mpesa/status?sessionId=${this.sessionId}`);
                     const data = await response.json();
 
-                    console.log('Poll response:', data.data?.status);
+                    console.log('Poll response:', data.data);
+
+                    // Call status update callback if provided
+                    if (onStatusUpdate && typeof onStatusUpdate === 'function') {
+                        onStatusUpdate(data.data?.status, attempts, maxAttempts);
+                    }
 
                     if (data.data?.status === 'completed') {
                         clearInterval(pollInterval);
@@ -98,13 +103,20 @@ class PaymentHandler {
                     } else if (data.data?.status === 'failed') {
                         clearInterval(pollInterval);
                         console.log('Payment failed!');
-                        reject(new Error('Payment was declined by M-Pesa'));
+                        
+                        // Get detailed error message from M-Pesa
+                        const errorMessage = this.getMpesaErrorMessage(data.data?.resultDesc || data.data?.errorMessage);
+                        reject(new Error(errorMessage));
+                    } else if (data.data?.status === 'cancelled') {
+                        clearInterval(pollInterval);
+                        console.log('Payment cancelled!');
+                        reject(new Error('You cancelled the M-Pesa payment request'));
                     }
 
                     if (attempts >= maxAttempts) {
                         clearInterval(pollInterval);
                         console.log('Payment polling timed out');
-                        reject(new Error('Payment status check timed out - Please check your M-Pesa account'));
+                        reject(new Error('Payment verification timed out. If money was deducted, please contact support.'));
                     }
 
                 } catch (error) {
@@ -116,6 +128,41 @@ class PaymentHandler {
                 }
             }, interval);
         });
+    }
+
+    // Get user-friendly M-Pesa error message
+    getMpesaErrorMessage(resultDesc) {
+        if (!resultDesc) return 'Payment failed. Please try again.';
+        
+        const errorMessages = {
+            'Request cancelled by user': 'You cancelled the payment request.',
+            'The initiator information is invalid': 'Payment service error. Please try again.',
+            'DS timeout': 'M-Pesa request timed out. Please try again.',
+            'insufficient_balance': 'Insufficient M-Pesa balance.',
+            'Wrong Pin': 'Wrong M-Pesa PIN entered. Please try again.',
+            'Invalid MSISDN': 'Invalid phone number. Please check and try again.',
+            'The service request is processed successfully': 'Payment successful!',
+            'The balance is insufficient': 'Insufficient M-Pesa balance. Please top up and try again.',
+            'User did not enter pin': 'You did not enter your M-Pesa PIN. Please try again.',
+            'Transaction timed out': 'Transaction timed out. Please try again.',
+            'System internal error': 'M-Pesa system error. Please try again later.',
+            '1032': 'You cancelled the payment request.',
+            '1': 'Insufficient M-Pesa balance.',
+            '2001': 'Wrong M-Pesa PIN entered.',
+            '1037': 'M-Pesa request timed out. No response received.',
+            '1025': 'Transaction limit exceeded.',
+            '1019': 'Transaction expired. Please try again.'
+        };
+
+        // Check for matching error
+        for (const [key, message] of Object.entries(errorMessages)) {
+            if (resultDesc.toLowerCase().includes(key.toLowerCase())) {
+                return message;
+            }
+        }
+
+        // Return original message if no match found
+        return resultDesc;
     }
 
     // Check if payment is completed

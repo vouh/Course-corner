@@ -100,15 +100,15 @@ Response:
   "data": {
     "sessionId": "abc123...",
     "checkoutRequestId": "ws_co_...",
-    "amount": 150,
+    "amount": 1,
     "category": "calculate-cluster-points"
   }
 }
 ```
 
 **Payment Categories & Amounts:**
-- `calculate-cluster-points` - KSH 150
-- `courses-only` - KSH 150
+- `calculate-cluster-points` - KSH 1
+- `courses-only` - KSH 1
 - `point-and-courses` - KSH 160
 
 ### 2. Check Payment Status
@@ -122,7 +122,7 @@ Response:
   "data": {
     "sessionId": "abc123...",
     "category": "calculate-cluster-points",
-    "amount": 150,
+    "amount": 1,
     "status": "completed|pending|failed"
   }
 }

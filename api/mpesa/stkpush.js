@@ -16,8 +16,8 @@ const payments = new Map();
 
 // Payment amounts for each category
 const PAYMENT_AMOUNTS = {
-  'calculate-cluster-points': 150,
-  'courses-only': 150,
+  'calculate-cluster-points': 1,
+  'courses-only': 1,
   'point-and-courses': 160
 };
 

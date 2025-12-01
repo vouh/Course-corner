@@ -499,12 +499,17 @@ router.get('/admin/test-firebase', async (req, res) => {
     
     // Initialize Firebase
     const admin = initializeFirebase();
-    console.log('Firebase Admin initialized');
+    console.log('Firebase Admin initialized, apps:', admin.apps.length);
     
     const db = getFirestore();
-    console.log('Got Firestore instance');
+    console.log('Got Firestore instance for project:', db._settings?.projectId || 'unknown');
     
-    // Test write
+    // First try to just list collections (read operation)
+    console.log('Attempting to list collections...');
+    const collections = await db.listCollections();
+    console.log('Collections found:', collections.map(c => c.id));
+    
+    // Then try to write
     console.log('Attempting to write test document...');
     const testDoc = await db.collection('test').add({
       message: 'Firebase connection test',
@@ -521,6 +526,7 @@ router.get('/admin/test-firebase', async (req, res) => {
     res.json({
       success: true,
       message: 'Firebase connection successful!',
+      collections: collections.map(c => c.id),
       testData: readDoc.data()
     });
   } catch (error) {
@@ -529,8 +535,7 @@ router.get('/admin/test-firebase', async (req, res) => {
       success: false,
       message: 'Firebase connection failed: ' + error.message,
       error: error.code || error.name,
-      details: error.details || null,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      details: error.details || null
     });
   }
 });

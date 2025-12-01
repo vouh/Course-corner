@@ -17,21 +17,6 @@
     <script src="download-handler.js"></script>
     <script src="paymentHandler.js"></script>
     
-    <!-- Initialize Payment System -->
-    <script>
-        // Set server URL - Change for production
-        const SERVER_URL = 'http://localhost:8080/api'; // Change to Vercel URL when deploying
-        const paymentHandler = new PaymentHandler(SERVER_URL);
-        
-        // Ensure results are hidden on page load
-        document.addEventListener('DOMContentLoaded', function() {
-            const resultsDiv = document.getElementById('results');
-            if (resultsDiv) {
-                resultsDiv.classList.add('hidden');
-            }
-        });
-    </script>
-    
     <style>
         @keyframes blink {
             0% { opacity: 1; }
@@ -1627,7 +1612,7 @@
                 input: 'text',
                 inputLabel: 'Enter your M-Pesa phone number',
                 inputPlaceholder: '0712345678 or 254712345678',
-                icon: 'none',
+                icon: 'info',
                 showCancelButton: true,
                 confirmButtonText: 'Pay Now',
                 confirmButtonColor: '#16a34a',

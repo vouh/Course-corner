@@ -101,12 +101,19 @@ class PaymentHandler {
                             data: data.data
                         });
                     } else if (data.data?.status === 'failed') {
-                        clearInterval(pollInterval);
-                        console.log('Payment failed!');
-                        
-                        // Get detailed error message from M-Pesa
-                        const errorMessage = this.getMpesaErrorMessage(data.data?.resultDesc || data.data?.errorMessage);
-                        reject(new Error(errorMessage));
+                        // Check if it's actually still processing (server bug workaround)
+                        const resultDesc = data.data?.resultDesc || data.data?.errorMessage || '';
+                        if (resultDesc.toLowerCase().includes('processing')) {
+                            console.log('Still processing despite failed status, continuing to poll...');
+                            // Don't stop polling - this is a false "failed" status
+                        } else {
+                            clearInterval(pollInterval);
+                            console.log('Payment failed!');
+                            
+                            // Get detailed error message from M-Pesa
+                            const errorMessage = this.getMpesaErrorMessage(resultDesc);
+                            reject(new Error(errorMessage));
+                        }
                     } else if (data.data?.status === 'cancelled') {
                         clearInterval(pollInterval);
                         console.log('Payment cancelled!');

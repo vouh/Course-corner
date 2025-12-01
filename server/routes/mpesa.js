@@ -120,9 +120,16 @@ router.get('/status/:sessionId?', async (req, res) => {
         console.log('📋 M-Pesa Query Result:', JSON.stringify(queryResult, null, 2));
         
         // Handle "pending" status - transaction still being processed
-        if (queryResult.ResultCode === 'pending' || queryResult.status === 'pending') {
-          console.log('⏳ Transaction still processing...');
-          // Keep status as pending, don't update anything
+        // Also check if ResultDesc contains "processing" - M-Pesa sometimes returns this
+        const isStillProcessing = 
+          queryResult.ResultCode === 'pending' || 
+          queryResult.status === 'pending' ||
+          (queryResult.ResultDesc && queryResult.ResultDesc.toLowerCase().includes('processing')) ||
+          (queryResult.errorMessage && queryResult.errorMessage.toLowerCase().includes('processing'));
+        
+        if (isStillProcessing) {
+          console.log('⏳ Transaction still processing, keeping pending status...');
+          // Keep status as pending, don't update anything - let polling continue
         }
         // Check the result code - ResultCode 0 = Success
         else if (queryResult.ResultCode === '0' || queryResult.ResultCode === 0) {
@@ -193,11 +200,15 @@ router.get('/status/:sessionId?', async (req, res) => {
           payment.status = 'failed';
           payment.resultDesc = 'Wrong M-Pesa PIN entered';
         }
-        // Any other non-zero ResultCode is a failure
-        else if (queryResult.ResultCode && queryResult.ResultCode !== '0' && queryResult.ResultCode !== 0) {
-          // Other failure
-          console.log('❌ Payment failed with code:', queryResult.ResultCode);
-          PaymentStore.updatePaymentStatus(sessionId, 'failed', queryResult.ResultDesc || 'Payment failed');
+        // Any other non-zero ResultCode is a failure (but NOT if still processing)
+        else if (queryResult.ResultCode && queryResult.ResultCode !== '0' && queryResult.ResultCode !== 0 && queryResult.ResultCode !== 'pending') {
+          // Double check it's not a processing message before marking as failed
+          if (queryResult.ResultDesc && queryResult.ResultDesc.toLowerCase().includes('processing')) {
+            console.log('⏳ ResultDesc indicates still processing, keeping pending...');
+          } else {
+            // Other failure
+            console.log('❌ Payment failed with code:', queryResult.ResultCode);
+            PaymentStore.updatePaymentStatus(sessionId, 'failed', queryResult.ResultDesc || 'Payment failed');
           
           await updatePaymentTransaction(payment.checkoutRequestId, {
             status: 'failed',
@@ -205,8 +216,9 @@ router.get('/status/:sessionId?', async (req, res) => {
             resultCode: queryResult.ResultCode
           });
           
-          payment.status = 'failed';
-          payment.resultDesc = queryResult.ResultDesc || 'Payment failed';
+            payment.status = 'failed';
+            payment.resultDesc = queryResult.ResultDesc || 'Payment failed';
+          }
         }
         // If no ResultCode at all, the transaction is still processing
         else {

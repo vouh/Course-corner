@@ -16,6 +16,22 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="download-handler.js"></script>
     <script src="paymentHandler.js"></script>
+    
+    <!-- Initialize Payment System -->
+    <script>
+        // Set server URL - Change for production
+        const SERVER_URL = 'http://localhost:8080/api'; // Change to Vercel URL when deploying
+        const paymentHandler = new PaymentHandler(SERVER_URL);
+        
+        // Ensure results are hidden on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const resultsDiv = document.getElementById('results');
+            if (resultsDiv) {
+                resultsDiv.classList.add('hidden');
+            }
+        });
+    </script>
+    
     <style>
         @keyframes blink {
             0% { opacity: 1; }
@@ -1035,18 +1051,7 @@
             // document.getElementById('results').classList.remove('hidden');
         }
 
-        // Add separate function for calculate button
-        document.getElementById('calculateButton').addEventListener('click', function() {
-            calculateTotalPoints();
-            document.getElementById('results').classList.remove('hidden');
-        });
-    </script>
-
-    <script>
-        document.getElementById('calculateBtn2').addEventListener('click', function() {
-            this.classList.add('pop-animation');
-            setTimeout(() => this.classList.remove('pop-animation'), 300);
-        });
+        // Old button listeners removed - Payment is now required first
     </script>
 
     <!-- Add this script after the existing scripts -->

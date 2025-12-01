@@ -1591,9 +1591,8 @@
         window.PAYMENT_HANDLERS_INITIALIZED = true;
         
         // Initialize Payment Handler with your server URL
-        const SERVER_URL = window.location.hostname === 'localhost' 
-            ? 'http://localhost:8080/api'
-            : 'https://course-corner-server.vercel.app/api'; // Change to your Vercel URL
+        // Server is hosted on Vercel
+        const SERVER_URL = 'https://course-corner-server.vercel.app/api';
 
         // Create single payment handler instance
         if (!window.paymentHandler) {

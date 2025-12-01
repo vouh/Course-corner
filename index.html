@@ -1582,154 +1582,239 @@
         }
     </script>
 
-    <!-- Payment Button Handlers -->
+    <!-- Payment Button Handlers - Unified Payment Flow -->
     <script>
+        // ===== UNIFIED PAYMENT FLOW =====
+        // All payment logic is centralized here to prevent duplicate handlers
+        
+        // Clear any existing payment handlers from courses-eligibility.js
+        window.PAYMENT_HANDLERS_INITIALIZED = true;
+        
         // Initialize Payment Handler with your server URL
-        // For local development: http://localhost:8080/api
-        // For production: https://your-vercel-domain.vercel.app/api
         const SERVER_URL = window.location.hostname === 'localhost' 
             ? 'http://localhost:8080/api'
-            : 'https://your-vercel-domain.vercel.app/api'; // Change this when deploying
+            : 'https://course-corner-server.vercel.app/api'; // Change to your Vercel URL
 
-        const paymentHandler = new PaymentHandler(SERVER_URL);
+        // Create single payment handler instance
+        if (!window.paymentHandler) {
+            window.paymentHandler = new PaymentHandler(SERVER_URL);
+        }
 
-        // Handle all payment button clicks
-        document.querySelectorAll('.payment-btn').forEach(btn => {
-            btn.addEventListener('click', async (e) => {
-                e.preventDefault();
-                
-                const category = btn.getAttribute('data-category');
-                const amount = btn.getAttribute('data-amount');
-                
-                try {
-                    // Get phone number from user
-                    const { value: phoneNumber } = await Swal.fire({
-                        title: 'Enter Your Phone Number',
-                        text: `Payment Amount: KSH ${amount}`,
-                        input: 'text',
-                        inputLabel: 'Your M-Pesa phone number',
-                        inputPlaceholder: '0712345678 or 254712345678',
-                        icon: 'info',
-                        showCancelButton: true,
-                        confirmButtonText: 'Continue',
-                        confirmButtonColor: '#16a34a',
-                        cancelButtonText: 'Cancel',
-                        inputValidator: (value) => {
-                            if (!value) {
-                                return 'Phone number is required!';
-                            }
-                            // Simple validation - must contain digits
-                            if (!/\d{9,}/.test(value.replace(/[^\d]/g, ''))) {
-                                return 'Please enter a valid phone number';
-                            }
-                        }
-                    });
+        // Main payment processing function
+        async function processPayment(category, amount) {
+            const grades = getStudentGrades ? getStudentGrades() : {};
+            const overallGrade = document.getElementById('overallGrade').value;
+            
+            // Validate grades before payment
+            if (!overallGrade || parseInt(overallGrade) < 7) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Please Enter Your Grades First',
+                    text: 'You need to fill in at least 7 subjects before calculating results.',
+                    confirmButtonColor: '#16a34a'
+                });
+                return false;
+            }
 
-                    if (!phoneNumber) return; // User cancelled
-
-                    // Show payment processing message
-                    Swal.fire({
-                        title: 'Processing Payment',
-                        text: `Amount: KSH ${amount}\nPhone: ${phoneNumber}\n\nInitiating M-Pesa STK push...`,
-                        icon: 'info',
-                        allowOutsideClick: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-
-                    // Initiate payment
-                    const result = await paymentHandler.initiatePayment(phoneNumber, category);
-
-                    // Show STK prompt message
-                    await Swal.fire({
-                        icon: 'info',
-                        title: 'Check Your Phone!',
-                        text: `An M-Pesa prompt has been sent to ${phoneNumber}.\n\nEnter your M-Pesa PIN to complete the payment.\n\nDo NOT close this window.`,
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        confirmButtonText: 'I Entered The PIN',
-                        confirmButtonColor: '#16a34a'
-                    });
-
-                    // Show payment status
-                    const paymentStatusDiv = document.getElementById('paymentStatus');
-                    const paymentMessage = document.getElementById('paymentMessage');
-                    paymentStatusDiv.classList.remove('hidden');
-                    paymentMessage.textContent = 'Waiting for M-Pesa confirmation... This may take up to 2 minutes.';
-
-                    // Poll for payment completion
-                    Swal.fire({
-                        title: 'Waiting for Payment Confirmation',
-                        text: 'Please wait while we verify your payment...',
-                        icon: 'info',
-                        allowOutsideClick: false,
-                        allowEscapeKey: false,
-                        didOpen: () => {
-                            Swal.showLoading();
-                        }
-                    });
-
-                    try {
-                        // Wait for payment
-                        await paymentHandler.pollPaymentStatus();
-
-                        // Payment successful - approve access
-                        await paymentHandler.approveAccess();
-
-                        // Hide payment status
-                        paymentStatusDiv.classList.add('hidden');
-
-                        // Show success message
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Payment Successful! ✅',
-                            text: `Your payment of KSH ${amount} has been confirmed!\n\nCalculating your results...`,
-                            confirmButtonText: 'View Results',
-                            confirmButtonColor: '#16a34a'
-                        });
-
-                        // NOW calculate and show results based on category
-                        if (typeof calculateClusterPoints === 'function') {
-                            try {
-                                calculateClusterPoints();
-                                console.log('Results calculated after payment confirmation');
-                            } catch (error) {
-                                console.error('Error calculating results:', error);
-                            }
-                        }
-                        
-                        // Show results
-                        document.getElementById('results').classList.remove('hidden');
-                        
-                        // Scroll to results
-                        setTimeout(() => {
-                            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
-                        }, 300);
-
-                    } catch (error) {
-                        paymentStatusDiv.classList.add('hidden');
-                        
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Payment Failed',
-                            text: error.message || 'An error occurred during payment verification',
-                            confirmButtonColor: '#dc2626'
-                        });
-                        
-                        paymentHandler.clearSession();
+            // Get phone number from user
+            const { value: phoneNumber } = await Swal.fire({
+                title: 'M-Pesa Payment',
+                html: `
+                    <div class="text-left mb-4">
+                        <p class="text-gray-600 mb-2">Service: <strong>${getCategoryName(category)}</strong></p>
+                        <p class="text-gray-600">Amount: <strong class="text-green-600">KSH ${amount}</strong></p>
+                    </div>
+                `,
+                input: 'text',
+                inputLabel: 'Enter your M-Pesa phone number',
+                inputPlaceholder: '0712345678 or 254712345678',
+                icon: 'none',
+                showCancelButton: true,
+                confirmButtonText: 'Pay Now',
+                confirmButtonColor: '#16a34a',
+                cancelButtonText: 'Cancel',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Phone number is required!';
                     }
-
-                } catch (error) {
-                    console.error('Payment Error:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: error.message || 'An unexpected error occurred'
-                    });
-                    paymentHandler.clearSession();
+                    if (!/\d{9,}/.test(value.replace(/[^\d]/g, ''))) {
+                        return 'Please enter a valid phone number';
+                    }
                 }
             });
+
+            if (!phoneNumber) return false; // User cancelled
+
+            try {
+                // Show payment processing message
+                Swal.fire({
+                    title: 'Initiating Payment...',
+                    html: `
+                        <p class="mb-2">Amount: <strong>KSH ${amount}</strong></p>
+                        <p>Phone: <strong>${phoneNumber}</strong></p>
+                        <p class="mt-4 text-sm text-gray-500">Sending STK push to your phone...</p>
+                    `,
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                // Initiate payment
+                await window.paymentHandler.initiatePayment(phoneNumber, category);
+
+                // Show STK prompt message
+                await Swal.fire({
+                    icon: 'info',
+                    title: '📱 Check Your Phone!',
+                    html: `
+                        <div class="text-left">
+                            <p class="mb-3">An M-Pesa prompt has been sent to:</p>
+                            <p class="text-lg font-bold text-green-600 mb-3">${phoneNumber}</p>
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-3">
+                                <p class="text-sm text-yellow-800">
+                                    <strong>Enter your M-Pesa PIN</strong> on your phone to complete the payment.
+                                </p>
+                            </div>
+                            <p class="text-sm text-gray-500">Do NOT close this window until payment is confirmed.</p>
+                        </div>
+                    `,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    confirmButtonText: 'I Entered The PIN',
+                    confirmButtonColor: '#16a34a'
+                });
+
+                // Show payment status
+                const paymentStatusDiv = document.getElementById('paymentStatus');
+                const paymentMessage = document.getElementById('paymentMessage');
+                paymentStatusDiv.classList.remove('hidden');
+                paymentMessage.textContent = 'Waiting for M-Pesa confirmation... This may take up to 2 minutes.';
+
+                // Poll for payment completion
+                Swal.fire({
+                    title: 'Verifying Payment...',
+                    html: '<p class="text-gray-600">Please wait while we confirm your payment with M-Pesa...</p>',
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                // Wait for payment
+                await window.paymentHandler.pollPaymentStatus();
+
+                // Payment successful - approve access
+                await window.paymentHandler.approveAccess();
+
+                // Hide payment status
+                paymentStatusDiv.classList.add('hidden');
+
+                // Show success message
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Payment Successful! ✅',
+                    html: `
+                        <p class="text-green-600 mb-2">Your payment of <strong>KSH ${amount}</strong> has been confirmed!</p>
+                        <p class="text-gray-600">Calculating your results now...</p>
+                    `,
+                    confirmButtonText: 'View Results',
+                    confirmButtonColor: '#16a34a'
+                });
+
+                return true; // Payment successful
+
+            } catch (error) {
+                document.getElementById('paymentStatus').classList.add('hidden');
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Payment Failed',
+                    text: error.message || 'An error occurred during payment verification',
+                    confirmButtonColor: '#dc2626'
+                });
+                
+                window.paymentHandler.clearSession();
+                return false;
+            }
+        }
+
+        // Helper function to get category display name
+        function getCategoryName(category) {
+            const names = {
+                'calculate-cluster-points': 'Cluster Points Calculation',
+                'courses-only': 'Eligible Courses',
+                'point-and-courses': 'Cluster Points & Courses'
+            };
+            return names[category] || category;
+        }
+
+        // Handle calculate results after payment
+        function showResultsAfterPayment(category) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.classList.remove('hidden');
+
+            if (category === 'calculate-cluster-points') {
+                // Calculate and show cluster points only
+                if (typeof calculateClusterPoints === 'function') {
+                    calculateClusterPoints();
+                }
+            } else if (category === 'courses-only') {
+                // Show eligible courses only
+                if (typeof getStudentGrades === 'function' && typeof getEligibleCourses === 'function') {
+                    const grades = getStudentGrades();
+                    const eligibleCourses = getEligibleCourses(grades);
+                    if (typeof displayAllResults === 'function') {
+                        displayAllResults(eligibleCourses);
+                    }
+                }
+            } else if (category === 'point-and-courses') {
+                // Show both cluster points and courses
+                if (typeof calculateClusterPoints === 'function') {
+                    calculateClusterPoints();
+                }
+                if (typeof getStudentGrades === 'function' && typeof getEligibleCourses === 'function') {
+                    const grades = getStudentGrades();
+                    const eligibleCourses = getEligibleCourses(grades);
+                    if (typeof displayCombinedResults === 'function') {
+                        displayCombinedResults(eligibleCourses);
+                    }
+                }
+            }
+
+            // Scroll to results
+            setTimeout(() => {
+                resultsDiv.scrollIntoView({ behavior: 'smooth' });
+            }, 300);
+        }
+
+        // Initialize payment button handlers on DOM ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Remove any previous handlers and add unified ones
+            const paymentBtns = document.querySelectorAll('.payment-btn');
+            
+            paymentBtns.forEach(btn => {
+                // Clone to remove old handlers
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                
+                newBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const category = this.getAttribute('data-category');
+                    const amount = this.getAttribute('data-amount');
+                    
+                    console.log('Payment button clicked:', category, amount);
+                    
+                    // Process payment first
+                    const paymentSuccess = await processPayment(category, amount);
+                    
+                    // Only show results if payment was successful
+                    if (paymentSuccess) {
+                        showResultsAfterPayment(category);
+                    }
+                });
+            });
+            
+            console.log('Unified payment handlers initialized for', paymentBtns.length, 'buttons');
         });
 
         // Check if user already has paid access on page load
@@ -1737,10 +1822,9 @@
             const sessionId = localStorage.getItem('paymentSessionId');
             if (sessionId) {
                 try {
-                    const access = await paymentHandler.hasAccessToCategory();
+                    const access = await window.paymentHandler.hasAccessToCategory();
                     if (access.hasAccess) {
-                        // User already paid, show results
-                        document.getElementById('results').classList.remove('hidden');
+                        console.log('User has existing paid access');
                     }
                 } catch (error) {
                     console.log('Access check skipped:', error.message);

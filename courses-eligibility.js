@@ -379,76 +379,20 @@ function checkMinimumSubjects(grades) {
 }
 
 // Add event listeners for both second and third buttons
+// NOTE: Payment handlers are now managed by index.html's unified payment system
+// These handlers are called AFTER payment is confirmed via showResultsAfterPayment()
 document.addEventListener('DOMContentLoaded', function() {
     // Load confetti script once at start
     const confettiScript = document.createElement('script');
     confettiScript.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
     document.head.appendChild(confettiScript);
 
-    // Second button (Courses Only)
-    const calculateBtn2 = document.getElementById('calculateBtn2');
-    if (calculateBtn2) {
-        calculateBtn2.addEventListener('click', async function() {
-            console.log('Calculate button clicked');
-            
-            // Get grades
-            const grades = getStudentGrades();
-            console.log('Student grades:', grades);
-
-            // Check minimum subjects (includes overall grade check)
-            const subjectsCheck = checkMinimumSubjects(grades);
-            if (!subjectsCheck.isValid) {
-                const resultsDiv = document.getElementById('results');
-                resultsDiv.innerHTML = subjectsCheck.message;
-                resultsDiv.classList.remove('hidden');
-                return;
-            }
-
-            // Get eligible courses from all sources
-            const eligibleCourses = getEligibleCourses(grades);
-            console.log('Eligible courses:', eligibleCourses);
-
-            // If there's an error, display it
-            if (eligibleCourses.error) {
-                const resultsDiv = document.getElementById('results');
-                resultsDiv.innerHTML = eligibleCourses.error;
-                resultsDiv.classList.remove('hidden');
-                return;
-            }
-
-            // Display all results
-            displayAllResults(eligibleCourses);
-
-            // Add animation to button
-            this.classList.add('pop-animation');
-            setTimeout(() => this.classList.remove('pop-animation'), 300);
-
-            // Call the download function after displaying results
-            setTimeout(() => {
-                handleCoursesOnlyDownload();
-            }, 500);
-        });
-    }
-
-    // Third button (Points & Courses)
-    const calculateBtn3 = document.getElementById('calculateBtn3');
-    if (calculateBtn3) {
-        calculateBtn3.addEventListener('click', function() {
-            // Call both calculations
-            calculateClusterPoints(); // From calculator.js
-            
-            // Get grades and check eligibility
-            const grades = getStudentGrades();
-            const eligibleCourses = getEligibleCourses(grades);
-            
-            // Display combined results
-            displayCombinedResults(eligibleCourses);
-            
-            // Add animation to button
-            this.classList.add('pop-animation');
-            setTimeout(() => this.classList.remove('pop-animation'), 300);
-        });
-    }
+    // IMPORTANT: Do NOT add click handlers to payment buttons here!
+    // All payment button click handlers are managed in index.html's unified payment system
+    // The functions below (displayAllResults, displayCombinedResults) are called 
+    // ONLY after successful payment confirmation
+    
+    console.log('courses-eligibility.js loaded - payment handlers deferred to unified system');
 });
 
 // Modify displayCombinedResults function

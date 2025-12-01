@@ -41,13 +41,10 @@ function getTimestamp() {
 }
 
 // Generate password for STK push
+// M-Pesa requires: base64(BusinessShortCode + Passkey + Timestamp)
 function generatePassword(timestamp) {
-  const stringToEncrypt = BUSINESS_SHORT_CODE + MPESA_PASSKEY + timestamp;
-  const encrypted = crypto
-    .createHash('sha256')
-    .update(stringToEncrypt)
-    .digest('base64');
-  return encrypted;
+  const stringToEncode = BUSINESS_SHORT_CODE + MPESA_PASSKEY + timestamp;
+  return Buffer.from(stringToEncode).toString('base64');
 }
 
 // Format phone number to 254XXXXXXXXX format

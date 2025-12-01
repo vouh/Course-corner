@@ -7,9 +7,9 @@ const BUSINESS_SHORT_CODE = process.env.BusinessShortCode;
 const MPESA_PASSKEY = process.env.MPESA_PASSKEY;
 const CALLBACK_URL = process.env.CALLBACK_URL;
 
-// M-Pesa URLs (Sandbox)
-const AUTH_URL = 'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
-const STK_PUSH_URL = 'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
+// M-Pesa URLs - PRODUCTION (Live)
+const AUTH_URL = 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+const STK_PUSH_URL = 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
 
 // In-memory payment store (for serverless, consider using a database)
 const payments = new Map();

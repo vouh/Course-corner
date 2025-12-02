@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', function() {
     // Direct calculation is ONLY done after payment is confirmed
     // Do NOT add click listener to calculateBtn here
     
+    // Export calculateClusterPoints to window for payment handler
+    window.calculateClusterPoints = calculateClusterPoints;
+    
     // Get all grade select dropdowns
     const gradeSelects = document.querySelectorAll('.grade-select');
     

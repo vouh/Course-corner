@@ -760,26 +760,59 @@
         // Mobile menu toggle
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
+        let isMenuOpen = false;
+        
+        function openMobileMenu() {
+            isMenuOpen = true;
+            mobileMenuBtn.classList.add('active');
+            mobileMenu.classList.add('show');
+        }
+        
+        function closeMobileMenu() {
+            isMenuOpen = false;
+            mobileMenuBtn.classList.remove('active');
+            mobileMenu.classList.remove('show');
+        }
+        
+        function toggleMobileMenu() {
+            if (isMenuOpen) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        }
         
         mobileMenuBtn.addEventListener('click', (e) => {
+            e.preventDefault();
             e.stopPropagation();
-            mobileMenuBtn.classList.toggle('active');
-            mobileMenu.classList.toggle('show');
+            toggleMobileMenu();
         });
         
         // Close mobile menu when clicking a link
-        mobileMenu.querySelectorAll('a').forEach(link => {
+        mobileMenu.querySelectorAll('a, button').forEach(link => {
             link.addEventListener('click', () => {
-                mobileMenuBtn.classList.remove('active');
-                mobileMenu.classList.remove('show');
+                closeMobileMenu();
             });
         });
         
         // Close mobile menu when clicking outside
         document.addEventListener('click', (e) => {
-            if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
-                mobileMenuBtn.classList.remove('active');
-                mobileMenu.classList.remove('show');
+            if (isMenuOpen && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                closeMobileMenu();
+            }
+        });
+        
+        // Close mobile menu on resize to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024 && isMenuOpen) {
+                closeMobileMenu();
+            }
+        });
+        
+        // Close mobile menu on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isMenuOpen) {
+                closeMobileMenu();
             }
         });
         
@@ -1023,14 +1056,29 @@
 
         // Show results after successful payment
         function showResultsAfterPayment(category) {
-            if (typeof calculateClusterPoints === 'function') {
-                calculateClusterPoints();
+            console.log('showResultsAfterPayment called with category:', category);
+            
+            // Call the calculate function
+            if (typeof window.calculateClusterPoints === 'function') {
+                console.log('Calling window.calculateClusterPoints');
+                window.calculateClusterPoints();
+            } else {
+                console.error('calculateClusterPoints not found on window');
             }
             
+            // Show results div
             const resultsDiv = document.getElementById('results');
             if (resultsDiv) {
+                console.log('Showing results div');
                 resultsDiv.classList.remove('hidden');
-                resultsDiv.scrollIntoView({ behavior: 'smooth' });
+                resultsDiv.style.display = 'block';
+                
+                // Scroll to results after a brief delay
+                setTimeout(() => {
+                    resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            } else {
+                console.error('Results div not found');
             }
         }
 

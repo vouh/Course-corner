@@ -39,6 +39,137 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+        
+        /* Mobile Navigation */
+        .mobile-menu {
+            display: none;
+        }
+        .mobile-menu.active {
+            display: flex;
+        }
+        
+        /* Mobile Card View for Table */
+        .mobile-card {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            /* Hide desktop table, show mobile cards */
+            .desktop-table {
+                display: none !important;
+            }
+            .mobile-card {
+                display: block !important;
+            }
+            
+            /* Stat cards adjustments */
+            .stat-card p.text-3xl {
+                font-size: 1.5rem;
+            }
+            
+            /* Nav buttons */
+            .nav-buttons {
+                display: none;
+            }
+            .nav-buttons.active {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: #16a34a;
+                padding: 1rem;
+                gap: 0.5rem;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+            
+            /* Filter adjustments */
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch !important;
+            }
+            .filter-row > div,
+            .filter-row > button {
+                width: 100%;
+            }
+            .filter-row select,
+            .filter-row input {
+                width: 100%;
+            }
+            
+            /* Export buttons */
+            .export-buttons {
+                flex-wrap: wrap;
+                width: 100%;
+                justify-content: space-between;
+            }
+            .export-buttons button {
+                flex: 1;
+                min-width: calc(50% - 0.25rem);
+            }
+            
+            /* Modal adjustments */
+            .modal-content {
+                margin: 0.5rem;
+                max-height: calc(100vh - 1rem);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stat-card {
+                padding: 1rem;
+            }
+            .stat-card p.text-3xl {
+                font-size: 1.25rem;
+            }
+            .stat-card .text-xl {
+                font-size: 1rem;
+            }
+        }
+        
+        /* Transaction Mobile Card */
+        .tx-mobile-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-left: 4px solid #e5e7eb;
+        }
+        .tx-mobile-card.status-completed {
+            border-left-color: #16a34a;
+        }
+        .tx-mobile-card.status-pending {
+            border-left-color: #eab308;
+        }
+        .tx-mobile-card.status-failed {
+            border-left-color: #dc2626;
+        }
+        .tx-mobile-card .tx-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+        }
+        .tx-mobile-card .tx-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+        .tx-mobile-card .tx-label {
+            color: #6b7280;
+            font-size: 0.75rem;
+        }
+        .tx-mobile-card .tx-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.75rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #e5e7eb;
+        }
     </style>
 </head>
 <body class="bg-gray-100 min-h-screen">
@@ -97,25 +228,47 @@
     <!-- Main Dashboard (hidden until logged in) -->
     <div id="dashboard" class="hidden">
         <!-- Navigation -->
-        <nav class="bg-green-600 text-white shadow-lg">
+        <nav class="bg-green-600 text-white shadow-lg relative">
             <div class="container mx-auto px-4">
                 <div class="flex justify-between items-center py-4">
                     <div class="flex items-center">
-                        <img src="../assets/images/1.png" alt="Logo" class="h-10 w-auto mr-3">
-                        <span class="text-xl font-bold">Course Corner Admin</span>
+                        <img src="../assets/images/1.png" alt="Logo" class="h-8 md:h-10 w-auto mr-2 md:mr-3">
+                        <span class="text-lg md:text-xl font-bold">Admin</span>
+                        <span class="hidden sm:inline text-lg md:text-xl font-bold"> Dashboard</span>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <span id="user-email" class="text-green-100 text-sm hidden md:inline">
+                    
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-green-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    
+                    <!-- Desktop Navigation -->
+                    <div id="nav-buttons" class="nav-buttons hidden md:flex items-center space-x-4">
+                        <span id="user-email" class="text-green-100 text-sm hidden lg:inline">
                             <i class="fas fa-user mr-1"></i>
                             <span id="user-email-text"></span>
                         </span>
-                        <button onclick="refreshData()" class="bg-white text-green-600 px-4 py-2 rounded-lg hover:bg-gray-100 transition">
-                            <i class="fas fa-sync-alt mr-2"></i>Refresh
+                        <button onclick="refreshData()" class="bg-white text-green-600 px-3 md:px-4 py-2 rounded-lg hover:bg-gray-100 transition text-sm md:text-base">
+                            <i class="fas fa-sync-alt md:mr-2"></i><span class="hidden md:inline">Refresh</span>
                         </button>
-                        <button onclick="logout()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
-                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        <button onclick="logout()" class="bg-red-500 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-red-600 transition text-sm md:text-base">
+                            <i class="fas fa-sign-out-alt md:mr-2"></i><span class="hidden md:inline">Logout</span>
                         </button>
                     </div>
+                </div>
+                
+                <!-- Mobile Menu -->
+                <div id="mobile-menu" class="mobile-menu flex-col pb-4 md:hidden">
+                    <span id="user-email-mobile" class="text-green-100 text-sm py-2">
+                        <i class="fas fa-user mr-2"></i>
+                        <span id="user-email-text-mobile"></span>
+                    </span>
+                    <button onclick="refreshData(); toggleMobileMenu();" class="w-full bg-white text-green-600 px-4 py-3 rounded-lg hover:bg-gray-100 transition text-left mt-2">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh Data
+                    </button>
+                    <button onclick="logout()" class="w-full bg-red-500 text-white px-4 py-3 rounded-lg hover:bg-red-600 transition text-left mt-2">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
                 </div>
             </div>
         </nav>
@@ -123,172 +276,157 @@
         <!-- Main Content -->
         <div class="container mx-auto px-4 py-8">
             <!-- Stats Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div class="stat-card bg-white rounded-xl shadow-md p-6">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+                <div class="stat-card bg-white rounded-xl shadow-md p-4 md:p-6">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-gray-500 text-sm font-medium">Total Transactions</p>
-                            <p id="stat-total" class="text-3xl font-bold text-gray-800">-</p>
+                            <p class="text-gray-500 text-xs md:text-sm font-medium">Total</p>
+                            <p id="stat-total" class="text-xl md:text-3xl font-bold text-gray-800">-</p>
                         </div>
-                        <div class="bg-blue-100 p-3 rounded-full">
-                            <i class="fas fa-receipt text-blue-600 text-xl"></i>
+                        <div class="bg-blue-100 p-2 md:p-3 rounded-full">
+                            <i class="fas fa-receipt text-blue-600 text-lg md:text-xl"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="stat-card bg-white rounded-xl shadow-md p-6">
+                <div class="stat-card bg-white rounded-xl shadow-md p-4 md:p-6">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-gray-500 text-sm font-medium">Completed</p>
-                            <p id="stat-completed" class="text-3xl font-bold text-green-600">-</p>
+                            <p class="text-gray-500 text-xs md:text-sm font-medium">Completed</p>
+                            <p id="stat-completed" class="text-xl md:text-3xl font-bold text-green-600">-</p>
                         </div>
-                        <div class="bg-green-100 p-3 rounded-full">
-                            <i class="fas fa-check-circle text-green-600 text-xl"></i>
+                        <div class="bg-green-100 p-2 md:p-3 rounded-full">
+                            <i class="fas fa-check-circle text-green-600 text-lg md:text-xl"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="stat-card bg-white rounded-xl shadow-md p-6">
-                    <div class="flex items-center justify-between">
+                <div class="stat-card bg-white rounded-xl shadow-md p-4 md:p-6">
                         <div>
-                            <p class="text-gray-500 text-sm font-medium">Failed</p>
-                            <p id="stat-failed" class="text-3xl font-bold text-red-600">-</p>
+                            <p class="text-gray-500 text-xs md:text-sm font-medium">Failed</p>
+                            <p id="stat-failed" class="text-xl md:text-3xl font-bold text-red-600">-</p>
                         </div>
-                        <div class="bg-red-100 p-3 rounded-full">
-                            <i class="fas fa-times-circle text-red-600 text-xl"></i>
+                        <div class="bg-red-100 p-2 md:p-3 rounded-full">
+                            <i class="fas fa-times-circle text-red-600 text-lg md:text-xl"></i>
                         </div>
                     </div>
                 </div>
 
-                <div class="stat-card bg-white rounded-xl shadow-md p-6">
+                <div class="stat-card bg-white rounded-xl shadow-md p-4 md:p-6">
                     <div class="flex items-center justify-between">
                         <div>
-                            <p class="text-gray-500 text-sm font-medium">Total Revenue</p>
-                            <p id="stat-revenue" class="text-3xl font-bold text-gray-800">-</p>
+                            <p class="text-gray-500 text-xs md:text-sm font-medium">Revenue</p>
+                            <p id="stat-revenue" class="text-xl md:text-3xl font-bold text-gray-800">-</p>
                         </div>
-                        <div class="bg-yellow-100 p-3 rounded-full">
-                            <i class="fas fa-coins text-yellow-600 text-xl"></i>
+                        <div class="bg-yellow-100 p-2 md:p-3 rounded-full">
+                            <i class="fas fa-coins text-yellow-600 text-lg md:text-xl"></i>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- Filters & Actions -->
-            <div class="bg-white rounded-xl shadow-md p-4 mb-6">
-                <!-- Row 1: Search and Main Filters -->
-                <div class="flex flex-wrap items-center gap-4 mb-4">
-                    <!-- Search -->
-                    <div class="flex-1 min-w-[200px]">
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
-                                <i class="fas fa-search"></i>
-                            </span>
-                            <input type="text" id="search-input" placeholder="Search by phone, M-Pesa code, category..."
-                                class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                                onkeyup="handleSearch()">
-                        </div>
+            <div class="bg-white rounded-xl shadow-md p-3 md:p-4 mb-4 md:mb-6">
+                <!-- Row 1: Search -->
+                <div class="mb-3">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" id="search-input" placeholder="Search phone, M-Pesa code..."
+                            class="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm md:text-base"
+                            onkeyup="handleSearch()">
                     </div>
-                    
+                </div>
+                
+                <!-- Row 2: Filter Dropdowns -->
+                <div class="filter-row grid grid-cols-2 md:flex md:flex-wrap items-center gap-2 md:gap-4 mb-3">
                     <!-- Status Filter -->
-                    <div>
-                        <select id="status-filter" onchange="applyAllFilters()" 
-                            class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option value="">All Status</option>
-                            <option value="completed">Completed</option>
-                            <option value="pending">Pending</option>
-                            <option value="failed">Failed</option>
-                        </select>
-                    </div>
+                    <select id="status-filter" onchange="applyAllFilters()" 
+                        class="border rounded-lg px-2 md:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                        <option value="">All Status</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                        <option value="failed">Failed</option>
+                    </select>
                     
                     <!-- Category Filter -->
-                    <div>
-                        <select id="category-filter" onchange="applyAllFilters()" 
-                            class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option value="">All Categories</option>
-                            <option value="calculate-cluster-points">Cluster Points</option>
-                            <option value="courses-only">Courses Only</option>
-                            <option value="point-and-courses">Points & Courses</option>
-                        </select>
-                    </div>
+                    <select id="category-filter" onchange="applyAllFilters()" 
+                        class="border rounded-lg px-2 md:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                        <option value="">All Categories</option>
+                        <option value="calculate-cluster-points">Cluster Pts</option>
+                        <option value="courses-only">Courses Only</option>
+                        <option value="point-and-courses">Pts & Courses</option>
+                    </select>
                     
                     <!-- Limit Filter -->
-                    <div>
-                        <select id="limit-filter" onchange="filterTransactions()" 
-                            class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-                            <option value="50">50 rows</option>
-                            <option value="100" selected>100 rows</option>
-                            <option value="200">200 rows</option>
-                            <option value="500">500 rows</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <!-- Row 2: Date Filters and Actions -->
-                <div class="flex flex-wrap items-center gap-4">
-                    <!-- Date From -->
-                    <div class="flex items-center gap-2">
-                        <label class="text-sm text-gray-600">From:</label>
-                        <input type="date" id="date-from" onchange="applyAllFilters()"
-                            class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-                    </div>
-                    
-                    <!-- Date To -->
-                    <div class="flex items-center gap-2">
-                        <label class="text-sm text-gray-600">To:</label>
-                        <input type="date" id="date-to" onchange="applyAllFilters()"
-                            class="border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500">
-                    </div>
+                    <select id="limit-filter" onchange="filterTransactions()" 
+                        class="border rounded-lg px-2 md:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                        <option value="50">50 rows</option>
+                        <option value="100" selected>100 rows</option>
+                        <option value="200">200 rows</option>
+                    </select>
                     
                     <!-- Clear Filters -->
-                    <button onclick="clearAllFilters()" class="text-gray-500 hover:text-gray-700 px-3 py-2">
-                        <i class="fas fa-times mr-1"></i>Clear Filters
-                    </button>
-                    
-                    <div class="flex-1"></div>
-                    
-                    <!-- Export Buttons -->
-                    <div class="flex gap-2">
-                        <button onclick="exportToCSV()" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
-                            <i class="fas fa-file-csv mr-2"></i>CSV
-                        </button>
-                        <button onclick="exportToPDF()" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition">
-                            <i class="fas fa-file-pdf mr-2"></i>PDF
-                        </button>
-                    </div>
-                    
-                    <!-- Delete Selected -->
-                    <button id="delete-selected-btn" onclick="deleteSelected()" disabled
-                        class="delete-selected-btn bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200 transition">
-                        <i class="fas fa-trash mr-2"></i>Delete (<span id="selected-count">0</span>)
+                    <button onclick="clearAllFilters()" class="text-gray-500 hover:text-gray-700 px-2 md:px-3 py-2 text-sm">
+                        <i class="fas fa-times mr-1"></i><span class="hidden md:inline">Clear</span>
                     </button>
                 </div>
                 
-                <div class="flex justify-between items-center mt-4 pt-4 border-t">
-                    <span id="results-count" class="text-sm text-gray-500">Showing 0 transactions</span>
-                    <span id="last-updated" class="text-sm text-gray-500"></span>
+                <!-- Row 3: Date Filters -->
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                    <div>
+                        <label class="text-xs text-gray-500 mb-1 block">From Date</label>
+                        <input type="date" id="date-from" onchange="applyAllFilters()"
+                            class="w-full border rounded-lg px-2 md:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500 mb-1 block">To Date</label>
+                        <input type="date" id="date-to" onchange="applyAllFilters()"
+                            class="w-full border rounded-lg px-2 md:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                    </div>
+                </div>
+                
+                <!-- Row 4: Actions -->
+                <div class="export-buttons flex flex-wrap gap-2">
+                    <button onclick="exportToCSV()" class="flex-1 md:flex-none bg-blue-500 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-blue-600 transition text-sm">
+                        <i class="fas fa-file-csv mr-1 md:mr-2"></i>CSV
+                    </button>
+                    <button onclick="exportToPDF()" class="flex-1 md:flex-none bg-red-500 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-red-600 transition text-sm">
+                        <i class="fas fa-file-pdf mr-1 md:mr-2"></i>PDF
+                    </button>
+                    <button id="delete-selected-btn" onclick="deleteSelected()" disabled
+                        class="flex-1 md:flex-none delete-selected-btn bg-red-100 text-red-600 px-3 md:px-4 py-2 rounded-lg hover:bg-red-200 transition text-sm">
+                        <i class="fas fa-trash mr-1"></i>(<span id="selected-count">0</span>)
+                    </button>
+                </div>
+                
+                <div class="flex justify-between items-center mt-3 pt-3 border-t">
+                    <span id="results-count" class="text-xs md:text-sm text-gray-500">Showing 0</span>
+                    <span id="last-updated" class="text-xs md:text-sm text-gray-500"></span>
                 </div>
             </div>
 
             <!-- Transactions Table -->
             <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-                    <h2 class="text-xl font-bold text-gray-800">
-                        <i class="fas fa-list mr-2"></i>Transaction Logs
+                <div class="px-4 md:px-6 py-3 md:py-4 border-b border-gray-200 flex justify-between items-center">
+                    <h2 class="text-lg md:text-xl font-bold text-gray-800">
+                        <i class="fas fa-list mr-2"></i><span class="hidden sm:inline">Transaction </span>Logs
                     </h2>
                     <div class="flex items-center gap-2">
                         <input type="checkbox" id="select-all" onchange="toggleSelectAll()" class="w-4 h-4 text-green-600 rounded">
-                        <label for="select-all" class="text-sm text-gray-600">Select All</label>
+                        <label for="select-all" class="text-xs md:text-sm text-gray-600">Select All</label>
                     </div>
                 </div>
                 
                 <!-- Loading State -->
                 <div id="loading" class="flex justify-center items-center py-12">
                     <div class="loader"></div>
-                    <span class="ml-3 text-gray-500">Loading transactions...</span>
+                    <span class="ml-3 text-gray-500">Loading...</span>
                 </div>
 
-                <!-- Table -->
-                <div id="table-container" class="hidden overflow-x-auto">
+                <!-- Desktop Table -->
+                <div id="table-container" class="hidden desktop-table overflow-x-auto">
                     <table class="w-full">
                         <thead class="bg-gray-50">
                             <tr>
@@ -308,11 +446,17 @@
                         </tbody>
                     </table>
                 </div>
+                
+                <!-- Mobile Cards -->
+                <div id="mobile-cards-container" class="hidden mobile-card p-3">
+                    <div id="transactions-mobile" class="space-y-3">
+                    </div>
+                </div>
 
                 <!-- Empty State -->
                 <div id="empty-state" class="hidden text-center py-12">
-                    <i class="fas fa-inbox text-gray-300 text-5xl mb-4"></i>
-                    <p class="text-gray-500">No transactions found</p>
+                    <i class="fas fa-inbox text-gray-300 text-4xl md:text-5xl mb-4"></i>
+                    <p class="text-gray-500 text-sm md:text-base">No transactions found</p>
                 </div>
             </div>
         </div>
@@ -401,9 +545,28 @@
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
             document.getElementById('user-email-text').textContent = user.email;
+            document.getElementById('user-email-text-mobile').textContent = user.email;
             document.getElementById('user-email').classList.remove('hidden');
             loadStats();
             loadTransactions();
+        }
+        
+        // ==================== MOBILE MENU ====================
+        
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.getElementById('mobile-menu-btn');
+            menu.classList.toggle('active');
+            
+            // Toggle icon
+            const icon = btn.querySelector('i');
+            if (menu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
         }
 
         document.getElementById('login-form').addEventListener('submit', async (e) => {
@@ -504,10 +667,12 @@
         async function loadTransactions(status = '', limit = 100) {
             const loading = document.getElementById('loading');
             const tableContainer = document.getElementById('table-container');
+            const mobileCardsContainer = document.getElementById('mobile-cards-container');
             const emptyState = document.getElementById('empty-state');
             
             loading.classList.remove('hidden');
             tableContainer.classList.add('hidden');
+            mobileCardsContainer.classList.add('hidden');
             emptyState.classList.add('hidden');
 
             try {
@@ -524,6 +689,7 @@
                     filteredTransactions = [...allTransactions];
                     renderTransactions(filteredTransactions);
                     tableContainer.classList.remove('hidden');
+                    mobileCardsContainer.classList.remove('hidden');
                     updateResultsCount();
                 } else {
                     allTransactions = [];
@@ -532,7 +698,7 @@
                     updateResultsCount();
                 }
                 
-                document.getElementById('last-updated').textContent = `Last updated: ${new Date().toLocaleTimeString()}`;
+                document.getElementById('last-updated').textContent = `${new Date().toLocaleTimeString()}`;
                 selectedTransactions.clear();
                 updateSelectedCount();
                 
@@ -544,15 +710,21 @@
         }
 
         function renderTransactions(transactions) {
+            // Render Desktop Table
             const tbody = document.getElementById('transactions-body');
             tbody.innerHTML = '';
             
+            // Render Mobile Cards
+            const mobileContainer = document.getElementById('transactions-mobile');
+            mobileContainer.innerHTML = '';
+            
             transactions.forEach((tx) => {
+                const isSelected = selectedTransactions.has(tx.id);
+                
+                // Desktop row
                 const row = document.createElement('tr');
                 row.className = 'table-row';
                 row.id = `row-${tx.id}`;
-                
-                const isSelected = selectedTransactions.has(tx.id);
                 
                 row.innerHTML = `
                     <td class="px-4 py-4 checkbox-cell">
@@ -577,6 +749,51 @@
                 `;
                 
                 tbody.appendChild(row);
+                
+                // Mobile card
+                const card = document.createElement('div');
+                card.className = `tx-mobile-card status-${tx.status}`;
+                card.id = `card-${tx.id}`;
+                
+                card.innerHTML = `
+                    <div class="tx-header">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" ${isSelected ? 'checked' : ''} 
+                                onchange="toggleSelect('${tx.id}')" 
+                                class="w-4 h-4 text-green-600 rounded transaction-checkbox">
+                            <span class="font-semibold text-gray-900">${formatPhone(tx.phoneNumber)}</span>
+                        </div>
+                        ${getStatusBadge(tx.status)}
+                    </div>
+                    <div class="tx-details">
+                        <div>
+                            <p class="tx-label">Amount</p>
+                            <p class="font-medium">KSH ${tx.amount || 0}</p>
+                        </div>
+                        <div>
+                            <p class="tx-label">Category</p>
+                            <p class="font-medium">${formatCategory(tx.category)}</p>
+                        </div>
+                        <div>
+                            <p class="tx-label">M-Pesa Code</p>
+                            <p class="font-mono font-bold text-green-700">${tx.mpesaReceiptNumber || tx.transactionCode || '-'}</p>
+                        </div>
+                        <div>
+                            <p class="tx-label">Date</p>
+                            <p class="text-gray-600">${formatDate(tx.createdAt)}</p>
+                        </div>
+                    </div>
+                    <div class="tx-actions">
+                        <button onclick="showDetail('${tx.id}')" class="text-green-600 hover:text-green-800 px-3 py-1 rounded-lg bg-green-50">
+                            <i class="fas fa-eye mr-1"></i>View
+                        </button>
+                        <button onclick="promptDelete('${tx.id}')" class="text-red-500 hover:text-red-700 px-3 py-1 rounded-lg bg-red-50">
+                            <i class="fas fa-trash mr-1"></i>Delete
+                        </button>
+                    </div>
+                `;
+                
+                mobileContainer.appendChild(card);
             });
         }
 

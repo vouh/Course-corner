@@ -6,298 +6,552 @@
     <title>Application Process - Course Corner</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/x-icon" href="../assets/images/1.png">
-    <link rel="stylesheet" href="../assets/css/application-process.css">
+    <link rel="stylesheet" href="../assets/css/modern-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Modern Page Header */
+        .page-hero {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 50%, #166534 100%);
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .page-hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .page-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .page-hero p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* Process Content */
+        .process-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        
+        /* Modern Process Steps */
+        .process-timeline {
+            position: relative;
+            padding-left: 50px;
+        }
+        
+        .process-timeline::before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #16a34a, #15803d);
+            border-radius: 10px;
+        }
+        
+        .process-step {
+            position: relative;
+            margin-bottom: 2.5rem;
+            opacity: 0;
+            transform: translateX(-20px);
+            animation: slideIn 0.5s ease forwards;
+        }
+        
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .process-step:nth-child(1) { animation-delay: 0.1s; }
+        .process-step:nth-child(2) { animation-delay: 0.2s; }
+        .process-step:nth-child(3) { animation-delay: 0.3s; }
+        .process-step:nth-child(4) { animation-delay: 0.4s; }
+        .process-step:nth-child(5) { animation-delay: 0.5s; }
+        .process-step:nth-child(6) { animation-delay: 0.6s; }
+        
+        .step-number {
+            position: absolute;
+            left: -50px;
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.125rem;
+            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
+            z-index: 1;
+        }
+        
+        .step-card {
+            background: white;
+            border-radius: 1.25rem;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+            border-color: #16a34a;
+        }
+        
+        .step-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .step-title i {
+            color: #16a34a;
+        }
+        
+        .step-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .step-list li {
+            position: relative;
+            padding: 0.5rem 0 0.5rem 1.75rem;
+            color: #4b5563;
+            line-height: 1.6;
+        }
+        
+        .step-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #16a34a;
+            font-weight: bold;
+        }
+        
+        /* Support Section */
+        .support-section {
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            margin-top: 3rem;
+            border: 2px solid #dcfce7;
+        }
+        
+        .support-section h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .support-section h2 i {
+            color: #16a34a;
+        }
+        
+        .support-section p {
+            color: #4b5563;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+        
+        .support-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .support-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            font-size: 1rem;
+        }
+        
+        .support-btn-primary {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
+        }
+        
+        .support-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(22, 163, 74, 0.4);
+        }
+        
+        .support-btn-secondary {
+            background: white;
+            color: #16a34a;
+            border: 2px solid #16a34a;
+        }
+        
+        .support-btn-secondary:hover {
+            background: #f0fdf4;
+        }
+        
+        /* Important Notice */
+        .notice-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            border-left: 4px solid #f59e0b;
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .notice-box i {
+            color: #f59e0b;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .notice-box p {
+            color: #78350f;
+            margin: 0;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 640px) {
+            .page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .process-timeline {
+                padding-left: 40px;
+            }
+            
+            .process-timeline::before {
+                left: 15px;
+            }
+            
+            .step-number {
+                left: -40px;
+                width: 36px;
+                height: 36px;
+                font-size: 1rem;
+            }
+            
+            .step-card {
+                padding: 1.5rem;
+            }
+            
+            .support-buttons {
+                flex-direction: column;
+            }
+            
+            .support-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
-    <!-- Navigation -->
-    <nav class="bg-white shadow-lg">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center">
-                    <img src="../assets/images/1.png" alt="Logo" class="h-16 w-auto">
-                    <span class="ml-3 text-2xl font-bold text-green-600">Course Corner</span>
+    <!-- Modern Navigation -->
+    <header class="modern-header" id="mainHeader">
+        <div class="header-container">
+            <a href="../index.html" class="logo">
+                <span>Course Corner</span>
+            </a>
+            
+            <nav class="nav-desktop">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About Us</a>
+                <a href="calculator.html" class="nav-link">Calculator</a>
+                <a href="cluster-points.html" class="nav-link">Cluster Points</a>
+                <a href="application-process.html" class="nav-link active">Application Guide</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </nav>
+            
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="../index.html" class="mobile-nav-link">Home</a>
+            <a href="about.html" class="mobile-nav-link">About Us</a>
+            <a href="calculator.html" class="mobile-nav-link">Calculator</a>
+            <a href="cluster-points.html" class="mobile-nav-link">Cluster Points</a>
+            <a href="application-process.html" class="mobile-nav-link active">Application Guide</a>
+            <a href="contact.html" class="mobile-nav-link">Contact</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <h1>KUCCPS Application Process 📝</h1>
+            <p>Your step-by-step guide to applying for university placement</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="process-content">
+        <div class="process-timeline">
+            <!-- Step 1 -->
+            <div class="process-step">
+                <div class="step-number">1</div>
+                <div class="step-card">
+                    <h3 class="step-title">
+                        <i class="fas fa-clipboard-check"></i>
+                        Eligibility Check
+                    </h3>
+                    <ul class="step-list">
+                        <li>Ensure you meet the minimum KCSE requirements for your desired program (usually C+ and above for degree programs)</li>
+                        <li>Verify that you sat the KCSE exam between 2000 and <span id="currentYear"></span></li>
+                        <li>Have your KCSE index number and birth certificate details ready</li>
+                    </ul>
                 </div>
-                <!-- Add mobile menu button -->
-                <button id="mobile-menu-button" class="md:hidden flex items-center px-3 py-2 border rounded text-gray-500 border-gray-500 hover:text-green-600 hover:border-green-600">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
-                </button>
-                <!-- Modify the navigation links div -->
-                <div id="mobile-menu" class="hidden md:flex md:space-x-8 absolute md:relative top-20 md:top-0 left-0 right-0 bg-white md:bg-transparent shadow-lg md:shadow-none p-4 md:p-0">
-                    <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8">
-                        <a href="../index.html" class="nav-link">Home</a>
-                        <a href="about.html" class="nav-link">About Us</a>
-                        <a href="cluster-points.html" class="nav-link">Cluster Points Guide</a>
-                        <a href="application-process.html" class="nav-link active">Application Process</a>
-                        <a href="contact.html" class="nav-link">Contact</a>
-                    </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="process-step">
+                <div class="step-number">2</div>
+                <div class="step-card">
+                    <h3 class="step-title">
+                        <i class="fas fa-user-plus"></i>
+                        Create an Account
+                    </h3>
+                    <ul class="step-list">
+                        <li>Visit the official KUCCPS Student's Portal at <strong>students.kuccps.net</strong></li>
+                        <li>Click on "Create Account" and fill in your personal details</li>
+                        <li>Enter your KCSE index number and year of examination</li>
+                        <li>Create a strong password and verify your email address</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="process-step">
+                <div class="step-number">3</div>
+                <div class="step-card">
+                    <h3 class="step-title">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Log In to the Portal
+                    </h3>
+                    <ul class="step-list">
+                        <li>Use your KCSE index number and password to log in</li>
+                        <li>Verify that your personal details and KCSE results are correct</li>
+                        <li>If you encounter login issues, use the "Forgot Password" option</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="process-step">
+                <div class="step-number">4</div>
+                <div class="step-card">
+                    <h3 class="step-title">
+                        <i class="fas fa-search"></i>
+                        Select Programs
+                    </h3>
+                    <ul class="step-list">
+                        <li>Browse through available programs at universities, colleges, and TVET institutions</li>
+                        <li>Filter programs based on your cluster points and subject requirements</li>
+                        <li>Select up to 6 program choices in order of preference</li>
+                        <li>Consider factors like location, cost, and career prospects</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Step 5 -->
+            <div class="process-step">
+                <div class="step-number">5</div>
+                <div class="step-card">
+                    <h3 class="step-title">
+                        <i class="fas fa-file-alt"></i>
+                        Submit Application
+                    </h3>
+                    <ul class="step-list">
+                        <li>Complete the application form with all required details</li>
+                        <li>Review your program choices carefully before submission</li>
+                        <li>Ensure all information is accurate – you may not be able to edit later</li>
+                        <li>Save a copy of your application for reference</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Step 6 -->
+            <div class="process-step">
+                <div class="step-number">6</div>
+                <div class="step-card">
+                    <h3 class="step-title">
+                        <i class="fas fa-credit-card"></i>
+                        Make Payment
+                    </h3>
+                    <ul class="step-list">
+                        <li>Follow payment instructions provided on the portal (M-Pesa paybill available)</li>
+                        <li>The application fee varies based on the type of application</li>
+                        <li>Keep your payment confirmation receipt/SMS</li>
+                        <li>Your application is only complete after successful payment</li>
+                    </ul>
                 </div>
             </div>
         </div>
-    </nav>
 
-    <!-- Main Content -->
-    <div class="container mx-auto px-4 py-8">
-        <h1 class="text-4xl font-bold text-center text-green-600 mb-12">KUCCPS Application Process</h1>
-        
-        <div class="max-w-4xl mx-auto">
-            <!-- Process Steps -->
-            <div class="process-steps">
-                <!-- Step 1 -->
-                <div class="process-card">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <h3 class="step-title">Eligibility Check</h3>
-                        <ul class="step-list">
-                            <li>Ensure you meet the minimum KCSE requirements for your desired program</li>
-                            <li>Verify that you sat the KCSE exam between 2000 and 2023</li>
-                        </ul>
-                    </div>
-                </div>
+        <!-- Notice Box -->
+        <div class="notice-box">
+            <i class="fas fa-exclamation-triangle"></i>
+            <p>
+                <strong>Important:</strong> Always apply through the official KUCCPS portal (students.kuccps.net). 
+                Beware of fraudulent websites. KUCCPS will never ask for your password or personal banking details 
+                outside the official portal.
+            </p>
+        </div>
 
-                <!-- Step 2 -->
-                <div class="process-card">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <h3 class="step-title">Create an Account</h3>
-                        <ul class="step-list">
-                            <li>Visit the KUCCPS Student's Portal (students.kuccps.net)</li>
-                            <li>Create an account with your personal details and KCSE results</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Step 3 -->
-                <div class="process-card">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <h3 class="step-title">Log In to the Portal</h3>
-                        <ul class="step-list">
-                            <li>Use your account credentials to log in to the KUCCPS Student's Portal</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Step 4 -->
-                <div class="process-card">
-                    <div class="step-number">4</div>
-                    <div class="step-content">
-                        <h3 class="step-title">Select Programs</h3>
-                        <ul class="step-list">
-                            <li>Browse through available programs at universities, colleges, and TVET institutions</li>
-                            <li>Select preferred programs based on KCSE grades and interests</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- Additional steps... -->
-                <div class="process-card">
-                    <div class="step-number">5</div>
-                    <div class="step-content">
-                        <h3 class="step-title">Submit Application</h3>
-                        <ul class="step-list">
-                            <li>Complete the application form with all required details</li>
-                            <li>Review your application thoroughly before submission</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="process-card">
-                    <div class="step-number">6</div>
-                    <div class="step-content">
-                        <h3 class="step-title">Make Payment</h3>
-                        <ul class="step-list">
-                            <li>Follow payment instructions on the portal</li>
-                            <li>Ensure you receive payment confirmation</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Support Section -->
-            <div class="bg-white rounded-lg shadow-md p-6 mt-8">
-                <h2 class="text-2xl font-bold text-green-600 mb-4">Need Help?</h2>
-                <p class="text-gray-600 mb-4">If you encounter any issues or have questions during the application process, our support team is here to help.</p>
-                <div class="flex flex-col md:flex-row gap-4">
-                    <a target="_blank" href="https://www.kuccps.net/sites/default/files/FAQ%20Brochure.pdf" class="support-button">
-                        Visit FAQ Page
-                    </a>
-                    <a target="_blank" href="https://www.kuccps.net/index.php?q=Contact" class="support-button">
-                        contact support
-                    </a>
-                    <button onclick="window.print()" class="support-button">
-                        <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                        </svg>
-                        Print Guide
-                    </button>
-                </div>
+        <!-- Support Section -->
+        <div class="support-section">
+            <h2><i class="fas fa-life-ring"></i> Need Help?</h2>
+            <p>
+                If you encounter any issues or have questions during the application process, 
+                our support team and KUCCPS help desk are here to assist you.
+            </p>
+            <div class="support-buttons">
+                <a href="https://www.kuccps.net/sites/default/files/FAQ%20Brochure.pdf" target="_blank" class="support-btn support-btn-primary">
+                    <i class="fas fa-question-circle"></i>
+                    Visit FAQ Page
+                </a>
+                <a href="https://www.kuccps.net/index.php?q=Contact" target="_blank" class="support-btn support-btn-secondary">
+                    <i class="fas fa-headset"></i>
+                    Contact KUCCPS Support
+                </a>
+                <button onclick="window.print()" class="support-btn support-btn-secondary">
+                    <i class="fas fa-print"></i>
+                    Print This Guide
+                </button>
             </div>
         </div>
     </div>
 
-    <script>
-        // Existing year range code
-        document.addEventListener('DOMContentLoaded', function() {
-            const yearElement = document.querySelector('.step-list li:nth-child(2)');
-            const currentYear = new Date().getFullYear();
-            yearElement.textContent = `Verify that you sat the KCSE exam between 2000 and ${currentYear}`;
-            
-            // Mobile menu toggle
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
-            
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
-            });
-
-            // Close mobile menu when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
-                    mobileMenu.classList.add('hidden');
-                }
-            });
-
-            // Close mobile menu when window is resized to desktop size
-            window.addEventListener('resize', () => {
-                if (window.innerWidth >= 768) { // 768px is the md breakpoint in Tailwind
-                    mobileMenu.classList.add('hidden');
-                }
-            });
-        });
-    </script>
-
-    <!-- Footer - Add this before closing body tag in all HTML files -->
-    <footer class="bg-green-600 text-white py-12 mt-16">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Navigation Links -->
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li><a href="index3.html" class="hover:text-gray-300">Home</a></li>
-                        <li><a href="index3.html#calculator" class="hover:text-gray-300">Calculator</a></li>
-                        <li><a href="cluster-points.html" class="hover:text-gray-300">Cluster Points Guide</a></li>
-                        <li><a href="application-process.html" class="hover:text-gray-300">Application Process</a></li>
+    <!-- Modern Footer -->
+    <footer class="modern-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-brand">
+                        <span>Course Corner</span>
+                    </div>
+                    <p class="footer-description">
+                        Empowering students to make informed decisions about their educational future through personalized course recommendations.
+                    </p>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="calculator.html">Calculator</a></li>
+                        <li><a href="cluster-points.html">Cluster Points</a></li>
+                        <li><a href="application-process.html">Application Guide</a></li>
                     </ul>
                 </div>
-
-                <!-- Social Media -->
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Connect With Us</h3>
-                    <ul class="space-y-2">
-                        <li>
-                            <a href="#" target="_blank" class="flex items-center hover:text-gray-300">
-                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/>
-                                </svg>
-                                TikTok
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" target="_blank" class="flex items-center hover:text-gray-300">
-                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                                </svg>
-                                WhatsApp
-                            </a>
-                        </li>
+                
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">KUCCPS Guide 2024</a></li>
+                        <li><a href="#">Course Requirements</a></li>
+                        <li><a href="#">Application Forms</a></li>
                     </ul>
                 </div>
-
-                <!-- Important Documents -->
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Important Documents</h3>
-                    <ul class="space-y-2">
-                        <li>
-                            <a href="#" class="hover:text-gray-300" download>
-                                KUCCPS Guide 2024
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-gray-300" download>
-                                Course Requirements
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-gray-300" download>
-                                Application Forms
-                            </a>
-                        </li>
+                
+                <div class="footer-col">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> info@coursecorner.com</li>
+                        <li><i class="fas fa-phone"></i> +254 700 000000</li>
                     </ul>
-                </div>
-
-                <!-- Contact Information -->
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Contact Us</h3>
-                    <ul class="space-y-2">
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-                            </svg>
-                            <a href="mailto:info@coursecorner.com">info@coursecorner.com</a>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
-                            </svg>
-                            <span>+254 700 000000</span>
-                        </li>
-                    </ul>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
                 </div>
             </div>
-
-            <!-- Copyright -->
-            <div class="text-center mt-8 pt-8 border-t border-green-500">
-                <p>© Course Corner <span id="currentYear"></span>. All rights reserved.</p>
+            
+            <div class="footer-bottom">
+                <p>© Course Corner <span id="footerYear"></span>. All rights reserved.</p>
             </div>
         </div>
     </footer>
 
-    <!-- Add this script before closing body tag -->
     <script>
-        // Update copyright year
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
-    </script>
-
-    <script src="https://unpkg.com/scrollreveal"></script>
-    <script>
-        // Existing scripts...
-
-        // Initialize ScrollReveal
-        const sr = ScrollReveal({
-            origin: 'bottom',
-            distance: '60px',
-            duration: 1000,
-            delay: 200
+        // Set current year
+        const currentYear = new Date().getFullYear();
+        document.getElementById('currentYear').textContent = currentYear;
+        document.getElementById('footerYear').textContent = currentYear;
+        
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        mobileMenuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+            mobileMenuBtn.innerHTML = mobileMenu.classList.contains('active') 
+                ? '<i class="fas fa-times"></i>' 
+                : '<i class="fas fa-bars"></i>';
         });
-
-        // Reveal elements
-        sr.reveal('.process-card', { interval: 200 });
-        sr.reveal('.support-button', { origin: 'left' });
-        sr.reveal('.contact-hero', { origin: 'top' });
-        sr.reveal('footer div', { interval: 100 });
-    </script>
-
-    <!-- Firebase -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
-            authDomain: "course-corner.firebaseapp.com",
-            projectId: "course-corner",
-            storageBucket: "course-corner.firebasestorage.app",
-            messagingSenderId: "961706784572",
-            appId: "1:961706784572:web:7aa6c24946570ffda59039",
-            measurementId: "G-QGJ7NZ31Z0"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const analytics = getAnalytics(app);
+        
+        // Header scroll effect
+        const header = document.getElementById('mainHeader');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
     </script>
 </body>
-</html> 
+</html>

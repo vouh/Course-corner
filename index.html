@@ -7,9 +7,10 @@
     <script src="assets/js/courses-eligibility.js" type="module"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Corner</title>
+    <title>Course Corner - Calculate Your Cluster Points & Find Eligible Courses</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/modern-ui.css">
     <link rel="icon" type="image/x-icon" href="assets/images/1.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -191,145 +192,205 @@
         <div class="loader mt-4"></div>
     </div>
 
-    <!-- Navigation -->
-    <nav class="bg-transparent shadow-lg">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center">
-                    <img src="assets/images/1.png" alt="Logo" class="h-16 w-auto">
-                    <span class="ml-3 text-2xl font-bold text-green-600">Course Corner</span>
+    <!-- Modern Sticky Navigation -->
+    <header class="modern-header" id="mainHeader">
+        <div class="header-container">
+            <!-- Logo -->
+            <a href="index.html" class="logo-container">
+                <span class="logo-text">Course Corner</span>
+            </a>
+
+            <!-- Desktop Navigation -->
+            <nav class="desktop-nav">
+                <div class="nav-links">
+                    <a href="index.html" class="modern-nav-link active">Home</a>
+                    <a href="pages/about.html" class="modern-nav-link">About Us</a>
+                    <a href="pages/cluster-points.html" class="modern-nav-link">Cluster Guide</a>
+                    <a href="pages/application-process.html" class="modern-nav-link">Application</a>
+                    <a href="pages/contact.html" class="modern-nav-link">Contact</a>
                 </div>
-                <!-- Add mobile menu button -->
-                <button id="mobile-menu-button" class="md:hidden flex items-center px-3 py-2 border rounded text-gray-500 border-gray-500 hover:text-green-600 hover:border-green-600">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
+                
+                <!-- Auth Buttons -->
+                <div class="nav-auth-buttons">
+                    <div id="userAvatar" class="hidden"></div>
+                    <button id="profileBtn" class="btn-nav-profile hidden" onclick="window.firebaseAuth.openProfileModal()">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Profile</span>
+                    </button>
+                    <button id="authBtn" class="btn-nav-login" onclick="window.firebaseAuth.openAuthModal()">
+                        <i class="fas fa-user"></i>
+                        <span>Login</span>
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <nav class="mobile-nav-links">
+                <a href="index.html" class="mobile-nav-link active">Home</a>
+                <a href="pages/about.html" class="mobile-nav-link">About Us</a>
+                <a href="pages/cluster-points.html" class="mobile-nav-link">Cluster Guide</a>
+                <a href="pages/application-process.html" class="mobile-nav-link">Application</a>
+                <a href="pages/contact.html" class="mobile-nav-link">Contact</a>
+            </nav>
+            <div class="mobile-auth-buttons">
+                <button id="profileBtnMobile" class="btn-nav-profile hidden" style="width:100%; justify-content:center;" onclick="window.firebaseAuth.openProfileModal()">
+                    <i class="fas fa-user-circle"></i>
+                    Profile
                 </button>
-                <!-- Modify the navigation links div -->
-                <div id="mobile-menu" class="hidden md:flex md:space-x-8 absolute md:relative top-20 md:top-0 left-0 right-0 bg-white md:bg-transparent shadow-lg md:shadow-none p-4 md:p-0 z-50">
-                    <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 items-center">
-                        <a href="index.html" class="nav-link active">Home</a>
-                        <a href="pages/about.html" class="nav-link">About Us</a>
-                        <a href="pages/cluster-points.html" class="nav-link">Cluster Points Guide</a>
-                        <a href="pages/application-process.html" class="nav-link">Application Process</a>
-                        <a href="pages/contact.html" class="nav-link">Contact</a>
-                        
-                        <!-- Auth Buttons -->
-                        <div class="nav-auth-container flex items-center gap-3 ml-4">
-                            <div id="userAvatar" class="hidden"></div>
-                            <button id="profileBtn" class="nav-auth-btn profile-btn hidden" onclick="window.firebaseAuth.openProfileModal()">
-                                <i class="fas fa-user-circle"></i>
-                                <span class="hidden md:inline">Profile</span>
-                            </button>
-                            <button id="authBtn" class="nav-auth-btn login-btn" onclick="window.firebaseAuth.openAuthModal()">
-                                <i class="fas fa-user"></i>
-                                <span class="hidden md:inline">Login</span>
-                            </button>
-                        </div>
+                <button id="authBtnMobile" class="btn-nav-login" style="width:100%; justify-content:center;" onclick="window.firebaseAuth.openAuthModal()">
+                    <i class="fas fa-user"></i>
+                    Login
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Modern Hero Section -->
+    <section class="modern-hero">
+        <!-- Background Pattern -->
+        <div class="hero-bg-pattern"></div>
+        
+        <!-- Floating Shapes -->
+        <div class="hero-shapes">
+            <div class="hero-shape hero-shape-1"></div>
+            <div class="hero-shape hero-shape-2"></div>
+            <div class="hero-shape hero-shape-3"></div>
+        </div>
+        
+        <!-- Hero Content -->
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-star"></i>
+                <span>Kenya's #1 Course Guidance Platform</span>
+            </div>
+            
+            <h1 class="hero-title">
+                Shape Your <span class="hero-title-highlight">Future</span> With Confidence
+            </h1>
+            
+            <p class="hero-subtitle">
+                Calculate your KCSE cluster points accurately and discover the perfect courses and universities for your career journey.
+            </p>
+            
+            <div class="hero-cta-container">
+                <a href="pages/calculator.html" class="btn-hero-primary">
+                    <i class="fas fa-calculator"></i>
+                    Calculate Points
+                </a>
+                <a href="pages/cluster-points.html" class="btn-hero-secondary">
+                    <i class="fas fa-book-open"></i>
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modern Features Section -->
+    <section class="features-section">
+        <div class="features-container">
+            <div class="section-header">
+                <h2 class="section-title">Your Path to Success</h2>
+                <p class="section-subtitle">Four simple steps to discover your ideal career path and university placement</p>
+            </div>
+            
+            <div class="features-grid">
+                <!-- Feature Card 1 -->
+                <div class="modern-feature-card" onclick="window.location.href='pages/calculator.html'">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-calculator"></i>
                     </div>
-                    
-                    <!-- Mobile Auth Buttons -->
-                    <div class="flex flex-col gap-2 mt-4 md:hidden border-t pt-4">
-                        <button id="profileBtnMobile" class="nav-auth-btn profile-btn hidden w-full justify-center" onclick="window.firebaseAuth.openProfileModal()">
-                            <i class="fas fa-user-circle"></i>
-                            Profile
-                        </button>
-                        <button id="authBtnMobile" class="nav-auth-btn login-btn w-full justify-center" onclick="window.firebaseAuth.openAuthModal()">
-                            <i class="fas fa-user"></i>
-                            Login
-                        </button>
+                    <h3 class="feature-title">Assess Grades</h3>
+                    <p class="feature-description">Input your KCSE grades and calculate your cluster points accurately</p>
+                </div>
+                
+                <!-- Feature Card 2 -->
+                <div class="modern-feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-compass"></i>
                     </div>
+                    <h3 class="feature-title">Explore Courses</h3>
+                    <p class="feature-description">Discover courses that match your cluster points and interests</p>
+                </div>
+                
+                <!-- Feature Card 3 -->
+                <div class="modern-feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <h3 class="feature-title">Find Universities</h3>
+                    <p class="feature-description">Compare universities offering your chosen courses</p>
+                </div>
+                
+                <!-- Feature Card 4 -->
+                <div class="modern-feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 class="feature-title">Make Decision</h3>
+                    <p class="feature-description">Choose your path with confidence and clarity</p>
                 </div>
             </div>
         </div>
-    </nav>
+    </section>
 
-    <!-- Hero Section -->
-    <div class="hero-section">
-        <div class="imagec">
-            <img src="assets/images/2.jpg" alt="Career Success" class="hero-image">
-        </div>
-        <div class="hero-overlay">
-            <div class="relative z-20 text-center px-4 max-w-5xl mx-auto pt-32">
-                <h1 class="text-5xl md:text-7xl font-bold text-white mb-12">
-                    Shape Your Future With Confidence
-                </h1>
-                <p class="text-xl md:text-2xl text-green-400 font-bold mb-12 opacity-90">
-                    Calculate your cluster points accurately and explore eligible courses
+    <!-- Calculator CTA Section -->
+    <section class="cta-section" id="calculator-cta">
+        <div class="cta-container">
+            <div class="cta-content">
+                <div class="cta-badge">
+                    <i class="fas fa-star"></i>
+                    <span>Start Your Journey</span>
+                </div>
+                <h2 class="cta-title">Ready to Calculate Your <span class="highlight">Cluster Points?</span></h2>
+                <p class="cta-description">
+                    Input your KCSE grades and instantly discover your cluster points, eligible courses, and university options. 
+                    Our comprehensive calculator covers all subject combinations and provides accurate results based on the latest KUCCPS guidelines.
                 </p>
-                <div class="flex flex-col md:flex-row gap-6 justify-center items-center">
-                    <button class="bg-green-600 text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-green-500 transition-all">
-                        Explore Your Options
-                    </button>
-                    <button class="border-2 border-white text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-white hover:text-green-600 transition-all">
-                        Learn More
-                    </button>
+                <div class="cta-features">
+                    <div class="cta-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Instant Results</span>
+                    </div>
+                    <div class="cta-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>All Subject Groups</span>
+                    </div>
+                    <div class="cta-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Course Recommendations</span>
+                    </div>
                 </div>
+                <a href="pages/calculator.html" class="cta-button">
+                    <i class="fas fa-calculator"></i>
+                    Open Calculator
+                    <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
-        </div>
-    </div>
-
-    <!-- Add this new section below the hero section -->
-    <section class="career-path-section">
-        <div class="container mx-auto">
-            <h2 class="text-4xl font-bold text-center text-gray-800 mb-8">Your Path to Success</h2>
-            <div class="card-container">
-                <!-- Card 1 -->
-                <div class="flip-card">
-                    <div class="flip-card-inner">
-                        <div class="flip-card-front">
-                            <i class="fas fa-calculator card-icon"></i>
-                            <h3 class="text-xl font-bold mb-2">Assess Your Grades</h3>
-                            <p class="text-gray-600">Calculate your cluster points</p>
-                        </div>
-                        <div class="flip-card-back">
-                            <h3 class="text-xl font-bold mb-4">Grade Assessment</h3>
-                            <p>Input your grades in our calculator to determine your cluster points accurately.</p>
-                        </div>
+            <div class="cta-visual">
+                <div class="cta-card">
+                    <div class="cta-card-header">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Sample Result</span>
                     </div>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="flip-card">
-                    <div class="flip-card-inner">
-                        <div class="flip-card-front">
-                            <i class="fas fa-compass card-icon"></i>
-                            <h3 class="text-xl font-bold mb-2">Explore Courses</h3>
-                            <p class="text-gray-600">Discover your options</p>
+                    <div class="cta-card-body">
+                        <div class="cta-score">
+                            <span class="score-number">72</span>
+                            <span class="score-label">/ 84 Points</span>
                         </div>
-                        <div class="flip-card-back">
-                            <h3 class="text-xl font-bold mb-4">Course Discovery</h3>
-                            <p>Browse through courses that match your cluster points and interests.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="flip-card">
-                    <div class="flip-card-inner">
-                        <div class="flip-card-front">
-                            <i class="fas fa-university card-icon"></i>
-                            <h3 class="text-xl font-bold mb-2">Check Universities</h3>
-                            <p class="text-gray-600">Find your ideal institution</p>
-                        </div>
-                        <div class="flip-card-back">
-                            <h3 class="text-xl font-bold mb-4">University Selection</h3>
-                            <p>Compare universities offering your chosen courses and their requirements.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 4 -->
-                <div class="flip-card">
-                    <div class="flip-card-inner">
-                        <div class="flip-card-front">
-                            <i class="fas fa-check-circle card-icon"></i>
-                            <h3 class="text-xl font-bold mb-2">Make Your Choice</h3>
-                            <p class="text-gray-600">Take the next step</p>
-                        </div>
-                        <div class="flip-card-back">
-                            <h3 class="text-xl font-bold mb-4">Decision Time</h3>
-                            <p>Make an informed decision about your future career path with confidence.</p>
+                        <div class="cta-courses">
+                            <div class="course-tag">Medicine</div>
+                            <div class="course-tag">Engineering</div>
+                            <div class="course-tag">Law</div>
+                            <div class="course-tag">+50 more</div>
                         </div>
                     </div>
                 </div>
@@ -337,519 +398,64 @@
         </div>
     </section>
 
-    <!-- Main Calculator Section -->
-    <div id="calculator" class="container mx-auto px-4 py-12">
-        <div class="max-w-4xl mx-auto">
-            <!-- Grade Input (replacing Cluster Selection) -->
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Your Overall Grade (0-84) is:</label>
-                <input 
-                    type="number" 
-                    id="overallGrade" 
-                    class="w-full p-2 border rounded" 
-                    min="0" 
-                    max="84" 
-                    placeholder="Automatically calculated"
-                    readonly
-                >
-                <p class="text-sm text-gray-600 mt-1">Automatically calculated from your 7 best subjects</p>
-            </div>
-
-            <!-- Subject Selection Form -->
-            <div id="subjectForm" class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-semibold mb-4">Enter Subject Grades</h2>
-                
-                <!-- Group 1: Communication Subjects -->
-                <div class="mb-6">
-                    <h3 class="font-bold mb-3">Group 1: Communication Subjects</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm mb-1">English</label>
-                            <select id="english" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Kiswahili</label>
-                            <select id="kiswahili" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Group 2: Sciences -->
-                <div class="mb-6">
-                    <h3 class="font-bold mb-3">Group 2: Sciences</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-sm mb-1">Mathematics</label>
-                            <select id="mathematics" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Biology</label>
-                            <select id="biology" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Physics</label>
-                            <select id="physics" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Chemistry</label>
-                            <select id="chemistry" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Group 3: Humanities -->
-                <div class="mb-6">
-                    <h3 class="font-bold mb-3">Group 3: Humanities</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                        <div>
-                            <label class="block text-sm mb-1">History and Government</label>
-                            <select id="history" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Geography</label>
-                            <select id="geography" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">CRE</label>
-                            <select id="cre" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">IRE</label>
-                            <select id="ire" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">HRE</label>
-                            <select id="hre" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Group 4: Technical and Applied Subjects -->
-                <div class="mb-6">
-                    <h3 class="font-bold mb-3">Group 4: Technical and Applied Subjects</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                        <div>
-                            <label class="block text-sm mb-1">Agriculture</label>
-                            <select id="agriculture" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Home Science</label>
-                            <select id="homeScience" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Business Studies</label>
-                            <select id="business" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Music</label>
-                            <select id="music" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Computer Studies</label>
-                            <select id="computerStudies" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <!-- Grade options will be populated by JS -->
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Aviation</label>
-                            <select id="aviation" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Woodwork</label>
-                            <select id="woodwork" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Metal Work</label>
-                            <select id="metalWork" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Building & Construction</label>
-                            <select id="buildingConstruction" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Art & Design</label>
-                            <select id="artDesign" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Group 5: Foreign Languages -->
-                <div class="mb-6">
-                    <h3 class="font-bold mb-3">Group 5: Foreign Languages</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-sm mb-1">French</label>
-                            <select id="french" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">German</label>
-                            <select id="german" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Arabic</label>
-                            <select id="arabic" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Sign Language</label>
-                            <select id="signLanguage" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Replace the single Calculate Button with these three buttons -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                    <button id="calculateBtn" class="blink-button payment-btn w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-500 transition transform hover:scale-105" data-category="calculate-cluster-points" data-amount="1">
-                        <i class="fas fa-calculator mr-2"></i>
-                        Calculate Cluster Points
-                        <small class="block text-xs mt-1">KSH 1</small>
-                    </button>
-                    
-                    <button id="calculateBtn2" class="blink-button payment-btn w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-500 transition transform hover:scale-105" data-category="courses-only" data-amount="1">
-                        <i class="fas fa-book mr-2"></i>
-                        Courses Only
-                        <small class="block text-xs mt-1">KSH 1</small>
-                    </button>
-                    
-                    <button id="calculateBtn3" class="blink-button payment-btn w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-500 transition transform hover:scale-105" data-category="point-and-courses" data-amount="160">
-                        <i class="fas fa-star mr-2"></i>
-                        Point & Courses
-                        <small class="block text-xs mt-1">KSH 160</small>
-                    </button>
-                </div>
-
-                <!-- Payment Status Section -->
-                <div id="paymentStatus" class="mt-6 p-4 bg-blue-50 border border-blue-300 rounded-lg hidden">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <h3 class="font-bold text-lg text-blue-900">Payment Processing</h3>
-                            <p id="paymentMessage" class="text-sm text-blue-700 mt-1">Processing your payment...</p>
-                        </div>
-                        <div class="animate-spin">
-                            <i class="fas fa-spinner text-blue-600 text-2xl"></i>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Results Section -->
-                <div id="results" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
-                    <h3 class="font-bold mb-2">Results</h3>
-                    <p id="clusterPoints" class="text-xl">Cluster Points: <span class="font-bold">0</span></p>
-                    <div id="eligibleCourses" class="mt-4">
-                        <h4 class="font-semibold mb-2">Eligible Courses:</h4>
-                        <ul class="list-disc pl-5" id="coursesList">
-                        </ul>
-                    </div>
-                    <!-- Added disclaimer message -->
-                    <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-gray-600">
-                        <p>Note: We strive to provide the most accurate calculations possible. However, due to KUCCPS standardization, actual cluster points may vary by ±2.5 points. These results should be used as a close approximation for making preliminary decisions.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="calculator.js"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Mobile menu toggle
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
+            // Modern Header Scroll Effect
+            const header = document.getElementById('mainHeader');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
             
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenuBtn.classList.toggle('active');
+                mobileMenu.classList.toggle('show');
             });
 
             // Close mobile menu when clicking outside
             document.addEventListener('click', (e) => {
-                if (!mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
-                    mobileMenu.classList.add('hidden');
+                if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                    mobileMenu.classList.remove('show');
+                    mobileMenuBtn.classList.remove('active');
                 }
             });
 
             // Close mobile menu when window is resized to desktop size
             window.addEventListener('resize', () => {
-                if (window.innerWidth >= 768) { // 768px is the md breakpoint in Tailwind
-                    mobileMenu.classList.add('hidden');
+                if (window.innerWidth >= 768) {
+                    mobileMenu.classList.remove('show');
+                    mobileMenuBtn.classList.remove('active');
                 }
             });
+            
+            // Update score display when grades change
+            document.querySelectorAll('.modern-grade-select, .grade-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    // Add visual feedback when a grade is selected
+                    if (this.value) {
+                        this.classList.add('has-value');
+                    } else {
+                        this.classList.remove('has-value');
+                    }
+                    // Update the overall grade display
+                    updateOverallGradeDisplay();
+                });
+            });
+            
+            function updateOverallGradeDisplay() {
+                const overallGrade = document.getElementById('overallGrade');
+                const display = document.getElementById('overallGradeDisplay');
+                if (overallGrade && display) {
+                    display.textContent = overallGrade.value || '0';
+                }
+            }
         });
     </script>
 
@@ -862,7 +468,7 @@
                     <h3 class="text-xl font-bold mb-4">Quick Links</h3>
                     <ul class="space-y-2">
                         <li><a href="index.html" class="hover:text-gray-300">Home</a></li>
-                        <li><a href="index.html#calculator" class="hover:text-gray-300">Calculator</a></li>
+                        <li><a href="pages/calculator.html" class="hover:text-gray-300">Calculator</a></li>
                         <li><a href="pages/cluster-points.html" class="hover:text-gray-300">Cluster Points Guide</a></li>
                         <li><a href="pages/application-process.html" class="hover:text-gray-300">Application Process</a></li>
                         <li><a href="admin/index.html" class="hover:text-gray-300">Admin Panel</a></li>

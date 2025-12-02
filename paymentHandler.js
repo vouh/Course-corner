@@ -11,9 +11,9 @@ class PaymentHandler {
 
     // Payment amounts mapping
     static AMOUNTS = {
-        'calculate-cluster-points': 1,
-        'courses-only': 1,
-        'point-and-courses': 160
+        'calculate-cluster-points': 50,
+        'courses-only': 100,
+        'point-and-courses': 150
     };
 
     // Initiate payment

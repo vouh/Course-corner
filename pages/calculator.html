@@ -827,6 +827,427 @@
             document.getElementById('overallGrade').value = total;
             document.getElementById('overallGradeDisplay').textContent = total;
         }
+
+        // ===== UNIFIED PAYMENT FLOW =====
+        const SERVER_URL = 'https://course-corner-server.vercel.app/api';
+
+        // Create single payment handler instance
+        if (!window.paymentHandler) {
+            window.paymentHandler = new PaymentHandler(SERVER_URL);
+        }
+
+        // Validate student subjects before payment
+        function validateSubjects() {
+            const errors = [];
+            const english = document.getElementById('english')?.value;
+            const kiswahili = document.getElementById('kiswahili')?.value;
+            const mathematics = document.getElementById('mathematics')?.value;
+            
+            if (!english) errors.push('English');
+            if (!kiswahili) errors.push('Kiswahili');
+            if (!mathematics) errors.push('Mathematics');
+            
+            let totalSubjects = 0;
+            document.querySelectorAll('.grade-select').forEach(select => {
+                if (select.value) totalSubjects++;
+            });
+            
+            return {
+                valid: errors.length === 0 && totalSubjects >= 7,
+                missingCompulsory: errors,
+                totalSubjects: totalSubjects,
+                needMore: Math.max(0, 7 - totalSubjects)
+            };
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                'calculate-cluster-points': 'Calculate Cluster Points',
+                'courses-only': 'View Eligible Courses',
+                'point-and-courses': 'Points & Courses Bundle'
+            };
+            return names[category] || category;
+        }
+
+        // Main payment processing function
+        async function processPayment(category, amount) {
+            const validation = validateSubjects();
+            
+            if (!validation.valid) {
+                let errorHtml = '<div class="text-left">';
+                if (validation.missingCompulsory.length > 0) {
+                    errorHtml += `<p class="mb-2"><strong>Missing compulsory subjects:</strong></p>`;
+                    errorHtml += `<ul class="list-disc list-inside mb-3 text-red-600">`;
+                    validation.missingCompulsory.forEach(subj => {
+                        errorHtml += `<li>${subj}</li>`;
+                    });
+                    errorHtml += `</ul>`;
+                }
+                if (validation.needMore > 0) {
+                    errorHtml += `<p class="text-gray-600">You need <strong>${validation.needMore} more subject(s)</strong> (minimum 7 required).</p>`;
+                }
+                errorHtml += '</div>';
+                
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Please Complete Your Grades',
+                    html: errorHtml,
+                    confirmButtonColor: '#16a34a',
+                    confirmButtonText: 'Fill Grades'
+                });
+                return false;
+            }
+
+            const { value: phoneNumber } = await Swal.fire({
+                title: 'M-Pesa Payment',
+                html: `
+                    <div class="text-left mb-4">
+                        <p class="text-gray-600 mb-2">Service: <strong>${getCategoryName(category)}</strong></p>
+                        <p class="text-gray-600">Amount: <strong class="text-green-600">KSH ${amount}</strong></p>
+                    </div>
+                `,
+                input: 'text',
+                inputLabel: 'Enter your M-Pesa phone number',
+                inputPlaceholder: '0712345678 or 254712345678',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Pay Now',
+                confirmButtonColor: '#16a34a',
+                cancelButtonText: 'Cancel',
+                inputValidator: (value) => {
+                    if (!value) return 'Phone number is required!';
+                    if (!/\d{9,}/.test(value.replace(/[^\d]/g, ''))) return 'Please enter a valid phone number';
+                }
+            });
+
+            if (!phoneNumber) return false;
+
+            try {
+                Swal.fire({
+                    title: 'Initiating Payment...',
+                    html: `<p class="mb-2">Amount: <strong>KSH ${amount}</strong></p><p>Phone: <strong>${phoneNumber}</strong></p>`,
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                await window.paymentHandler.initiatePayment(phoneNumber, category);
+
+                Swal.fire({
+                    title: '📱 Check Your Phone!',
+                    html: `
+                        <div class="text-center">
+                            <p class="mb-3">An M-Pesa prompt has been sent to:</p>
+                            <p class="text-xl font-bold text-green-600 mb-4">${phoneNumber}</p>
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-4 text-left">
+                                <p class="text-sm text-yellow-800"><strong>Enter your M-Pesa PIN</strong> to complete the payment.</p>
+                            </div>
+                            <p class="text-xs text-gray-400">Do NOT close this window</p>
+                        </div>
+                    `,
+                    allowOutsideClick: false,
+                    allowEscapeKey: false,
+                    showConfirmButton: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                await window.paymentHandler.pollPaymentStatus(40, 3000);
+                await window.paymentHandler.approveAccess();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Payment Successful! ✅',
+                    html: `<p class="text-green-600 mb-2">Your payment has been confirmed!</p>`,
+                    showConfirmButton: false,
+                    timer: 2000
+                });
+
+                return true;
+
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Payment Failed',
+                    text: error.message || 'Something went wrong. Please try again.',
+                    confirmButtonColor: '#16a34a'
+                });
+                return false;
+            }
+        }
+
+        // Show results after successful payment
+        function showResultsAfterPayment(category) {
+            if (typeof calculateClusterPoints === 'function') {
+                calculateClusterPoints();
+            }
+            
+            const resultsDiv = document.getElementById('results');
+            if (resultsDiv) {
+                resultsDiv.classList.remove('hidden');
+                resultsDiv.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        // Initialize payment button handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentBtns = document.querySelectorAll('.payment-btn');
+            
+            paymentBtns.forEach(btn => {
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                
+                newBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const category = this.getAttribute('data-category');
+                    const amount = this.getAttribute('data-amount');
+                    
+                    console.log('Payment button clicked:', category, amount);
+                    
+                    const paymentSuccess = await processPayment(category, amount);
+                    if (paymentSuccess) {
+                        showResultsAfterPayment(category);
+                    }
+                });
+            });
+            
+            console.log('Payment handlers initialized for', paymentBtns.length, 'buttons');
+        });
+    </script>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="auth-modal-overlay hidden">
+        <div class="auth-modal">
+            <div class="modal-header">
+                <h2>Welcome to Course Corner</h2>
+                <button class="modal-close-btn" onclick="window.firebaseAuth.closeAuthModal()">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Auth Tabs -->
+                <div class="auth-tabs">
+                    <button id="loginTab" class="auth-tab active" onclick="window.firebaseAuth.switchAuthMode('login')">
+                        Login
+                    </button>
+                    <button id="signupTab" class="auth-tab" onclick="window.firebaseAuth.switchAuthMode('signup')">
+                        Sign Up
+                    </button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                    </div>
+                    <div class="forgot-password-link">
+                        <a class="auth-link text-sm" onclick="window.firebaseAuth.switchAuthMode('forgot')">Forgot password?</a>
+                    </div>
+                    <button type="submit" id="loginBtn" class="btn-primary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </button>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signupForm" class="auth-form hidden" onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" class="form-input" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address</label>
+                        <input type="email" id="signupEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" class="form-input" placeholder="Create a password (min 6 characters)" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupConfirmPassword">Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" class="form-input" placeholder="Confirm your password" required>
+                    </div>
+                    <button type="submit" id="signupBtn" class="btn-primary">
+                        <i class="fas fa-user-plus"></i>
+                        Create Account
+                    </button>
+                </form>
+
+                <!-- Forgot Password Section -->
+                <div id="forgotPasswordSection" class="auth-form hidden">
+                    <p class="text-gray-600 mb-4">Enter your email address and we'll send you a link to reset your password.</p>
+                    <div class="form-group">
+                        <label for="resetEmail">Email Address</label>
+                        <input type="email" id="resetEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <button type="button" onclick="handleResetPassword()" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        Send Reset Link
+                    </button>
+                    <div class="text-center mt-4">
+                        <a class="auth-link" onclick="window.firebaseAuth.switchAuthMode('login')">
+                            <i class="fas fa-arrow-left mr-1"></i>
+                            Back to Login
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="auth-divider">
+                    <span>or continue with</span>
+                </div>
+
+                <!-- Google Sign In -->
+                <button type="button" onclick="handleGoogleSignIn()" class="btn-google">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                    Sign in with Google
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Handler Functions -->
+    <script>
+        // Handle login form submission
+        async function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+            
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+                
+                await window.firebaseAuth.login(email, password);
+                window.firebaseAuth.closeAuthModal();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Welcome back!',
+                    text: 'You have successfully logged in.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Failed',
+                    text: error.message
+                });
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+            }
+        }
+
+        // Handle signup form submission
+        async function handleSignup(event) {
+            event.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const btn = document.getElementById('signupBtn');
+            
+            if (password !== confirmPassword) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Passwords do not match',
+                    text: 'Please make sure your passwords match.'
+                });
+                return;
+            }
+            
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+                
+                await window.firebaseAuth.signup(email, password, name);
+                window.firebaseAuth.closeAuthModal();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Account Created!',
+                    text: 'Welcome to Course Corner! Your account has been created.',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Signup Failed',
+                    text: error.message
+                });
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+            }
+        }
+
+        // Handle Google sign in
+        async function handleGoogleSignIn() {
+            try {
+                await window.firebaseAuth.googleSignIn();
+                window.firebaseAuth.closeAuthModal();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Welcome!',
+                    text: 'You have successfully signed in with Google.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Google Sign In Failed',
+                    text: error.message
+                });
+            }
+        }
+
+        // Handle password reset
+        async function handleResetPassword() {
+            const email = document.getElementById('resetEmail').value;
+            
+            if (!email) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Email Required',
+                    text: 'Please enter your email address.'
+                });
+                return;
+            }
+            
+            try {
+                await window.firebaseAuth.resetPassword(email);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Reset Email Sent',
+                    text: 'Check your email for the password reset link.'
+                });
+                window.firebaseAuth.switchAuthMode('login');
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Reset Failed',
+                    text: error.message
+                });
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('authModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'authModal') {
+                window.firebaseAuth.closeAuthModal();
+            }
+        });
     </script>
 </body>
 </html>

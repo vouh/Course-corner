@@ -1922,13 +1922,19 @@ textarea.cc-form-input {
     }
     
     .hero-cta-container {
-        flex-direction: column;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: center;
+        gap: 0.75rem;
     }
     
     .btn-hero-primary,
     .btn-hero-secondary {
-        width: 100%;
-        justify-content: center;
+        width: auto;
+        flex: 0 1 auto;
+        padding: 0.625rem 1rem;
+        font-size: 0.8125rem;
+        white-space: nowrap;
     }
 }
 

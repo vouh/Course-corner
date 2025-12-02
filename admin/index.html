@@ -14,6 +14,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <style>
+        /* Prevent body horizontal scroll */
+        html, body {
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+        
         .stat-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -54,12 +60,31 @@
         }
         
         @media (max-width: 768px) {
-            /* Hide desktop table, show mobile cards */
+            /* Show table with horizontal scroll on mobile instead of cards */
             .desktop-table {
-                display: none !important;
+                display: block !important;
             }
             .mobile-card {
-                display: block !important;
+                display: none !important;
+            }
+            
+            /* Horizontal scroll container for table */
+            .table-scroll-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin: 0 -1rem;
+                padding: 0 1rem;
+            }
+            
+            .desktop-table table {
+                min-width: 800px;
+                font-size: 0.75rem;
+            }
+            
+            .desktop-table th,
+            .desktop-table td {
+                padding: 0.5rem 0.75rem;
+                white-space: nowrap;
             }
             
             /* Stat cards adjustments */
@@ -468,25 +493,27 @@
                 </div>
 
                 <!-- Desktop Table -->
-                <div id="table-container" class="hidden desktop-table overflow-x-auto">
-                    <table class="w-full">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                <th class="px-4 py-3 checkbox-cell">
-                                    <input type="checkbox" id="select-all-header" onchange="toggleSelectAll()" class="w-4 h-4 text-green-600 rounded">
-                                </th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">M-Pesa Code</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactions-body" class="divide-y divide-gray-200">
-                        </tbody>
-                    </table>
+                <div id="table-container" class="hidden desktop-table">
+                    <div class="table-scroll-container" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                        <table class="w-full" style="min-width: 850px;">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 checkbox-cell">
+                                        <input type="checkbox" id="select-all-header" onchange="toggleSelectAll()" class="w-4 h-4 text-green-600 rounded">
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">M-Pesa Code</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-body" class="divide-y divide-gray-200">
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 
                 <!-- Mobile Cards -->

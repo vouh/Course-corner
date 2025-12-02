@@ -285,7 +285,7 @@
                 Calculate your KCSE cluster points accurately and discover the perfect courses and universities for your career journey.
             </p>
             
-            <div class="hero-cta-container">
+            <div class="hero-cta-container" style="display: flex; flex-direction: row; gap: 1rem; flex-wrap: wrap; justify-content: center;">
                 <a href="pages/calculator.html" class="btn-hero-primary">
                     <i class="fas fa-calculator"></i>
                     Calculate Points
@@ -1381,12 +1381,9 @@
                 Swal.fire({
                     icon: 'success',
                     title: 'Payment Successful! ✅',
-                    html: `
-                        <p class="text-green-600 mb-2">Your payment of <strong>KSH ${amount}</strong> has been confirmed!</p>
-                        <p class="text-gray-600">Loading your results...</p>
-                    `,
+                    html: `<p class="text-green-600 mb-2">Your payment has been confirmed!</p>`,
                     showConfirmButton: false,
-                    timer: 2000,
+                    timer: 1500,
                     timerProgressBar: true
                 });
 
@@ -1396,7 +1393,7 @@
                     
                     // Scroll to results section
                     document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
-                }, 2000);
+                }, 1600);
 
                 return true; // Payment successful
 
@@ -1648,7 +1645,6 @@
                     </div>
                     <div class="user-details">
                         <h3 id="userDisplayName">User</h3>
-                        <p id="userDisplayEmail">user@example.com</p>
                     </div>
                 </div>
 

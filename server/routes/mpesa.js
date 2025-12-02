@@ -133,26 +133,30 @@ router.get('/status/:sessionId?', async (req, res) => {
         }
         // Check the result code - ResultCode 0 = Success
         else if (queryResult.ResultCode === '0' || queryResult.ResultCode === 0) {
-          // Payment successful - extract M-Pesa receipt number
-          const mpesaReceiptNumber = queryResult.MpesaReceiptNumber || null;
-          console.log('✅ M-Pesa confirms payment successful, Receipt:', mpesaReceiptNumber);
+          // Payment successful!
+          // NOTE: STK Push Query does NOT return MpesaReceiptNumber - that only comes from callback
+          // If we have it from a previous callback, use it. Otherwise it will be null.
+          const existingReceipt = payment.mpesaReceiptNumber || payment.metadata?.MpesaReceiptNumber || null;
+          console.log('✅ M-Pesa confirms payment successful!');
+          console.log('   ResultDesc:', queryResult.ResultDesc);
+          console.log('   Existing Receipt (from callback):', existingReceipt || 'NOT YET RECEIVED - waiting for callback');
           
-          // Update PaymentStore with receipt number
-          PaymentStore.updatePaymentStatus(sessionId, 'completed', queryResult.ResultDesc || 'Payment successful', {
-            mpesaReceiptNumber: mpesaReceiptNumber
+          // Update PaymentStore - mark as completed
+          PaymentStore.updatePaymentStatus(sessionId, 'completed', queryResult.ResultDesc || 'The service request is processed successfully.', {
+            mpesaReceiptNumber: existingReceipt
           });
           
-          // Update Firebase with receipt number
+          // Update Firebase - mark as completed
           await updatePaymentTransaction(payment.checkoutRequestId, {
             status: 'completed',
-            resultDesc: queryResult.ResultDesc,
-            mpesaReceiptNumber: mpesaReceiptNumber,
-            transactionCode: mpesaReceiptNumber
+            resultDesc: queryResult.ResultDesc || 'The service request is processed successfully.',
+            // Only update receipt if we have one
+            ...(existingReceipt && { mpesaReceiptNumber: existingReceipt, transactionCode: existingReceipt })
           });
           
           payment.status = 'completed';
-          payment.resultDesc = queryResult.ResultDesc || 'Payment successful';
-          payment.mpesaReceiptNumber = mpesaReceiptNumber;
+          payment.resultDesc = queryResult.ResultDesc || 'The service request is processed successfully.';
+          if (existingReceipt) payment.mpesaReceiptNumber = existingReceipt;
         } 
         // ResultCode 1032 = Cancelled by user
         else if (queryResult.ResultCode === '1032' || queryResult.ResultCode === 1032) {
@@ -691,6 +695,135 @@ router.post('/debug/simulate-callback', async (req, res) => {
       }
     });
   } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// Admin: Sync pending Firebase transactions by querying M-Pesa
+router.post('/admin/sync-pending', async (req, res) => {
+  try {
+    const { getAllTransactions: getAll } = require('../utils/firebaseAdmin');
+    
+    // Get all pending transactions from Firebase
+    const pendingTransactions = await getAll(50, 'pending');
+    console.log(`🔄 Found ${pendingTransactions.length} pending transactions to sync`);
+    
+    const results = {
+      total: pendingTransactions.length,
+      updated: 0,
+      stillPending: 0,
+      failed: 0,
+      errors: []
+    };
+    
+    for (const tx of pendingTransactions) {
+      if (!tx.checkoutRequestId) {
+        results.errors.push({ id: tx.id, error: 'No checkoutRequestId' });
+        continue;
+      }
+      
+      try {
+        console.log(`📡 Querying status for: ${tx.checkoutRequestId}`);
+        const queryResult = await querySTKPushStatus(tx.checkoutRequestId);
+        console.log('   Result:', JSON.stringify(queryResult, null, 2));
+        
+        if (queryResult.ResultCode === '0' || queryResult.ResultCode === 0) {
+          // Success - update to completed
+          await updatePaymentTransaction(tx.checkoutRequestId, {
+            status: 'completed',
+            resultDesc: queryResult.ResultDesc || 'The service request is processed successfully.',
+            syncedAt: new Date().toISOString()
+          });
+          results.updated++;
+          console.log(`   ✅ Updated to completed`);
+        } else if (queryResult.ResultCode === 'pending' || queryResult.status === 'pending') {
+          // Still pending
+          results.stillPending++;
+          console.log(`   ⏳ Still pending`);
+        } else {
+          // Failed
+          await updatePaymentTransaction(tx.checkoutRequestId, {
+            status: 'failed',
+            resultDesc: queryResult.ResultDesc || 'Payment failed',
+            resultCode: queryResult.ResultCode,
+            syncedAt: new Date().toISOString()
+          });
+          results.failed++;
+          console.log(`   ❌ Marked as failed: ${queryResult.ResultDesc}`);
+        }
+      } catch (err) {
+        results.errors.push({ id: tx.id, checkoutRequestId: tx.checkoutRequestId, error: err.message });
+        console.log(`   ⚠️ Error: ${err.message}`);
+      }
+    }
+    
+    res.json({
+      success: true,
+      message: 'Sync completed',
+      results
+    });
+  } catch (error) {
+    console.error('Sync error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// Admin: Manually update a transaction's status and receipt
+router.post('/admin/update-transaction', async (req, res) => {
+  try {
+    const { transactionId, checkoutRequestId, status, mpesaReceiptNumber } = req.body;
+    
+    if (!transactionId && !checkoutRequestId) {
+      return res.status(400).json({
+        success: false,
+        message: 'Either transactionId or checkoutRequestId is required'
+      });
+    }
+    
+    const updateData = {
+      updatedAt: new Date().toISOString(),
+      manuallyUpdated: true
+    };
+    
+    if (status) updateData.status = status;
+    if (mpesaReceiptNumber) {
+      updateData.mpesaReceiptNumber = mpesaReceiptNumber;
+      updateData.transactionCode = mpesaReceiptNumber;
+    }
+    
+    let success = false;
+    
+    if (checkoutRequestId) {
+      success = await updatePaymentTransaction(checkoutRequestId, updateData);
+    } else if (transactionId) {
+      // Update directly by document ID
+      const { getFirestore } = require('../utils/firebaseAdmin');
+      const db = getFirestore();
+      const docRef = db.collection('transactions').doc(transactionId);
+      await docRef.update(updateData);
+      success = true;
+    }
+    
+    if (success) {
+      res.json({
+        success: true,
+        message: 'Transaction updated successfully',
+        data: updateData
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: 'Transaction not found'
+      });
+    }
+  } catch (error) {
+    console.error('Update transaction error:', error);
     res.status(500).json({
       success: false,
       message: error.message

@@ -452,7 +452,7 @@
     }
 }
 
-/* Hidden utility */
-.hidden {
+/* Hidden utility - only for auth modals */
+.auth-modal-overlay.hidden {
     display: none !important;
 }

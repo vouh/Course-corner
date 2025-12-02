@@ -269,14 +269,17 @@ router.get('/status/:sessionId?', async (req, res) => {
 router.post('/callback', async (req, res) => {
   try {
     const callbackData = req.body;
-    console.log('📱 M-Pesa Callback Received:', new Date().toISOString());
+    console.log('═══════════════════════════════════════════════════════════');
+    console.log('📱 M-PESA CALLBACK RECEIVED:', new Date().toISOString());
+    console.log('═══════════════════════════════════════════════════════════');
+    console.log('Raw Callback Data:');
     console.log(JSON.stringify(callbackData, null, 2));
 
     // Extract callback data
     const stkCallback = callbackData.Body?.stkCallback;
     
     if (!stkCallback) {
-      console.error('Invalid callback structure');
+      console.error('❌ Invalid callback structure - no stkCallback found');
       return res.json({
         ResultCode: 1,
         ResultDesc: 'Invalid callback structure'
@@ -284,63 +287,93 @@ router.post('/callback', async (req, res) => {
     }
 
     const checkoutRequestID = stkCallback.CheckoutRequestID;
+    const merchantRequestID = stkCallback.MerchantRequestID;
     const resultCode = stkCallback.ResultCode;
     const resultDesc = stkCallback.ResultDesc;
 
+    console.log('📋 Callback Details:');
+    console.log('   CheckoutRequestID:', checkoutRequestID);
+    console.log('   MerchantRequestID:', merchantRequestID);
+    console.log('   ResultCode:', resultCode);
+    console.log('   ResultDesc:', resultDesc);
+
     // Find payment by checkout request ID
     const payment = PaymentStore.getPaymentByCheckoutId(checkoutRequestID);
+    console.log('   Found Payment:', payment ? `Session: ${payment.sessionId}` : 'NOT FOUND');
 
     if (payment) {
       if (resultCode === 0) {
-        // Payment successful
-        console.log('✅ Payment successful for session:', payment.sessionId);
+        // Payment successful - Extract metadata including M-Pesa Receipt Number
+        console.log('✅ PAYMENT SUCCESSFUL!');
         
-        // Extract payment metadata
         const callbackMetadata = stkCallback.CallbackMetadata?.Item || [];
         const metadata = {};
         
+        console.log('📦 Extracting CallbackMetadata:');
         callbackMetadata.forEach(item => {
           metadata[item.Name] = item.Value;
+          console.log(`   ${item.Name}: ${item.Value}`);
         });
 
-        PaymentStore.updatePaymentStatus(payment.sessionId, 'completed', resultDesc, metadata);
+        // Extract the M-Pesa Receipt Number (transaction code)
+        const mpesaReceiptNumber = metadata.MpesaReceiptNumber || null;
+        console.log('🧾 M-PESA RECEIPT NUMBER:', mpesaReceiptNumber || 'NOT FOUND IN CALLBACK');
+
+        // Update PaymentStore with all metadata including receipt number
+        PaymentStore.updatePaymentStatus(payment.sessionId, 'completed', resultDesc, {
+          ...metadata,
+          mpesaReceiptNumber: mpesaReceiptNumber
+        });
         
         // Update Firebase with success status and transaction details
         await updatePaymentTransaction(checkoutRequestID, {
           status: 'completed',
           resultDesc,
-          mpesaReceiptNumber: metadata.MpesaReceiptNumber || null,
-          transactionCode: metadata.MpesaReceiptNumber || null,
+          mpesaReceiptNumber: mpesaReceiptNumber,
+          transactionCode: mpesaReceiptNumber,
           transactionDate: metadata.TransactionDate || null,
-          metadata
+          amount: metadata.Amount || payment.amount,
+          phoneNumber: metadata.PhoneNumber || payment.phoneNumber,
+          metadata,
+          callbackReceivedAt: new Date().toISOString()
         });
         
-        console.log('💾 Payment data saved:', metadata);
+        console.log('💾 Payment data saved successfully with Receipt:', mpesaReceiptNumber);
       } else {
         // Payment failed
-        console.log('❌ Payment failed for session:', payment.sessionId);
-        console.log('Reason:', resultDesc);
-        PaymentStore.updatePaymentStatus(payment.sessionId, 'failed', resultDesc);
+        console.log('❌ PAYMENT FAILED!');
+        console.log('   Reason:', resultDesc);
+        console.log('   ResultCode:', resultCode);
+        
+        PaymentStore.updatePaymentStatus(payment.sessionId, 'failed', resultDesc, {
+          resultCode: resultCode
+        });
         
         // Update Firebase with failed status
         await updatePaymentTransaction(checkoutRequestID, {
           status: 'failed',
           resultDesc,
-          resultCode
+          resultCode,
+          callbackReceivedAt: new Date().toISOString()
         });
       }
     } else {
-      console.warn('⚠️ Payment session not found for checkout ID:', checkoutRequestID);
+      console.warn('⚠️ Payment session NOT FOUND for checkout ID:', checkoutRequestID);
+      console.warn('   This might be an orphan callback or the payment session expired');
     }
 
-    // Acknowledge callback receipt
+    console.log('═══════════════════════════════════════════════════════════');
+
+    // Acknowledge callback receipt to M-Pesa
     res.json({
       ResultCode: 0,
       ResultDesc: 'Callback received and processed successfully'
     });
 
   } catch (error) {
-    console.error('❌ Callback Error:', error);
+    console.error('═══════════════════════════════════════════════════════════');
+    console.error('❌ CALLBACK PROCESSING ERROR:', error);
+    console.error('═══════════════════════════════════════════════════════════');
     res.status(500).json({
       ResultCode: 1,
       ResultDesc: 'Error processing callback'
@@ -584,6 +617,80 @@ router.delete('/admin/transactions/:id', async (req, res) => {
     }
   } catch (error) {
     console.error('Delete transaction error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// Debug: View all in-memory payments (useful for debugging callback issues)
+router.get('/debug/payments', async (req, res) => {
+  try {
+    const payments = PaymentStore.getAllPayments();
+    res.json({
+      success: true,
+      message: 'In-memory payment store',
+      count: payments.length,
+      data: payments
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// Debug: Simulate a successful callback (for testing)
+router.post('/debug/simulate-callback', async (req, res) => {
+  try {
+    const { checkoutRequestId, mpesaReceiptNumber } = req.body;
+    
+    if (!checkoutRequestId) {
+      return res.status(400).json({
+        success: false,
+        message: 'checkoutRequestId is required'
+      });
+    }
+    
+    const payment = PaymentStore.getPaymentByCheckoutId(checkoutRequestId);
+    
+    if (!payment) {
+      return res.status(404).json({
+        success: false,
+        message: 'Payment not found for this checkoutRequestId'
+      });
+    }
+    
+    // Simulate successful callback
+    const simulatedReceipt = mpesaReceiptNumber || `SIM${Date.now().toString().slice(-8)}`;
+    
+    PaymentStore.updatePaymentStatus(payment.sessionId, 'completed', 'Simulated successful payment', {
+      MpesaReceiptNumber: simulatedReceipt,
+      mpesaReceiptNumber: simulatedReceipt,
+      Amount: payment.amount,
+      PhoneNumber: payment.phoneNumber,
+      TransactionDate: new Date().toISOString()
+    });
+    
+    // Update Firebase
+    await updatePaymentTransaction(checkoutRequestId, {
+      status: 'completed',
+      resultDesc: 'Simulated successful payment',
+      mpesaReceiptNumber: simulatedReceipt,
+      transactionCode: simulatedReceipt
+    });
+    
+    res.json({
+      success: true,
+      message: 'Callback simulated successfully',
+      data: {
+        sessionId: payment.sessionId,
+        mpesaReceiptNumber: simulatedReceipt
+      }
+    });
+  } catch (error) {
     res.status(500).json({
       success: false,
       message: error.message

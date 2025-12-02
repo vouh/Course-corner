@@ -137,6 +137,11 @@ class PaymentStore {
     }
     return false;
   }
+
+  // Get all payments (for debugging)
+  getAllPayments() {
+    return Array.from(this.payments.values());
+  }
 }
 
 // Export singleton instance

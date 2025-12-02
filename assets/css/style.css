@@ -119,6 +119,42 @@
 select option[value=""] { color: #e71815; }
 select option:not([value=""]) { color: var(--text-dark); }
 
+/* Enhanced Mobile Select Styling */
+@media (max-width: 640px) {
+    /* Make selects more compact on mobile */
+    .grade-select,
+    .cc-grade-select,
+    #foreignLanguage,
+    #re {
+        font-size: 14px !important;
+        padding: 6px 28px 6px 8px !important;
+        height: 34px !important;
+        min-height: 34px !important;
+        line-height: 1.2 !important;
+    }
+    
+    /* Option styling for mobile */
+    .grade-select option,
+    .cc-grade-select option {
+        font-size: 14px !important;
+        padding: 8px 10px !important;
+        min-height: auto !important;
+    }
+}
+
+/* Even smaller screens */
+@media (max-width: 400px) {
+    .grade-select,
+    .cc-grade-select,
+    #foreignLanguage,
+    #re {
+        font-size: 13px !important;
+        padding: 5px 24px 5px 6px !important;
+        height: 32px !important;
+        min-height: 32px !important;
+    }
+}
+
 /* Animations */
 @keyframes fadeIn {
     from {

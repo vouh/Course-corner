@@ -2,15 +2,27 @@ let coursesData = null;
 let diplomaData = null;
 let technicalCoursesData = null;
 
+// Determine base path based on current location
+const getBasePath = () => {
+    const path = window.location.pathname;
+    if (path.includes('/pages/')) {
+        return '../';
+    }
+    return './';
+};
+
+const basePath = getBasePath();
+
 Promise.all([
-    fetch('data/courses.json').then(response => response.json()),
-    fetch('data/diploma.json').then(response => response.json()),
-    fetch('data/dip.json').then(response => response.json())
+    fetch(`${basePath}data/courses.json`).then(response => response.json()),
+    fetch(`${basePath}data/diploma.json`).then(response => response.json()),
+    fetch(`${basePath}data/dip.json`).then(response => response.json())
 ])
 .then(([courses, diploma, technical]) => {
     coursesData = courses;
     diplomaData = diploma;
     technicalCoursesData = technical;
+    console.log('📚 Course data loaded successfully');
 })
 .catch(error => {
     console.error('Error loading data:', error);

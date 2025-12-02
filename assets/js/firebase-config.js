@@ -1,4 +1,4 @@
-withthe // Firebase Configuration for Course Corner
+// Firebase Configuration for Course Corner
 // This file can be imported by other modules that need Firebase services
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";

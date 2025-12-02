@@ -418,9 +418,18 @@
             const mobileMenuBtn = document.getElementById('mobileMenuBtn');
             const mobileMenu = document.getElementById('mobileMenu');
             
-            mobileMenuBtn.addEventListener('click', () => {
+            mobileMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 mobileMenuBtn.classList.toggle('active');
                 mobileMenu.classList.toggle('show');
+            });
+            
+            // Close mobile menu when clicking a link
+            mobileMenu.querySelectorAll('a, button').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('show');
+                    mobileMenuBtn.classList.remove('active');
+                });
             });
 
             // Close mobile menu when clicking outside
@@ -433,7 +442,7 @@
 
             // Close mobile menu when window is resized to desktop size
             window.addEventListener('resize', () => {
-                if (window.innerWidth >= 768) {
+                if (window.innerWidth >= 1024) {
                     mobileMenu.classList.remove('show');
                     mobileMenuBtn.classList.remove('active');
                 }
@@ -1302,6 +1311,7 @@
                 paymentMessage.textContent = 'Waiting for M-Pesa confirmation...';
 
                 // Show waiting for M-Pesa with real-time status updates (no button click required)
+                let paymentCancelled = false;
                 Swal.fire({
                     title: '📱 Check Your Phone!',
                     html: `
@@ -1320,13 +1330,20 @@
                                 </div>
                                 <p id="swal-attempt-text" class="text-xs text-gray-400">Listening for M-Pesa response...</p>
                             </div>
-                            <p class="text-xs text-gray-400 mt-3">Do NOT close this window</p>
+                            <p class="text-xs text-gray-400 mt-3">Click Cancel if you didn't receive the prompt</p>
                         </div>
                     `,
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
+                    allowOutsideClick: true,
+                    allowEscapeKey: true,
                     showConfirmButton: false,
+                    showCancelButton: true,
+                    cancelButtonText: 'Cancel',
+                    cancelButtonColor: '#6b7280',
                     didOpen: () => Swal.showLoading()
+                }).then((result) => {
+                    if (result.dismiss === Swal.DismissReason.cancel) {
+                        paymentCancelled = true;
+                    }
                 });
 
                 // Wait for payment with status callback (starts immediately, no button click needed)
@@ -1347,6 +1364,12 @@
                         attemptText.textContent = `Checking... ${attempt}/${maxAttempts} • Timeout in ~${timeRemaining}s`;
                     }
                 });
+
+                // Check if cancelled
+                if (paymentCancelled) {
+                    window.paymentHandler.clearSession();
+                    return false;
+                }
 
                 // Payment successful - approve access
                 await window.paymentHandler.approveAccess();

@@ -761,9 +761,26 @@
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
         
-        mobileMenuBtn.addEventListener('click', () => {
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
             mobileMenuBtn.classList.toggle('active');
             mobileMenu.classList.toggle('show');
+        });
+        
+        // Close mobile menu when clicking a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenuBtn.classList.remove('active');
+                mobileMenu.classList.remove('show');
+            });
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                mobileMenuBtn.classList.remove('active');
+                mobileMenu.classList.remove('show');
+            }
         });
         
         // Calculate total points
@@ -932,6 +949,8 @@
 
                 await window.paymentHandler.initiatePayment(phoneNumber, category);
 
+                // Show waiting dialog with cancel option
+                let cancelled = false;
                 Swal.fire({
                     title: '📱 Check Your Phone!',
                     html: `
@@ -941,24 +960,44 @@
                             <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-4 text-left">
                                 <p class="text-sm text-yellow-800"><strong>Enter your M-Pesa PIN</strong> to complete the payment.</p>
                             </div>
-                            <p class="text-xs text-gray-400">Do NOT close this window</p>
+                            <p class="text-xs text-gray-400">Click Cancel if you didn't receive the prompt</p>
                         </div>
                     `,
-                    allowOutsideClick: false,
-                    allowEscapeKey: false,
+                    allowOutsideClick: true,
+                    allowEscapeKey: true,
                     showConfirmButton: false,
+                    showCancelButton: true,
+                    cancelButtonText: 'Cancel',
+                    cancelButtonColor: '#6b7280',
                     didOpen: () => Swal.showLoading()
+                }).then((result) => {
+                    if (result.dismiss === Swal.DismissReason.cancel) {
+                        cancelled = true;
+                    }
                 });
 
-                await window.paymentHandler.pollPaymentStatus(40, 3000);
+                // Poll with timeout
+                const pollPromise = window.paymentHandler.pollPaymentStatus(40, 3000);
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Payment verification timed out. Please check your M-Pesa messages.')), 130000)
+                );
+                
+                await Promise.race([pollPromise, timeoutPromise]);
+                
+                if (cancelled) {
+                    return false;
+                }
+                
                 await window.paymentHandler.approveAccess();
 
                 Swal.fire({
                     icon: 'success',
                     title: 'Payment Successful! ✅',
                     html: `<p class="text-green-600 mb-2">Your payment has been confirmed!</p>`,
-                    showConfirmButton: false,
-                    timer: 2000
+                    confirmButtonText: 'Continue',
+                    confirmButtonColor: '#16a34a',
+                    timer: 3000,
+                    timerProgressBar: true
                 });
 
                 return true;
@@ -968,7 +1007,10 @@
                     icon: 'error',
                     title: 'Payment Failed',
                     text: error.message || 'Something went wrong. Please try again.',
-                    confirmButtonColor: '#16a34a'
+                    confirmButtonColor: '#16a34a',
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: true,
+                    allowEscapeKey: true
                 });
                 return false;
             }
@@ -1193,7 +1235,7 @@
         // Handle Google sign in
         async function handleGoogleSignIn() {
             try {
-                await window.firebaseAuth.googleSignIn();
+                await window.firebaseAuth.signInWithGoogle();
                 window.firebaseAuth.closeAuthModal();
                 
                 Swal.fire({

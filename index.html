@@ -1403,27 +1403,31 @@
                 paymentStatusDiv.classList.add('hidden');
 
                 // Show brief success message then auto-redirect to results
-                Swal.fire({
+                await Swal.fire({
                     icon: 'success',
                     title: 'Payment Successful! ✅',
                     html: `<p class="text-green-600 mb-2">Your payment has been confirmed!</p>`,
                     showConfirmButton: false,
                     timer: 1500,
-                    timerProgressBar: true
+                    timerProgressBar: true,
+                    willClose: () => {
+                        document.body.classList.remove('swal2-shown');
+                    }
                 });
 
-                // Auto-show results after brief delay
-                setTimeout(() => {
-                    showResultsAfterPayment(category);
-                    
-                    // Scroll to results section
-                    document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
-                }, 1600);
+                // Show results after dialog closes
+                showResultsAfterPayment(category);
+                
+                // Scroll to results section
+                document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
 
                 return true; // Payment successful
 
             } catch (error) {
                 document.getElementById('paymentStatus').classList.add('hidden');
+                
+                // Close any existing dialogs first
+                Swal.close();
                 
                 // Determine icon and title based on error message
                 let icon = 'error';
@@ -1444,15 +1448,20 @@
                     title = 'Request Timed Out';
                 }
                 
-                Swal.fire({
+                await Swal.fire({
                     icon: icon,
                     title: title,
                     html: `
                         <p class="mb-3">${errorMsg}</p>
                         <p class="text-sm text-gray-500">You can try again by clicking the button.</p>
                     `,
-                    confirmButtonText: 'Try Again',
-                    confirmButtonColor: '#16a34a'
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#16a34a',
+                    allowOutsideClick: true,
+                    allowEscapeKey: true,
+                    willClose: () => {
+                        document.body.classList.remove('swal2-shown');
+                    }
                 });
                 
                 window.paymentHandler.clearSession();

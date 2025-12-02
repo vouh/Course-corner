@@ -513,6 +513,15 @@
     backdrop-filter: blur(8px) !important;
 }
 
+/* Ensure SweetAlert properly hides when closed */
+.swal2-container.swal2-backdrop-hide {
+    display: none !important;
+}
+
+body:not(.swal2-shown) .swal2-container {
+    display: none !important;
+}
+
 .swal2-title {
     font-size: 1.25rem !important;
     font-weight: 700 !important;

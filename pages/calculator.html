@@ -111,8 +111,9 @@
                         <div class="cc-score-value-wrapper">
                             <span class="cc-score-value" id="overallGradeDisplay">0</span>
                             <span class="cc-score-max">/ 84</span>
+                            <span class="cc-grade-letter" id="gradeLetter" style="margin-left: 12px; font-size: 1.5rem; font-weight: 700; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 8px;"></span>
                         </div>
-                        <span class="cc-score-note">Calculated from your 7 best subjects</span>
+                        <span class="cc-score-note" id="gradeMessage">Calculated from your 7 best subjects</span>
                     </div>
                     <input type="hidden" id="overallGrade" value="0">
                 </div>
@@ -137,7 +138,7 @@
                             <div class="cc-grade-item">
                                 <label for="english">English</label>
                                 <select id="english" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -155,7 +156,7 @@
                             <div class="cc-grade-item">
                                 <label for="kiswahili">Kiswahili</label>
                                 <select id="kiswahili" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -186,7 +187,7 @@
                             <div class="cc-grade-item">
                                 <label for="mathematics">Mathematics</label>
                                 <select id="mathematics" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -204,7 +205,7 @@
                             <div class="cc-grade-item">
                                 <label for="biology">Biology</label>
                                 <select id="biology" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -222,7 +223,7 @@
                             <div class="cc-grade-item">
                                 <label for="physics">Physics</label>
                                 <select id="physics" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -240,7 +241,7 @@
                             <div class="cc-grade-item">
                                 <label for="chemistry">Chemistry</label>
                                 <select id="chemistry" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -271,7 +272,7 @@
                             <div class="cc-grade-item">
                                 <label for="history">History & Govt</label>
                                 <select id="history" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -289,7 +290,7 @@
                             <div class="cc-grade-item">
                                 <label for="geography">Geography</label>
                                 <select id="geography" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -307,7 +308,7 @@
                             <div class="cc-grade-item">
                                 <label for="cre">CRE</label>
                                 <select id="cre" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -325,7 +326,7 @@
                             <div class="cc-grade-item">
                                 <label for="ire">IRE</label>
                                 <select id="ire" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -343,7 +344,7 @@
                             <div class="cc-grade-item">
                                 <label for="hre">HRE</label>
                                 <select id="hre" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -362,7 +363,7 @@
                     </div>
 
                     <!-- Group 4: Technical & Applied -->
-                    <div class="cc-subject-group">
+                    <div class="cc-subject-group cc-group-4-parent">
                         <div class="cc-group-header cc-group-4">
                             <div class="cc-group-icon"><i class="fas fa-tools"></i></div>
                             <div class="cc-group-info">
@@ -374,7 +375,7 @@
                             <div class="cc-grade-item">
                                 <label for="agriculture">Agriculture</label>
                                 <select id="agriculture" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -392,7 +393,7 @@
                             <div class="cc-grade-item">
                                 <label for="homeScience">Home Science</label>
                                 <select id="homeScience" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -410,7 +411,7 @@
                             <div class="cc-grade-item">
                                 <label for="business">Business Studies</label>
                                 <select id="business" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -428,7 +429,7 @@
                             <div class="cc-grade-item">
                                 <label for="computerStudies">Computer Studies</label>
                                 <select id="computerStudies" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -446,7 +447,7 @@
                             <div class="cc-grade-item">
                                 <label for="music">Music</label>
                                 <select id="music" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -464,7 +465,7 @@
                             <div class="cc-grade-item">
                                 <label for="aviation">Aviation</label>
                                 <select id="aviation" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -482,7 +483,7 @@
                             <div class="cc-grade-item">
                                 <label for="woodwork">Woodwork</label>
                                 <select id="woodwork" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -500,7 +501,7 @@
                             <div class="cc-grade-item">
                                 <label for="metalWork">Metal Work</label>
                                 <select id="metalWork" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -518,7 +519,7 @@
                             <div class="cc-grade-item">
                                 <label for="buildingConstruction">Building & Const.</label>
                                 <select id="buildingConstruction" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -536,7 +537,7 @@
                             <div class="cc-grade-item">
                                 <label for="artDesign">Art & Design</label>
                                 <select id="artDesign" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -567,7 +568,7 @@
                             <div class="cc-grade-item">
                                 <label for="french">French</label>
                                 <select id="french" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -585,7 +586,7 @@
                             <div class="cc-grade-item">
                                 <label for="german">German</label>
                                 <select id="german" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -603,7 +604,7 @@
                             <div class="cc-grade-item">
                                 <label for="arabic">Arabic</label>
                                 <select id="arabic" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -621,7 +622,7 @@
                             <div class="cc-grade-item">
                                 <label for="signLanguage">Sign Language</label>
                                 <select id="signLanguage" class="cc-grade-select grade-select">
-                                    <option value="">Select Grade</option>
+                                    <option value="">Select</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -816,9 +817,33 @@
             }
         });
         
+        // Grade details function
+        function getGradeDetails(points) {
+            if (points >= 81 && points <= 84) return { grade: 'A', message: '🎉 Excellent! You have a strong foundation for top university courses.' };
+            if (points >= 74 && points <= 80) return { grade: 'A-', message: '🌟 Outstanding! Many competitive opportunities await you.' };
+            if (points >= 67 && points <= 73) return { grade: 'B+', message: '👏 Very good! You qualify for many excellent courses.' };
+            if (points >= 60 && points <= 66) return { grade: 'B', message: '💪 Good performance! You have solid options available.' };
+            if (points >= 53 && points <= 59) return { grade: 'B-', message: '👍 Above average! Consider competitive degree programs.' };
+            if (points >= 46 && points <= 52) return { grade: 'C+', message: '✅ You meet minimum university entry requirements.' };
+            if (points >= 39 && points <= 45) return { grade: 'C', message: '📚 Consider diploma programs or bridging courses.' };
+            if (points >= 32 && points <= 38) return { grade: 'C-', message: '📋 Look into diploma and certificate options.' };
+            if (points >= 25 && points <= 31) return { grade: 'D+', message: '🔧 Consider vocational training programs.' };
+            if (points >= 18 && points <= 24) return { grade: 'D', message: '🛠️ Explore technical training opportunities.' };
+            if (points >= 11 && points <= 17) return { grade: 'D-', message: '📝 Consider certificate programs.' };
+            return { grade: 'E', message: '💡 Look into skill-based training programs.' };
+        }
+        
         // Calculate total points
         document.querySelectorAll('.grade-select').forEach(select => {
-            select.addEventListener('change', calculateTotalPoints);
+            select.addEventListener('change', function() {
+                // Toggle has-value class for styling
+                if (this.value) {
+                    this.classList.add('has-value');
+                } else {
+                    this.classList.remove('has-value');
+                }
+                calculateTotalPoints();
+            });
         });
         
         function calculateTotalPoints() {
@@ -832,15 +857,22 @@
             });
 
             const totalSubjectsSelected = Object.keys(scores).length;
+            const gradeLetterEl = document.getElementById('gradeLetter');
+            const gradeMessageEl = document.getElementById('gradeMessage');
+            
             if (totalSubjectsSelected < 7) {
                 document.getElementById('overallGrade').value = "";
                 document.getElementById('overallGradeDisplay').textContent = "0";
+                gradeLetterEl.textContent = "";
+                gradeMessageEl.textContent = "Calculated from your 7 best subjects";
                 return;
             }
 
             if (!scores.mathematics) {
                 document.getElementById('overallGrade').value = "";
                 document.getElementById('overallGradeDisplay').textContent = "0";
+                gradeLetterEl.textContent = "";
+                gradeMessageEl.textContent = "Mathematics is required";
                 return;
             }
             total += scores.mathematics;
@@ -853,6 +885,8 @@
             if (languageScores.length === 0) {
                 document.getElementById('overallGrade').value = "";
                 document.getElementById('overallGradeDisplay').textContent = "0";
+                gradeLetterEl.textContent = "";
+                gradeMessageEl.textContent = "At least one language is required";
                 return;
             }
 
@@ -876,6 +910,11 @@
 
             document.getElementById('overallGrade').value = total;
             document.getElementById('overallGradeDisplay').textContent = total;
+            
+            // Update grade letter and message
+            const gradeInfo = getGradeDetails(total);
+            gradeLetterEl.textContent = gradeInfo.grade;
+            gradeMessageEl.textContent = gradeInfo.message;
         }
 
         // ===== UNIFIED PAYMENT FLOW =====
@@ -1024,31 +1063,39 @@
                 await window.paymentHandler.approveAccess();
 
                 // Auto-close and show results
-                Swal.fire({
+                await Swal.fire({
                     icon: 'success',
                     title: 'Payment Successful! ✅',
                     html: `<p class="text-green-600 mb-2">Your payment has been confirmed!</p>`,
                     showConfirmButton: false,
                     timer: 1500,
-                    timerProgressBar: true
+                    timerProgressBar: true,
+                    willClose: () => {
+                        // Ensure backdrop is removed
+                        document.body.classList.remove('swal2-shown');
+                    }
                 });
 
-                // Auto-show results after dialog closes
-                setTimeout(() => {
-                    showResultsAfterPayment(category);
-                }, 1600);
+                // Show results after dialog closes
+                showResultsAfterPayment(category);
 
                 return true;
 
             } catch (error) {
-                Swal.fire({
+                // Close any existing dialogs first
+                Swal.close();
+                
+                await Swal.fire({
                     icon: 'error',
                     title: 'Payment Failed',
                     text: error.message || 'Something went wrong. Please try again.',
                     confirmButtonColor: '#16a34a',
                     confirmButtonText: 'OK',
                     allowOutsideClick: true,
-                    allowEscapeKey: true
+                    allowEscapeKey: true,
+                    willClose: () => {
+                        document.body.classList.remove('swal2-shown');
+                    }
                 });
                 return false;
             }

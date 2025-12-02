@@ -312,8 +312,10 @@
                 <a href="contact.html" class="nav-link">Contact</a>
             </nav>
             
-            <button class="mobile-menu-btn" id="mobileMenuBtn">
-                <i class="fas fa-bars"></i>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
         </div>
         
@@ -532,15 +534,54 @@
         document.getElementById('currentYear').textContent = currentYear;
         document.getElementById('footerYear').textContent = currentYear;
         
-        // Mobile menu toggle
+        // Mobile menu toggle with state tracking
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
+        let isMenuOpen = false;
         
-        mobileMenuBtn.addEventListener('click', () => {
-            mobileMenu.classList.toggle('active');
-            mobileMenuBtn.innerHTML = mobileMenu.classList.contains('active') 
-                ? '<i class="fas fa-times"></i>' 
-                : '<i class="fas fa-bars"></i>';
+        function openMobileMenu() {
+            isMenuOpen = true;
+            mobileMenuBtn.classList.add('active');
+            mobileMenu.classList.add('active');
+        }
+        
+        function closeMobileMenu() {
+            isMenuOpen = false;
+            mobileMenuBtn.classList.remove('active');
+            mobileMenu.classList.remove('active');
+        }
+        
+        function toggleMobileMenu() {
+            if (isMenuOpen) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        }
+        
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMobileMenu();
+        });
+        
+        // Close mobile menu when clicking a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => closeMobileMenu());
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (isMenuOpen && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                closeMobileMenu();
+            }
+        });
+        
+        // Close on resize to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024 && isMenuOpen) {
+                closeMobileMenu();
+            }
         });
         
         // Header scroll effect

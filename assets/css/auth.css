@@ -1,0 +1,458 @@
+/* Authentication Modal Styles */
+
+/* Modal Overlay */
+.auth-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+/* Modal Container */
+.auth-modal {
+    background: white;
+    border-radius: 1rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    max-width: 28rem;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: modalSlideIn 0.3s ease-out;
+}
+
+/* Profile Modal - Wider */
+.profile-modal {
+    max-width: 42rem;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Modal Header */
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.modal-header h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    color: #6b7280;
+    transition: all 0.2s;
+}
+
+.modal-close-btn:hover {
+    background-color: #f3f4f6;
+    color: #111827;
+}
+
+/* Modal Body */
+.modal-body {
+    padding: 1.5rem;
+}
+
+/* Auth Tabs */
+.auth-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.auth-tab.active {
+    background-color: #16a34a;
+    color: white;
+}
+
+.auth-tab:not(.active) {
+    background-color: #e5e7eb;
+    color: #374151;
+}
+
+.auth-tab:hover:not(.active) {
+    background-color: #d1d5db;
+}
+
+/* Form Styles */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+}
+
+.form-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.form-input {
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    transition: all 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-input:focus {
+    outline: none;
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+
+.form-input::placeholder {
+    color: #9ca3af;
+}
+
+.form-select {
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: #16a34a;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+}
+
+/* Button Styles */
+.btn-primary {
+    padding: 0.875rem 1.5rem;
+    background-color: #16a34a;
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-primary:hover {
+    background-color: #15803d;
+}
+
+.btn-primary:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    padding: 0.875rem 1.5rem;
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-secondary:hover {
+    background-color: #e5e7eb;
+}
+
+/* Google Button */
+.btn-google {
+    padding: 0.875rem 1.5rem;
+    background-color: white;
+    color: #374151;
+    border: 1px solid #d1d5db;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.btn-google:hover {
+    background-color: #f9fafb;
+    border-color: #9ca3af;
+}
+
+.btn-google img {
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+/* Divider */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background-color: #e5e7eb;
+}
+
+.auth-divider span {
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+/* Link Styles */
+.auth-link {
+    color: #16a34a;
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.auth-link:hover {
+    color: #15803d;
+    text-decoration: underline;
+}
+
+/* Forgot Password */
+.forgot-password-link {
+    text-align: right;
+    margin-top: -0.5rem;
+}
+
+/* Profile Section */
+.profile-section {
+    margin-bottom: 1.5rem;
+}
+
+.profile-section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #16a34a;
+}
+
+/* Grade Grid */
+.grades-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+}
+
+@media (min-width: 640px) {
+    .grades-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* User Info Display */
+.user-info-display {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background-color: #f0fdf4;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.user-avatar-large {
+    width: 4rem;
+    height: 4rem;
+    border-radius: 50%;
+    background-color: #16a34a;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.user-avatar-large img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.user-details h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0 0.25rem 0;
+}
+
+.user-details p {
+    font-size: 0.875rem;
+    color: #6b7280;
+    margin: 0;
+}
+
+/* Navbar Auth Buttons */
+.nav-auth-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.nav-auth-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: none;
+}
+
+.nav-auth-btn.login-btn {
+    background-color: #16a34a;
+    color: white;
+}
+
+.nav-auth-btn.login-btn:hover {
+    background-color: #15803d;
+}
+
+.nav-auth-btn.profile-btn {
+    background-color: #f3f4f6;
+    color: #374151;
+    border: 1px solid #d1d5db;
+}
+
+.nav-auth-btn.profile-btn:hover {
+    background-color: #e5e7eb;
+}
+
+.nav-user-avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.nav-user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Loading Spinner */
+.btn-loading {
+    position: relative;
+    color: transparent !important;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid white;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Mobile Responsive */
+@media (max-width: 640px) {
+    .auth-modal {
+        margin: 0.5rem;
+        max-height: 95vh;
+    }
+    
+    .profile-modal {
+        max-width: 100%;
+    }
+    
+    .grades-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .modal-header h2 {
+        font-size: 1.25rem;
+    }
+    
+    .nav-auth-container {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+/* Hidden utility */
+.hidden {
+    display: none !important;
+}

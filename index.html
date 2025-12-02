@@ -15,6 +15,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/js/paymentHandler.js"></script>
+    <link rel="stylesheet" href="assets/css/auth.css">
+    <script src="assets/js/firebase-auth.js" defer></script>
     
     <style>
         @keyframes blink {
@@ -205,12 +207,37 @@
                 </button>
                 <!-- Modify the navigation links div -->
                 <div id="mobile-menu" class="hidden md:flex md:space-x-8 absolute md:relative top-20 md:top-0 left-0 right-0 bg-white md:bg-transparent shadow-lg md:shadow-none p-4 md:p-0 z-50">
-                    <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8">
+                    <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8 items-center">
                         <a href="index.html" class="nav-link active">Home</a>
                         <a href="pages/about.html" class="nav-link">About Us</a>
                         <a href="pages/cluster-points.html" class="nav-link">Cluster Points Guide</a>
                         <a href="pages/application-process.html" class="nav-link">Application Process</a>
                         <a href="pages/contact.html" class="nav-link">Contact</a>
+                        
+                        <!-- Auth Buttons -->
+                        <div class="nav-auth-container flex items-center gap-3 ml-4">
+                            <div id="userAvatar" class="hidden"></div>
+                            <button id="profileBtn" class="nav-auth-btn profile-btn hidden" onclick="window.firebaseAuth.openProfileModal()">
+                                <i class="fas fa-user-circle"></i>
+                                <span class="hidden md:inline">Profile</span>
+                            </button>
+                            <button id="authBtn" class="nav-auth-btn login-btn" onclick="window.firebaseAuth.openAuthModal()">
+                                <i class="fas fa-user"></i>
+                                <span class="hidden md:inline">Login</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile Auth Buttons -->
+                    <div class="flex flex-col gap-2 mt-4 md:hidden border-t pt-4">
+                        <button id="profileBtnMobile" class="nav-auth-btn profile-btn hidden w-full justify-center" onclick="window.firebaseAuth.openProfileModal()">
+                            <i class="fas fa-user-circle"></i>
+                            Profile
+                        </button>
+                        <button id="authBtnMobile" class="nav-auth-btn login-btn w-full justify-center" onclick="window.firebaseAuth.openAuthModal()">
+                            <i class="fas fa-user"></i>
+                            Login
+                        </button>
                     </div>
                 </div>
             </div>
@@ -1909,6 +1936,542 @@
                 } catch (error) {
                     console.log('Access check skipped:', error.message);
                 }
+            }
+        });
+    </script>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="auth-modal-overlay hidden">
+        <div class="auth-modal">
+            <div class="modal-header">
+                <h2>Welcome to Course Corner</h2>
+                <button class="modal-close-btn" onclick="window.firebaseAuth.closeAuthModal()">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Auth Tabs -->
+                <div class="auth-tabs">
+                    <button id="loginTab" class="auth-tab active" onclick="window.firebaseAuth.switchAuthMode('login')">
+                        Login
+                    </button>
+                    <button id="signupTab" class="auth-tab" onclick="window.firebaseAuth.switchAuthMode('signup')">
+                        Sign Up
+                    </button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                    </div>
+                    <div class="forgot-password-link">
+                        <a class="auth-link text-sm" onclick="window.firebaseAuth.switchAuthMode('forgot')">Forgot password?</a>
+                    </div>
+                    <button type="submit" id="loginBtn" class="btn-primary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </button>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signupForm" class="auth-form hidden" onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" class="form-input" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address</label>
+                        <input type="email" id="signupEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" class="form-input" placeholder="Create a password (min 6 characters)" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupConfirmPassword">Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" class="form-input" placeholder="Confirm your password" required>
+                    </div>
+                    <button type="submit" id="signupBtn" class="btn-primary">
+                        <i class="fas fa-user-plus"></i>
+                        Create Account
+                    </button>
+                </form>
+
+                <!-- Forgot Password Section -->
+                <div id="forgotPasswordSection" class="auth-form hidden">
+                    <p class="text-gray-600 mb-4">Enter your email address and we'll send you a link to reset your password.</p>
+                    <div class="form-group">
+                        <label for="resetEmail">Email Address</label>
+                        <input type="email" id="resetEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <button type="button" onclick="handleResetPassword()" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        Send Reset Link
+                    </button>
+                    <div class="text-center mt-4">
+                        <a class="auth-link" onclick="window.firebaseAuth.switchAuthMode('login')">
+                            <i class="fas fa-arrow-left mr-1"></i>
+                            Back to Login
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="auth-divider">
+                    <span>or continue with</span>
+                </div>
+
+                <!-- Google Sign In -->
+                <button type="button" onclick="handleGoogleSignIn()" class="btn-google">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                    Sign in with Google
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="auth-modal-overlay hidden">
+        <div class="auth-modal profile-modal">
+            <div class="modal-header">
+                <h2>My Profile</h2>
+                <button class="modal-close-btn" onclick="window.firebaseAuth.closeProfileModal()">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- User Info Display -->
+                <div id="userInfoDisplay" class="user-info-display">
+                    <div id="userAvatarLarge" class="user-avatar-large">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <h3 id="userDisplayName">User</h3>
+                        <p id="userDisplayEmail">user@example.com</p>
+                    </div>
+                </div>
+
+                <!-- Personal Information Section -->
+                <div class="profile-section">
+                    <h3 class="profile-section-title">
+                        <i class="fas fa-user mr-2"></i>Personal Information
+                    </h3>
+                    <div class="form-group mb-3">
+                        <label for="profileEmail">Email Address</label>
+                        <input type="email" id="profileEmail" class="form-input bg-gray-100" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="profilePhone">Phone Number</label>
+                        <input type="tel" id="profilePhone" class="form-input" placeholder="e.g., 0712345678">
+                    </div>
+                </div>
+
+                <!-- KCSE Information Section -->
+                <div class="profile-section">
+                    <h3 class="profile-section-title">
+                        <i class="fas fa-graduation-cap mr-2"></i>KCSE Information
+                    </h3>
+                    <div class="form-group mb-4">
+                        <label for="profileKcseYear">KCSE Year</label>
+                        <select id="profileKcseYear" class="form-select">
+                            <option value="">Select Year</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- KCSE Grades Section -->
+                <div class="profile-section">
+                    <h3 class="profile-section-title">
+                        <i class="fas fa-chart-bar mr-2"></i>KCSE Grades
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-3">Save your grades to auto-fill the cluster calculator</p>
+                    <div class="grades-grid">
+                        <!-- Core Subjects -->
+                        <div class="form-group">
+                            <label for="profile_mathematics">Mathematics</label>
+                            <select id="profile_mathematics" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_english">English</label>
+                            <select id="profile_english" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_kiswahili">Kiswahili</label>
+                            <select id="profile_kiswahili" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <!-- Sciences -->
+                        <div class="form-group">
+                            <label for="profile_biology">Biology</label>
+                            <select id="profile_biology" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_chemistry">Chemistry</label>
+                            <select id="profile_chemistry" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_physics">Physics</label>
+                            <select id="profile_physics" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <!-- Humanities -->
+                        <div class="form-group">
+                            <label for="profile_history">History</label>
+                            <select id="profile_history" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_geography">Geography</label>
+                            <select id="profile_geography" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_cre">CRE/IRE/HRE</label>
+                            <select id="profile_cre" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <!-- Technical/Applied -->
+                        <div class="form-group">
+                            <label for="profile_agriculture">Agriculture</label>
+                            <select id="profile_agriculture" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_business">Business Studies</label>
+                            <select id="profile_business" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_computer">Computer Studies</label>
+                            <select id="profile_computer" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="window.firebaseAuth.closeProfileModal()" class="btn-secondary flex-1">
+                        Cancel
+                    </button>
+                    <button type="button" onclick="handleSaveProfile()" id="saveProfileBtn" class="btn-primary flex-1">
+                        <i class="fas fa-save mr-2"></i>
+                        Save Changes
+                    </button>
+                </div>
+
+                <!-- Logout Button -->
+                <div class="mt-4 pt-4 border-t">
+                    <button type="button" onclick="handleLogout()" class="btn-secondary w-full text-red-600 border-red-200 hover:bg-red-50">
+                        <i class="fas fa-sign-out-alt mr-2"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Form Handlers Script -->
+    <script>
+        // Login handler
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+            
+            btn.classList.add('btn-loading');
+            btn.disabled = true;
+            
+            const result = await window.firebaseAuth.signIn(email, password);
+            
+            btn.classList.remove('btn-loading');
+            btn.disabled = false;
+            
+            if (result.success) {
+                window.firebaseAuth.closeAuthModal();
+            }
+        }
+
+        // Signup handler
+        async function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const btn = document.getElementById('signupBtn');
+            
+            if (password !== confirmPassword) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Passwords do not match',
+                    text: 'Please make sure both passwords are the same'
+                });
+                return;
+            }
+            
+            btn.classList.add('btn-loading');
+            btn.disabled = true;
+            
+            const result = await window.firebaseAuth.signUp(email, password, name);
+            
+            btn.classList.remove('btn-loading');
+            btn.disabled = false;
+            
+            if (result.success) {
+                window.firebaseAuth.closeAuthModal();
+            }
+        }
+
+        // Google sign in handler
+        async function handleGoogleSignIn() {
+            const result = await window.firebaseAuth.signInWithGoogle();
+            if (result.success) {
+                window.firebaseAuth.closeAuthModal();
+            }
+        }
+
+        // Password reset handler
+        async function handleResetPassword() {
+            const email = document.getElementById('resetEmail').value;
+            if (!email) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Email Required',
+                    text: 'Please enter your email address'
+                });
+                return;
+            }
+            await window.firebaseAuth.resetPassword(email);
+        }
+
+        // Save profile handler
+        async function handleSaveProfile() {
+            const btn = document.getElementById('saveProfileBtn');
+            btn.classList.add('btn-loading');
+            btn.disabled = true;
+            
+            await window.firebaseAuth.saveProfile();
+            
+            btn.classList.remove('btn-loading');
+            btn.disabled = false;
+        }
+
+        // Logout handler
+        async function handleLogout() {
+            await window.firebaseAuth.logout();
+            window.firebaseAuth.closeProfileModal();
+        }
+
+        // Update profile modal with user data when opened
+        window.firebaseAuth?.onAuthStateChange?.((user) => {
+            if (user) {
+                const nameEl = document.getElementById('userDisplayName');
+                const emailEl = document.getElementById('userDisplayEmail');
+                const avatarEl = document.getElementById('userAvatarLarge');
+                
+                if (nameEl) nameEl.textContent = user.displayName || 'User';
+                if (emailEl) emailEl.textContent = user.email || '';
+                
+                if (avatarEl) {
+                    if (user.photoURL) {
+                        avatarEl.innerHTML = `<img src="${user.photoURL}" alt="Profile">`;
+                    } else {
+                        const initial = (user.displayName || user.email || 'U')[0].toUpperCase();
+                        avatarEl.innerHTML = initial;
+                    }
+                }
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('authModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'authModal') {
+                window.firebaseAuth.closeAuthModal();
+            }
+        });
+
+        document.getElementById('profileModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'profileModal') {
+                window.firebaseAuth.closeProfileModal();
             }
         });
     </script>

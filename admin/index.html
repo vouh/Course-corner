@@ -128,47 +128,82 @@
             }
         }
         
-        /* Transaction Mobile Card */
+        /* Transaction Mobile Card - Form Style */
         .tx-mobile-card {
             background: white;
             border-radius: 0.75rem;
-            padding: 1rem;
-            margin-bottom: 0.75rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            border-left: 4px solid #e5e7eb;
-        }
-        .tx-mobile-card.status-completed {
-            border-left-color: #16a34a;
-        }
-        .tx-mobile-card.status-pending {
-            border-left-color: #eab308;
-        }
-        .tx-mobile-card.status-failed {
-            border-left-color: #dc2626;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
         }
         .tx-mobile-card .tx-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 0.75rem;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: linear-gradient(to right, #f8fafc, #f1f5f9);
+            border-bottom: 1px solid #e5e7eb;
         }
-        .tx-mobile-card .tx-details {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-            font-size: 0.875rem;
+        .tx-mobile-card.status-completed .tx-header {
+            background: linear-gradient(to right, #dcfce7, #f0fdf4);
+            border-bottom-color: #bbf7d0;
         }
-        .tx-mobile-card .tx-label {
+        .tx-mobile-card.status-pending .tx-header {
+            background: linear-gradient(to right, #fef9c3, #fefce8);
+            border-bottom-color: #fde047;
+        }
+        .tx-mobile-card.status-failed .tx-header {
+            background: linear-gradient(to right, #fee2e2, #fef2f2);
+            border-bottom-color: #fecaca;
+        }
+        .tx-mobile-card .tx-body {
+            padding: 0;
+        }
+        .tx-mobile-card .tx-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .tx-mobile-card .tx-field:last-child {
+            border-bottom: none;
+        }
+        .tx-mobile-card .tx-field-label {
             color: #6b7280;
-            font-size: 0.75rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .tx-mobile-card .tx-field-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1f2937;
+            text-align: right;
+        }
+        .tx-mobile-card .tx-field-value.mpesa-code {
+            font-family: monospace;
+            color: #16a34a;
+            background: #f0fdf4;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
         }
         .tx-mobile-card .tx-actions {
             display: flex;
-            justify-content: flex-end;
-            gap: 0.75rem;
-            margin-top: 0.75rem;
-            padding-top: 0.75rem;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: #f9fafb;
             border-top: 1px solid #e5e7eb;
+        }
+        .tx-mobile-card .tx-actions button {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
         }
     </style>
 </head>
@@ -308,6 +343,7 @@
                 </div>
 
                 <div class="stat-card bg-white rounded-xl shadow-md p-4 md:p-6">
+                    <div class="flex items-center justify-between">
                         <div>
                             <p class="text-gray-500 text-xs md:text-sm font-medium">Failed</p>
                             <p id="stat-failed" class="text-xl md:text-3xl font-bold text-red-600">-</p>
@@ -789,7 +825,7 @@
                 
                 tbody.appendChild(row);
                 
-                // Mobile card
+                // Mobile card - Form style
                 const card = document.createElement('div');
                 card.className = `tx-mobile-card status-${tx.status}`;
                 card.id = `card-${tx.id}`;
@@ -800,34 +836,34 @@
                             <input type="checkbox" ${isSelected ? 'checked' : ''} 
                                 onchange="toggleSelect('${tx.id}')" 
                                 class="w-4 h-4 text-green-600 rounded transaction-checkbox">
-                            <span class="font-semibold text-gray-900">${formatPhone(tx.phoneNumber)}</span>
+                            <span class="font-semibold text-gray-800 text-sm">${formatPhone(tx.phoneNumber)}</span>
                         </div>
                         ${getStatusBadge(tx.status)}
                     </div>
-                    <div class="tx-details">
-                        <div>
-                            <p class="tx-label">Amount</p>
-                            <p class="font-medium">KSH ${tx.amount || 0}</p>
+                    <div class="tx-body">
+                        <div class="tx-field">
+                            <span class="tx-field-label">Amount</span>
+                            <span class="tx-field-value">KSH ${tx.amount || 0}</span>
                         </div>
-                        <div>
-                            <p class="tx-label">Category</p>
-                            <p class="font-medium">${formatCategory(tx.category)}</p>
+                        <div class="tx-field">
+                            <span class="tx-field-label">Category</span>
+                            <span class="tx-field-value">${formatCategory(tx.category)}</span>
                         </div>
-                        <div>
-                            <p class="tx-label">M-Pesa Code</p>
-                            <p class="font-mono font-bold text-green-700">${tx.mpesaReceiptNumber || tx.transactionCode || '-'}</p>
+                        <div class="tx-field">
+                            <span class="tx-field-label">M-Pesa Code</span>
+                            <span class="tx-field-value ${tx.mpesaReceiptNumber || tx.transactionCode ? 'mpesa-code' : ''}">${tx.mpesaReceiptNumber || tx.transactionCode || '-'}</span>
                         </div>
-                        <div>
-                            <p class="tx-label">Date</p>
-                            <p class="text-gray-600">${formatDate(tx.createdAt)}</p>
+                        <div class="tx-field">
+                            <span class="tx-field-label">Date</span>
+                            <span class="tx-field-value" style="font-weight: 400; font-size: 0.8rem;">${formatDate(tx.createdAt)}</span>
                         </div>
                     </div>
                     <div class="tx-actions">
-                        <button onclick="showDetail('${tx.id}')" class="text-green-600 hover:text-green-800 px-3 py-1 rounded-lg bg-green-50">
-                            <i class="fas fa-eye mr-1"></i>View
+                        <button onclick="showDetail('${tx.id}')" class="bg-green-100 text-green-700 hover:bg-green-200">
+                            <i class="fas fa-eye"></i>View
                         </button>
-                        <button onclick="promptDelete('${tx.id}')" class="text-red-500 hover:text-red-700 px-3 py-1 rounded-lg bg-red-50">
-                            <i class="fas fa-trash mr-1"></i>Delete
+                        <button onclick="promptDelete('${tx.id}')" class="bg-red-100 text-red-600 hover:bg-red-200">
+                            <i class="fas fa-trash"></i>Delete
                         </button>
                     </div>
                 `;

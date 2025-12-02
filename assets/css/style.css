@@ -39,38 +39,65 @@
 .grade-select, 
 #foreignLanguage, 
 #re {
-    background-color: white;
-    border-radius: 0.375rem;
-    border: 1px solid var(--border-gray);
-    padding: 0.625rem;
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    border-radius: 0.5rem;
+    border: 1px solid #e5e7eb;
+    padding: 0.4rem 0.5rem;
     width: 100%;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    background-position: right 0.5rem center;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2316a34a' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.4rem center;
     background-repeat: no-repeat;
-    background-size: 1.5em 1.5em;
-    transition: all 0.2s ease;
+    background-size: 1.125em 1.125em;
+    transition: all 0.25s ease;
+    min-height: 32px;
+    padding-right: 24px;
+}
+
+@media (min-width: 640px) {
+    .grade-select, 
+    #foreignLanguage, 
+    #re {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        min-height: 38px;
+        padding-right: 30px;
+        background-position: right 0.5rem center;
+        background-size: 1.25em 1.25em;
+    }
 }
 
 /* Select States */
 .grade-select:hover,
 #foreignLanguage:hover,
-#re:hover,
+#re:hover {
+    border-color: var(--primary-blue);
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.1);
+}
+
 .grade-select:focus,
 #foreignLanguage:focus,
 #re:focus {
     border-color: var(--primary-blue);
     outline: none;
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15), 0 0 20px rgba(22, 163, 74, 0.1);
 }
 
 /* Subject Form Styling */
 #subjectForm {
     background: linear-gradient(to bottom, #ffffff, #f8fafc);
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    padding: 1.5rem;
-    border-radius: 0.5rem;
+    padding: 1rem;
+    border-radius: 0.75rem;
+}
+
+@media (min-width: 640px) {
+    #subjectForm {
+        padding: 1.5rem;
+    }
 }
 
 /* Group Headers */

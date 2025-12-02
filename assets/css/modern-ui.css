@@ -684,13 +684,15 @@ html {
 .cc-grades-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--cc-space-md);
-    padding: var(--cc-space-lg) var(--cc-space-xl);
+    gap: var(--cc-space-sm);
+    padding: var(--cc-space-md) var(--cc-space-lg);
 }
 
 @media (min-width: 640px) {
     .cc-grades-grid {
         grid-template-columns: repeat(3, 1fr);
+        gap: var(--cc-space-md);
+        padding: var(--cc-space-lg) var(--cc-space-xl);
     }
 }
 
@@ -703,41 +705,69 @@ html {
 .cc-grade-item {
     display: flex;
     flex-direction: column;
-    gap: var(--cc-space-xs);
+    gap: 0.125rem;
 }
 
 .cc-grade-item label {
-    font-size: 0.8125rem;
-    font-weight: 500;
+    font-size: 0.6875rem;
+    font-weight: 600;
     color: var(--cc-gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+@media (min-width: 640px) {
+    .cc-grade-item label {
+        font-size: 0.75rem;
+    }
 }
 
 .cc-grade-select {
     width: 100%;
-    padding: var(--cc-space-sm) var(--cc-space-md);
-    font-size: 0.875rem;
+    padding: 0.4rem 0.5rem;
+    font-size: 0.8125rem;
     font-family: inherit;
+    font-weight: 500;
     color: var(--cc-gray-700);
-    background: white;
-    border: 1px solid var(--cc-gray-300);
+    background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+    border: 1px solid var(--cc-gray-200);
     border-radius: var(--cc-radius-md);
     cursor: pointer;
-    transition: var(--cc-transition-fast);
+    transition: all 0.25s ease;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b7280' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath fill='%2316a34a' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
-    background-position: right 12px center;
-    padding-right: 36px;
+    background-position: right 8px center;
+    padding-right: 24px;
+    min-height: 32px;
+}
+
+@media (min-width: 640px) {
+    .cc-grade-select {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+        padding-right: 30px;
+        background-position: right 10px center;
+        min-height: 38px;
+    }
 }
 
 .cc-grade-select:hover {
     border-color: var(--cc-primary-light);
+    box-shadow: 0 2px 8px rgba(22, 163, 74, 0.1);
 }
 
 .cc-grade-select:focus {
     outline: none;
     border-color: var(--cc-primary);
-    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15), 0 0 20px rgba(22, 163, 74, 0.1);
+    background: white;
+}
+
+/* Custom select options for browsers that support it */
+.cc-grade-select option {
+    padding: 0.5rem;
+    font-size: 0.875rem;
 }
 
 /* Action Buttons */
@@ -973,9 +1003,23 @@ html {
    ============================================ */
 .cc-footer,
 .modern-footer {
-    background: var(--cc-gray-900);
+    background: linear-gradient(135deg, var(--cc-primary) 0%, var(--cc-primary-dark) 100%);
     color: white;
     padding: var(--cc-space-3xl) 0 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.cc-footer::before,
+.modern-footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
 }
 
 .cc-footer-container,
@@ -1039,7 +1083,7 @@ html {
 
 .cc-footer-brand p,
 .footer-description {
-    color: var(--cc-gray-400);
+    color: rgba(255, 255, 255, 0.85);
     font-size: 0.9375rem;
     line-height: 1.6;
     margin: 0 0 var(--cc-space-lg);
@@ -1058,17 +1102,19 @@ html {
     justify-content: center;
     width: 40px;
     height: 40px;
-    background: var(--cc-gray-800);
+    background: rgba(255, 255, 255, 0.15);
     color: white;
     border-radius: var(--cc-radius-md);
     font-size: 1.125rem;
     transition: var(--cc-transition-fast);
+    backdrop-filter: blur(4px);
 }
 
 .cc-social-links a:hover,
 .social-links a:hover {
-    background: var(--cc-primary);
+    background: rgba(255, 255, 255, 0.3);
     transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
 }
 
 .cc-footer-links h4,
@@ -1095,7 +1141,7 @@ html {
 
 .cc-footer-links a,
 .footer-col a {
-    color: var(--cc-gray-400);
+    color: rgba(255, 255, 255, 0.85);
     text-decoration: none;
     font-size: 0.9375rem;
     transition: var(--cc-transition-fast);
@@ -1103,7 +1149,8 @@ html {
 
 .cc-footer-links a:hover,
 .footer-col a:hover {
-    color: var(--cc-primary-light);
+    color: white;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
 
 .cc-footer-contact li,
@@ -1111,28 +1158,28 @@ html {
     display: flex;
     align-items: center;
     gap: var(--cc-space-sm);
-    color: var(--cc-gray-400);
+    color: rgba(255, 255, 255, 0.85);
     font-size: 0.9375rem;
     margin-bottom: var(--cc-space-md);
 }
 
 .cc-footer-contact i,
 .footer-col i {
-    color: var(--cc-primary-light);
+    color: rgba(255, 255, 255, 0.9);
     width: 20px;
 }
 
 .cc-footer-bottom,
 .footer-bottom {
     padding: var(--cc-space-lg) 0;
-    border-top: 1px solid var(--cc-gray-800);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
     text-align: center;
 }
 
 .cc-footer-bottom p,
 .footer-bottom p {
     margin: 0;
-    color: var(--cc-gray-500);
+    color: rgba(255, 255, 255, 0.8);
     font-size: 0.875rem;
 }
 

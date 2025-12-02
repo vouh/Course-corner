@@ -1,0 +1,269 @@
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap');
+
+/* Base styles */
+:root {
+    --primary-green: #16a34a;
+    --border-gray: #e5e7eb;
+    --text-dark: #1f2937;
+    --text-gray: #4b5563;
+    --body-font: 'Poppins', sans-serif;
+    --heading-font: 'Montserrat', sans-serif;
+}
+
+body {
+    font-family: var(--body-font);
+    color: var(--text-dark);
+}
+
+/* Typography */
+h1 {
+    font-family: var(--heading-font);
+    font-size: 2.5rem !important;
+    font-weight: 600;
+    color: var(--primary-green);
+}
+
+h2 {
+    font-family: var(--heading-font);
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--primary-green);
+}
+
+/* Navigation Styles */
+.nav-link {
+    color: var(--text-gray);
+    font-weight: 500;
+    transition: color 0.2s ease-in-out;
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--primary-green);
+}
+
+/* Process Steps */
+.process-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.process-card {
+    display: flex;
+    gap: 1.5rem;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-gray);
+    transition: all 0.2s ease-in-out;
+}
+
+.process-card:hover {
+    transform: translateX(10px);
+    border-color: var(--primary-green);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.step-number {
+    background: var(--primary-green);
+    color: white;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.step-title {
+    font-family: var(--heading-font);
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-green);
+    margin-bottom: 0.75rem;
+}
+
+.step-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.step-list li {
+    color: var(--text-gray);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    position: relative;
+    padding-left: 1.25rem;
+}
+
+.step-list li:before {
+    content: "•";
+    color: var(--primary-green);
+    position: absolute;
+    left: 0;
+}
+
+/* Support Buttons */
+.support-button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-green);
+    color: white;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease-in-out;
+    text-align: center;
+}
+
+.support-button:hover {
+    background-color: #15803d;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem !important;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    .step-title {
+        font-size: 1.1rem;
+    }
+    
+    .process-card {
+        padding: 1rem;
+    }
+}
+
+/* Footer Styles */
+footer {
+    position: relative;
+    overflow: hidden;
+}
+
+footer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, 
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0.2) 25%,
+        rgba(255,255,255,0.2) 75%,
+        rgba(255,255,255,0) 100%);
+}
+
+footer a {
+    transition: all 0.2s ease-in-out;
+}
+
+footer a:hover {
+    transform: translateX(5px);
+}
+
+footer ul li a,
+footer ul li span {
+    font-size: 0.95rem;
+}
+
+footer h3 {
+    position: relative;
+    display: inline-block;
+}
+
+footer h3::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.4);
+}
+
+@media (max-width: 768px) {
+    footer .grid {
+        gap: 2rem;
+    }
+    
+    footer h3 {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Reveal Animation Styles */
+[class*="reveal-"] {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.reveal-visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Optional: Add smooth transitions for better reveal effects */
+.process-card,
+.support-button {
+    transition: all 0.6s ease-in-out;
+}
+
+/* Prevent Flash of Unstyled Content */
+.sr .process-card,
+.sr .support-button {
+    visibility: hidden;
+}
+
+/* Add these styles */
+.print-button {
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-green);
+    color: white;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    animation: pulse 2s infinite;
+}
+
+.print-button:hover {
+    background-color: #15803d;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(22, 163, 74, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+    }
+}
+
+/* Add print styles */
+@media print {
+    nav, footer, .print-button, .support-button {
+        display: none !important;
+    }
+    
+    .process-card {
+        break-inside: avoid;
+        page-break-inside: avoid;
+    }
+} 

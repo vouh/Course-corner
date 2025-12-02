@@ -1,0 +1,737 @@
+{
+  "courses": {
+    "diploma": {
+      "programs": [
+        {
+          "category": "Engineering",
+          "subCategories": [
+            {
+              "subCategory": "Subcat 1",
+              "requirements": {
+                "meanGrade": "C-",
+                "English": "C-",
+                "MAT/PHY": "C-"
+              },
+              "programs": [
+                "Diploma in Aeronautical Engineering"
+              ]
+            },
+            {
+              "subCategory": "Subcat 2",
+              "requirements": {
+                "meanGrade": "C-"
+              },
+              "programs": [
+                "Diploma in Mechanical Engineering",
+                "Diploma in Mechanical Engineering (Automotive Option)",
+                "Diploma in Mechanical Engineering (Plant Option)",
+                "Diploma in Mechanical Engineering (Production Option)",
+                "Diploma in Mechatronics",
+                "Diploma in Telecommunication Engineering",
+                "Diploma in Water Engineering",
+                "Diploma in Electrical & Electronics Engineering",
+                "Diploma in Electrical & Electronics Engineering (Control & Instrumentation)",
+                "Diploma in Electrical & Electronics Engineering (Electronics Option)",
+                "Diploma in Electrical & Electronics Engineering (Power Option)",
+                "Diploma in Electrical & Electronics Engineering (Telecommunication Option)",
+                "Diploma in Electronics Engineering",
+                "Diploma in Highways Engineering",
+                "Diploma in Marine Engineering",
+                "Diploma in Medical Engineering",
+                "Diploma in Power and Process Engineering",
+                "Diploma in Technology Medical Engineering",
+                "Diploma in Mechanical Engineering Technology",
+                "Diploma in Technology in Electronic Engineering"
+              ],
+              "note": "Compulsory subjects (ENG, KIS, MAT) will be employed as a measure of merit where mean grade is provided as the only Entry Requirement."
+            }
+          ]
+        },
+        {
+          "category": "Technical",
+          "subCategories": [
+            {
+              "subCategory": "Subcat 1",
+              "requirements": {
+                "meanGrade": "C-",
+                "ENG": "C-",
+                "MAT": "C-",
+                "PHY": "C-"
+              },
+              "programs": [
+                "Diploma in Land Surveying"
+              ]
+            },
+            {
+              "subCategory": "Subcat 2",
+              "requirements": {
+                "meanGrade": "C",
+                "ENG/KIS": "C",
+                "MAT": "C",
+                "PHY": "C"
+              },
+              "programs": [
+                "Diploma in Quantity Surveying"
+              ]
+            },
+            {
+              "subCategory": "Subcat 3",
+              "requirements": {
+                "meanGrade": "C-",
+                "ENG": "C-",
+                "MAT": "C-",
+                "CHE": "C-"
+              },
+              "programs": [
+                "Diploma in Map Reproduction (Printing)"
+              ]
+            },
+            {
+              "subCategory": "Subcat 4",
+              "requirements": {
+                "meanGrade": "C-"
+              },
+              "programs": [
+                "Diploma in Water Technology (Water Supply Option)",
+                "Diploma in Motor Vehicle Mechanics",
+                "Diploma in Refrigeration & Air Conditioning",
+                "Diploma in Road Construction",
+                "Diploma in Building & Construction",
+                "Diploma in Construction Plant",
+                "Diploma in Graphic Design",
+                "Diploma in Electrical/Electronics Technology (Telecommunication)",
+                "Diploma in Refraction Technology"
+              ],
+              "note": "Compulsory subjects (ENG, KIS, MAT) will be employed as a measure of merit where mean grade is provided as the only Entry Requirement."
+            }
+          ]
+        },
+        {
+          "category": "Computing",
+          "requirements": {
+            "meanGrade": "C-"
+          },
+          "programs": [
+            "Diploma in Information Communication Technology",
+            "Diploma in Computer Science",
+            "Diploma in Information Technology",
+            "Diploma in Business Information Technology",
+            "Diploma in Computer Studies"
+          ],
+          "note": "Compulsory subjects (ENG, KIS, MAT) will be employed as a measure of merit where mean grade is provided as the only Entry Requirement."
+        },
+        {
+          "category": "Business",
+          "requirements": {
+            "meanGrade": "C-"
+          },
+          "programs": [
+            "Diploma in Accounting & Finance",
+            "Diploma in Agribusiness Management",
+            "Diploma in Air Cargo Management",
+            "Diploma in Airport Operations",
+            "Diploma in Banking & Finance",
+            "Diploma in Business Administration",
+            "Diploma in Business Management",
+            "Diploma in Transport Management",
+            "Diploma in Wildlife Management",
+            "Diploma in Library Information Studies",
+            "Diploma in Cooperative Management",
+            "Diploma in Credit Management",
+            "Diploma in Secretarial Studies",
+            "Diploma in Supply Chain Management",
+            "Diploma in Entrepreneurial Agriculture",
+            "Diploma in Entrepreneurship Development",
+            "Diploma in Front Office Operations and Customer Care",
+            "Diploma in Housekeeping Management",
+            "Diploma in Human Resource Management",
+            "Diploma in Logistics and Transport Management",
+            "Diploma in Marketing",
+            "Diploma in Micro-Finance",
+            "Diploma in Project Management",
+            "Diploma in Public Relations"
+          ],
+          "note": "Compulsory subjects (ENG, KIS, MAT) will be employed as a measure of merit where mean grade is provided as the only Entry Requirement."
+        },
+        {
+          "category": "Tourism and Hotel Management",
+          "requirements": {
+            "meanGrade": "C-"
+          },
+          "programs": [
+            "Diploma in Food & Beverage Management",
+            "Diploma in Food & Beverage Production & Service Management",
+            "Diploma in Hotel and Institutional Management",
+            "Diploma in Catering & Accommodation Management",
+            "Diploma in Tour Guiding",
+            "Diploma in Tourism and Hospitality Management",
+            "Diploma in Tourism Management"
+          ],
+          "note": "Compulsory subjects (ENG, KIS, MAT) will be employed as a measure of merit where mean grade is provided as the only Entry Requirement."
+        },
+        {
+          "category": "Cloth and Textile",
+          "requirements": {
+            "meanGrade": "C-"
+          },
+          "programs": [
+            "Diploma in Fashion Design & Garment Making",
+            "Diploma in Clothing & Textile",
+            "Diploma in Fashion Design & Clothing Technology"
+          ],
+          "note": "Compulsory subjects (ENG, KIS, MAT) will be employed as a measure of merit where mean grade is provided as the only Entry Requirement."
+        },
+        {
+          "category": "Health Sciences",
+          "subCategories": [
+            {
+              "subCategory": "Subcat 1",
+              "requirements": {
+                "meanGrade": "C",
+                "ENG/KIS": "C",
+                "BIO": "C",
+                "MAT": "C",
+                "PHY/CHEM": "C-"
+              },
+              "programs": [
+                "Diploma in Environmental Health Sciences"
+              ]
+            },
+            {
+              "subCategory": "Subcat 2",
+              "requirements": {
+                "meanGrade": "C",
+                "ENG/KIS": "C",
+                "PHY/MAT": "C",
+                "CHE": "C",
+                "BIO": "C"
+              },
+              "programs": [
+                "Diploma in Medical Laboratory Science"
+              ]
+            },
+            {
+              "subCategory": "Subcat 3",
+              "requirements": {
+                "meanGrade": "C",
+                "ENG/KIS": "C",
+                "MAT/PHY": "C",
+                "CHE": "C",
+                "BIO": "C"
+              },
+              "programs": [
+                "Diploma in Pharmaceutical Technology",
+                "Diploma in Pharmacy"
+              ]
+            },
+            {
+              "subCategory": "Subcat 4",
+              "requirements": {
+                "meanGrade": "C",
+                "BIO/": "C",
+                "ENG/KIS": "C",
+                "MAT/PHY/CHEM": "C-"
+              },
+              "programs": [
+                "Diploma in Registered Nursing, Mental Health and Psychiatry",
+                "Diploma in Kenya Registered Nurse (KRN)"
+              ]
+            },
+            {
+              "subCategory": "Subcat 5",
+              "requirements": {
+                "meanGrade": "C-"
+              },
+              "programs": [
+                "Diploma in Dental Technology",
+                "Diploma in Occupational Therapy",
+                "Diploma in Medical Bio-Technology",
+                "Diploma in Optical Technology",
+                "Diploma in Optometry",
+                "Diploma in Orthopaedic Technology",
+                "Diploma in Physiotherapy",
+                "Diploma in Medical Imaging Science"
+              ],
+              "note": "Compulsory subjects (ENG, KIS, MAT) will be employed as a measure of merit where mean grade is provided as the only Entry Requirement."
+            },
+            {
+              "subCategory": "Subcat 6",
+              "requirements": {
+                "meanGrade": "C",
+                "BIO": "D+",
+                "CHE": "D+",
+                "ENG/KIS": "D+",
+                "HSC/AGRI": "D"
+              },
+              "programs": [
+                "Diploma in Nutrition & Dietetics",
+                "Diploma in Community Health & HIV Management",
+                "Diploma in Community Health and Nutrition",
+                "Diploma in Community Oral Health",
+                "Diploma in Food Science and Technology"
+              ]
+            }
+          ]
+        },
+        {
+          "category": "Science and Agriculture",
+          "subCategories": [
+            {
+              "subCategory": "Subcat 1",
+              "requirements": {
+                "meanGrade": "C-",
+                "MAT": "D+",
+                "PHY": "D+",
+                "CHE": "D+",
+                "BIO": "D+"
+              },
+              "programs": [
+                "Diploma in Water Resources"
+              ]
+            },
+            {
+              "subCategory": "Subcat 2",
+              "requirements": {
+                "meanGrade": "C-",
+                "CHE": "D+"
+              },
+              "programs": [
+                "Diploma in Analytical Chemistry",
+                "Diploma in Applied Chemistry"
+              ]
+            },
+            {
+              "subCategory": "Subcat 3",
+              "requirements": {
+                "meanGrade": "C-",
+                "BIO": "D+"
+              },
+              "programs": [
+                "Diploma in Applied Biology",
+                "Diploma in Environmental Management",
+                "Diploma in Agriculture",
+                "Diploma in Horticulture",
+                "Diploma in Medical Bio-Technology",
+                "Diploma in Industrial Microbiology"
+              ]
+            },
+            {
+              "subCategory": "Subcat 4",
+              "requirements": {
+                "meanGrade": "C-",
+                "BIO/AGRI": "D+"
+              },
+              "programs": [
+                "Diploma in Agriculture"
+              ]
+            },
+            {
+              "subCategory": "Subcat 5",
+              "requirements": {
+                "meanGrade": "C-"
+              },
+              "programs": [
+                "Diploma in Petroleum and Geoscience",
+                "Diploma in Agricultural Engineering",
+                "Diploma in Petroleum Management",
+                "Diploma in Fisheries and Aquatic Sciences",
+                "Diploma in Nautical Sciences"
+              ],
+              "note": "Compulsory subjects (ENG, KIS, MAT) will be employed as a measure of merit where mean grade is provided as the only Entry Requirement."
+            }
+          ]
+        },
+        {
+          "category": "Education (Science)",
+          "requirements": {
+            "meanGrade": "C+",
+            "ENG/KIS": "C-"
+          },
+          "programs": [
+            {
+              "program": "Diploma in Teacher Education (Physics/Chemistry)",
+              "requirements": {
+                "PHY": "C+",
+                "CHE": "C+"
+              }
+            },
+            {
+              "program": "Diploma in Teacher Education (Biology/Chemistry)",
+              "requirements": {
+                "BIO": "C+",
+                "CHE": "C+"
+              }
+            },
+            {
+              "program": "Diploma in Teacher Education (Biology/Physics)",
+              "requirements": {
+                "BIO": "C+",
+                "PHY": "C+"
+              }
+            },
+            {
+              "program": "Diploma in Teacher Education (Biology/Mathematics)",
+              "requirements": {
+                "BIO": "C+",
+                "MAT": "C+"
+              }
+            },
+            {
+              "program": "Diploma in Teacher Education (Mathematics/Chemistry)",
+              "requirements": {
+                "MAT": "C+",
+                "CHE": "C+"
+              }
+            },
+            {
+              "program": "Diploma in Teacher Education (Mathematics/Physics)",
+              "requirements": {
+                "MAT": "C+",
+                "PHY": "C+"
+              }
+            },
+            {
+              "program": "Diploma in Teacher Education (Mathematics/Computer)",
+              "requirements": {
+                "MAT": "C+",
+                "CMP": "C+"
+              }
+            },
+            {
+              "program": "Diploma in Teacher Education (Computer/Physics)",
+              "requirements": {
+                "CMP": "C+",
+                "PHY": "C+"
+              }
+            }
+          ]
+        },
+        {
+          "category": "Education (Arts)",
+          "subCategories": [
+            {
+              "subCategory": "Subcat 1",
+              "requirements": {
+                "meanGrade": "C+",
+                "ENG": "C-",
+                "MAT": "D+"
+              },
+              "programs": [
+                {
+                  "program": "Diploma in Teacher Education (Kiswahili/Geography)",
+                  "requirements": {
+                    "KIS": "C+",
+                    "GEO": "C+"
+                  }
+                },
+                {
+                  "program": "Diploma in Teacher Education (Kiswahili/History)",
+                  "requirements": {
+                    "KIS": "C+",
+                    "HAG": "C+"
+                  }
+                },
+                {
+                  "program": "Diploma in Teacher Education (Music/English or Kiswahili)",
+                  "requirements": {
+                    "ENG/KIS": "C+",
+                    "MUS": "C+"
+                  }
+                }
+              ]
+            },
+            {
+              "subCategory": "Subcat 2",
+              "requirements": {
+                "meanGrade": "C+",
+                "ENG": "C-",
+                "MAT": "D+"
+              },
+              "programs": [
+                {
+                  "program": "Diploma in Teacher Education (English/Music)",
+                  "requirements": {
+                    "ENG": "C+",
+                    "MUS": "C+"
+                  }
+                },
+                {
+                  "program": "Diploma in Teacher Education (English/CRE)",
+                  "requirements": {
+                    "ENG": "C+",
+                    "CRE": "C+"
+                  }
+                },
+                {
+                  "program": "Diploma in Teacher Education (English/History)",
+                  "requirements": {
+                    "ENG": "C+",
+                    "HAG": "C+"
+                  }
+                },
+                {
+                  "program": "Diploma in Teacher Education (English/Geography)",
+                  "requirements": {
+                    "ENG": "C+",
+                    "GEO": "C+"
+                  }
+                }
+              ]
+            },
+            {
+              "subCategory": "Subcat 3",
+              "requirements": {
+                "meanGrade": "C+",
+                "ENG": "C",
+                "MAT": "D+"
+              },
+              "programs": [
+                {
+                  "program": "Diploma in Teacher Education (Mathematics/Business)",
+                  "requirements": {
+                    "MAT": "C+",
+                    "BUS": "C+"
+                  }
+                },
+                {
+                  "program": "Diploma in Teacher Education (Mathematics/Geography)",
+                  "requirements": {
+                    "MAT": "C+",
+                    "GEO": "C+"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "category": "Humanities",
+          "requirements": {
+            "meanGrade": "C-"
+          },
+          "programs": [
+            "Diploma in Community Development",
+            "Diploma in Community Development and Counselling",
+            "Diploma in Community Development and Social Work",
+            "Diploma in County Governance and Ethics",
+            "Diploma in Early Childhood Development",
+            "Diploma in Social Work and Community Development",
+            "Diploma in Sports Administration and Management",
+            "Diploma in Guidance and Counselling",
+            "Diploma in Clinical Counselling Psychology",
+            "Diploma in Health Promotion and Education",
+            "Diploma in Health Records and Information Technology",
+            "Diploma in Information Science",
+            "Diploma in Journalism & Media",
+            "Diploma in Leadership and Management",
+            "Diploma in Library and Information Science",
+            "Diploma in Mass Communication"
+          ],
+          "note": "Compulsory subjects (ENG, KIS, MAT) will be employed as a measure of merit where mean grade is provided as the only Entry Requirement."
+        }
+      ]
+    },
+    "certificate": {
+      "programs": [
+        {
+          "category": "GENERAL",
+          "requirements": {
+            "meanGrade": "D"
+          },
+          "programs": [
+            "CERTIFICATE IN FREIGHT MANAGEMENT",
+            "CERTIFICATE IN ENTREPRENEURSHIP",
+            "CERTIFICATE IN PETROLEUM GEOSCIENCE",
+            "CERTIFICATE IN LEATHERWORK TECHNOLOGY",
+            "CERTIFICATE IN INFORMATION SCIENCE",
+            "CERTIFICATE IN LIBRARY INFORMATION SCIENCE LEVEL FIVE(TVET-CDACC)",
+            "CERTIFICATE IN INFORMATION STUDIES (LIBRARY SCIENCE)",
+            "CERTIFICATE IN ACCOUNTANCY",
+            "CERTIFICATE IN AGRICULTURAL ENGINEERING",
+            "CERTIFICATE IN AGRICULTURE",
+            "CERTIFICATE IN AGRICULTURE AND COMMUNITY DEVELOPMENT",
+            "CERTIFICATE IN AQUACULTURE",
+            "CERTIFICATE IN BAKING TECHNOLOGY",
+            "CERTIFICATE IN BANKING",
+            "CERTIFICATE IN BUILDING AND CONSTRUCTION TECHNOLOGY",
+            "CERTIFICATE IN CONSTRUCTION PLANT MECHANICS",
+            "CERTIFICATE IN BUILDING CONSTRUCTION TECHNOLOGY",
+            "CERTIFICATE IN BUILDING TECHNOLOGY",
+            "CERTIFICATE IN BUSINESS ADMINISTRATION",
+            "CERTIFICATE IN CREDIT MANAGEMENT",
+            "CERTIFICATE IN SECRETARIAL STUDIES SINGLE AND GROUP",
+            "CERTIFICATE IN BUSINESS MANAGEMENT",
+            "CERTIFICATE IN CARPENTRY AND JOINERY",
+            "CERTIFICATE IN CATERING AND ACCOMODATION",
+            "CERTIFICATE IN CATERING AND ACCOMMODATION MANAGEMENT",
+            "CERTIFICATE IN CLERICAL OPERATIONS",
+            "CERTIFICATE IN CLOTHING TECHNOLOGY",
+            "CERTIFICATE IN COMMUNITY WILDLIFE MANAGEMENT",
+            "CERTIFICATE IN COMPUTER PROGRAMMING",
+            "CERTIFICATE IN ICT",
+            "CERTIFICATE IN INFORMATION AND COMMUNICATION TECHNOLOGY (ICT)",
+            "CERTIFICATE IN COMPUTER STUDIES",
+            "CERTIFICATE IN COMPUTER WEB DESIGN AND DEVELOPMENT",
+            "CERTIFICATE IN COMPUTERIZED SECRETARIAL STUDIES",
+            "CERTIFICATE IN COMPUTERIZED SECRETARIAL",
+            "CERTIFICATE IN COOPERATIVE MANAGEMENT",
+            "CERTIFICATE IN ELECTRICAL INSTALLATION",
+            "CERTIFICATE IN ELECTRICAL INSTALLATION AND MAINTENANCE",
+            "CERTIFICATE IN ELECTRICAL INSTRUMENTATION AND CONTROL",
+            "CERTIFICATE IN ENTREPRENEURAL AGRICULTURE",
+            "CERTIFICATE IN FASHION DESIGN",
+            "CERTIFICATE IN FOOD AND BEVERAGE PRODUCTION",
+            "BAKING TECHNOLOGY LEVEL FOUR (TVET-CDACC)",
+            "CERTIFICATE IN FOOD AND BEVERAGE",
+            "CERTIFICATE IN FOOD AND BEVERAGE MANAGEMENT",
+            "CERTIFICATE IN FOOD AND BEVERAGE PRODUCTION, SALES AND SERVICES",
+            "CERTIFICATE IN FOOD AND BEVERAGE PRODUCTION SERVICE",
+            "CERTIFICATE IN FOOD PREPARATION AND CULINARY ARTS",
+            "CERTIFICATE IN FOOD SCIENCE TECHNOLOGY",
+            "CERTIFICATE IN FOOD PROCESSING TECHNOLOGY",
+            "CERTIFICATE IN GARMENT MAKING",
+            "CERTIFICATE IN FISHERIES TECHNOLOGY",
+            "CERTIFICATE IN GENERAL AGRICULTURE",
+            "CERTIFICATE IN HAIRDRESSING AND BEAUTY THERAPY",
+            "CERTIFICATE IN HUMAN RESOURCES MANAGEMENT",
+            "CERTIFICATE IN MARINE ENGINEERING",
+            "CERTIFICATE IN MARKETING",
+            "CERTIFICATE IN MARKETING MANAGEMENT",
+            "CERTIFICATE IN PLUMBING",
+            "CERTIFICATE IN PLUMBING AND BULDING SERVICES",
+            "CERTIFICATE IN PLUMBING AND WATER SERVICES",
+            "CERTIFICATE IN PROJECT MANAGEMENT",
+            "CERTIFICATE IN PURCHASING AND SUPPLY MANAGEMENT",
+            "CERTIFICATE IN HEALTH RECORDS AND IT",
+            "CERTIFICATE IN ROAD CONSTRUCTION",
+            "CERTIFICATE IN ROAD BUILDING AND CONSTRUCTION",
+            "CERTIFICATE IN ROAD CONSTRUCTION TECHNOLOGY",
+            "CERTIFICATE IN SALES AND MARKETING",
+            "CERTIFICATE IN SCIENCE LABORATORY TECHNOLOGY",
+            "CERTIFICATE IN SCIENCE LABORATORY TECHNICIAN",
+            "CERTIFICATE IN SECRETARIAL STUDIES",
+            "CERTIFICATE IN SOCIAL WORK AND COMMUNITY DEVELOPMENT",
+            "CERTIFICATE IN SOCIAL WORK",
+            "CERTIFICATE IN SUPPLY CHAIN MANAGEMENT",
+            "CERTIFICATE IN SUSTAINABLE AGRICULTURE",
+            "CERTIFICATE IN TOUR GUIDE",
+            "CERTIFICATE IN TOURISM MANAGEMENT",
+            "CERTIFICATE IN TOUR GUIDING AND OPERATIONS",
+            "CERTIFICATE IN TOUR GUIDING AND TRAVEL",
+            "CERTIFICATE IN TRANSPORT MANAGEMENT",
+            "CERTIFICATE IN ROAD TRANSPORT MANAGEMENT",
+            "CERTIFICATE IN VEHICLE ENGINEERING",
+            "CERTIFICATE IN WATER TECHNOLOGY",
+            "CERTIFICATE IN WATER RESOURCES TECHNOLOGY AND MANAGEMENT",
+            "CERTIFICATE IN WELDING AND FABRICATION",
+            "CERTIFICATE IN FRONT OFFICE OPERATIONS"
+          ],
+          "note": "Compulsory subjects (ENG, KIS, MAT) will be employed as a measure of merit where mean grade is provided as the only Entry Requirement."
+        },
+        {
+          "category": "BUSINESS",
+          "requirements": {
+            "meanGrade": "C-",
+            "ENG": "D+",
+            "MAT": "D+"
+          },
+          "programs": [
+            "CERTIFICATE IN CUSTOMS ADMINISTRATION",
+            "CERTIFICATE IN TAX ADMINISTRATION"
+          ]
+        },
+        {
+          "category": "FORESTRY",  
+          "requirements": {
+            "meanGrade": "D+",
+            "ENG/KIS": "C-",
+            "MAT": "D+",
+            "BIO/CHE/PHY/AGRI": "C-"
+          },
+          "programs": [
+            "CERTIFICATE IN FORESTRY"
+          ]
+        },
+        {
+          "category": "TANNERY AND LEATHER TECHNOLOGY",  
+          "requirements": {
+            "meanGrade": "D",
+            "CHE": "C-",
+            "BIO": "D"
+          },
+          "programs": [
+            "CERTIFICATE IN TANNERY AND LEATHER TECHNOLOGY"
+          ]
+        },
+        {
+          "category": "ENGINEERING",
+          "requirements": {
+            "meanGrade": "D+"
+          },
+          "programs": [
+            "CERTIFICATE IN AUTOMOTIVE ENGINEERING",
+            "CERTIFICATE IN CIVIL ENGINEERING",
+            "CERTIFICATE IN EARLY CHILDHOOD DEVELOPMENT",
+            "CERTIFICATE IN ELECTRICAL ENGINEERING",
+            "CERTIFICATE IN ELECTRICAL ENGINEERING LEVEL FIVE(TVET-CDACC)",
+            "CERTIFICATE IN ELECTRICAL AND ELECTRONIC ENGINEERING",
+            "CERTIFICATE IN ELECTRICAL AND ELECTRONIC ENGINEERING (POWER OPTION)",
+            "CERTIFICATE IN ELECTRICAL TECHNOLOGY (POWER OPTION)",
+            "CERTIFICATE IN ELECTRICAL AND ELECTRONIC ENGINEERING (POWER)",
+            "CERTIFICATE IN ELECTRICAL AND ELECTRONIC ENGINEERING (TELECOMMUNICATION)",
+            "CERTIFICATE IN ELECTRICAL ENGINEERING (TELECOMMUNICATION OPTION)",
+            "CERTIFICATE IN ELECTRICAL AND ELECTRONIC TECHNOLOGY (POWER AND TELECOMMUNICATION OPTION)",
+            "CERTIFICATE IN ELECTRICAL TECHNOLOGY (TELECOMMUNICATION OPTION)",
+            "CERTIFICATE IN ELECTRICAL AND ELECTRONIC TECHNOLOGY",
+            "CERTIFICATE IN ELECTRICAL AND ELECTRONICS",
+            "CERTIFICATE IN ELECTRICAL INSTALLATION (TVET-CDACC)",
+            "CERTIFICATE IN TELECOMMUNICATION ENGINEERING"
+          ],
+          "note": "Compulsory subjects (ENG, KIS, MAT) will be employed as a measure of merit where mean grade is provided as the only Entry Requirement."
+        },
+        {
+          "category": "LEATHER TECHNOLOGY",
+          "requirements": {
+            "meanGrade": "E",
+            "AGR": "C-"
+          },
+          "programs": [
+            "CERTIFICATE IN LEATHER MACHINE OPERATOR"
+          ]
+        },
+        {
+          "category": "LEATHER TECHNOLOGY",
+          "requirements": {
+            "meanGrade": "D+",
+            "MAT/PHY/CHE/BIO": "D"
+          },
+          "programs": [
+            "CERTIFICATE IN LEATHER MACHINE OPERATOR"
+          ]
+        }
+      ]
+    },
+    "artisan": {
+      "programs": [
+        {
+          "category": "Artisan",
+          "requirements": {
+            "meanGrade": "E"
+          },
+          "programs": [
+            "ARTISAN IN ELECTRICAL INSTALLATION",
+            "ARTISAN IN MOTOR VEHICLE MECHANICS",
+            "ARTISAN IN HAIRDRESSING AND BEAUTY THERAPY",
+            "ARTISAN IN BUILDING TECHNOLOGY",
+            "ARTISAN IN PLUMBING",
+            "ARTISAN IN FASHION DESIGN AND GARMENT MAKING",
+            "ARTISAN IN FOOD AND BEVERAGE PRODUCTION SALES AND SERVICE",
+            "ARTISAN IN ELECTRICAL WIREMAN",
+            "ARTISAN IN CARPENTRY AND JOINERY",
+            "ARTISAN IN AGRIBUSINESS"
+          ]
+        }
+      ]
+    }
+  }
+}

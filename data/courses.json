@@ -1,0 +1,1653 @@
+{
+    "clusters": {
+      "1": {
+        "name": "Law Cluster",
+        "subClusters": {
+          "1A": {
+            "requirements": {
+              "subject1": {
+                "name": "ENG/KIS",
+                "minGrade": "B"
+              },
+              "subject2": {
+                "name": "MAT/GROUP2"
+              },
+              "subject3": {
+                "name": "GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Laws (LLB)"
+         ]
+          }
+        }
+      },
+      "2": {
+        "name": "Business and Management Cluster",
+        "subClusters": {
+          "2A": {
+            "requirements": {
+              "subject1": {
+                "name": "ENG/KIS"
+              },
+              "subject2": {
+                "name": "MAT",
+                "minGrade": "C"
+              },
+              "subject3": {
+                "name": "GROUP2/GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Co-operative and Community Development",
+              "Bachelor of Secretarial Management and Administration",
+              "Bachelor of Technology (Office Administration and Technology)",
+              "Bachelor of Commerce",
+              "Bachelor of Entrepreneurship",
+              "Bachelor of Entrepreneurship & Small Business Management",
+              "Bachelor of Entrepreneurship and Small Business",
+              "Bachelor of Science (Entrepreneurship and Small Enterprises Management)",
+              "Bachelor of Science (Entrepreneurship)",
+              "Bachelor of Science (Entrepreneurship Studies)",
+              "Bachelor of Science in Entrepreneurship",
+              "Bachelor of Procurement and Contract Management",
+              "Bachelor of Procurement and Supply Chain Management",
+              "Bachelor of Purchasing & Supplies Management",
+              "Bachelor of Supply Chain Management",
+              "Bachelor of Logistics and Supply Chain Management",
+              "Bachelor of Procurement and Logistics Management",
+              "Bachelor of Purchasing and Supplies Management",
+              "Bachelor of Science (Management Science)",
+              "Bachelor of Science in Strategic Management",
+              "Bachelor of Science (Strategic Management)",
+              "Bachelor of Science In International Business Management",
+              "Bachelor of Science in Marketing With IT",
+              "Bachelor of Science In Co-operative and Entreprenuership Management"
+            ]
+          },
+          "2B": {
+            "requirements": {
+              "subject1": {
+                "name": "ENG/KIS"
+              },
+              "subject2": {
+                "name": "MAT"
+              },
+              "subject3": {
+                "name": "GROUP2/GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Co-operative and Community Development",
+              "Bachelor of Secretarial Management and Administration",
+              "Bachelor of Technology (Office Administration and Technology)",
+              "Bachelor of Commerce",
+              "Bachelor of Entrepreneurship",
+              "Bachelor of Entrepreneurship & Small Business Management",
+              "Bachelor of Entrepreneurship and Small Business",
+              "Bachelor of Science (Entrepreneurship and Small Enterprises Management)",
+              "Bachelor of Science (Entrepreneurship)",
+              "Bachelor of Science (Entrepreneurship Studies)",
+              "Bachelor of Science in Entrepreneurship",
+              "Bachelor of Procurement and Contract Management",
+              "Bachelor of Procurement and Supply Chain Management",
+              "Bachelor of Purchasing & Supplies Management",
+              "Bachelor of Supply Chain Management",
+              "Bachelor of Logistics and Supply Chain Management",
+              "Bachelor of Procurement and Logistics Management",
+              "Bachelor of Purchasing and Supplies Management",
+              "Bachelor of Science (Management Science)",
+              "Bachelor of Science in Strategic Management",
+              "Bachelor of Science (Strategic Management)",
+              "Bachelor of Science In International Business Management",
+              "Bachelor of Science in Marketing With IT",
+              "Bachelor of Science In Co-operative and Entreprenuership Management"
+            ]
+          }
+        }
+      },
+      "3": {
+        "name": "Media and Communication Cluster",
+        "subClusters": {
+          "3A": {
+            "requirements": {
+              "subject1": {
+                "name": "ENG/KIS",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "MAT/GROUP2"
+              },
+              "subject3": {
+                "name": "GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Arts (Communication and Media Technology with IT)",
+              "Bachelor of Arts (International Relations)",
+              "Bachelor of Arts (Communication and Media)",
+              "Bachelor of Science (Broadcast Journalism)",
+              "Bachelor of Science (Communication and Journalism)",
+              "Bachelor of Science (Mass Communication)",
+              "Bachelor of Arts (Communication Studies)",
+              "Bachelor of Technology (Journalism and Mass Communication)"
+            ]
+          },
+          "3B": {
+            "requirements": {
+              "subject1": {
+                "name": "ENG",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "MAT/GROUP2"
+              },
+              "subject3": {
+                "name": "GROUP2/GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Arts (English and Communication)"
+            ]
+          },
+          "3C": {
+            "requirements": {
+              "subject1": {
+                "name": "KIS",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "MAT"
+              },
+              "subject3": {
+                "name": "GROUP2/GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+      "Bachelor of Arts (English and Communication)",
+      "Bachelor of Arts (Kiswahili and Communication)",
+      "Bachelor of Arts in Kiswahili and Communication",
+      "Bachelor of Arts (Kiswahili, With IT)",
+      "Bachelor of Arts (Kiswahili)",
+      "Bachelor of Arts in Kiswahili"
+
+            
+            ]
+          },
+          "3D": {
+            "requirements": {
+              "subject1": {
+                "name": "ENG/KIS"
+              },
+              "subject2": {
+                "name": "MAT/GROUP2"
+              },
+              "subject3": {
+                "name": "GROUP2/GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+    "Bachelor of Arts (English and Communication)",
+    "Bachelor of Arts (Anthropology)",
+    "Bachelor of Science (Event and Convention Management)",
+    "Bachelor of Arts (Political Science, With IT)",
+    "Bachelor of Arts (Criminology & Security Studies)",
+    "Bachelor of Science in Public Administration and Leadership",
+    "Bachelor of Conflict Resolution and Humanitarian Assistance",
+    "Bachelor of Arts (Development Studies)",
+    "Bachelor of Science in Medical Social Work",
+    "Bachelor of Arts (Psychology)",
+    "Bachelor of Arts in Community Development",
+    "Bachelor of Science (Disaster Risk Management and Sustainable Development)",
+    "Bachelor of Science (Community Resource Management)",
+    "Bachelor of Arts (Peace and Conflict Studies)",
+    "Bachelor of Science (Counselling Psychology)",
+    "Bachelor of Arts (Counselling Psychology)"
+ ]
+          },
+          "3E": {
+            "requirements": {
+              "subject1": {
+                "name": "ENG/KIS/ARD/CMP",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "MAT/GROUP2"
+              },
+              "subject3": {
+                "name": "GROUP2/GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Arts (Fine Art, With IT)",
+              "Bachelor of Arts (Fine Arts)",
+              "Bachelor of Science in Gaming and Animation Technology",
+              "Bachelor of Science (Graphic, Communication and Advertising)",
+              "Bachelor of Science (Graphic, Comm. & Advertising)"
+        
+            ]
+          }
+        }
+        },
+      "4": {
+        "name": "Geospatial and Survey Engineering Cluster",
+        "subClusters": {
+          "4A": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "PHY",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "GEO",
+                "minGrade": "C"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5",
+                "minGrade": "C"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Geospatial Engineering)",
+              "Bachelor of Science (Geomatic and Geospatial Information Systems)",
+              "Bachelor of Science (Geospatial Information Science)",
+              "Bachelor of Engineering (Geospatial Engineering)"
+            ]
+          },
+          "4B": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "PHY",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "GEO/CHE",
+                "minGrade": "C"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5",
+                "minGrade": "C"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Geophysical and Mineralogy)",
+      "Bachelor of Science (Meteorology)",
+      "Bachelor of Science (Astronomy and Astrophysics)",
+      "Bachelor of Science in Mining Physics (Geophysics)",
+      "Bachelor of Science (Earth Science, With IT)",
+      "Bachelor of Science (Geology)",
+      "Bachelor of Science (Geophysics)"
+            ]
+
+          }
+        }
+      },
+      "5": {
+        "name": "Engineering Cluster",
+        "subClusters": {
+          "5A": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "PHY",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "CHE",
+                "minGrade": "C+"
+              },
+              "subject4": {
+                "name": "ENG/KIS",
+                "minGrade": "C+"
+              }
+            },
+            "courses": [
+              "Bachelor of Engineering (Electrical and Electronics Engineering)",
+              "Bachelor of Engineering (Mechanical Engineering)",
+              "Bachelor of Engineering (Civil Engineering)",
+              "Bachelor of Engineering (Chemical Engineering)",
+              "Bachelor of Science (Mechanical and Manufacturing Engineering)",
+              "Bachelor of Science (Aerospace Engineering)",
+              "Bachelor of Engineering (Aeronautical Engineering)"
+            ]
+          },
+          "5B": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C"
+              },
+              "subject2": {
+                "name": "PHY",
+                "minGrade": "C"
+              },
+              "subject3": {
+                "name": "CHE",
+                "minGrade": "C+"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5",
+                "minGrade": "C"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Industrial Chemistry)",
+              "Bachelor of Science (Analytical Chemistry)",
+              "Bachelor of Science (Industrial Chemistry)",
+              "Bachelor of Technology (Applied Chemistry)"
+            ]
+          },
+          "5C": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C"
+              },
+              "subject2": {
+                "name": "PHY",
+                "minGrade": "C"
+              },
+              "subject3": {
+                "name": "CHE",
+                "minGrade": "C"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science in Control and Instrumentation",
+              "Bachelor of Science (Telecommunication and Information Engineering)",
+              "Bachelor of Science (Manufacturing Engineering & Technology)",
+              "Bachelor of Science (Electronics)",
+              "Bachelor of Science in Renewable Energy and Environmental Physics",
+              "Bachelor of Science (Renewable Energy)",
+              "Bachelor of Science (Biomedical Engineering)"
+            ]
+          
+          },
+          "5D": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "PHY",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "CHE",
+                "minGrade": "C+"
+              },
+              "subject4": {
+                "name": "BIO",
+                "minGrade": "C+"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Agricultural and Biosystems Engineering)",
+              "Bachelor of Engineering (Agricultural & Bio-systems Engineering)",
+              "Bachelor of Science (Agricultural & Bio-systems Engineering)",
+              "Bachelor of Science in Agricultural and Biosystems Engineering"
+            ]
+          },
+          "5E": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "PHY",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "CHE",
+                "minGrade": "C+"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Technology (Civil Engineering Technology)",
+              "Bachelor of Technology in Electrical and Electronic Engineering",
+              "Bachelor of Technology in Medical Engineering",
+              "Bachelor of Industrial Technology",
+              "Bachelor of Science (Renewable Energy and Technology)",
+              "Bachelor of Science in Renewable Energy and Technology",
+              "Bachelor of Technology in Renewable Energy & Environmental Physics",
+              "Bachelor of Technology (Chemical Engineering)"
+        
+            ]
+          },
+          "5F": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "PHY",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "CHE",
+                "minGrade": "C+"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+             "Bachelor of Education in Technology (Civil Engineering)",
+      "Bachelor of Education in Technology (Mechanical Engineering)",
+      "Bachelor of Education in Technology (Electrical & Electronics Engineering)",
+      "Bachelor of Education Technical and Vocational Education",
+      "Bachelor of Education (ICT)",
+      "Bachelor of Education (Technology)",
+      "Bachelor of Education (Technology Education)"
+            ]
+          }
+        }
+      },
+      "6": {
+        "name": "Architecture and Construction Cluster",
+        "subClusters": {
+          "6A": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "PHY",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "ENG/KIS",
+                "minGrade": "C+"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Architectural Studies)",
+              "Bachelor of Architecture",
+              "Bachelor of Science (Architectural Technology)",
+              "Bachelor of Science (Landscape Architecture)",
+              "Bachelor of Science (Quantity Surveying)"
+            ]
+          },
+          "6B": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C"
+              },
+              "subject2": {
+                "name": "ENG/KIS",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "GEO",
+                "minGrade": "C"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Arts (Planning)",
+              "Bachelor of Arts (Spatial Planning)",
+              "Bachelor of Arts (Design)",
+              "Bachelor of Technology (Design)",
+              "Bachelor of Technology (Building Construction)",
+              "Bachelor of Science (Construction Management)",
+              "Bachelor of Science (Construction Management)",
+              "Bachelor of Science (Built Environment Construction Management)",
+              "Bachelor of Science (Built Environment Urban and Regional Planning)",
+              "Bachelor of Arts (Urban and Regional Planning with IT)",
+              "Bachelor of Science (Urban Design and Development)"
+            ]
+          },
+          "6C": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "PHY"
+              },
+              "subject3": {
+                "name": "Any GROUP2"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Real Estate",
+      "Bachelor of Science (Real Estate)",
+      "Bachelor of Technology (Real Estate and Property Management)"
+]
+          }
+        }
+      },
+      "7": {
+        "name": "Computer Science and IT Cluster",
+        "subClusters": {
+          "7A": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "PHY",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "ENG/KIS",
+                "minGrade": "C"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+                "Bachelor of Science (Computer Science)",
+                "Bachelor of Science in Computer Science",
+                "Bachelor of Science in Applied Computer Science",
+                "Bachelor of Science in Applied Physics and Computer Science",
+                "Bachelor of Science in Software Engineering",
+                "Bachelor of Science (Computer Technology)",
+                "Bachelor of Science in Computer Technology",
+                "Bachelor of Technology (Computer Technology)",
+                "Bachelor of Science in Computer Information Systems"
+          
+            ]
+          },
+          "7B": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "PHY",
+                "minGrade": "C"
+              },
+              "subject3": {
+                "name": "ENG/KIS",
+                "minGrade": "C"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Applied Statistics with Computing)",
+              "Bachelor of Science (Mathematics and Computing)",
+              "Bachelor of Science (Statistics and Programming)",
+              "Bachelor of Science (Informatics)",
+              "Bachelor of Science (Biometry and Informatics)"
+            ]
+          },
+          "7C": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C"
+              },
+              "subject2": {
+                "name": "ENG/KIS",
+                "minGrade": "C"
+              },
+              "subject3": {
+                "name": "GROUP2/GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Information Technology)",
+              "Bachelor of Technology (Information Technology)",
+              "Bachelor of Science (Information and Communication Technology)",
+              "Bachelor of Technology (Information and Communication Technology)",
+              "Bachelor of Science (Business Computing)",
+              "Bachelor of Science (Informatics)"
+            ]
+          }
+        }
+      },
+      "8": {
+        "name": "Agriculture Economics and Resource Management Cluster",
+        "subClusters": {
+          "8A": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C"
+              },
+              "subject2": {
+                "name": "BIO/AGRIC/BST",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "PHYC/CHE"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Agricultural Resource Management)",
+              "Bachelor of Science (Agribusiness Management and Marketing)",
+              "Bachelor of Science (Agribusiness Management)",
+              "Bachelor of Science (Agribusiness)",
+              "Bachelor of Science (Agribusiness Management)",
+              "Bachelor of Science (Agricultural Economics)",
+              "Bachelor of Science (Agricultural Economics and Resource Management)",
+              "Bachelor of Science (Agricultural Economics and Rural Development)"
+            ]
+          }
+        }
+      },
+      "9": {
+        "name": "Science Cluster",
+        "subClusters": {
+          "9A": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C"
+              },
+              "subject2": {
+                "name": "BIO/CHE/PHY",
+                "minGrade": "C"
+              },
+              "subject3": {
+                "name": "BIO/PHY/CHE",
+                "minGrade": "C"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science",
+              "Bachelor of Science (Basic Science with IT)",
+              "Bachelor of Science (BSc)"
+            ]
+          },
+          "9B": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C"
+              },
+              "subject2": {
+                "name": "BIO",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "CHE",
+                "minGrade": "C"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Biology)",
+              "Bachelor of Science (Biological Sciences)",
+              "Bachelor of Science (Microbiology and Biotechnology)",
+              "Bachelor of Science (Applied Biology)",
+              "Bachelor of Technology (Applied Biology)",
+              "Bachelor of Science (Biotechnology)",
+              "Bachelor of Science (Industrial Biotechnology)",
+              "Bachelor of Science (Forensic Science)"
+            ]
+          },
+          "9C": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C"
+              },
+              "subject2": {
+                "name": "PHY",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "GROUP2"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Physics)",
+              "Bachelor of Science (Physics with IT)",
+              "Bachelor of Technology (Technical and Applied Physics)"
+            ]
+          },
+          "9D": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C"
+              },
+              "subject2": {
+                "name": "CHE",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "GROUP2"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Chemistry)",
+              "Bachelor of Science (Environmental Chemistry)"
+            ]
+          }
+        }
+      },
+      "10": {
+        "name": "Economics and Statistics Cluster",
+        "subClusters": {
+          "10A": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "ENG/KIS",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "GROUP2/GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Accountancy)",
+              "Bachelor of Science (Mathematics and Economics)",
+              "Bachelor of Science (Mathematics and Economics)",
+              "Bachelor of Science (Financial Engineering)"
+            ]
+          },
+          "10B": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "ENG/KIS",
+                "minGrade": "C"
+              },
+              "subject3": {
+                "name": "GROUP2/GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Economics",
+              "Bachelor of Science (Economics and Statistics)",
+              "Bachelor of Science (Economics)",
+              "Bachelor of Arts (Economics)",
+              "Bachelor of Arts (Economics and Sociology)",
+              "Bachelor of Arts (History and Economics)"
+            ]
+          },
+          "10C": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "GROUP2/GROUP3"
+              },
+              "subject3": {
+                "name": "GROUP2/GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Actuarial Science)",
+              "Bachelor of Science (Actuarial Science with IT)",
+              "Bachelor of Science (Mathematics and Finance)",
+              "Bachelor of Science (Finance)",
+              "Bachelor of Science (Economics and Finance)"
+            ]
+          }
+        }
+      },
+      "11": {
+        "name": "Design and Creative Arts Cluster",
+        "subClusters": {
+          "11A": {
+            "requirements": {
+              "subject1": {
+                "name": "CHE",
+                "minGrade": "C"
+              },
+              "subject2": {
+                "name": "MAT/PHY"
+              },
+              "subject3": {
+                "name": "BIO/HSC"
+              },
+              "subject4": {
+                "name": "ENG/KIS/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Arts (Interior Design with IT)",
+              "Bachelor of Arts (Textiles, Apparel Design and Fashion Merchandising with IT)",
+              "Bachelor of Science (Apparel and Fashion Technology)",
+              "Bachelor of Science (Clothing Textile and Interior Design)",
+              "Bachelor of Science (Fashion Design and Marketing)",
+              "Bachelor of Science (Fashion Design and Textile Technology)",
+              "Bachelor of Science (Fashion Design and Marketing)"
+            ]
+          }
+        }
+      },
+      "12": {
+        "name": "Sports Science Cluster",
+        "subClusters": {
+          "12A": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO/HSC",
+                "minGrade": "C"
+              },
+              "subject2": {
+                "name": "MAT"
+              },
+              "subject3": {
+                "name": "GROUP2/GROUP3"
+              },
+              "subject4": {
+                "name": "ENG/KIS/GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Health Promotion and Sports Science)",
+              "Bachelor of Science (Exercise and Sport Science)",
+              "Bachelor of Science (Recreation and Sports Management)",
+              "Bachelor of Science (Sports Science and Management)",
+              "Bachelor of Science (Sports Management)"
+            ]
+          }
+        }
+      },
+      "13": {
+        "name": "Medical Sciences Cluster",
+        "subClusters": {
+          "13A": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO",
+                "minGrade": "B"
+              },
+              "subject2": {
+                "name": "CHE",
+                "minGrade": "B"
+              },
+              "subject3": {
+                "name": "MAT/PHY",
+                "minGrade": "B"
+              },
+              "subject4": {
+                "name": "ENG/KIS",
+                "minGrade": "B"
+              }
+            },
+            "courses": [
+              "Bachelor of Dental Surgery",
+              "Bachelor of Medicine and Bachelor of Surgery (MBChB)",
+              "Bachelor of Medicine and Bachelor of Surgery with IT"
+            ]
+          },
+          "13B": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "CHE",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "MAT/PHY",
+                "minGrade": "C+"
+              },
+              "subject4": {
+                "name": "ENG/KIS",
+                "minGrade": "C+"
+              }
+            },
+            "courses": [
+              "Bachelor of Pharmacy",
+              "Bachelor of Science (Pharmaceutical Sciences with IT)",
+              "Bachelor of Science (Nursing with IT)",
+              "Bachelor of Science (Nursing)",
+              "Bachelor of Science (Nursing Science)",
+              "Bachelor of Science (Clinical Medicine and Community Health)",
+              "Bachelor of Science (Clinical Medicine)",
+              "Bachelor of Science (Clinical Medicine, Surgery and Community Health)",
+              "Bachelor of Science (Midwifery with Reproductive Health)"
+            ]
+          },
+          "13C": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO",
+                "minGrade": "C"
+              },
+              "subject2": {
+                "name": "CHE",
+                "minGrade": "C"
+              },
+              "subject3": {
+                "name": "MAT/PHY",
+                "minGrade": "C"
+              },
+              "subject4": {
+                "name": "ENG/KIS",
+                "minGrade": "C"
+              }
+            },
+            "courses": [
+              "Bachelor of Technology (Community and Public Health)",
+              "Bachelor of Science (Occupational Health and Safety)",
+              "Bachelor of Science (Occupational Therapy)",
+              "Bachelor of Science (Population Health)",
+              "Bachelor of Science (Community Health and Development)",
+              "Bachelor of Science (Medical Laboratory Sciences)",
+              "Bachelor of Technology (Medical Laboratory Science)",
+              "Bachelor of Science (Environmental Health)",
+              "Bachelor of Science (Environmental Health Sciences Public Health)",
+              "Bachelor of Science (Optometry and Vision Sciences)",
+              "Bachelor of Science (Physical Therapy)",
+              "Bachelor of Science (Physiotherapy)",
+              "Bachelor of Science (Public Health with IT)",
+              "Bachelor of Science (Public Health)"
+            ]
+          },
+          "13D": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "CHE",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "MAT/PHY/AGRIC",
+                "minGrade": "C+"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Veterinary Medicine"
+            ]
+          },
+          "13E": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "MAT",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "MAT/PHY"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Biostatistics)",
+              "Bachelor of Science (Epidemiology and Biostatistics)"
+            ]
+          },
+          "13F": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "MAT/PHY",
+                "minGrade": "C+"
+              }, 
+              "subject3": {
+                "name": "GROUP2"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Biomedical Science and Technology)",
+              "Bachelor of Science (Laboratory Sciences)",
+              "Bachelor of Technology (Science Laboratory Technology)",
+              "Bachelor of Science (Medical Psychology)"
+            ]
+          }
+        }
+      },
+      "14": {
+        "name": "History and Archaeology Cluster",
+        "subClusters": {
+          "14A": {
+            "requirements": {
+              "subject1": {
+                "name": "HAG",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "ENG/KIS",
+                "minGrade": "C"
+              },
+              "subject3": {
+                "name": "MAT/GROUP2"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Arts (History and Archaeology)",
+              "Bachelor of Arts (History)",
+              "Bachelor of Arts (History and Archaeology with IT)",
+              "Bachelor of Arts (History and International Studies)"
+            ]
+          }
+        }
+      },
+      "15": {
+        "name": "Agriculture and Related Sciences Cluster",
+        "subClusters": {
+          "15A": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "CHE/MAT/PHY",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "MAT/PHY/GEO"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Animal Health and Production)",
+              "Bachelor of Science (Animal Health, Production and Processing)",
+              "Bachelor of Science (Animal Production and Health Management)",
+              "Bachelor of Science (Animal Health Management)",
+              "Bachelor of Science (Animal Production)",
+              "Bachelor of Science (Applied Animal Laboratory Science)"
+            ]
+          },
+          "15B": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "MAT/PHY/CHE",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "MAT/PHY/GEO"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Animal Science and Management)",
+              "Bachelor of Science (Animal Science with IT)",
+              "Bachelor of Science (Animal Science)",
+              "Bachelor of Science (Animal Science and Technology)",
+              "Bachelor of Science (Animal Products Technology)"
+            ]
+          },
+          "15C": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO",
+                "minGrade": "C"
+              },
+              "subject2": {
+                "name": "CHE",
+                "minGrade": "C"
+              },
+              "subject3": {
+                "name": "MAT/PHY/GEO",
+                "minGrade": "C"
+              },
+              "subject4": {
+                "name": "ENG/KIS",
+                "minGrade": "C"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Food Nutrition and Dietetics)",
+              "Bachelor of Science (Food Science and Nutrition)",
+              "Bachelor of Science (Nutrition and Dietetics with IT)",
+              "Bachelor of Science (Food Science and Nutrition)"
+            ]
+          },
+          "15D": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO",
+                "minGrade": "C"
+              },
+              "subject2": {
+                "name": "CHE",
+                "minGrade": "C"
+              },
+              "subject3": {
+                "name": "MAT/PHY/GEO"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+            "Bachelor of Science (Fisheries and Aquaculture Management)",
+    "Bachelor of Science (Coastal & Marine Resource Management)",
+    "Bachelor of Science (Fisheries & Aquatic Sciences)",
+    "Bachelor of Science (Fisheries and Aquaculture, With IT)",
+    "Bachelor of Science in Fisheries and Aquaculture",
+    "Bachelor of Science (Marine Biology & Fisheries)",
+    "Bachelor of Science in Aquaculture and Fisheries Technology",
+    "Bachelor of Science in Fisheries and Oceanography",
+    "Bachelor of Science (Applied Aquatic Science)",
+    "Bachelor of Science in Marine Resource Management"
+
+            ]
+          },
+          "15E": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO/AGRIC/HSC",
+                "minGrade": "C"
+              },
+              "subject2": {
+                "name": "CHE",
+                "minGrade": "C"
+              },
+              "subject3": {
+                "name": "MAT",
+                 "minGrade": "C"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science (Food Processing Technology)",
+              "Bachelor of Science in Food Science & Technology",
+              "Bachelor of Science (Food Science & Technology)",
+              "Bachelor of Science (Food Science and Management)",
+              "Bachelor of Science (Food Science and Technology)",
+              "Bachelor of Science (Food Security)"
+            ]
+          },
+          "15F": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO/AGRIC",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "GEO/CHE",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "MAT/PHY/GEO"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Environmental Science",
+              "Bachelor of Environmental Studies",
+              "Bachelor of Science in Environmental Studies",
+              "Bachelor of Environmental Studies (Arts)",
+              "Bachelor of Environmental Studies (Science)",
+              "Bachelor of Science in Environmental Science"
+            ]
+          },
+          "15G": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO/AGRIC",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "MAT/PHY/CHE/BIO",
+                "minGrade": "C"
+              },
+              "subject3": {
+                "name": "MAT/PHY/GEO",
+                "minGrade": "C"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Science in Natural Resources",
+              "Bachelor of Science (Natural Resource Management)",
+              "Bachelor of Science in Nutraceutical Science and Technology",
+              "Bachelor of Science (Utilization & Sustainability of Arid Lands (Usal))",
+              "Bachelor of Science (Wildlife Enterprises & Management)"
+            ]
+          }
+        }
+      },
+      "16": {
+        "name": "Geography and Earth Sciences Cluster",
+        "subClusters": {
+          "16A": {
+            "requirements": {
+              "subject1": {
+                "name": "GEO",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "MAT"              },
+              "subject3": {
+                "name": "GROUP2"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Arts (Geography)",
+              "Bachelor of Science (Geography)",
+              "Bachelor of Arts (Geography and Economics)",
+              "Bachelor of Arts (Kiswahili and Geography)",
+              "Bachelor of Science (Geography and Natural Resource Management with IT)"
+            ]
+          }
+        }
+      },
+      "17": {
+        "name": "Foreign Languages Cluster",
+        "subClusters": {
+          "17A": {
+            "requirements": {
+              "subject1": {
+                "name": "FRE/GER",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "ENG/KIS"
+              },
+              "subject3": {
+                "name": "MAT/GROUP2/GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Arts (French)",
+              "Bachelor of Arts (French with IT)",
+              "Bachelor of Arts (German)"
+            ]
+          }
+        }
+      },
+      "18": {
+        "name": "Music Cluster",
+        "subClusters": {
+          "18A": {
+            "requirements": {
+              "subject1": {
+                "name": "MUS",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "ENG/KIS"
+              },
+              "subject3": {
+                "name": "MAT/GROUP2/GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Arts (Music)",
+              "Bachelor of Arts (Music, With IT)",
+              "Bachelor of Music",
+              "Bachelor of Music (Technology)"
+            ]
+          }
+        }
+      },
+      "19": {
+        "name": "Education Cluster",
+        "subClusters": {
+          "19A": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT/PHY/CHE/BIO",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "MAT/PHY/CHE/BIO",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Education (Science)",
+              "Bachelor of Education (Science with IT)",
+              "Bachelor of Education (Science with IT)"
+            ]
+          },
+          "19B": {
+            "requirements": {
+              "subject1": {
+                "name": "ENG/KIS/MAT/BIO/HAG/GEO/CRE/IRE/HRE/HSC/ARD/CMP/GROUP5",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "ENG/KIS/MAT/BIO/HAG/GEO/CRE/IRE/HRE/HSC/ARD/CMP/GROUP5",
+                "minGrade": "C+"
+              },
+              "subject3": {
+                "name": "GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Education (Arts)",
+              "Bachelor of Education (Arts) Fine Art",
+              "Bachelor of Education (Arts with Guidance and Counselling)",
+              "Bachelor of Education (Arts with IT)",
+              "Bachelor of Education (Guidance and Counselling)"
+            ]
+          },
+          "19C": {
+            "requirements": {
+              "subject1": {
+                "name": "MAT/BST",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "ENG/KIS/MAT/HAG/GEO/CRE/IRE/HRE/HSC/ARD/CMP/GROUP5",
+                "minGrade": "C+ "
+              },
+              "subject3": {
+                "name": "GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Education arts(Busness Studies)"
+            ]
+          },
+          "19D": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO/HSC",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "ENG/KIS/MAT/HAG/GEO/CRE/IRE/HRE/HSC/ARD/CMP/GROUP5",
+                "minGrade": "C+ "
+              },
+              "subject3": {
+                "name": "GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Education (Physical Education and Sports)",
+              "Bachelor of Education (Physical Education)"
+            ]
+          },
+          "19E": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO/HSC",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "ENG/KIS/MAT/HAG/GEO/CRE/IRE/HRE/HSC/ARD/CMP/GROUP5",
+                "minGrade": "C+ "
+              },
+              "subject3": {
+                "name": "GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Education (Special Needs Education - Secondary Option)",
+              "Bachelor of Education (Special Needs Education)",
+              "Bachelor of Education (Visual and Performing Arts)"
+            ]
+          },
+          "19F": {
+            "requirements": {
+              "subject1": {
+                "name": "FRE",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "ENG/KIS/MAT/HAG/GEO/CRE/IRE/HRE/HSC/ARD/CMP/GROUP5",
+                "minGrade": "C+ "
+              },
+              "subject3": {
+                "name": "GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Education (French)",
+              "Bachelor of Education (French, With IT)"
+            ]
+          },
+          "19G": {
+            "requirements": {
+              "subject1": {
+                "name": "MUS",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "ENG/KIS/MAT/HAG/GEO/CRE/IRE/HRE/HSC/ARD/CMP/GROUP5",
+                "minGrade": "C+ "
+              },
+              "subject3": {
+                "name": "GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+             "Bachelor of Education (Music)",
+      "Bachelor of Education (Music, With IT)"
+
+            ]
+          },
+          "19H": {
+            "requirements": {
+              "subject1": {
+                "name": "GER",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "ENG/KIS/MAT/HAG/GEO/CRE/IRE/HRE/HSC/ARD/CMP/GROUP5",
+                "minGrade": "C+ "
+              },
+              "subject3": {
+                "name": "GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Education (German)",
+              "Bachelor of Education (Arts) German"
+            ]
+          },
+          "19I": {
+            "requirements": {
+              "subject1": {
+                "name": "BIO",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "BIO/AGRIC",
+                "minGrade": "C+ "
+              },
+              "subject3": {
+                "name": "GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP3/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+              "Bachelor of Agricultural Education & Extension",
+      "Bachelor of Agricultural Education and Extension",
+      "Bachelor of Science in Agricultural Extension",
+      "Bachelor of Science (Agricultural Education and Extension)",
+      "Bachelor of Science Agricultural Extension Education",
+      "Bachelor of Science (Agriculture Education and Extension, With IT)"
+            ]
+          }
+        }
+      },
+      "20": {
+        "name": "Religious Studies Cluster",
+        "subClusters": {
+          "20A": {
+            "requirements": {
+              "subject1": {
+                "name": "CRE/IRE/HRE",
+                "minGrade": "C+"
+              },
+              "subject2": {
+                "name": "ENG/KIS",
+                "minGrade": "C"
+              },
+              "subject3": {
+                "name": "GROUP3"
+              },
+              "subject4": {
+                "name": "GROUP2/GROUP4/GROUP5"
+              }
+            },
+            "courses": [
+            "Bachelor of Arts (Religion, With IT)",
+      "Bachelor of Arts (Religious Studies)",
+      "Bachelor of Arts in Sociology and Religious Studies",
+      "Bachelor of Arts (Theology, With IT)",
+      "Bachelor of Arts (Sociology & Religion)",
+      "Bachelor of Arts in Intercultural Studies",
+      "Bachelor of Arts in Islamic Studies",
+      "Bachelor of Arts in Islamic Sharia"
+     ]
+          }
+        }
+      }
+    }
+  }

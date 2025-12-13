@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Calculate your KCSE cluster points and discover eligible university courses with Course Corner's accurate calculator.">
+    <title>Cluster Points Calculator - Course Corner</title>
+    
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="../assets/js/firebase-config.js" type="module"></script>
+    <script src="../assets/js/calculator.js" type="module"></script>
+    <script src="../assets/js/courses-eligibility.js" type="module"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../assets/js/paymentHandler.js"></script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/modern-ui.css">
+    <link rel="stylesheet" href="../assets/css/auth.css">
+    <link rel="icon" type="image/x-icon" href="../assets/images/1.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Firebase Auth -->
+    <script src="../assets/js/firebase-auth.js" defer></script>
+    
+    <!-- Custom Select for Mobile -->
+    <script src="../assets/js/custom-select.js" defer></script>
+</head>
+<body class="cc-body">
+    <!-- Modern Navigation -->
+    <header class="cc-header" id="mainHeader">
+        <div class="cc-header-container">
+            <a href="../index.html" class="cc-logo">
+                <span>Course Corner</span>
+            </a>
+            
+            <nav class="cc-nav-desktop">
+                <a href="../index.html" class="cc-nav-link">Home</a>
+                <a href="about.html" class="cc-nav-link">About</a>
+                <a href="calculator.html" class="cc-nav-link active">Calculator</a>
+                <a href="cluster-points.html" class="cc-nav-link">Cluster Guide</a>
+                <a href="application-process.html" class="cc-nav-link">Application</a>
+                <a href="contact.html" class="cc-nav-link">Contact</a>
+            </nav>
+            
+            <div class="cc-nav-actions">
+                <button id="authBtn" class="cc-btn-login" onclick="window.firebaseAuth?.openAuthModal()">
+                    <i class="fas fa-user"></i>
+                    <span>Login</span>
+                </button>
+                <button id="profileBtn" class="cc-btn-profile hidden" onclick="window.firebaseAuth?.openProfileModal()">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Profile</span>
+                </button>
+            </div>
+            
+            <button class="cc-mobile-toggle" id="mobileMenuBtn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="cc-mobile-menu" id="mobileMenu">
+            <nav class="cc-mobile-nav">
+                <a href="../index.html" class="cc-mobile-link">Home</a>
+                <a href="about.html" class="cc-mobile-link">About</a>
+                <a href="calculator.html" class="cc-mobile-link active">Calculator</a>
+                <a href="cluster-points.html" class="cc-mobile-link">Cluster Guide</a>
+                <a href="application-process.html" class="cc-mobile-link">Application</a>
+                <a href="contact.html" class="cc-mobile-link">Contact</a>
+            </nav>
+            <div class="cc-mobile-actions">
+                <button id="authBtnMobile" class="cc-btn-login" onclick="window.firebaseAuth?.openAuthModal()">
+                    <i class="fas fa-user"></i> Login
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Page Hero -->
+    <section class="cc-page-hero">
+        <div class="cc-page-hero-bg"></div>
+        <div class="cc-page-hero-content">
+            <div class="cc-breadcrumb">
+                <a href="../index.html">Home</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Calculator</span>
+            </div>
+            <h1>Cluster Points Calculator</h1>
+            <p>Calculate your KCSE cluster points and discover university courses you're eligible for</p>
+        </div>
+    </section>
+
+    <!-- Calculator Section -->
+    <section class="cc-calculator-section">
+        <div class="cc-container">
+            <div class="cc-calculator-wrapper">
+                <!-- Score Display Card -->
+                <div class="cc-score-card">
+                    <div class="cc-score-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="cc-score-content">
+                        <span class="cc-score-label">Your Overall Grade</span>
+                        <div class="cc-score-value-wrapper">
+                            <span class="cc-score-value" id="overallGradeDisplay">0</span>
+                            <span class="cc-score-max">/ 84</span>
+                            <span class="cc-grade-letter" id="gradeLetter" style="margin-left: 12px; font-size: 1.5rem; font-weight: 700; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 8px;"></span>
+                        </div>
+                        <span class="cc-score-note" id="gradeMessage">Calculated from your 7 best subjects</span>
+                    </div>
+                    <input type="hidden" id="overallGrade" value="0">
+                </div>
+
+                <!-- Calculator Form -->
+                <div class="cc-calculator-form">
+                    <div class="cc-form-header">
+                        <h2><i class="fas fa-edit"></i> Enter Your KCSE Grades</h2>
+                        <p>Select your grades for each subject you took</p>
+                    </div>
+
+                    <!-- Group 1: Communication Subjects -->
+                    <div class="cc-subject-group">
+                        <div class="cc-group-header cc-group-1">
+                            <div class="cc-group-icon"><i class="fas fa-comments"></i></div>
+                            <div class="cc-group-info">
+                                <h3>Group 1: Communication</h3>
+                                <span>Languages & Communication</span>
+                            </div>
+                        </div>
+                        <div class="cc-grades-grid">
+                            <div class="cc-grade-item">
+                                <label for="english">English</label>
+                                <select id="english" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="kiswahili">Kiswahili</label>
+                                <select id="kiswahili" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group 2: Sciences -->
+                    <div class="cc-subject-group">
+                        <div class="cc-group-header cc-group-2">
+                            <div class="cc-group-icon"><i class="fas fa-flask"></i></div>
+                            <div class="cc-group-info">
+                                <h3>Group 2: Sciences</h3>
+                                <span>Mathematics & Natural Sciences</span>
+                            </div>
+                        </div>
+                        <div class="cc-grades-grid">
+                            <div class="cc-grade-item">
+                                <label for="mathematics">Mathematics</label>
+                                <select id="mathematics" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="biology">Biology</label>
+                                <select id="biology" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="physics">Physics</label>
+                                <select id="physics" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="chemistry">Chemistry</label>
+                                <select id="chemistry" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group 3: Humanities -->
+                    <div class="cc-subject-group">
+                        <div class="cc-group-header cc-group-3">
+                            <div class="cc-group-icon"><i class="fas fa-landmark"></i></div>
+                            <div class="cc-group-info">
+                                <h3>Group 3: Humanities</h3>
+                                <span>Social Sciences & Religion</span>
+                            </div>
+                        </div>
+                        <div class="cc-grades-grid">
+                            <div class="cc-grade-item">
+                                <label for="history">History & Govt</label>
+                                <select id="history" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="geography">Geography</label>
+                                <select id="geography" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="cre">CRE</label>
+                                <select id="cre" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="ire">IRE</label>
+                                <select id="ire" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="hre">HRE</label>
+                                <select id="hre" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group 4: Technical & Applied -->
+                    <div class="cc-subject-group cc-group-4-parent">
+                        <div class="cc-group-header cc-group-4">
+                            <div class="cc-group-icon"><i class="fas fa-tools"></i></div>
+                            <div class="cc-group-info">
+                                <h3>Group 4: Technical & Applied</h3>
+                                <span>Vocational & Business Subjects</span>
+                            </div>
+                        </div>
+                        <div class="cc-grades-grid">
+                            <div class="cc-grade-item">
+                                <label for="agriculture">Agriculture</label>
+                                <select id="agriculture" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="homeScience">Home Science</label>
+                                <select id="homeScience" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="business">Business Studies</label>
+                                <select id="business" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="computerStudies">Computer Studies</label>
+                                <select id="computerStudies" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="music">Music</label>
+                                <select id="music" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="aviation">Aviation</label>
+                                <select id="aviation" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="woodwork">Woodwork</label>
+                                <select id="woodwork" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="metalWork">Metal Work</label>
+                                <select id="metalWork" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="buildingConstruction">Building & Const.</label>
+                                <select id="buildingConstruction" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="artDesign">Art & Design</label>
+                                <select id="artDesign" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Group 5: Foreign Languages -->
+                    <div class="cc-subject-group">
+                        <div class="cc-group-header cc-group-5">
+                            <div class="cc-group-icon"><i class="fas fa-language"></i></div>
+                            <div class="cc-group-info">
+                                <h3>Group 5: Foreign Languages</h3>
+                                <span>International Languages</span>
+                            </div>
+                        </div>
+                        <div class="cc-grades-grid">
+                            <div class="cc-grade-item">
+                                <label for="french">French</label>
+                                <select id="french" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="german">German</label>
+                                <select id="german" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="arabic">Arabic</label>
+                                <select id="arabic" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                            <div class="cc-grade-item">
+                                <label for="signLanguage">Sign Language</label>
+                                <select id="signLanguage" class="cc-grade-select grade-select">
+                                    <option value="">Select</option>
+                                    <option value="12">A</option>
+                                    <option value="11">A-</option>
+                                    <option value="10">B+</option>
+                                    <option value="9">B</option>
+                                    <option value="8">B-</option>
+                                    <option value="7">C+</option>
+                                    <option value="6">C</option>
+                                    <option value="5">C-</option>
+                                    <option value="4">D+</option>
+                                    <option value="3">D</option>
+                                    <option value="2">D-</option>
+                                    <option value="1">E</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="cc-action-buttons">
+                        <button id="calculateBtn" class="cc-btn-primary payment-btn" data-category="calculate-cluster-points" data-amount="1">
+                            <i class="fas fa-calculator"></i>
+                            <span>Calculate Points</span>
+                            <span class="cc-btn-price">KES 1</span>
+                        </button>
+                        
+                        <button id="calculateBtn2" class="cc-btn-secondary payment-btn" data-category="courses-only" data-amount="1">
+                            <i class="fas fa-book"></i>
+                            <span>Courses Only</span>
+                            <span class="cc-btn-price">KES 1</span>
+                        </button>
+                        
+                        <button id="calculateBtn3" class="cc-btn-featured payment-btn" data-category="point-and-courses" data-amount="160">
+                            <span class="cc-popular-badge">Popular</span>
+                            <i class="fas fa-star"></i>
+                            <span>Points & Courses</span>
+                            <span class="cc-btn-price">KES 160</span>
+                        </button>
+                    </div>
+
+                    <!-- Payment Status -->
+                    <div id="paymentStatus" class="cc-payment-status hidden">
+                        <div class="cc-payment-content">
+                            <div class="cc-payment-spinner"></div>
+                            <div>
+                                <h4>Processing Payment</h4>
+                                <p id="paymentMessage">Please wait while we process your payment...</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results Section -->
+                    <div id="results" class="cc-results hidden">
+                        <div class="cc-results-header">
+                            <i class="fas fa-trophy"></i>
+                            <h3>Your Results</h3>
+                        </div>
+                        <div class="cc-results-body">
+                            <p id="clusterPoints" class="cc-cluster-points">
+                                Cluster Points: <span>0</span>
+                            </p>
+                            <div id="eligibleCourses" class="cc-eligible-courses">
+                                <h4><i class="fas fa-graduation-cap"></i> Eligible Courses</h4>
+                                <ul id="coursesList"></ul>
+                            </div>
+                        </div>
+                        <div class="cc-results-disclaimer">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Note: Due to KUCCPS standardization, actual cluster points may vary by ±2.5 points. Use these results as a close approximation.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modern Footer -->
+    <footer class="cc-footer">
+        <div class="cc-footer-container">
+            <div class="cc-footer-grid">
+                <div class="cc-footer-brand">
+                    <span class="cc-footer-title">Course Corner</span>
+                    <p>Empowering Kenyan students to make informed decisions about their academic futures.</p>
+                    <div class="cc-social-links">
+                        <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div class="cc-footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="calculator.html">Calculator</a></li>
+                        <li><a href="cluster-points.html">Cluster Guide</a></li>
+                        <li><a href="application-process.html">Application Process</a></li>
+                    </ul>
+                </div>
+                
+                <div class="cc-footer-links">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">KUCCPS Guide 2024</a></li>
+                        <li><a href="#">Course Requirements</a></li>
+                        <li><a href="#">Application Forms</a></li>
+                        <li><a href="about.html">About Us</a></li>
+                    </ul>
+                </div>
+                
+                <div class="cc-footer-contact">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> info@coursecorner.com</li>
+                        <li><i class="fas fa-phone"></i> +254 700 000000</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Nairobi, Kenya</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="cc-footer-bottom">
+                <p>&copy; <span id="currentYear"></span> Course Corner. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        // Header scroll effect
+        const header = document.getElementById('mainHeader');
+        window.addEventListener('scroll', () => {
+            header.classList.toggle('scrolled', window.scrollY > 50);
+        });
+        
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        let isMenuOpen = false;
+        
+        function openMobileMenu() {
+            isMenuOpen = true;
+            mobileMenuBtn.classList.add('active');
+            mobileMenu.classList.add('show');
+        }
+        
+        function closeMobileMenu() {
+            isMenuOpen = false;
+            mobileMenuBtn.classList.remove('active');
+            mobileMenu.classList.remove('show');
+        }
+        
+        function toggleMobileMenu() {
+            if (isMenuOpen) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        }
+        
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMobileMenu();
+        });
+        
+        // Close mobile menu when clicking a link
+        mobileMenu.querySelectorAll('a, button').forEach(link => {
+            link.addEventListener('click', () => {
+                closeMobileMenu();
+            });
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (isMenuOpen && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                closeMobileMenu();
+            }
+        });
+        
+        // Close mobile menu on resize to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024 && isMenuOpen) {
+                closeMobileMenu();
+            }
+        });
+        
+        // Close mobile menu on escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && isMenuOpen) {
+                closeMobileMenu();
+            }
+        });
+        
+        // Grade details function
+        function getGradeDetails(points) {
+            if (points >= 81 && points <= 84) return { grade: 'A', message: '🎉 Excellent! You have a strong foundation for top university courses.' };
+            if (points >= 74 && points <= 80) return { grade: 'A-', message: '🌟 Outstanding! Many competitive opportunities await you.' };
+            if (points >= 67 && points <= 73) return { grade: 'B+', message: '👏 Very good! You qualify for many excellent courses.' };
+            if (points >= 60 && points <= 66) return { grade: 'B', message: '💪 Good performance! You have solid options available.' };
+            if (points >= 53 && points <= 59) return { grade: 'B-', message: '👍 Above average! Consider competitive degree programs.' };
+            if (points >= 46 && points <= 52) return { grade: 'C+', message: '✅ You meet minimum university entry requirements.' };
+            if (points >= 39 && points <= 45) return { grade: 'C', message: '📚 Consider diploma programs or bridging courses.' };
+            if (points >= 32 && points <= 38) return { grade: 'C-', message: '📋 Look into diploma and certificate options.' };
+            if (points >= 25 && points <= 31) return { grade: 'D+', message: '🔧 Consider vocational training programs.' };
+            if (points >= 18 && points <= 24) return { grade: 'D', message: '🛠️ Explore technical training opportunities.' };
+            if (points >= 11 && points <= 17) return { grade: 'D-', message: '📝 Consider certificate programs.' };
+            return { grade: 'E', message: '💡 Look into skill-based training programs.' };
+        }
+        
+        // Calculate total points
+        document.querySelectorAll('.grade-select').forEach(select => {
+            select.addEventListener('change', function() {
+                // Toggle has-value class for styling
+                if (this.value) {
+                    this.classList.add('has-value');
+                } else {
+                    this.classList.remove('has-value');
+                }
+                calculateTotalPoints();
+            });
+        });
+        
+        function calculateTotalPoints() {
+            let total = 0;
+            const scores = {};
+            
+            document.querySelectorAll('.grade-select').forEach(select => {
+                if (select.value) {
+                    scores[select.id] = parseInt(select.value);
+                }
+            });
+
+            const totalSubjectsSelected = Object.keys(scores).length;
+            const gradeLetterEl = document.getElementById('gradeLetter');
+            const gradeMessageEl = document.getElementById('gradeMessage');
+            
+            if (totalSubjectsSelected < 7) {
+                document.getElementById('overallGrade').value = "";
+                document.getElementById('overallGradeDisplay').textContent = "0";
+                gradeLetterEl.textContent = "";
+                gradeMessageEl.textContent = "Calculated from your 7 best subjects";
+                return;
+            }
+
+            if (!scores.mathematics) {
+                document.getElementById('overallGrade').value = "";
+                document.getElementById('overallGradeDisplay').textContent = "0";
+                gradeLetterEl.textContent = "";
+                gradeMessageEl.textContent = "Mathematics is required";
+                return;
+            }
+            total += scores.mathematics;
+
+            const languages = ['english', 'kiswahili', 'french', 'german', 'arabic', 'signLanguage'];
+            const languageScores = languages
+                .filter(lang => scores[lang])
+                .map(lang => ({ subject: lang, score: scores[lang] }));
+            
+            if (languageScores.length === 0) {
+                document.getElementById('overallGrade').value = "";
+                document.getElementById('overallGradeDisplay').textContent = "0";
+                gradeLetterEl.textContent = "";
+                gradeMessageEl.textContent = "At least one language is required";
+                return;
+            }
+
+            const bestLanguage = languageScores.reduce((best, current) => 
+                current.score > best.score ? current : best
+            );
+            total += bestLanguage.score;
+
+            const remainingSubjects = Object.entries(scores)
+                .filter(([subject]) => 
+                    subject !== 'mathematics' && 
+                    subject !== bestLanguage.subject
+                )
+                .map(([subject, score]) => ({ subject, score }))
+                .sort((a, b) => b.score - a.score);
+
+            const bestFiveRemaining = remainingSubjects.slice(0, 5);
+            bestFiveRemaining.forEach(subject => {
+                total += subject.score;
+            });
+
+            document.getElementById('overallGrade').value = total;
+            document.getElementById('overallGradeDisplay').textContent = total;
+            
+            // Update grade letter and message
+            const gradeInfo = getGradeDetails(total);
+            gradeLetterEl.textContent = gradeInfo.grade;
+            gradeMessageEl.textContent = gradeInfo.message;
+        }
+
+        // ===== UNIFIED PAYMENT FLOW =====
+        const SERVER_URL = 'https://course-corner-server.vercel.app/api';
+
+        // Create single payment handler instance
+        if (!window.paymentHandler) {
+            window.paymentHandler = new PaymentHandler(SERVER_URL);
+        }
+
+        // Validate student subjects before payment
+        function validateSubjects() {
+            const errors = [];
+            const english = document.getElementById('english')?.value;
+            const kiswahili = document.getElementById('kiswahili')?.value;
+            const mathematics = document.getElementById('mathematics')?.value;
+            
+            if (!english) errors.push('English');
+            if (!kiswahili) errors.push('Kiswahili');
+            if (!mathematics) errors.push('Mathematics');
+            
+            let totalSubjects = 0;
+            document.querySelectorAll('.grade-select').forEach(select => {
+                if (select.value) totalSubjects++;
+            });
+            
+            return {
+                valid: errors.length === 0 && totalSubjects >= 7,
+                missingCompulsory: errors,
+                totalSubjects: totalSubjects,
+                needMore: Math.max(0, 7 - totalSubjects)
+            };
+        }
+
+        function getCategoryName(category) {
+            const names = {
+                'calculate-cluster-points': 'Calculate Cluster Points',
+                'courses-only': 'View Eligible Courses',
+                'point-and-courses': 'Points & Courses Bundle'
+            };
+            return names[category] || category;
+        }
+
+        // Main payment processing function
+        async function processPayment(category, amount) {
+            const validation = validateSubjects();
+            
+            if (!validation.valid) {
+                let errorHtml = '<div class="text-left">';
+                if (validation.missingCompulsory.length > 0) {
+                    errorHtml += `<p class="mb-2"><strong>Missing compulsory subjects:</strong></p>`;
+                    errorHtml += `<ul class="list-disc list-inside mb-3 text-red-600">`;
+                    validation.missingCompulsory.forEach(subj => {
+                        errorHtml += `<li>${subj}</li>`;
+                    });
+                    errorHtml += `</ul>`;
+                }
+                if (validation.needMore > 0) {
+                    errorHtml += `<p class="text-gray-600">You need <strong>${validation.needMore} more subject(s)</strong> (minimum 7 required).</p>`;
+                }
+                errorHtml += '</div>';
+                
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Please Complete Your Grades',
+                    html: errorHtml,
+                    confirmButtonColor: '#16a34a',
+                    confirmButtonText: 'Fill Grades'
+                });
+                return false;
+            }
+
+            const { value: phoneNumber } = await Swal.fire({
+                title: 'M-Pesa Payment',
+                html: `
+                    <div class="text-left mb-4">
+                        <p class="text-gray-600 mb-2">Service: <strong>${getCategoryName(category)}</strong></p>
+                        <p class="text-gray-600">Amount: <strong class="text-green-600">KSH ${amount}</strong></p>
+                    </div>
+                `,
+                input: 'text',
+                inputLabel: 'Enter your M-Pesa phone number',
+                inputPlaceholder: '0712345678 or 254712345678',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Pay Now',
+                confirmButtonColor: '#16a34a',
+                cancelButtonText: 'Cancel',
+                inputValidator: (value) => {
+                    if (!value) return 'Phone number is required!';
+                    if (!/\d{9,}/.test(value.replace(/[^\d]/g, ''))) return 'Please enter a valid phone number';
+                }
+            });
+
+            if (!phoneNumber) return false;
+
+            try {
+                Swal.fire({
+                    title: 'Initiating Payment...',
+                    html: `<p class="mb-2">Amount: <strong>KSH ${amount}</strong></p><p>Phone: <strong>${phoneNumber}</strong></p>`,
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                await window.paymentHandler.initiatePayment(phoneNumber, category);
+
+                // Show waiting dialog with cancel option
+                let cancelled = false;
+                Swal.fire({
+                    title: '📱 Check Your Phone!',
+                    html: `
+                        <div class="text-center">
+                            <p class="mb-3">An M-Pesa prompt has been sent to:</p>
+                            <p class="text-xl font-bold text-green-600 mb-4">${phoneNumber}</p>
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-4 text-left">
+                                <p class="text-sm text-yellow-800"><strong>Enter your M-Pesa PIN</strong> to complete the payment.</p>
+                            </div>
+                            <p class="text-xs text-gray-400">Click Cancel if you didn't receive the prompt</p>
+                        </div>
+                    `,
+                    allowOutsideClick: true,
+                    allowEscapeKey: true,
+                    showConfirmButton: false,
+                    showCancelButton: true,
+                    cancelButtonText: 'Cancel',
+                    cancelButtonColor: '#6b7280',
+                    didOpen: () => Swal.showLoading()
+                }).then((result) => {
+                    if (result.dismiss === Swal.DismissReason.cancel) {
+                        cancelled = true;
+                    }
+                });
+
+                // Poll with timeout
+                const pollPromise = window.paymentHandler.pollPaymentStatus(40, 3000);
+                const timeoutPromise = new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Payment verification timed out. Please check your M-Pesa messages.')), 130000)
+                );
+                
+                await Promise.race([pollPromise, timeoutPromise]);
+                
+                if (cancelled) {
+                    return false;
+                }
+                
+                await window.paymentHandler.approveAccess();
+
+                // Auto-close and show results
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Payment Successful! ✅',
+                    html: `<p class="text-green-600 mb-2">Your payment has been confirmed!</p>`,
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true,
+                    willClose: () => {
+                        // Ensure backdrop is removed
+                        document.body.classList.remove('swal2-shown');
+                    }
+                });
+
+                // Show results after dialog closes
+                showResultsAfterPayment(category);
+
+                return true;
+
+            } catch (error) {
+                // Close any existing dialogs first
+                Swal.close();
+                
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Payment Failed',
+                    text: error.message || 'Something went wrong. Please try again.',
+                    confirmButtonColor: '#16a34a',
+                    confirmButtonText: 'OK',
+                    allowOutsideClick: true,
+                    allowEscapeKey: true,
+                    willClose: () => {
+                        document.body.classList.remove('swal2-shown');
+                    }
+                });
+                return false;
+            }
+        }
+
+        // Show results after successful payment
+        function showResultsAfterPayment(category) {
+            console.log('showResultsAfterPayment called with category:', category);
+            
+            // Call the calculate function
+            if (typeof window.calculateClusterPoints === 'function') {
+                console.log('Calling window.calculateClusterPoints');
+                window.calculateClusterPoints();
+            } else {
+                console.error('calculateClusterPoints not found on window');
+            }
+            
+            // Show results div
+            const resultsDiv = document.getElementById('results');
+            if (resultsDiv) {
+                console.log('Showing results div');
+                resultsDiv.classList.remove('hidden');
+                resultsDiv.style.display = 'block';
+                
+                // Scroll to results after a brief delay
+                setTimeout(() => {
+                    resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 100);
+            } else {
+                console.error('Results div not found');
+            }
+        }
+
+        // Initialize payment button handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            const paymentBtns = document.querySelectorAll('.payment-btn');
+            
+            paymentBtns.forEach(btn => {
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                
+                newBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const category = this.getAttribute('data-category');
+                    const amount = this.getAttribute('data-amount');
+                    
+                    console.log('Payment button clicked:', category, amount);
+                    
+                    const paymentSuccess = await processPayment(category, amount);
+                    if (paymentSuccess) {
+                        showResultsAfterPayment(category);
+                    }
+                });
+            });
+            
+            console.log('Payment handlers initialized for', paymentBtns.length, 'buttons');
+        });
+    </script>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="auth-modal-overlay hidden">
+        <div class="auth-modal">
+            <div class="modal-header">
+                <h2>Welcome to Course Corner</h2>
+                <button class="modal-close-btn" onclick="window.firebaseAuth.closeAuthModal()">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Auth Tabs -->
+                <div class="auth-tabs">
+                    <button id="loginTab" class="auth-tab active" onclick="window.firebaseAuth.switchAuthMode('login')">
+                        Login
+                    </button>
+                    <button id="signupTab" class="auth-tab" onclick="window.firebaseAuth.switchAuthMode('signup')">
+                        Sign Up
+                    </button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                    </div>
+                    <div class="forgot-password-link">
+                        <a class="auth-link text-sm" onclick="window.firebaseAuth.switchAuthMode('forgot')">Forgot password?</a>
+                    </div>
+                    <button type="submit" id="loginBtn" class="btn-primary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </button>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signupForm" class="auth-form hidden" onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" class="form-input" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address</label>
+                        <input type="email" id="signupEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" class="form-input" placeholder="Create a password (min 6 characters)" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupConfirmPassword">Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" class="form-input" placeholder="Confirm your password" required>
+                    </div>
+                    <button type="submit" id="signupBtn" class="btn-primary">
+                        <i class="fas fa-user-plus"></i>
+                        Create Account
+                    </button>
+                </form>
+
+                <!-- Forgot Password Section -->
+                <div id="forgotPasswordSection" class="auth-form hidden">
+                    <p class="text-gray-600 mb-4">Enter your email address and we'll send you a link to reset your password.</p>
+                    <div class="form-group">
+                        <label for="resetEmail">Email Address</label>
+                        <input type="email" id="resetEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <button type="button" onclick="handleResetPassword()" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        Send Reset Link
+                    </button>
+                    <div class="text-center mt-4">
+                        <a class="auth-link" onclick="window.firebaseAuth.switchAuthMode('login')">
+                            <i class="fas fa-arrow-left mr-1"></i>
+                            Back to Login
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="auth-divider">
+                    <span>or continue with</span>
+                </div>
+
+                <!-- Google Sign In -->
+                <button type="button" onclick="handleGoogleSignIn()" class="btn-google">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                    Sign in with Google
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Handler Functions -->
+    <script>
+        // Handle login form submission
+        async function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+            
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+                
+                await window.firebaseAuth.login(email, password);
+                window.firebaseAuth.closeAuthModal();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Welcome back!',
+                    text: 'You have successfully logged in.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Failed',
+                    text: error.message
+                });
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login';
+            }
+        }
+
+        // Handle signup form submission
+        async function handleSignup(event) {
+            event.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const btn = document.getElementById('signupBtn');
+            
+            if (password !== confirmPassword) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Passwords do not match',
+                    text: 'Please make sure your passwords match.'
+                });
+                return;
+            }
+            
+            try {
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
+                
+                await window.firebaseAuth.signup(email, password, name);
+                window.firebaseAuth.closeAuthModal();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Account Created!',
+                    text: 'Welcome to Course Corner! Your account has been created.',
+                    timer: 2500,
+                    showConfirmButton: false
+                });
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Signup Failed',
+                    text: error.message
+                });
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Account';
+            }
+        }
+
+        // Handle Google sign in
+        async function handleGoogleSignIn() {
+            try {
+                await window.firebaseAuth.signInWithGoogle();
+                window.firebaseAuth.closeAuthModal();
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Welcome!',
+                    text: 'You have successfully signed in with Google.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Google Sign In Failed',
+                    text: error.message
+                });
+            }
+        }
+
+        // Handle password reset
+        async function handleResetPassword() {
+            const email = document.getElementById('resetEmail').value;
+            
+            if (!email) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Email Required',
+                    text: 'Please enter your email address.'
+                });
+                return;
+            }
+            
+            try {
+                await window.firebaseAuth.resetPassword(email);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Reset Email Sent',
+                    text: 'Check your email for the password reset link.'
+                });
+                window.firebaseAuth.switchAuthMode('login');
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Reset Failed',
+                    text: error.message
+                });
+            }
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('authModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'authModal') {
+                window.firebaseAuth.closeAuthModal();
+            }
+        });
+    </script>
+</body>
+</html>

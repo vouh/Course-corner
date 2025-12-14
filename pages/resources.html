@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resources - Course Corner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" href="../assets/images/1.png">
+    <link rel="stylesheet" href="../assets/css/modern-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Modern Page Header */
+        .page-hero {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 50%, #166534 100%);
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .page-hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .page-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .page-hero p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* Resources Layout */
+        .resources-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem 4rem;
+        }
+
+        .resources-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        @media (max-width: 1024px) {
+            .resources-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar-card {
+            position: sticky;
+            top: 110px;
+            background: white;
+            border-radius: 1.25rem;
+            padding: 1.25rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar-card {
+                position: relative;
+                top: auto;
+            }
+        }
+
+        .sidebar-title {
+            font-size: 1.125rem;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sidebar-title i {
+            color: #16a34a;
+        }
+
+        .category-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .category-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            padding: 0.75rem 0.875rem;
+            border-radius: 0.875rem;
+            border: 1px solid transparent;
+            background: transparent;
+            color: #374151;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .category-btn:hover {
+            background: #f0fdf4;
+            border-color: #bbf7d0;
+            color: #16a34a;
+        }
+
+        .category-btn.active {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .category-btn .count {
+            font-size: 0.875rem;
+            font-weight: 800;
+            padding: 0.15rem 0.5rem;
+            border-radius: 999px;
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        .category-btn.active .count {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        /* Search */
+        .search-card {
+            background: white;
+            border-radius: 1.25rem;
+            padding: 1.25rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-row {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.75rem;
+        }
+
+        .search-input {
+            width: 100%;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.875rem;
+            padding: 0.9rem 1rem;
+            font-weight: 600;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            border-color: #16a34a;
+            box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.12);
+        }
+
+        .search-hint {
+            color: #6b7280;
+            font-size: 0.9375rem;
+        }
+
+        /* Results */
+        .results-card {
+            background: white;
+            border-radius: 1.25rem;
+            padding: 1.25rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+        }
+
+        .category-section {
+            margin-bottom: 1.75rem;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #f3f4f6;
+            margin-bottom: 1rem;
+        }
+
+        .category-header h2 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #111827;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .category-header h2 i {
+            color: #16a34a;
+        }
+
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1rem;
+        }
+
+        .resource-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1.1rem 1.1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+            border-color: #16a34a;
+        }
+
+        .resource-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            color: #111827;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.6rem;
+        }
+
+        .resource-title i {
+            color: #16a34a;
+            margin-top: 0.15rem;
+        }
+
+        .resource-desc {
+            color: #4b5563;
+            line-height: 1.6;
+        }
+
+        .resource-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin-top: 0.4rem;
+        }
+
+        .resource-badge {
+            font-size: 0.8rem;
+            font-weight: 800;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        .resource-link {
+            font-weight: 800;
+            color: #16a34a;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .resource-link:hover {
+            color: #15803d;
+        }
+
+        .empty-state {
+            padding: 2rem 1rem;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        .empty-state strong {
+            color: #111827;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Modern Navigation -->
+    <header class="modern-header" id="mainHeader">
+        <div class="header-container">
+            <a href="../index.html" class="logo">
+                <span>Course Corner</span>
+            </a>
+
+            <nav class="nav-desktop">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About Us</a>
+                <a href="calculator.html" class="nav-link">Calculator</a>
+                <a href="cluster-points.html" class="nav-link">Cluster Points</a>
+                <a href="application-process.html" class="nav-link">Application Guide</a>
+                <a href="resources.html" class="nav-link active">Resources</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </nav>
+
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="../index.html" class="mobile-nav-link">Home</a>
+            <a href="about.html" class="mobile-nav-link">About Us</a>
+            <a href="calculator.html" class="mobile-nav-link">Calculator</a>
+            <a href="cluster-points.html" class="mobile-nav-link">Cluster Points</a>
+            <a href="application-process.html" class="mobile-nav-link">Application Guide</a>
+            <a href="resources.html" class="mobile-nav-link active">Resources</a>
+            <a href="contact.html" class="mobile-nav-link">Contact</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <h1>Resources Library 📚</h1>
+            <p>Search and browse helpful guides, tools, and links for KUCCPS, applications, and career planning</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="resources-content">
+        <div class="resources-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar-card" aria-label="Resource categories">
+                <div class="sidebar-title">
+                    <i class="fas fa-layer-group"></i>
+                    Categories
+                </div>
+                <ul class="category-list" id="categoryList"></ul>
+            </aside>
+
+            <!-- Main -->
+            <main>
+                <div class="search-card">
+                    <div class="search-row">
+                        <input id="resourceSearch" class="search-input" type="text" placeholder="Search resources (e.g., KUCCPS, scholarships, application, cluster points…)" autocomplete="off" />
+                        <div class="search-hint">
+                            Tip: use the categories on the left to narrow down.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="results-card">
+                    <div id="resultsRoot"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modern Footer -->
+    <footer class="modern-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-brand">
+                        <span>Course Corner</span>
+                    </div>
+                    <p class="footer-description">
+                        Empowering students to make informed decisions about their educational future through personalized course recommendations.
+                    </p>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="calculator.html">Calculator</a></li>
+                        <li><a href="cluster-points.html">Cluster Points</a></li>
+                        <li><a href="application-process.html">Application Guide</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="resources.html">Resources Library</a></li>
+                        <li><a href="cluster-points.html">Cluster Guide</a></li>
+                        <li><a href="application-process.html">Application Guide</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> info@coursecorner.com</li>
+                        <li><i class="fas fa-phone"></i> +254 700 000000</li>
+                    </ul>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© Course Corner <span id="currentYear"></span>. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set current year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Mobile menu toggle with state tracking
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        let isMenuOpen = false;
+
+        function openMobileMenu() {
+            isMenuOpen = true;
+            mobileMenuBtn.classList.add('active');
+            mobileMenu.classList.add('active');
+        }
+
+        function closeMobileMenu() {
+            isMenuOpen = false;
+            mobileMenuBtn.classList.remove('active');
+            mobileMenu.classList.remove('active');
+        }
+
+        function toggleMobileMenu() {
+            if (isMenuOpen) closeMobileMenu();
+            else openMobileMenu();
+        }
+
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMobileMenu();
+        });
+
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => closeMobileMenu());
+        });
+
+        document.addEventListener('click', (e) => {
+            if (isMenuOpen && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                closeMobileMenu();
+            }
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024 && isMenuOpen) {
+                closeMobileMenu();
+            }
+        });
+
+        // Header scroll effect
+        const header = document.getElementById('mainHeader');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) header.classList.add('scrolled');
+            else header.classList.remove('scrolled');
+        });
+
+        // ===== Resources Data + Rendering =====
+        const resources = [
+            {
+                category: 'KUCCPS & Placement',
+                title: 'KUCCPS Official Website',
+                description: 'Official portal for placement updates and announcements.',
+                href: 'https://www.kuccps.net',
+                badge: 'Official Link',
+                icon: 'fa-landmark'
+            },
+            {
+                category: 'KUCCPS & Placement',
+                title: 'KUCCPS Students Portal',
+                description: 'Login portal for student services and application actions.',
+                href: 'https://students.kuccps.net',
+                badge: 'Official Link',
+                icon: 'fa-user-graduate'
+            },
+            {
+                category: 'Cluster Points & Subjects',
+                title: 'Cluster Points Guide',
+                description: 'Learn how cluster points work and what they mean.',
+                href: 'cluster-points.html',
+                badge: 'Guide',
+                icon: 'fa-chart-line'
+            },
+            {
+                category: 'Cluster Points & Subjects',
+                title: 'Cluster Points Calculator',
+                description: 'Calculate your overall points and explore eligibility.',
+                href: 'calculator.html',
+                badge: 'Tool',
+                icon: 'fa-calculator'
+            },
+            {
+                category: 'Applications & Admissions',
+                title: 'Application Process Guide',
+                description: 'Step-by-step overview to help you apply confidently.',
+                href: 'application-process.html',
+                badge: 'Guide',
+                icon: 'fa-clipboard-check'
+            },
+            {
+                category: 'Scholarships & Funding',
+                title: 'Scholarship Checklist',
+                description: 'A quick checklist of documents and steps to prepare.',
+                href: '#',
+                badge: 'Checklist',
+                icon: 'fa-hand-holding-heart'
+            },
+            {
+                category: 'Career Planning',
+                title: 'How to Choose a Career Path',
+                description: 'Simple steps to match your strengths and interests to careers.',
+                href: '#',
+                badge: 'Article',
+                icon: 'fa-compass'
+            },
+            {
+                category: 'Career Planning',
+                title: 'Talk to Us',
+                description: 'Need help? Reach out and we’ll guide you.',
+                href: 'contact.html',
+                badge: 'Support',
+                icon: 'fa-headset'
+            }
+        ];
+
+        const categoryIcons = {
+            'KUCCPS & Placement': 'fa-building-columns',
+            'Cluster Points & Subjects': 'fa-layer-group',
+            'Applications & Admissions': 'fa-file-signature',
+            'Scholarships & Funding': 'fa-award',
+            'Career Planning': 'fa-briefcase'
+        };
+
+        const state = {
+            activeCategory: 'All',
+            query: ''
+        };
+
+        const categoryListEl = document.getElementById('categoryList');
+        const resultsRootEl = document.getElementById('resultsRoot');
+        const searchEl = document.getElementById('resourceSearch');
+
+        function normalize(text) {
+            return (text || '').toString().toLowerCase().trim();
+        }
+
+        function getCategories() {
+            const set = new Set(resources.map(r => r.category));
+            return ['All', ...Array.from(set).sort((a, b) => a.localeCompare(b))];
+        }
+
+        function getCountsByCategory(filtered) {
+            const counts = {};
+            filtered.forEach(r => {
+                counts[r.category] = (counts[r.category] || 0) + 1;
+            });
+            return counts;
+        }
+
+        function filterResources() {
+            const q = normalize(state.query);
+            return resources.filter(r => {
+                const matchesQuery = !q || normalize(r.title).includes(q) || normalize(r.description).includes(q) || normalize(r.category).includes(q);
+                const matchesCategory = state.activeCategory === 'All' || r.category === state.activeCategory;
+                return matchesQuery && matchesCategory;
+            });
+        }
+
+        function renderSidebar() {
+            const allFilteredByQuery = resources.filter(r => {
+                const q = normalize(state.query);
+                if (!q) return true;
+                return normalize(r.title).includes(q) || normalize(r.description).includes(q) || normalize(r.category).includes(q);
+            });
+
+            const counts = getCountsByCategory(allFilteredByQuery);
+            const categories = getCategories();
+
+            categoryListEl.innerHTML = '';
+
+            categories.forEach(cat => {
+                const li = document.createElement('li');
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'category-btn' + (state.activeCategory === cat ? ' active' : '');
+
+                const left = document.createElement('span');
+                left.textContent = cat;
+
+                const count = document.createElement('span');
+                count.className = 'count';
+                if (cat === 'All') {
+                    count.textContent = allFilteredByQuery.length;
+                } else {
+                    count.textContent = counts[cat] || 0;
+                }
+
+                btn.appendChild(left);
+                btn.appendChild(count);
+                btn.addEventListener('click', () => {
+                    state.activeCategory = cat;
+                    render();
+                });
+
+                li.appendChild(btn);
+                categoryListEl.appendChild(li);
+            });
+        }
+
+        function renderResults() {
+            const filtered = filterResources();
+
+            if (filtered.length === 0) {
+                resultsRootEl.innerHTML = `
+                    <div class="empty-state">
+                        <div style="font-size: 2rem; margin-bottom: 0.5rem;">No results</div>
+                        <div>Try a different search, or choose <strong>All</strong> categories.</div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Group by category
+            const groups = {};
+            filtered.forEach(r => {
+                if (!groups[r.category]) groups[r.category] = [];
+                groups[r.category].push(r);
+            });
+
+            const categoryOrder = Object.keys(groups).sort((a, b) => a.localeCompare(b));
+
+            const html = categoryOrder.map(category => {
+                const icon = categoryIcons[category] || 'fa-book';
+                const cards = groups[category].map(r => {
+                    const isExternal = /^https?:\/\//i.test(r.href);
+                    const target = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
+                    return `
+                        <article class="resource-card">
+                            <div class="resource-title">
+                                <i class="fas ${r.icon ? `fa-solid ${r.icon}` : 'fa-book'}"></i>
+                                <span>${r.title}</span>
+                            </div>
+                            <div class="resource-desc">${r.description}</div>
+                            <div class="resource-meta">
+                                <span class="resource-badge">${r.badge || 'Resource'}</span>
+                                <a class="resource-link" href="${r.href}"${target}>
+                                    Open <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </article>
+                    `;
+                }).join('');
+
+                return `
+                    <section class="category-section">
+                        <div class="category-header">
+                            <h2><i class="fas fa-solid ${icon}"></i> ${category}</h2>
+                            <span class="resource-badge">${groups[category].length} item(s)</span>
+                        </div>
+                        <div class="resource-grid">${cards}</div>
+                    </section>
+                `;
+            }).join('');
+
+            resultsRootEl.innerHTML = html;
+        }
+
+        function render() {
+            renderSidebar();
+            renderResults();
+        }
+
+        searchEl.addEventListener('input', (e) => {
+            state.query = e.target.value || '';
+            // If the active category is now empty under this query, fall back to All
+            const matches = resources.filter(r => {
+                const q = normalize(state.query);
+                const matchesQuery = !q || normalize(r.title).includes(q) || normalize(r.description).includes(q) || normalize(r.category).includes(q);
+                const matchesCategory = state.activeCategory === 'All' || r.category === state.activeCategory;
+                return matchesQuery && matchesCategory;
+            });
+            if (matches.length === 0 && state.activeCategory !== 'All') {
+                state.activeCategory = 'All';
+            }
+            render();
+        });
+
+        render();
+    </script>
+</body>
+</html>

@@ -51,11 +51,11 @@
         }
 
         .sidebar-card {
-            background: white;
-            border-radius: 1.25rem;
-            padding: 1.25rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+            border: 1px solid #f3f4f6;
             position: sticky;
             top: 6.75rem;
             max-width: 100%;
@@ -69,10 +69,10 @@
         }
 
         .sidebar-title {
-            font-size: 1.05rem;
-            font-weight: 700;
+            font-size: 1rem;
+            font-weight: 600;
             color: #111827;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.5rem;
         }
 
         .sidebar-section {
@@ -80,12 +80,12 @@
         }
 
         .sidebar-label {
-            font-size: 0.9rem;
-            font-weight: 700;
+            font-size: 0.75rem;
+            font-weight: 600;
             color: #6b7280;
-            margin-bottom: 0.6rem;
+            margin-bottom: 0.5rem;
             text-transform: uppercase;
-            letter-spacing: 0.03em;
+            letter-spacing: 0.05em;
         }
 
         .resources-header {
@@ -112,11 +112,11 @@
 
         /* Search */
         .search-card {
-            background: white;
-            border-radius: 1.25rem;
-            padding: 1.25rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            border-radius: 1rem;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f3f4f6;
             margin-bottom: 1.5rem;
         }
 
@@ -147,25 +147,26 @@
             background: #f9fafb;
             color: #111827;
             font-weight: 600;
-            padding: 0.45rem 0.75rem;
-            border-radius: 999px;
+            font-size: 0.875rem;
+            padding: 0.375rem 0.875rem;
+            border-radius: 0.5rem;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: background 0.15s ease, border-color 0.15s ease;
             max-width: 100%;
             white-space: normal;
             text-align: left;
         }
 
         .chip:hover {
-            border-color: #bbf7d0;
-            background: #f0fdf4;
+            background: #ecfdf5;
+            border-color: #a7f3d0;
             color: #15803d;
         }
 
         .chip.active {
-            background: #fee2e2;
-            border-color: #fecaca;
-            color: #b91c1c;
+            background: #dcfce7;
+            border-color: #86efac;
+            color: #166534;
         }
 
         .chip.access {
@@ -175,24 +176,25 @@
         }
 
         .chip.access.active {
-            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            background: #16a34a;
             border-color: transparent;
             color: white;
         }
 
         .search-input {
             width: 100%;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.875rem;
-            padding: 0.9rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.625rem;
+            padding: 0.75rem 1rem;
             font-weight: 500;
+            font-size: 0.9375rem;
             outline: none;
             transition: all 0.2s ease;
         }
 
         .search-input:focus {
             border-color: #16a34a;
-            box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.12);
+            box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
         }
 
         .search-hint {
@@ -240,20 +242,20 @@
 
         .resource-card {
             background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 1.25rem;
+            border: 1px solid #f3f4f6;
+            border-radius: 1rem;
             overflow: hidden;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
             display: flex;
             flex-direction: column;
-            min-height: 420px;
+            min-height: 400px;
         }
 
         .resource-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.1);
-            border-color: #bbf7d0;
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+            border-color: #d1fae5;
         }
 
         .card-media {
@@ -303,22 +305,23 @@
             gap: 0.45rem;
             background: #fee2e2;
             color: #b91c1c;
-            font-weight: 700;
-            border-radius: 999px;
-            padding: 0.25rem 0.7rem;
+            font-weight: 600;
+            border-radius: 0.375rem;
+            padding: 0.2rem 0.6rem;
             width: fit-content;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
         }
 
         .resource-title {
-            font-size: 1.15rem;
-            font-weight: 750;
+            font-size: 1.05rem;
+            font-weight: 700;
             color: #111827;
-            line-height: 1.25;
+            line-height: 1.35;
         }
 
         .resource-desc {
-            color: #6b7280;
+            color: #4b5563;
+            font-size: 0.9rem;
             line-height: 1.6;
         }
 
@@ -328,7 +331,8 @@
             justify-content: space-between;
             gap: 0.75rem;
             color: #6b7280;
-            font-weight: 600;
+            font-size: 0.8125rem;
+            font-weight: 500;
             margin-top: 0.35rem;
         }
 
@@ -354,13 +358,11 @@
             flex-wrap: wrap;
         }
 
-            .price {
-                font-weight: 800;
-                color: #dc2626;
-                font-size: 1.1rem;
-            }
-
-            .price.free {
+        .price {
+            font-weight: 700;
+            color: #dc2626;
+            font-size: 1rem;
+        }            .price.free {
                 color: #16a34a;
             }
 
@@ -371,29 +373,25 @@
             gap: 0.5rem;
             border-radius: 999px;
             padding: 0.55rem 0.95rem;
-            font-weight: 700;
-            border: 1px solid #e5e7eb;
-            background: #111827;
+            font-weight: 600;
+            font-size: 0.875rem;
+            border: none;
+            background: #16a34a;
             color: #ffffff;
             text-decoration: none;
             white-space: nowrap;
             min-width: 0;
         }
 
-            .btn:hover {
-                background: #0b1220;
-            }
-
-            .btn.secondary {
-                background: #ffffff;
-                color: #111827;
-            }
-
-            .btn.secondary:hover {
-                background: #f9fafb;
-            }
-
-        .card-actions {
+        .btn:hover {
+            background: #15803d;
+        }        .btn.secondary {
+            background: #ffffff;
+            color: #111827;
+            border: 1px solid #d1d5db;
+        }        .btn.secondary:hover {
+            background: #f3f4f6;
+        }        .card-actions {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
@@ -617,7 +615,7 @@
                 fileHref: '../RESOURCES/files/kuccps-checklist.pdf',
                 fileType: 'PDF',
                 access: 'Free',
-                image: '../assets/images/1.png',
+                image: '../assets/images/test.png',
                 downloadName: 'kuccps-checklist.pdf',
                 priceKes: 0,
                 rating: 4.9,
@@ -631,7 +629,7 @@
                 fileHref: '../RESOURCES/files/application-timeline.pdf',
                 fileType: 'PDF',
                 access: 'Free',
-                image: '../RESOURCES/sam.png',
+                image: '../assets/images/test.png',
                 downloadName: 'application-timeline.pdf',
                 priceKes: 0,
                 rating: 4.8,
@@ -645,7 +643,7 @@
                 fileHref: '../RESOURCES/files/cluster-points-quick-guide.pdf',
                 fileType: 'PDF',
                 access: 'Free',
-                image: '../assets/images/1.png',
+                image: '../assets/images/test.png',
                 downloadName: 'cluster-points-quick-guide.pdf',
                 priceKes: 0,
                 rating: 4.9,
@@ -659,7 +657,7 @@
                 fileHref: '../RESOURCES/files/cluster-guide-full-pack.pdf',
                 fileType: 'PDF',
                 access: 'Paid',
-                image: '../RESOURCES/sam.png',
+                image: '../assets/images/test.png',
                 priceKes: 250,
                 rating: 4.7,
                 metaLeft: 'PDF',
@@ -672,7 +670,7 @@
                 fileHref: '../RESOURCES/files/scholarship-checklist.pdf',
                 fileType: 'PDF',
                 access: 'Free',
-                image: '../assets/images/1.png',
+                image: '../assets/images/test.png',
                 downloadName: 'scholarship-checklist.pdf',
                 priceKes: 0,
                 rating: 4.8,
@@ -686,7 +684,7 @@
                 fileHref: '../RESOURCES/files/career-planning-workbook.pdf',
                 fileType: 'PDF',
                 access: 'Paid',
-                image: '../RESOURCES/sam.png',
+                image: '../assets/images/test.png',
                 priceKes: 300,
                 rating: 4.6,
                 metaLeft: 'PDF',
@@ -699,7 +697,7 @@
                 fileHref: '../RESOURCES/files/career-planning-workbook-sample.pdf',
                 fileType: 'PDF',
                 access: 'Free',
-                image: '../assets/images/1.png',
+                image: '../assets/images/test.png',
                 downloadName: 'career-planning-workbook-sample.pdf',
                 priceKes: 0,
                 rating: 4.8,
@@ -713,7 +711,7 @@
                 fileHref: '../RESOURCES/files/how-to-use-course-corner.pdf',
                 fileType: 'PDF',
                 access: 'Free',
-                image: '../RESOURCES/sam.png',
+                image: '../assets/images/test.png',
                 downloadName: 'how-to-use-course-corner.pdf',
                 priceKes: 0,
                 rating: 4.7,

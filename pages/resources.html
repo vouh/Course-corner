@@ -24,6 +24,56 @@
             padding: 3rem 2rem 4rem;
         }
 
+        .resources-layout {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 1.25rem;
+            align-items: start;
+        }
+
+        @media (max-width: 980px) {
+            .resources-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .sidebar-card {
+            background: white;
+            border-radius: 1.25rem;
+            padding: 1.25rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e5e7eb;
+            position: sticky;
+            top: 6.75rem;
+        }
+
+        @media (max-width: 980px) {
+            .sidebar-card {
+                position: static;
+                top: auto;
+            }
+        }
+
+        .sidebar-title {
+            font-size: 1.05rem;
+            font-weight: 900;
+            color: #111827;
+            margin-bottom: 0.75rem;
+        }
+
+        .sidebar-section {
+            margin-top: 1rem;
+        }
+
+        .sidebar-label {
+            font-size: 0.9rem;
+            font-weight: 900;
+            color: #6b7280;
+            margin-bottom: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+        }
+
         .resources-header {
             display: flex;
             align-items: flex-start;
@@ -353,6 +403,7 @@
     <header class="modern-header" id="mainHeader">
         <div class="header-container">
             <a href="../index.html" class="logo">
+                <img src="../assets/images/logo.png" alt="Course Corner logo" />
                 <span>Course Corner</span>
             </a>
 
@@ -363,6 +414,7 @@
                 <a href="cluster-points.html" class="nav-link">Cluster Points</a>
                 <a href="application-process.html" class="nav-link">Application Guide</a>
                 <a href="resources.html" class="nav-link active">Resources</a>
+                <a href="guide.html" class="nav-link">Guide</a>
                 <a href="contact.html" class="nav-link">Contact</a>
             </nav>
 
@@ -381,6 +433,7 @@
             <a href="cluster-points.html" class="mobile-nav-link">Cluster Points</a>
             <a href="application-process.html" class="mobile-nav-link">Application Guide</a>
             <a href="resources.html" class="mobile-nav-link active">Resources</a>
+            <a href="guide.html" class="mobile-nav-link">Guide</a>
             <a href="contact.html" class="mobile-nav-link">Contact</a>
         </div>
     </header>
@@ -394,27 +447,40 @@
             </div>
         </div>
 
-        <div class="search-card">
-            <div class="search-row">
-                <div class="toolbar">
+        <div class="resources-layout">
+            <aside class="sidebar-card" aria-label="Filters">
+                <div class="sidebar-title">Filters</div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-label">Category</div>
                     <div class="chip-row" id="categoryChips" aria-label="Categories"></div>
+                </div>
+
+                <div class="sidebar-section">
+                    <div class="sidebar-label">Access</div>
                     <div class="chip-row" aria-label="Access">
                         <button class="chip access active" type="button" data-access="All">All</button>
                         <button class="chip access" type="button" data-access="Free">Free</button>
                         <button class="chip access" type="button" data-access="Paid">Paid</button>
                     </div>
                 </div>
+            </aside>
 
-                <input id="resourceSearch" class="search-input" type="text" placeholder="Search resources (e.g., KUCCPS, scholarships, application, cluster points…)" autocomplete="off" />
-                <div class="search-hint">Tip: use the category chips above to filter.</div>
+            <div>
+                <div class="search-card">
+                    <div class="search-row">
+                        <input id="resourceSearch" class="search-input" type="text" placeholder="Search resources (e.g., KUCCPS, scholarships, application, cluster points…)" autocomplete="off" />
+                        <div class="search-hint">Tip: use the filters on the left to narrow down results.</div>
+                    </div>
+                </div>
+
+                <div class="cards-header">
+                    <div id="resultsCount">Showing 0 resources</div>
+                </div>
+
+                <div id="resultsRoot"></div>
             </div>
         </div>
-
-        <div class="cards-header">
-            <div id="resultsCount">Showing 0 resources</div>
-        </div>
-
-        <div id="resultsRoot"></div>
     </div>
 
     <!-- Modern Footer -->
@@ -423,6 +489,7 @@
             <div class="footer-grid">
                 <div class="footer-col">
                     <div class="footer-brand">
+                        <img class="footer-logo" src="../assets/images/logo.png" alt="Course Corner logo" />
                         <span>Course Corner</span>
                     </div>
                     <p class="footer-description">

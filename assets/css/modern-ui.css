@@ -1115,8 +1115,15 @@ html {
 
 .footer-brand {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--cc-space-sm);
     margin-bottom: var(--cc-space-md);
+}
+
+.footer-logo {
+    height: 40px;
+    width: auto;
 }
 
 .footer-brand span {

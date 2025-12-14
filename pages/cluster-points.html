@@ -225,6 +225,83 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Compact accordion list */
+        .clusters-accordion {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .cluster-accordion-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+
+        .cluster-accordion-item[open] {
+            border-color: #16a34a;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .cluster-accordion-summary {
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            cursor: pointer;
+            padding: 1rem 1.25rem;
+            user-select: none;
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+        }
+
+        .cluster-accordion-summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .cluster-accordion-left {
+            display: grid;
+            gap: 0.15rem;
+        }
+
+        .cluster-accordion-label {
+            font-size: 0.9rem;
+            font-weight: 800;
+            opacity: 0.95;
+        }
+
+        .cluster-accordion-title {
+            font-size: 1.05rem;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .cluster-accordion-chevron {
+            font-size: 1rem;
+            opacity: 0.95;
+            transition: transform 0.2s ease;
+        }
+
+        .cluster-accordion-item[open] .cluster-accordion-chevron {
+            transform: rotate(180deg);
+        }
+
+        .cluster-accordion-body {
+            padding: 1rem 1.25rem 1.25rem;
+        }
+
+        .cluster-accordion-body ul {
+            margin: 0;
+            padding-left: 1.2rem;
+            color: #374151;
+        }
+
+        .cluster-accordion-body li {
+            margin: 0.35rem 0;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
@@ -264,16 +341,8 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="page-hero">
-        <div class="page-hero-content">
-            <h1>Cluster Points Guide 📊</h1>
-            <p>Understanding how cluster points work is crucial for your university application process</p>
-        </div>
-    </section>
-
     <!-- Main Content -->
-    <div class="cluster-content">
+    <div class="cluster-content" style="padding-top: 7rem;">
         <!-- Explanation Section -->
         <div class="explanation-box">
             <h2><i class="fas fa-info-circle"></i> How Cluster Points Work</h2>
@@ -290,328 +359,8 @@
             </div>
         </div>
 
-        <!-- Clusters Grid -->
-        <div class="clusters-grid">
-            <!-- Cluster 1 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 1</div>
-                    <div class="cluster-title">Law and Related Courses</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>ENG/KIS</li>
-                        <li>MAT A/B or any GROUP II</li>
-                        <li>Any GROUP III</li>
-                        <li>GROUP II/2nd GROUP III/GROUP IV/GROUP V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 2 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 2</div>
-                    <div class="cluster-title">Business, Hospitality & Related</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>ENG/KIS</li>
-                        <li>ENG/KIS</li>
-                        <li>MAT A/B</li>
-                        <li>Any GROUP II or GROUP III</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 3 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 3</div>
-                    <div class="cluster-title">Social Sciences, Media, Fine Arts & Related</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>ENG/KIS</li>
-                        <li>MAT A/B or any GROUP II</li>
-                        <li>Any GROUP III</li>
-                        <li>GROUP II/2nd GROUP III/GROUP IV/GROUP V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 4 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 4</div>
-                    <div class="cluster-title">Geosciences & Related</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>MAT A</li>
-                        <li>PHY</li>
-                        <li>BIO/CHE/GEO</li>
-                        <li>GROUP II/GROUP III/GROUP IV/GROUP V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 5 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 5</div>
-                    <div class="cluster-title">Engineering & Technology</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>MAT A</li>
-                        <li>PHY</li>
-                        <li>BIO/CHE/GEO</li>
-                        <li>GROUP II/GROUP III/GROUP IV/GROUP V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 6 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 6</div>
-                    <div class="cluster-title">Architecture, Building & Construction</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>MAT A</li>
-                        <li>PHY</li>
-                        <li>Any GROUP III</li>
-                        <li>2nd GROUP II/III/GROUP IV/GROUP V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 7 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 7</div>
-                    <div class="cluster-title">Computing, IT & Related</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>MAT A</li>
-                        <li>PHY</li>
-                        <li>2nd GROUP II or any GROUP III</li>
-                        <li>GROUP II/III/GROUP IV/GROUP V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 8 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 8</div>
-                    <div class="cluster-title">Agribusiness & Related</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>MAT A</li>
-                        <li>BIO</li>
-                        <li>PHY or CHE</li>
-                        <li>3rd GROUP II/III/GROUP IV/GROUP V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 9 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 9</div>
-                    <div class="cluster-title">Biological Sciences, Physics, Chemistry</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>MAT A</li>
-                        <li>Any GROUP II</li>
-                        <li>2nd GROUP II</li>
-                        <li>3rd GROUP II/III/GROUP IV/GROUP V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 10 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 10</div>
-                    <div class="cluster-title">Actuarial Science, Accountancy, Economics</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>MAT A</li>
-                        <li>Any GROUP II</li>
-                        <li>Any GROUP III</li>
-                        <li>2nd GROUP II/III/GROUP IV/GROUP V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 11 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 11</div>
-                    <div class="cluster-title">Interior Design, Fashion, Textiles</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>CHE</li>
-                        <li>MAT A/B or PHY</li>
-                        <li>BIO/HSC</li>
-                        <li>ENG/KIS or GROUP III/IV/V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 12 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 12</div>
-                    <div class="cluster-title">Sport Science & Related</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>BIO/GSC</li>
-                        <li>MAT A/B</li>
-                        <li>Any GROUP II or III</li>
-                        <li>ENG/KIS or GROUP II/III/IV/V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 13 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 13</div>
-                    <div class="cluster-title">Medicine, Health, Veterinary</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>BIO</li>
-                        <li>CHE</li>
-                        <li>MAT A/PHY</li>
-                        <li>ENG/KIS or 3rd GROUP II/III/IV/V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 14 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 14</div>
-                    <div class="cluster-title">History, Archaeology & Related</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>HAG</li>
-                        <li>ENG/KIS</li>
-                        <li>MAT A/B or any GROUP II</li>
-                        <li>GROUP II/2nd GROUP III/IV/V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 15 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 15</div>
-                    <div class="cluster-title">Agriculture, Food Science, Environment</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>BIO</li>
-                        <li>CHE</li>
-                        <li>MAT A/PHY/GEO</li>
-                        <li>ENG/KIS or 3rd GROUP II/III/IV/V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 16 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 16</div>
-                    <div class="cluster-title">Pharmacy, Nursing, Public Health</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>BIO</li>
-                        <li>CHE</li>
-                        <li>MAT A/PHY</li>
-                        <li>ENG/KIS or 3rd GROUP II/III/IV/V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 17 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 17</div>
-                    <div class="cluster-title">Languages, Literature, Philosophy</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>ENG</li>
-                        <li>KIS</li>
-                        <li>Any GROUP III</li>
-                        <li>MAT A/B or GROUP II/III/IV/V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 18 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 18</div>
-                    <div class="cluster-title">Music & Related Courses</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>MUS</li>
-                        <li>ENG/KIS</li>
-                        <li>MAT A/B or any GROUP II</li>
-                        <li>GROUP III/IV/V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 19 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 19</div>
-                    <div class="cluster-title">Religious Studies & Related</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>CRE/IRE/HRE</li>
-                        <li>ENG/KIS</li>
-                        <li>Any GROUP III</li>
-                        <li>MAT A/B or GROUP II/III/IV/V</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Cluster 20 -->
-            <div class="cluster-card">
-                <div class="cluster-header">
-                    <div class="cluster-number">Cluster 20</div>
-                    <div class="cluster-title">Education & Teaching</div>
-                </div>
-                <div class="cluster-body">
-                    <ul class="cluster-subjects">
-                        <li>ENG/KIS</li>
-                        <li>MAT A/B or any GROUP II</li>
-                        <li>Any GROUP III</li>
-                        <li>GROUP II/III/IV/V</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+        <!-- Clusters (Compact Dropdowns) -->
+        <div class="clusters-accordion" id="clustersAccordion" aria-label="Clusters 1 to 20"></div>
 
         <!-- CTA Section -->
         <div class="cta-box">
@@ -679,6 +428,51 @@
     <script>
         // Set current year
         document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Render compact cluster dropdowns
+        const clusters = [
+            { n: 1, title: 'Law and Related Courses', subjects: ['ENG/KIS', 'MAT A/B or any GROUP II', 'Any GROUP III', 'GROUP II/2nd GROUP III/GROUP IV/GROUP V'] },
+            { n: 2, title: 'Business, Hospitality & Related', subjects: ['ENG/KIS', 'ENG/KIS', 'MAT A/B', 'Any GROUP II or GROUP III'] },
+            { n: 3, title: 'Social Sciences, Media, Fine Arts & Related', subjects: ['ENG/KIS', 'MAT A/B or any GROUP II', 'Any GROUP III', 'GROUP II/2nd GROUP III/GROUP IV/GROUP V'] },
+            { n: 4, title: 'Geosciences & Related', subjects: ['MAT A', 'PHY', 'BIO/CHE/GEO', 'GROUP II/GROUP III/GROUP IV/GROUP V'] },
+            { n: 5, title: 'Engineering & Technology', subjects: ['MAT A', 'PHY', 'BIO/CHE/GEO', 'GROUP II/GROUP III/GROUP IV/GROUP V'] },
+            { n: 6, title: 'Architecture, Building & Construction', subjects: ['MAT A', 'PHY', 'Any GROUP III', '2nd GROUP II/III/GROUP IV/GROUP V'] },
+            { n: 7, title: 'Computing, IT & Related', subjects: ['MAT A', 'PHY', '2nd GROUP II or any GROUP III', 'GROUP II/III/GROUP IV/GROUP V'] },
+            { n: 8, title: 'Agribusiness & Related', subjects: ['MAT A', 'BIO', 'PHY or CHE', '3rd GROUP II/III/GROUP IV/GROUP V'] },
+            { n: 9, title: 'Biological Sciences, Physics, Chemistry', subjects: ['MAT A', 'Any GROUP II', '2nd GROUP II', '3rd GROUP II/III/GROUP IV/GROUP V'] },
+            { n: 10, title: 'Actuarial Science, Accountancy, Economics', subjects: ['MAT A', 'Any GROUP II', 'Any GROUP III', '2nd GROUP II/III/GROUP IV/GROUP V'] },
+            { n: 11, title: 'Interior Design, Fashion, Textiles', subjects: ['CHE', 'MAT A/B or PHY', 'BIO/HSC', 'ENG/KIS or GROUP III/IV/V'] },
+            { n: 12, title: 'Sport Science & Related', subjects: ['BIO/GSC', 'MAT A/B', 'Any GROUP II or III', 'ENG/KIS or GROUP II/III/IV/V'] },
+            { n: 13, title: 'Medicine, Health, Veterinary', subjects: ['BIO', 'CHE', 'MAT A/PHY', 'ENG/KIS or 3rd GROUP II/III/IV/V'] },
+            { n: 14, title: 'History, Archaeology & Related', subjects: ['HAG', 'ENG/KIS', 'MAT A/B or any GROUP II', 'GROUP II/2nd GROUP III/IV/V'] },
+            { n: 15, title: 'Agriculture, Food Science, Environment', subjects: ['BIO', 'CHE', 'MAT A/PHY/GEO', 'ENG/KIS or 3rd GROUP II/III/IV/V'] },
+            { n: 16, title: 'Pharmacy, Nursing, Public Health', subjects: ['BIO', 'CHE', 'MAT A/PHY', 'ENG/KIS or 3rd GROUP II/III/IV/V'] },
+            { n: 17, title: 'Languages, Literature, Philosophy', subjects: ['ENG', 'KIS', 'Any GROUP III', 'MAT A/B or GROUP II/III/IV/V'] },
+            { n: 18, title: 'Music & Related Courses', subjects: ['MUS', 'ENG/KIS', 'MAT A/B or any GROUP II', 'GROUP III/IV/V'] },
+            { n: 19, title: 'Religious Studies & Related', subjects: ['CRE/IRE/HRE', 'ENG/KIS', 'Any GROUP III', 'MAT A/B or GROUP II/III/IV/V'] },
+            { n: 20, title: 'Education & Teaching', subjects: ['ENG/KIS', 'MAT A/B or any GROUP II', 'Any GROUP III', 'GROUP II/III/IV/V'] }
+        ];
+
+        const accordionRoot = document.getElementById('clustersAccordion');
+        if (accordionRoot) {
+            accordionRoot.innerHTML = clusters.map(c => {
+                const items = c.subjects.map(s => `<li>${s}</li>`).join('');
+                return `
+                    <details class="cluster-accordion-item">
+                        <summary class="cluster-accordion-summary">
+                            <div class="cluster-accordion-left">
+                                <div class="cluster-accordion-label">Cluster ${c.n}</div>
+                                <div class="cluster-accordion-title">${c.title}</div>
+                            </div>
+                            <i class="fas fa-chevron-down cluster-accordion-chevron" aria-hidden="true"></i>
+                        </summary>
+                        <div class="cluster-accordion-body">
+                            <ul>${items}</ul>
+                        </div>
+                    </details>
+                `;
+            }).join('');
+        }
         
         // Mobile menu toggle with state tracking
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');

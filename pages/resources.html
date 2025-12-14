@@ -71,7 +71,72 @@
 
         @media (max-width: 1024px) {
             .resources-layout {
-                grid-template-columns: 1fr;
+                display: block;
+            }
+        }
+
+        /* Mobile off-canvas sidebar */
+        .sidebar-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(17, 24, 39, 0.55);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            z-index: 40;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .sidebar-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+        }
+
+        .sidebar-inner {
+            margin-top: 0.75rem;
+        }
+
+        .sidebar-close-btn {
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            font-weight: 800;
+            border-radius: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+        }
+
+        .sidebar-close-btn:hover {
+            background: rgba(255, 255, 255, 0.18);
+        }
+
+        .sidebar-toggle-btn {
+            display: none;
+            align-items: center;
+            gap: 0.6rem;
+            border: 1px solid #e5e7eb;
+            background: white;
+            color: #111827;
+            font-weight: 800;
+            border-radius: 0.875rem;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .sidebar-toggle-btn i {
+            color: #16a34a;
+        }
+
+        @media (min-width: 1025px) {
+            .sidebar-close-btn {
+                display: none;
             }
         }
 
@@ -87,8 +152,47 @@
 
         @media (max-width: 1024px) {
             .sidebar-card {
-                position: relative;
-                top: auto;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: min(360px, 92vw);
+                height: 100vh;
+                z-index: 50;
+                border-radius: 0;
+                padding-top: 1rem;
+                transform: translateX(-110%);
+                transition: transform 0.22s ease;
+            }
+
+            .sidebar-card.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-title {
+                margin-bottom: 0;
+                color: white;
+            }
+
+            .sidebar-title i {
+                color: rgba(255, 255, 255, 0.95);
+            }
+
+            .sidebar-card {
+                background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+                border: 0;
+            }
+
+            .sidebar-inner {
+                background: white;
+                border-radius: 1rem;
+                padding: 1rem;
+                margin-top: 1rem;
+                height: calc(100vh - 5.25rem);
+                overflow: auto;
+            }
+
+            .sidebar-toggle-btn {
+                display: inline-flex;
             }
         }
 
@@ -171,6 +275,37 @@
             gap: 0.75rem;
         }
 
+        .search-tools {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-pills {
+            display: inline-flex;
+            background: #f3f4f6;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.875rem;
+            overflow: hidden;
+        }
+
+        .filter-pill {
+            appearance: none;
+            border: 0;
+            background: transparent;
+            padding: 0.65rem 0.85rem;
+            font-weight: 900;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .filter-pill.active {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+        }
+
         .search-input {
             width: 100%;
             border: 1px solid #e5e7eb;
@@ -237,12 +372,12 @@
             background: #ffffff;
             border: 1px solid #e5e7eb;
             border-radius: 1rem;
-            padding: 1.1rem 1.1rem;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
             transition: all 0.25s ease;
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
+            overflow: hidden;
         }
 
         .resource-card:hover {
@@ -258,6 +393,26 @@
             display: flex;
             align-items: flex-start;
             gap: 0.6rem;
+        }
+
+        .resource-thumb {
+            width: 100%;
+            height: 140px;
+            background: #f3f4f6;
+        }
+
+        .resource-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .resource-body {
+            padding: 1.1rem 1.1rem 1.15rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
         }
 
         .resource-title i {
@@ -276,6 +431,69 @@
             justify-content: space-between;
             gap: 0.75rem;
             margin-top: 0.4rem;
+        }
+
+        .resource-meta-left {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .access-pill {
+            font-size: 0.8rem;
+            font-weight: 900;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+        }
+
+        .access-pill.free {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .access-pill.paid {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .file-pill {
+            font-size: 0.8rem;
+            font-weight: 900;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            background: #f3f4f6;
+            color: #111827;
+        }
+
+        .resource-action {
+            font-weight: 900;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.55rem 0.75rem;
+            border-radius: 0.8rem;
+            border: 1px solid #e5e7eb;
+            background: #ffffff;
+            color: #16a34a;
+        }
+
+        .resource-action:hover {
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+            color: #15803d;
+        }
+
+        .resource-action.paid {
+            color: #92400e;
+            background: #fffbeb;
+            border-color: #fde68a;
+        }
+
+        .resource-action.paid:hover {
+            background: #fef3c7;
+            border-color: #fcd34d;
         }
 
         .resource-badge {
@@ -348,30 +566,44 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
-    <section class="page-hero">
-        <div class="page-hero-content">
-            <h1>Resources Library 📚</h1>
-            <p>Search and browse helpful guides, tools, and links for KUCCPS, applications, and career planning</p>
-        </div>
-    </section>
+    <!-- Sidebar Overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
 
     <!-- Main Content -->
-    <div class="resources-content">
+    <div class="resources-content" style="padding-top: 7rem;">
         <div class="resources-layout">
             <!-- Sidebar -->
             <aside class="sidebar-card" aria-label="Resource categories">
-                <div class="sidebar-title">
-                    <i class="fas fa-layer-group"></i>
-                    Categories
+                <div class="sidebar-top">
+                    <div class="sidebar-title">
+                        <i class="fas fa-layer-group"></i>
+                        Categories
+                    </div>
+                    <button class="sidebar-close-btn" id="closeSidebarBtn" type="button" aria-label="Close categories">
+                        Close
+                    </button>
                 </div>
-                <ul class="category-list" id="categoryList"></ul>
+                <div class="sidebar-inner">
+                    <ul class="category-list" id="categoryList"></ul>
+                </div>
             </aside>
 
             <!-- Main -->
             <main>
                 <div class="search-card">
                     <div class="search-row">
+                        <div class="search-tools">
+                            <button class="sidebar-toggle-btn" id="openSidebarBtn" type="button" aria-label="Open categories">
+                                <i class="fas fa-bars"></i>
+                                Categories
+                            </button>
+
+                            <div class="filter-pills" role="tablist" aria-label="Filter by access">
+                                <button class="filter-pill active" type="button" data-access="All">All</button>
+                                <button class="filter-pill" type="button" data-access="Free">Free</button>
+                                <button class="filter-pill" type="button" data-access="Paid">Paid</button>
+                            </div>
+                        </div>
                         <input id="resourceSearch" class="search-input" type="text" placeholder="Search resources (e.g., KUCCPS, scholarships, application, cluster points…)" autocomplete="off" />
                         <div class="search-hint">
                             Tip: use the categories on the left to narrow down.
@@ -493,71 +725,139 @@
             else header.classList.remove('scrolled');
         });
 
+        // Off-canvas categories sidebar (mobile)
+        const sidebarEl = document.querySelector('.sidebar-card');
+        const sidebarOverlayEl = document.getElementById('sidebarOverlay');
+        const openSidebarBtn = document.getElementById('openSidebarBtn');
+        const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+
+        function openSidebar() {
+            if (!sidebarEl || !sidebarOverlayEl) return;
+            sidebarEl.classList.add('open');
+            sidebarOverlayEl.classList.add('active');
+        }
+
+        function closeSidebar() {
+            if (!sidebarEl || !sidebarOverlayEl) return;
+            sidebarEl.classList.remove('open');
+            sidebarOverlayEl.classList.remove('active');
+        }
+
+        openSidebarBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            openSidebar();
+        });
+
+        closeSidebarBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            closeSidebar();
+        });
+
+        sidebarOverlayEl?.addEventListener('click', () => closeSidebar());
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeSidebar();
+        });
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) closeSidebar();
+        });
+
         // ===== Resources Data + Rendering =====
         const resources = [
             {
                 category: 'KUCCPS & Placement',
-                title: 'KUCCPS Official Website',
-                description: 'Official portal for placement updates and announcements.',
-                href: 'https://www.kuccps.net',
-                badge: 'Official Link',
-                icon: 'fa-landmark'
+                title: 'KUCCPS Application Checklist',
+                description: 'A quick checklist to help you submit your KUCCPS application correctly.',
+                fileHref: '../RESOURCES/files/kuccps-checklist.txt',
+                fileType: 'TXT',
+                access: 'Free',
+                badge: 'Checklist',
+                icon: 'fa-clipboard-list',
+                image: '../assets/images/1.png',
+                downloadName: 'kuccps-checklist.txt'
             },
             {
                 category: 'KUCCPS & Placement',
-                title: 'KUCCPS Students Portal',
-                description: 'Login portal for student services and application actions.',
-                href: 'https://students.kuccps.net',
-                badge: 'Official Link',
-                icon: 'fa-user-graduate'
+                title: 'Application Timeline Template',
+                description: 'A simple timeline template you can reuse to plan your application steps.',
+                fileHref: '../RESOURCES/files/application-timeline.txt',
+                fileType: 'TXT',
+                access: 'Free',
+                badge: 'Template',
+                icon: 'fa-calendar-check',
+                image: '../RESOURCES/sam.png',
+                downloadName: 'application-timeline.txt'
             },
             {
                 category: 'Cluster Points & Subjects',
-                title: 'Cluster Points Guide',
-                description: 'Learn how cluster points work and what they mean.',
-                href: 'cluster-points.html',
+                title: 'Cluster Points Quick Guide',
+                description: 'A short guide explaining cluster points and how to use them.',
+                fileHref: '../RESOURCES/files/cluster-points-quick-guide.txt',
+                fileType: 'TXT',
+                access: 'Free',
                 badge: 'Guide',
-                icon: 'fa-chart-line'
+                icon: 'fa-layer-group',
+                image: '../assets/images/1.png',
+                downloadName: 'cluster-points-quick-guide.txt'
             },
             {
                 category: 'Cluster Points & Subjects',
-                title: 'Cluster Points Calculator',
-                description: 'Calculate your overall points and explore eligibility.',
-                href: 'calculator.html',
-                badge: 'Tool',
-                icon: 'fa-calculator'
+                title: 'Cluster Guide (Full Pack)',
+                description: 'A more detailed pack with extra notes and examples (paid resource).',
+                fileHref: '../RESOURCES/files/cluster-points-quick-guide.txt',
+                fileType: 'TXT',
+                access: 'Paid',
+                badge: 'Pack',
+                icon: 'fa-book',
+                image: '../RESOURCES/sam.png'
             },
             {
                 category: 'Applications & Admissions',
-                title: 'Application Process Guide',
-                description: 'Step-by-step overview to help you apply confidently.',
-                href: 'application-process.html',
-                badge: 'Guide',
-                icon: 'fa-clipboard-check'
+                title: 'Scholarship Checklist',
+                description: 'Common documents and steps to prepare before applying for scholarships.',
+                fileHref: '../RESOURCES/files/scholarship-checklist.txt',
+                fileType: 'TXT',
+                access: 'Free',
+                badge: 'Checklist',
+                icon: 'fa-award',
+                image: '../assets/images/1.png',
+                downloadName: 'scholarship-checklist.txt'
             },
             {
                 category: 'Scholarships & Funding',
-                title: 'Scholarship Checklist',
-                description: 'A quick checklist of documents and steps to prepare.',
-                href: '#',
-                badge: 'Checklist',
-                icon: 'fa-hand-holding-heart'
+                title: 'Career Planning Mini-Workbook',
+                description: 'A simple workbook to help you shortlist careers and next steps (paid resource).',
+                fileHref: '../RESOURCES/files/career-planning-workbook.txt',
+                fileType: 'TXT',
+                access: 'Paid',
+                badge: 'Workbook',
+                icon: 'fa-briefcase',
+                image: '../RESOURCES/sam.png'
             },
             {
                 category: 'Career Planning',
-                title: 'How to Choose a Career Path',
-                description: 'Simple steps to match your strengths and interests to careers.',
-                href: '#',
-                badge: 'Article',
-                icon: 'fa-compass'
+                title: 'Career Planning Mini-Workbook (Free Sample)',
+                description: 'A free sample workbook to help you start planning your career.',
+                fileHref: '../RESOURCES/files/career-planning-workbook.txt',
+                fileType: 'TXT',
+                access: 'Free',
+                badge: 'Workbook',
+                icon: 'fa-compass',
+                image: '../assets/images/1.png',
+                downloadName: 'career-planning-workbook.txt'
             },
             {
-                category: 'Career Planning',
-                title: 'Talk to Us',
-                description: 'Need help? Reach out and we’ll guide you.',
-                href: 'contact.html',
-                badge: 'Support',
-                icon: 'fa-headset'
+                category: 'Videos',
+                title: 'Demo Video (Sample)',
+                description: 'Sample downloadable video file (for testing downloads).',
+                fileHref: '../RESOURCES/SAM-LANDING.mp4',
+                fileType: 'MP4',
+                access: 'Free',
+                badge: 'Video',
+                icon: 'fa-video',
+                image: '../RESOURCES/sam.png',
+                downloadName: 'SAM-LANDING.mp4'
             }
         ];
 
@@ -566,12 +866,14 @@
             'Cluster Points & Subjects': 'fa-layer-group',
             'Applications & Admissions': 'fa-file-signature',
             'Scholarships & Funding': 'fa-award',
-            'Career Planning': 'fa-briefcase'
+            'Career Planning': 'fa-briefcase',
+            'Videos': 'fa-circle-play'
         };
 
         const state = {
             activeCategory: 'All',
-            query: ''
+            query: '',
+            access: 'All'
         };
 
         const categoryListEl = document.getElementById('categoryList');
@@ -600,7 +902,8 @@
             return resources.filter(r => {
                 const matchesQuery = !q || normalize(r.title).includes(q) || normalize(r.description).includes(q) || normalize(r.category).includes(q);
                 const matchesCategory = state.activeCategory === 'All' || r.category === state.activeCategory;
-                return matchesQuery && matchesCategory;
+                const matchesAccess = state.access === 'All' || r.access === state.access;
+                return matchesQuery && matchesCategory && matchesAccess;
             });
         }
 
@@ -637,6 +940,7 @@
                 btn.appendChild(count);
                 btn.addEventListener('click', () => {
                     state.activeCategory = cat;
+                    if (window.innerWidth <= 1024) closeSidebar();
                     render();
                 });
 
@@ -670,20 +974,37 @@
             const html = categoryOrder.map(category => {
                 const icon = categoryIcons[category] || 'fa-book';
                 const cards = groups[category].map(r => {
-                    const isExternal = /^https?:\/\//i.test(r.href);
-                    const target = isExternal ? ' target="_blank" rel="noopener noreferrer"' : '';
+                    const accessClass = r.access === 'Paid' ? 'paid' : 'free';
+                    const imageSrc = r.image || '../assets/images/1.png';
+                    const fileHref = r.fileHref || '#';
+                    const isFree = r.access !== 'Paid';
+                    const downloadAttr = isFree ? ` download="${(r.downloadName || '').replace(/"/g, '')}"` : '';
+                    const actionHtml = isFree
+                        ? `<a class="resource-action" href="${fileHref}"${downloadAttr}>
+                                Download <i class="fas fa-download"></i>
+                           </a>`
+                        : `<a class="resource-action paid" href="contact.html">
+                                Request Access <i class="fas fa-lock"></i>
+                           </a>`;
                     return `
                         <article class="resource-card">
-                            <div class="resource-title">
-                                <i class="fas ${r.icon ? `fa-solid ${r.icon}` : 'fa-book'}"></i>
-                                <span>${r.title}</span>
+                            <div class="resource-thumb">
+                                <img src="${imageSrc}" alt="${(r.title || 'Resource').replace(/"/g, '')}" loading="lazy" onerror="this.src='../assets/images/1.png'" />
                             </div>
-                            <div class="resource-desc">${r.description}</div>
-                            <div class="resource-meta">
-                                <span class="resource-badge">${r.badge || 'Resource'}</span>
-                                <a class="resource-link" href="${r.href}"${target}>
-                                    Open <i class="fas fa-arrow-right"></i>
-                                </a>
+                            <div class="resource-body">
+                                <div class="resource-title">
+                                    <i class="fas ${r.icon || 'fa-book'}"></i>
+                                    <span>${r.title}</span>
+                                </div>
+                                <div class="resource-desc">${r.description}</div>
+                                <div class="resource-meta">
+                                    <div class="resource-meta-left">
+                                        <span class="resource-badge">${r.badge || 'Resource'}</span>
+                                        <span class="access-pill ${accessClass}">${r.access}</span>
+                                        <span class="file-pill">${r.fileType || 'FILE'}</span>
+                                    </div>
+                                    ${actionHtml}
+                                </div>
                             </div>
                         </article>
                     `;
@@ -715,12 +1036,24 @@
                 const q = normalize(state.query);
                 const matchesQuery = !q || normalize(r.title).includes(q) || normalize(r.description).includes(q) || normalize(r.category).includes(q);
                 const matchesCategory = state.activeCategory === 'All' || r.category === state.activeCategory;
-                return matchesQuery && matchesCategory;
+                const matchesAccess = state.access === 'All' || r.access === state.access;
+                return matchesQuery && matchesCategory && matchesAccess;
             });
             if (matches.length === 0 && state.activeCategory !== 'All') {
                 state.activeCategory = 'All';
             }
             render();
+        });
+
+        // Access filter pills
+        document.querySelectorAll('.filter-pill').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const next = btn.getAttribute('data-access') || 'All';
+                state.access = next;
+                document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                render();
+            });
         });
 
         render();

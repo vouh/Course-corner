@@ -17,44 +17,6 @@
             font-family: 'Inter', sans-serif;
         }
 
-        /* Modern Page Header */
-        .page-hero {
-            background: linear-gradient(135deg, #16a34a 0%, #15803d 50%, #166534 100%);
-            padding: 8rem 2rem 4rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .page-hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-
-        .page-hero-content {
-            max-width: 900px;
-            margin: 0 auto;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        .page-hero h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            color: white;
-            margin-bottom: 1rem;
-        }
-
-        .page-hero p {
-            font-size: 1.25rem;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
         /* Resources Layout */
         .resources-content {
             max-width: 1400px;
@@ -62,201 +24,25 @@
             padding: 3rem 2rem 4rem;
         }
 
-        .resources-layout {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 2rem;
-            align-items: start;
-        }
-
-        @media (max-width: 1024px) {
-            .resources-layout {
-                display: block;
-            }
-        }
-
-        /* Mobile off-canvas sidebar */
-        .sidebar-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(17, 24, 39, 0.55);
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity 0.2s ease;
-            z-index: 40;
-        }
-
-        .sidebar-overlay.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .sidebar-top {
+        .resources-header {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             justify-content: space-between;
-            gap: 0.75rem;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1.25rem;
         }
 
-        .sidebar-inner {
-            margin-top: 0.75rem;
-        }
-
-        .sidebar-close-btn {
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.12);
-            color: white;
-            font-weight: 800;
-            border-radius: 0.75rem;
-            padding: 0.5rem 0.75rem;
-            cursor: pointer;
-        }
-
-        .sidebar-close-btn:hover {
-            background: rgba(255, 255, 255, 0.18);
-        }
-
-        .sidebar-toggle-btn {
-            display: none;
-            align-items: center;
-            gap: 0.6rem;
-            border: 1px solid #e5e7eb;
-            background: white;
+        .resources-title {
+            font-size: 1.5rem;
+            font-weight: 900;
             color: #111827;
-            font-weight: 800;
-            border-radius: 0.875rem;
-            padding: 0.75rem 1rem;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
         }
 
-        .sidebar-toggle-btn i {
-            color: #16a34a;
-        }
-
-        @media (min-width: 1025px) {
-            .sidebar-close-btn {
-                display: none;
-            }
-        }
-
-        .sidebar-card {
-            position: sticky;
-            top: 110px;
-            background: white;
-            border-radius: 1.25rem;
-            padding: 1.25rem;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            border: 1px solid #e5e7eb;
-        }
-
-        @media (max-width: 1024px) {
-            .sidebar-card {
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: min(360px, 92vw);
-                height: 100vh;
-                z-index: 50;
-                border-radius: 0;
-                padding-top: 1rem;
-                transform: translateX(-110%);
-                transition: transform 0.22s ease;
-            }
-
-            .sidebar-card.open {
-                transform: translateX(0);
-            }
-
-            .sidebar-title {
-                margin-bottom: 0;
-                color: white;
-            }
-
-            .sidebar-title i {
-                color: rgba(255, 255, 255, 0.95);
-            }
-
-            .sidebar-card {
-                background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-                border: 0;
-            }
-
-            .sidebar-inner {
-                background: white;
-                border-radius: 1rem;
-                padding: 1rem;
-                margin-top: 1rem;
-                height: calc(100vh - 5.25rem);
-                overflow: auto;
-            }
-
-            .sidebar-toggle-btn {
-                display: inline-flex;
-            }
-        }
-
-        .sidebar-title {
-            font-size: 1.125rem;
-            font-weight: 800;
-            color: #111827;
-            margin-bottom: 0.75rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .sidebar-title i {
-            color: #16a34a;
-        }
-
-        .category-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .category-btn {
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.75rem;
-            padding: 0.75rem 0.875rem;
-            border-radius: 0.875rem;
-            border: 1px solid transparent;
-            background: transparent;
-            color: #374151;
+        .resources-subtitle {
+            color: #6b7280;
             font-weight: 600;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            text-align: left;
-        }
-
-        .category-btn:hover {
-            background: #f0fdf4;
-            border-color: #bbf7d0;
-            color: #16a34a;
-        }
-
-        .category-btn.active {
-            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
-            color: white;
-            border-color: transparent;
-        }
-
-        .category-btn .count {
-            font-size: 0.875rem;
-            font-weight: 800;
-            padding: 0.15rem 0.5rem;
-            border-radius: 999px;
-            background: #f3f4f6;
-            color: #111827;
-        }
-
-        .category-btn.active .count {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+            margin-top: 0.25rem;
         }
 
         /* Search */
@@ -275,7 +61,7 @@
             gap: 0.75rem;
         }
 
-        .search-tools {
+        .toolbar {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -283,26 +69,45 @@
             flex-wrap: wrap;
         }
 
-        .filter-pills {
-            display: inline-flex;
-            background: #f3f4f6;
+        .chip-row {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .chip {
             border: 1px solid #e5e7eb;
-            border-radius: 0.875rem;
-            overflow: hidden;
-        }
-
-        .filter-pill {
-            appearance: none;
-            border: 0;
-            background: transparent;
-            padding: 0.65rem 0.85rem;
-            font-weight: 900;
-            color: #374151;
+            background: #f9fafb;
+            color: #111827;
+            font-weight: 800;
+            padding: 0.4rem 0.7rem;
+            border-radius: 999px;
             cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .filter-pill.active {
+        .chip:hover {
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+            color: #15803d;
+        }
+
+        .chip.active {
+            background: #fee2e2;
+            border-color: #fecaca;
+            color: #b91c1c;
+        }
+
+        .chip.access {
+            background: #f3f4f6;
+            border-color: #e5e7eb;
+            color: #111827;
+        }
+
+        .chip.access.active {
             background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            border-color: transparent;
             color: white;
         }
 
@@ -345,197 +150,200 @@
             justify-content: space-between;
             gap: 1rem;
             padding-bottom: 0.75rem;
-            border-bottom: 1px solid #f3f4f6;
-            margin-bottom: 1rem;
-        }
 
-        .category-header h2 {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: #111827;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-        }
+            /* Card Grid (like screenshot) */
+            .cards-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1rem;
+                margin: 1rem 0 0.75rem;
+                color: #6b7280;
+                font-weight: 700;
+            }
 
-        .category-header h2 i {
-            color: #16a34a;
-        }
+            .resource-grid {
+                display: grid;
+                grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 1.25rem;
+            }
 
-        .resource-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1rem;
-        }
+            @media (max-width: 1280px) {
+                .resource-grid {
+                    grid-template-columns: repeat(3, minmax(0, 1fr));
+                }
+            }
 
-        .resource-card {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            border-radius: 1rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
-            transition: all 0.25s ease;
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-            overflow: hidden;
-        }
+            @media (max-width: 980px) {
+                .resource-grid {
+                    grid-template-columns: repeat(2, minmax(0, 1fr));
+                }
+            }
 
-        .resource-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
-            border-color: #16a34a;
-        }
+            @media (max-width: 640px) {
+                .resource-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
 
-        .resource-title {
-            font-size: 1.05rem;
-            font-weight: 800;
-            color: #111827;
-            display: flex;
-            align-items: flex-start;
-            gap: 0.6rem;
-        }
+            .resource-card {
+                background: #ffffff;
+                border: 1px solid #e5e7eb;
+                border-radius: 1.25rem;
+                overflow: hidden;
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+                transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+                display: flex;
+                flex-direction: column;
+                min-height: 420px;
+            }
 
-        .resource-thumb {
-            width: 100%;
-            height: 140px;
-            background: #f3f4f6;
-        }
+            .resource-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 16px 36px rgba(0, 0, 0, 0.1);
+                border-color: #bbf7d0;
+            }
 
-        .resource-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
+            .card-media {
+                position: relative;
+                height: 170px;
+                background: #f3f4f6;
+            }
 
-        .resource-body {
-            padding: 1.1rem 1.1rem 1.15rem;
-            display: flex;
-            flex-direction: column;
-            gap: 0.55rem;
-        }
+            .card-media img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                display: block;
+            }
 
-        .resource-title i {
-            color: #16a34a;
-            margin-top: 0.15rem;
-        }
+            .rating-badge {
+                position: absolute;
+                top: 0.75rem;
+                right: 0.75rem;
+                background: rgba(255, 255, 255, 0.95);
+                border: 1px solid #e5e7eb;
+                border-radius: 999px;
+                padding: 0.25rem 0.55rem;
+                font-weight: 900;
+                color: #111827;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.35rem;
+                font-size: 0.9rem;
+            }
 
-        .resource-desc {
-            color: #4b5563;
-            line-height: 1.6;
-        }
+            .rating-badge i {
+                color: #f59e0b;
+            }
 
-        .resource-meta {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.75rem;
-            margin-top: 0.4rem;
-        }
+            .card-body {
+                padding: 1rem 1.1rem;
+                display: flex;
+                flex-direction: column;
+                gap: 0.6rem;
+                flex: 1;
+            }
 
-        .resource-meta-left {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
+            .category-pill {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.45rem;
+                background: #fee2e2;
+                color: #b91c1c;
+                font-weight: 900;
+                border-radius: 999px;
+                padding: 0.25rem 0.7rem;
+                width: fit-content;
+                font-size: 0.85rem;
+            }
 
-        .access-pill {
-            font-size: 0.8rem;
-            font-weight: 900;
-            padding: 0.2rem 0.6rem;
-            border-radius: 999px;
-        }
+            .resource-title {
+                font-size: 1.15rem;
+                font-weight: 900;
+                color: #111827;
+                line-height: 1.25;
+            }
 
-        .access-pill.free {
-            background: #dcfce7;
-            color: #166534;
-        }
+            .resource-desc {
+                color: #6b7280;
+                line-height: 1.6;
+            }
 
-        .access-pill.paid {
-            background: #fef3c7;
-            color: #92400e;
-        }
+            .card-meta {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.75rem;
+                color: #6b7280;
+                font-weight: 700;
+                margin-top: 0.35rem;
+            }
 
-        .file-pill {
-            font-size: 0.8rem;
-            font-weight: 900;
-            padding: 0.2rem 0.6rem;
-            border-radius: 999px;
-            background: #f3f4f6;
-            color: #111827;
-        }
+            .meta-left {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.45rem;
+            }
 
-        .resource-action {
-            font-weight: 900;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-            padding: 0.55rem 0.75rem;
-            border-radius: 0.8rem;
-            border: 1px solid #e5e7eb;
-            background: #ffffff;
-            color: #16a34a;
-        }
+            .meta-right {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.45rem;
+            }
 
-        .resource-action:hover {
-            border-color: #bbf7d0;
-            background: #f0fdf4;
-            color: #15803d;
-        }
+            .card-footer {
+                padding: 0.95rem 1.1rem 1.15rem;
+                border-top: 1px solid #f3f4f6;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 0.75rem;
+            }
 
-        .resource-action.paid {
-            color: #92400e;
-            background: #fffbeb;
-            border-color: #fde68a;
-        }
+            .price {
+                font-weight: 900;
+                color: #dc2626;
+                font-size: 1.1rem;
+            }
 
-        .resource-action.paid:hover {
-            background: #fef3c7;
-            border-color: #fcd34d;
-        }
+            .price.free {
+                color: #16a34a;
+            }
 
-        .resource-badge {
-            font-size: 0.8rem;
-            font-weight: 800;
-            padding: 0.2rem 0.6rem;
-            border-radius: 999px;
-            background: #f3f4f6;
-            color: #111827;
-        }
+            .btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                border-radius: 999px;
+                padding: 0.6rem 1.1rem;
+                font-weight: 900;
+                border: 1px solid #e5e7eb;
+                background: #111827;
+                color: #ffffff;
+                text-decoration: none;
+                min-width: 92px;
+            }
 
-        .resource-link {
-            font-weight: 800;
-            color: #16a34a;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.4rem;
-        }
+            .btn:hover {
+                background: #0b1220;
+            }
 
-        .resource-link:hover {
-            color: #15803d;
-        }
+            .btn.secondary {
+                background: #ffffff;
+                color: #111827;
+            }
 
-        .empty-state {
-            padding: 2rem 1rem;
-            text-align: center;
-            color: #6b7280;
-        }
+            .btn.secondary:hover {
+                background: #f9fafb;
+            }
 
-        .empty-state strong {
-            color: #111827;
-        }
-    </style>
-</head>
-<body class="bg-gray-50">
-    <!-- Modern Navigation -->
-    <header class="modern-header" id="mainHeader">
-        <div class="header-container">
-            <a href="../index.html" class="logo">
-                <span>Course Corner</span>
-            </a>
+            .card-actions {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
 
             <nav class="nav-desktop">
                 <a href="../index.html" class="nav-link">Home</a>
@@ -566,56 +374,36 @@
         </div>
     </header>
 
-    <!-- Sidebar Overlay (mobile) -->
-    <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
-
     <!-- Main Content -->
     <div class="resources-content" style="padding-top: 7rem;">
-        <div class="resources-layout">
-            <!-- Sidebar -->
-            <aside class="sidebar-card" aria-label="Resource categories">
-                <div class="sidebar-top">
-                    <div class="sidebar-title">
-                        <i class="fas fa-layer-group"></i>
-                        Categories
-                    </div>
-                    <button class="sidebar-close-btn" id="closeSidebarBtn" type="button" aria-label="Close categories">
-                        Close
-                    </button>
-                </div>
-                <div class="sidebar-inner">
-                    <ul class="category-list" id="categoryList"></ul>
-                </div>
-            </aside>
-
-            <!-- Main -->
-            <main>
-                <div class="search-card">
-                    <div class="search-row">
-                        <div class="search-tools">
-                            <button class="sidebar-toggle-btn" id="openSidebarBtn" type="button" aria-label="Open categories">
-                                <i class="fas fa-bars"></i>
-                                Categories
-                            </button>
-
-                            <div class="filter-pills" role="tablist" aria-label="Filter by access">
-                                <button class="filter-pill active" type="button" data-access="All">All</button>
-                                <button class="filter-pill" type="button" data-access="Free">Free</button>
-                                <button class="filter-pill" type="button" data-access="Paid">Paid</button>
-                            </div>
-                        </div>
-                        <input id="resourceSearch" class="search-input" type="text" placeholder="Search resources (e.g., KUCCPS, scholarships, application, cluster points…)" autocomplete="off" />
-                        <div class="search-hint">
-                            Tip: use the categories on the left to narrow down.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="results-card">
-                    <div id="resultsRoot"></div>
-                </div>
-            </main>
+        <div class="resources-header">
+            <div>
+                <div class="resources-title">Resources</div>
+                <div class="resources-subtitle">View or download guides and documents (PDF)</div>
+            </div>
         </div>
+
+        <div class="search-card">
+            <div class="search-row">
+                <div class="toolbar">
+                    <div class="chip-row" id="categoryChips" aria-label="Categories"></div>
+                    <div class="chip-row" aria-label="Access">
+                        <button class="chip access active" type="button" data-access="All">All</button>
+                        <button class="chip access" type="button" data-access="Free">Free</button>
+                        <button class="chip access" type="button" data-access="Paid">Paid</button>
+                    </div>
+                </div>
+
+                <input id="resourceSearch" class="search-input" type="text" placeholder="Search resources (e.g., KUCCPS, scholarships, application, cluster points…)" autocomplete="off" />
+                <div class="search-hint">Tip: use the category chips above to filter.</div>
+            </div>
+        </div>
+
+        <div class="cards-header">
+            <div id="resultsCount">Showing 0 resources</div>
+        </div>
+
+        <div id="resultsRoot"></div>
     </div>
 
     <!-- Modern Footer -->
@@ -725,150 +513,119 @@
             else header.classList.remove('scrolled');
         });
 
-        // Off-canvas categories sidebar (mobile)
-        const sidebarEl = document.querySelector('.sidebar-card');
-        const sidebarOverlayEl = document.getElementById('sidebarOverlay');
-        const openSidebarBtn = document.getElementById('openSidebarBtn');
-        const closeSidebarBtn = document.getElementById('closeSidebarBtn');
-
-        function openSidebar() {
-            if (!sidebarEl || !sidebarOverlayEl) return;
-            sidebarEl.classList.add('open');
-            sidebarOverlayEl.classList.add('active');
-        }
-
-        function closeSidebar() {
-            if (!sidebarEl || !sidebarOverlayEl) return;
-            sidebarEl.classList.remove('open');
-            sidebarOverlayEl.classList.remove('active');
-        }
-
-        openSidebarBtn?.addEventListener('click', (e) => {
-            e.preventDefault();
-            openSidebar();
-        });
-
-        closeSidebarBtn?.addEventListener('click', (e) => {
-            e.preventDefault();
-            closeSidebar();
-        });
-
-        sidebarOverlayEl?.addEventListener('click', () => closeSidebar());
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') closeSidebar();
-        });
-
-        window.addEventListener('resize', () => {
-            if (window.innerWidth > 1024) closeSidebar();
-        });
-
         // ===== Resources Data + Rendering =====
         const resources = [
             {
                 category: 'KUCCPS & Placement',
                 title: 'KUCCPS Application Checklist',
                 description: 'A quick checklist to help you submit your KUCCPS application correctly.',
-                fileHref: '../RESOURCES/files/kuccps-checklist.txt',
-                fileType: 'TXT',
+                fileHref: '../RESOURCES/files/kuccps-checklist.pdf',
+                fileType: 'PDF',
                 access: 'Free',
-                badge: 'Checklist',
-                icon: 'fa-clipboard-list',
                 image: '../assets/images/1.png',
-                downloadName: 'kuccps-checklist.txt'
+                downloadName: 'kuccps-checklist.pdf',
+                priceKes: 0,
+                rating: 4.9,
+                metaLeft: 'PDF',
+                metaRight: 'Free'
             },
             {
                 category: 'KUCCPS & Placement',
                 title: 'Application Timeline Template',
                 description: 'A simple timeline template you can reuse to plan your application steps.',
-                fileHref: '../RESOURCES/files/application-timeline.txt',
-                fileType: 'TXT',
+                fileHref: '../RESOURCES/files/application-timeline.pdf',
+                fileType: 'PDF',
                 access: 'Free',
-                badge: 'Template',
-                icon: 'fa-calendar-check',
                 image: '../RESOURCES/sam.png',
-                downloadName: 'application-timeline.txt'
+                downloadName: 'application-timeline.pdf',
+                priceKes: 0,
+                rating: 4.8,
+                metaLeft: 'PDF',
+                metaRight: 'Free'
             },
             {
                 category: 'Cluster Points & Subjects',
                 title: 'Cluster Points Quick Guide',
                 description: 'A short guide explaining cluster points and how to use them.',
-                fileHref: '../RESOURCES/files/cluster-points-quick-guide.txt',
-                fileType: 'TXT',
+                fileHref: '../RESOURCES/files/cluster-points-quick-guide.pdf',
+                fileType: 'PDF',
                 access: 'Free',
-                badge: 'Guide',
-                icon: 'fa-layer-group',
                 image: '../assets/images/1.png',
-                downloadName: 'cluster-points-quick-guide.txt'
+                downloadName: 'cluster-points-quick-guide.pdf',
+                priceKes: 0,
+                rating: 4.9,
+                metaLeft: 'PDF',
+                metaRight: 'Free'
             },
             {
                 category: 'Cluster Points & Subjects',
                 title: 'Cluster Guide (Full Pack)',
                 description: 'A more detailed pack with extra notes and examples (paid resource).',
-                fileHref: '../RESOURCES/files/cluster-points-quick-guide.txt',
-                fileType: 'TXT',
+                fileHref: '../RESOURCES/files/cluster-guide-full-pack.pdf',
+                fileType: 'PDF',
                 access: 'Paid',
-                badge: 'Pack',
-                icon: 'fa-book',
-                image: '../RESOURCES/sam.png'
+                image: '../RESOURCES/sam.png',
+                priceKes: 250,
+                rating: 4.7,
+                metaLeft: 'PDF',
+                metaRight: 'Paid'
             },
             {
                 category: 'Applications & Admissions',
                 title: 'Scholarship Checklist',
                 description: 'Common documents and steps to prepare before applying for scholarships.',
-                fileHref: '../RESOURCES/files/scholarship-checklist.txt',
-                fileType: 'TXT',
+                fileHref: '../RESOURCES/files/scholarship-checklist.pdf',
+                fileType: 'PDF',
                 access: 'Free',
-                badge: 'Checklist',
-                icon: 'fa-award',
                 image: '../assets/images/1.png',
-                downloadName: 'scholarship-checklist.txt'
+                downloadName: 'scholarship-checklist.pdf',
+                priceKes: 0,
+                rating: 4.8,
+                metaLeft: 'PDF',
+                metaRight: 'Free'
             },
             {
                 category: 'Scholarships & Funding',
                 title: 'Career Planning Mini-Workbook',
                 description: 'A simple workbook to help you shortlist careers and next steps (paid resource).',
-                fileHref: '../RESOURCES/files/career-planning-workbook.txt',
-                fileType: 'TXT',
+                fileHref: '../RESOURCES/files/career-planning-workbook.pdf',
+                fileType: 'PDF',
                 access: 'Paid',
-                badge: 'Workbook',
-                icon: 'fa-briefcase',
-                image: '../RESOURCES/sam.png'
+                image: '../RESOURCES/sam.png',
+                priceKes: 300,
+                rating: 4.6,
+                metaLeft: 'PDF',
+                metaRight: 'Paid'
             },
             {
                 category: 'Career Planning',
                 title: 'Career Planning Mini-Workbook (Free Sample)',
                 description: 'A free sample workbook to help you start planning your career.',
-                fileHref: '../RESOURCES/files/career-planning-workbook.txt',
-                fileType: 'TXT',
+                fileHref: '../RESOURCES/files/career-planning-workbook-sample.pdf',
+                fileType: 'PDF',
                 access: 'Free',
-                badge: 'Workbook',
-                icon: 'fa-compass',
                 image: '../assets/images/1.png',
-                downloadName: 'career-planning-workbook.txt'
+                downloadName: 'career-planning-workbook-sample.pdf',
+                priceKes: 0,
+                rating: 4.8,
+                metaLeft: 'PDF',
+                metaRight: 'Free'
             },
             {
-                category: 'Videos',
-                title: 'Demo Video (Sample)',
-                description: 'Sample downloadable video file (for testing downloads).',
-                fileHref: '../RESOURCES/SAM-LANDING.mp4',
-                fileType: 'MP4',
+                category: 'Guides',
+                title: 'How to Use Course Corner',
+                description: 'Step-by-step guide on how to use the calculator, cluster guide, and resources.',
+                fileHref: '../RESOURCES/files/how-to-use-course-corner.pdf',
+                fileType: 'PDF',
                 access: 'Free',
-                badge: 'Video',
-                icon: 'fa-video',
                 image: '../RESOURCES/sam.png',
-                downloadName: 'SAM-LANDING.mp4'
+                downloadName: 'how-to-use-course-corner.pdf',
+                priceKes: 0,
+                rating: 4.7,
+                metaLeft: 'PDF',
+                metaRight: 'Free'
             }
         ];
-
-        const categoryIcons = {
-            'KUCCPS & Placement': 'fa-building-columns',
-            'Cluster Points & Subjects': 'fa-layer-group',
-            'Applications & Admissions': 'fa-file-signature',
-            'Scholarships & Funding': 'fa-award',
-            'Career Planning': 'fa-briefcase',
-            'Videos': 'fa-circle-play'
-        };
 
         const state = {
             activeCategory: 'All',
@@ -876,9 +633,10 @@
             access: 'All'
         };
 
-        const categoryListEl = document.getElementById('categoryList');
+        const categoryChipsEl = document.getElementById('categoryChips');
         const resultsRootEl = document.getElementById('resultsRoot');
         const searchEl = document.getElementById('resourceSearch');
+        const resultsCountEl = document.getElementById('resultsCount');
 
         function normalize(text) {
             return (text || '').toString().toLowerCase().trim();
@@ -887,14 +645,6 @@
         function getCategories() {
             const set = new Set(resources.map(r => r.category));
             return ['All', ...Array.from(set).sort((a, b) => a.localeCompare(b))];
-        }
-
-        function getCountsByCategory(filtered) {
-            const counts = {};
-            filtered.forEach(r => {
-                counts[r.category] = (counts[r.category] || 0) + 1;
-            });
-            return counts;
         }
 
         function filterResources() {
@@ -907,50 +657,29 @@
             });
         }
 
-        function renderSidebar() {
-            const allFilteredByQuery = resources.filter(r => {
-                const q = normalize(state.query);
-                if (!q) return true;
-                return normalize(r.title).includes(q) || normalize(r.description).includes(q) || normalize(r.category).includes(q);
-            });
-
-            const counts = getCountsByCategory(allFilteredByQuery);
+        function renderCategoryChips() {
             const categories = getCategories();
-
-            categoryListEl.innerHTML = '';
+            categoryChipsEl.innerHTML = '';
 
             categories.forEach(cat => {
-                const li = document.createElement('li');
                 const btn = document.createElement('button');
                 btn.type = 'button';
-                btn.className = 'category-btn' + (state.activeCategory === cat ? ' active' : '');
-
-                const left = document.createElement('span');
-                left.textContent = cat;
-
-                const count = document.createElement('span');
-                count.className = 'count';
-                if (cat === 'All') {
-                    count.textContent = allFilteredByQuery.length;
-                } else {
-                    count.textContent = counts[cat] || 0;
-                }
-
-                btn.appendChild(left);
-                btn.appendChild(count);
+                btn.className = 'chip' + (state.activeCategory === cat ? ' active' : '');
+                btn.textContent = cat;
                 btn.addEventListener('click', () => {
                     state.activeCategory = cat;
-                    if (window.innerWidth <= 1024) closeSidebar();
                     render();
                 });
-
-                li.appendChild(btn);
-                categoryListEl.appendChild(li);
+                categoryChipsEl.appendChild(btn);
             });
         }
 
         function renderResults() {
             const filtered = filterResources();
+
+            if (resultsCountEl) {
+                resultsCountEl.textContent = `Showing ${filtered.length} resources`;
+            }
 
             if (filtered.length === 0) {
                 resultsRootEl.innerHTML = `
@@ -962,70 +691,59 @@
                 return;
             }
 
-            // Group by category
-            const groups = {};
-            filtered.forEach(r => {
-                if (!groups[r.category]) groups[r.category] = [];
-                groups[r.category].push(r);
-            });
+            const cards = filtered.map(r => {
+                const imageSrc = r.image || '../assets/images/1.png';
+                const viewHref = r.fileHref || '#';
+                const isFree = r.access !== 'Paid';
+                const downloadAttr = isFree ? ` download="${(r.downloadName || '').replace(/\"/g, '')}"` : '';
+                const priceText = (r.priceKes || 0) > 0 ? `KES ${Number(r.priceKes).toLocaleString()}` : 'Free';
+                const priceClass = (r.priceKes || 0) > 0 ? '' : 'free';
+                const rating = typeof r.rating === 'number' ? r.rating.toFixed(1) : '4.8';
+                const metaLeft = r.metaLeft || (r.fileType || 'PDF');
+                const metaRight = r.metaRight || (r.access || 'Free');
 
-            const categoryOrder = Object.keys(groups).sort((a, b) => a.localeCompare(b));
-
-            const html = categoryOrder.map(category => {
-                const icon = categoryIcons[category] || 'fa-book';
-                const cards = groups[category].map(r => {
-                    const accessClass = r.access === 'Paid' ? 'paid' : 'free';
-                    const imageSrc = r.image || '../assets/images/1.png';
-                    const fileHref = r.fileHref || '#';
-                    const isFree = r.access !== 'Paid';
-                    const downloadAttr = isFree ? ` download="${(r.downloadName || '').replace(/"/g, '')}"` : '';
-                    const actionHtml = isFree
-                        ? `<a class="resource-action" href="${fileHref}"${downloadAttr}>
-                                Download <i class="fas fa-download"></i>
-                           </a>`
-                        : `<a class="resource-action paid" href="contact.html">
-                                Request Access <i class="fas fa-lock"></i>
-                           </a>`;
-                    return `
-                        <article class="resource-card">
-                            <div class="resource-thumb">
-                                <img src="${imageSrc}" alt="${(r.title || 'Resource').replace(/"/g, '')}" loading="lazy" onerror="this.src='../assets/images/1.png'" />
-                            </div>
-                            <div class="resource-body">
-                                <div class="resource-title">
-                                    <i class="fas ${r.icon || 'fa-book'}"></i>
-                                    <span>${r.title}</span>
-                                </div>
-                                <div class="resource-desc">${r.description}</div>
-                                <div class="resource-meta">
-                                    <div class="resource-meta-left">
-                                        <span class="resource-badge">${r.badge || 'Resource'}</span>
-                                        <span class="access-pill ${accessClass}">${r.access}</span>
-                                        <span class="file-pill">${r.fileType || 'FILE'}</span>
-                                    </div>
-                                    ${actionHtml}
-                                </div>
-                            </div>
-                        </article>
+                const actionHtml = isFree
+                    ? `
+                        <div class="card-actions">
+                            <a class="btn secondary" href="${viewHref}" target="_blank" rel="noopener noreferrer">View</a>
+                            <a class="btn" href="${viewHref}"${downloadAttr}>Download</a>
+                        </div>
+                    `
+                    : `
+                        <div class="card-actions">
+                            <a class="btn secondary" href="${viewHref}" target="_blank" rel="noopener noreferrer">View</a>
+                            <a class="btn" href="contact.html">Get Access</a>
+                        </div>
                     `;
-                }).join('');
 
                 return `
-                    <section class="category-section">
-                        <div class="category-header">
-                            <h2><i class="fas fa-solid ${icon}"></i> ${category}</h2>
-                            <span class="resource-badge">${groups[category].length} item(s)</span>
+                    <article class="resource-card">
+                        <div class="card-media">
+                            <img src="${imageSrc}" alt="${(r.title || 'Resource').replace(/\"/g, '')}" loading="lazy" onerror="this.src='../assets/images/1.png'" />
+                            <div class="rating-badge"><i class="fas fa-star"></i> ${rating}</div>
                         </div>
-                        <div class="resource-grid">${cards}</div>
-                    </section>
+                        <div class="card-body">
+                            <div class="category-pill">${r.category || 'Resource'}</div>
+                            <div class="resource-title">${r.title || 'Resource'}</div>
+                            <div class="resource-desc">${r.description || ''}</div>
+                            <div class="card-meta">
+                                <div class="meta-left"><i class="fas fa-file-pdf"></i> ${metaLeft}</div>
+                                <div class="meta-right"><i class="fas fa-user"></i> ${metaRight}</div>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="price ${priceClass}">${priceText}</div>
+                            ${actionHtml}
+                        </div>
+                    </article>
                 `;
             }).join('');
 
-            resultsRootEl.innerHTML = html;
+            resultsRootEl.innerHTML = `<div class="resource-grid">${cards}</div>`;
         }
 
         function render() {
-            renderSidebar();
+            renderCategoryChips();
             renderResults();
         }
 
@@ -1045,12 +763,12 @@
             render();
         });
 
-        // Access filter pills
-        document.querySelectorAll('.filter-pill').forEach(btn => {
+        // Access filter chips
+        document.querySelectorAll('.chip.access').forEach(btn => {
             btn.addEventListener('click', () => {
                 const next = btn.getAttribute('data-access') || 'All';
                 state.access = next;
-                document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.chip.access').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 render();
             });

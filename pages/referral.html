@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referral Program - Course Corner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" href="../assets/images/1.png">
+    <link rel="stylesheet" href="../assets/css/modern-ui.css">
+    <link rel="stylesheet" href="../assets/css/auth.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="../assets/js/firebase-config.js" type="module"></script>
+    <script src="../assets/js/firebase-auth.js" defer></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            color: #111827;
+        }
+
+        .referral-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem 1.25rem 4rem;
+        }
+
+        @media (min-width: 1024px) {
+            .referral-container {
+                padding: 3rem 2rem 4rem;
+            }
+        }
+
+        /* Guest View - How It Works */
+        .referral-hero {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: linear-gradient(135deg, #dcfce7 0%, #f0fdf4 100%);
+            border-radius: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .referral-hero h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.75rem;
+        }
+
+        @media (min-width: 768px) {
+            .referral-hero h1 {
+                font-size: 2.5rem;
+            }
+        }
+
+        .referral-hero p {
+            font-size: 1.1rem;
+            color: #4b5563;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .referral-hero-icon {
+            width: 80px;
+            height: 80px;
+            background: #16a34a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+
+        .referral-hero-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+
+        /* Steps Section */
+        .steps-section {
+            margin-bottom: 3rem;
+        }
+
+        .steps-section h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #111827;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .steps-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .step-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .step-card:hover {
+            border-color: #16a34a;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.1);
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: #dcfce7;
+            color: #16a34a;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin: 0 auto 1rem;
+        }
+
+        .step-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-card p {
+            font-size: 0.9375rem;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        /* Earnings Highlight */
+        .earnings-card {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            color: white;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .earnings-card h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .earnings-amount {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+
+        .earnings-card p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* Login CTA */
+        .login-cta {
+            background: white;
+            border: 2px solid #16a34a;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .login-cta h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 0.75rem;
+        }
+
+        .login-cta p {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-login-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #16a34a;
+            color: white;
+            padding: 0.875rem 2rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-login-cta:hover {
+            background: #15803d;
+            transform: translateY(-2px);
+        }
+
+        /* ============ LOGGED IN VIEW ============ */
+        .dashboard-view {
+            display: none;
+        }
+
+        .dashboard-view.active {
+            display: block;
+        }
+
+        .guest-view.hidden {
+            display: none;
+        }
+
+        .dashboard-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .dashboard-header-icon {
+            width: 56px;
+            height: 56px;
+            background: #dcfce7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dashboard-header-icon i {
+            font-size: 1.5rem;
+            color: #16a34a;
+        }
+
+        .dashboard-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .dashboard-header p {
+            color: #6b7280;
+            font-size: 0.9375rem;
+        }
+
+        /* Referral Code Card */
+        .code-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .code-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .code-card-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .code-display {
+            background: #f9fafb;
+            border: 2px dashed #d1d5db;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .code-display.has-code {
+            border-style: solid;
+            border-color: #16a34a;
+            background: #f0fdf4;
+        }
+
+        .code-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            color: #16a34a;
+            font-family: 'Courier New', monospace;
+        }
+
+        .code-placeholder {
+            color: #9ca3af;
+            font-size: 0.9375rem;
+        }
+
+        .generate-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            background: #16a34a;
+            color: white;
+            padding: 0.875rem 1.5rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            background: #15803d;
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .generate-btn.generated {
+            background: #6b7280;
+        }
+
+        /* Link Card */
+        .link-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .link-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 1rem;
+        }
+
+        .link-input-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .link-input {
+            flex: 1;
+            background: #f9fafb;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.875rem;
+            color: #374151;
+            font-family: monospace;
+        }
+
+        .copy-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+            background: #111827;
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .copy-btn:hover {
+            background: #1f2937;
+        }
+
+        .copy-btn.copied {
+            background: #16a34a;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .stat-item {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1.25rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #16a34a;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.8125rem;
+            color: #6b7280;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #fffbeb;
+            border: 1px solid #fcd34d;
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .info-box i {
+            color: #f59e0b;
+            font-size: 1.1rem;
+            margin-top: 0.1rem;
+        }
+
+        .info-box p {
+            font-size: 0.875rem;
+            color: #92400e;
+            line-height: 1.5;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #111827;
+            color: white;
+            padding: 0.875rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.9375rem;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .toast.success {
+            background: #16a34a;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Modern Navigation -->
+    <header class="modern-header" id="mainHeader">
+        <div class="header-container">
+            <a href="../index.html" class="logo">
+                <img src="../assets/images/logo.png" alt="Course Corner logo" />
+                <span>Course Corner</span>
+            </a>
+
+            <nav class="nav-desktop">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About Us</a>
+                <a href="calculator.html" class="nav-link">Calculator</a>
+                <a href="cluster-points.html" class="nav-link">Cluster Points</a>
+                <a href="application-process.html" class="nav-link">Application Guide</a>
+                <a href="resources.html" class="nav-link">Resources</a>
+                <a href="guide.html" class="nav-link">Guide</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </nav>
+
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="../index.html" class="mobile-nav-link">Home</a>
+            <a href="about.html" class="mobile-nav-link">About Us</a>
+            <a href="calculator.html" class="mobile-nav-link">Calculator</a>
+            <a href="cluster-points.html" class="mobile-nav-link">Cluster Points</a>
+            <a href="application-process.html" class="mobile-nav-link">Application Guide</a>
+            <a href="resources.html" class="mobile-nav-link">Resources</a>
+            <a href="guide.html" class="mobile-nav-link">Guide</a>
+            <a href="contact.html" class="mobile-nav-link">Contact</a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="referral-container" style="padding-top: 7rem;">
+
+        <!-- ========== GUEST VIEW ========== -->
+        <div class="guest-view" id="guestView">
+            <div class="referral-hero">
+                <div class="referral-hero-icon">
+                    <i class="fas fa-gift"></i>
+                </div>
+                <h1>Earn Money by Referring Friends</h1>
+                <p>Share Course Corner with friends and earn 10% commission on every payment they make!</p>
+            </div>
+
+            <!-- Earnings Highlight -->
+            <div class="earnings-card">
+                <h2>Your Commission Rate</h2>
+                <div class="earnings-amount">10%</div>
+                <p>of every payment made by your referrals</p>
+            </div>
+
+            <!-- How It Works -->
+            <div class="steps-section">
+                <h2>How It Works</h2>
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <h3>Get Your Code</h3>
+                        <p>Sign in to your account and generate your unique 5-character referral code. You only need to do this once!</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <h3>Share Your Link</h3>
+                        <p>Share your personalized referral link with friends, family, or on social media. The more you share, the more you earn!</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <h3>Earn Rewards</h3>
+                        <p>When someone uses your code and pays for any service, you automatically earn 10% of their payment. It's that simple!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login CTA -->
+            <div class="login-cta">
+                <h3>Ready to Start Earning?</h3>
+                <p>Sign in or create an account to get your unique referral code and start earning today!</p>
+                <button class="btn-login-cta" onclick="window.firebaseAuth?.openAuthModal()">
+                    <i class="fas fa-user"></i>
+                    Sign In to Get Started
+                </button>
+            </div>
+        </div>
+
+        <!-- ========== LOGGED IN DASHBOARD VIEW ========== -->
+        <div class="dashboard-view" id="dashboardView">
+            <div class="dashboard-header">
+                <div class="dashboard-header-icon">
+                    <i class="fas fa-hand-holding-usd"></i>
+                </div>
+                <div>
+                    <h1>My Referral Dashboard</h1>
+                    <p>Generate your code, share your link, and track your earnings</p>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="statReferrals">0</div>
+                    <div class="stat-label">Total Referrals</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statPaid">0</div>
+                    <div class="stat-label">Paid Referrals</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statEarnings">KES 0</div>
+                    <div class="stat-label">Total Earnings</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="statPending">KES 0</div>
+                    <div class="stat-label">Pending Payout</div>
+                </div>
+            </div>
+
+            <!-- Referral Code Card -->
+            <div class="code-card">
+                <div class="code-card-header">
+                    <h3><i class="fas fa-key mr-2 text-green-600"></i>Your Referral Code</h3>
+                </div>
+                <div class="code-display" id="codeDisplay">
+                    <div class="code-placeholder" id="codePlaceholder">No code generated yet</div>
+                    <div class="code-value hidden" id="codeValue"></div>
+                </div>
+                <button class="generate-btn" id="generateBtn" onclick="generateReferralCode()">
+                    <i class="fas fa-magic"></i>
+                    Generate My Code
+                </button>
+            </div>
+
+            <!-- Referral Link Card -->
+            <div class="link-card" id="linkCard" style="display: none;">
+                <h3><i class="fas fa-link mr-2 text-green-600"></i>Your Referral Link</h3>
+                <div class="link-input-group">
+                    <input type="text" class="link-input" id="referralLink" readonly>
+                    <button class="copy-btn" id="copyBtn" onclick="copyReferralLink()">
+                        <i class="fas fa-copy"></i>
+                        Copy
+                    </button>
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="info-box">
+                <i class="fas fa-info-circle"></i>
+                <p>Your referral code can only be generated once and cannot be changed. When someone signs up or makes a payment using your referral link, you'll earn 10% of their payment automatically. Earnings are tracked and can be withdrawn once they reach a minimum threshold.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Modern Footer -->
+    <footer class="modern-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-brand">
+                        <img class="footer-logo" src="../assets/images/logo.png" alt="Course Corner logo" />
+                        <span>Course Corner</span>
+                    </div>
+                    <p class="footer-description">
+                        Empowering students to make informed decisions about their educational future through personalized course recommendations.
+                    </p>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="calculator.html">Calculator</a></li>
+                        <li><a href="cluster-points.html">Cluster Points</a></li>
+                        <li><a href="application-process.html">Application Guide</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="resources.html">Resources Library</a></li>
+                        <li><a href="guide.html">How to Use</a></li>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="terms-of-service.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-col">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> info@coursecorner.com</li>
+                        <li><i class="fas fa-phone"></i> +254 700 000000</li>
+                    </ul>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>© Course Corner <span id="currentYear"></span>. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modal (Same as other pages) -->
+    <div id="authModal" class="auth-modal-overlay hidden">
+        <div class="auth-modal">
+            <div class="modal-header">
+                <h2>Welcome</h2>
+                <button class="modal-close-btn" onclick="window.firebaseAuth.closeAuthModal()">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="auth-tabs">
+                    <button id="loginTab" class="auth-tab active" onclick="window.firebaseAuth.switchAuthMode('login')">
+                        Login
+                    </button>
+                    <button id="signupTab" class="auth-tab" onclick="window.firebaseAuth.switchAuthMode('signup')">
+                        Sign Up
+                    </button>
+                </div>
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                    </div>
+                    <div class="form-group text-right">
+                        <a class="auth-link text-sm" onclick="window.firebaseAuth.switchAuthMode('forgot')">Forgot password?</a>
+                    </div>
+                    <button type="submit" id="loginBtn" class="btn-primary">
+                        <span>Login</span>
+                    </button>
+                </form>
+                <!-- Signup Form -->
+                <form id="signupForm" class="auth-form hidden" onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" class="form-input" placeholder="Enter your name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address</label>
+                        <input type="email" id="signupEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" class="form-input" placeholder="Create a password (min 6 chars)" required minlength="6">
+                    </div>
+                    <button type="submit" id="signupBtn" class="btn-primary">
+                        <span>Create Account</span>
+                    </button>
+                </form>
+                <!-- Forgot Password Form -->
+                <form id="forgotForm" class="auth-form hidden" onsubmit="handleForgotPassword(event)">
+                    <p class="text-gray-600 mb-4">Enter your email and we'll send you a reset link.</p>
+                    <div class="form-group">
+                        <label for="forgotEmail">Email Address</label>
+                        <input type="email" id="forgotEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <button type="submit" id="forgotBtn" class="btn-primary">
+                        <span>Send Reset Link</span>
+                    </button>
+                    <div class="text-center mt-3">
+                        <a class="auth-link" onclick="window.firebaseAuth.switchAuthMode('login')">Back to Login</a>
+                    </div>
+                </form>
+                <!-- Divider -->
+                <div class="auth-divider" id="authDivider">
+                    <span>or</span>
+                </div>
+                <!-- Google Sign In -->
+                <button id="googleSignIn" class="btn-google" onclick="window.firebaseAuth.signInWithGoogle()">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="20">
+                    <span>Continue with Google</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Set current year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+        // Mobile menu toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        let isMenuOpen = false;
+
+        function toggleMobileMenu() {
+            isMenuOpen = !isMenuOpen;
+            mobileMenuBtn.classList.toggle('active', isMenuOpen);
+            mobileMenu.classList.toggle('active', isMenuOpen);
+        }
+
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMobileMenu();
+        });
+
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => { isMenuOpen = false; mobileMenuBtn.classList.remove('active'); mobileMenu.classList.remove('active'); });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (isMenuOpen && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                isMenuOpen = false;
+                mobileMenuBtn.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            }
+        });
+
+        // Header scroll effect
+        const header = document.getElementById('mainHeader');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) header.classList.add('scrolled');
+            else header.classList.remove('scrolled');
+        });
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show' + (type === 'success' ? ' success' : '');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Generate random 5-character code
+        function generateCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            for (let i = 0; i < 5; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return code;
+        }
+
+        // Generate referral code for user
+        async function generateReferralCode() {
+            const btn = document.getElementById('generateBtn');
+            
+            if (!window.firebaseAuth || !window.firebaseAuth.isLoggedIn()) {
+                showToast('Please sign in first', 'error');
+                return;
+            }
+
+            // Check if user already has a code
+            const profile = window.firebaseAuth.getProfile();
+            if (profile && profile.referralCode) {
+                showToast('You already have a referral code!', 'error');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+            try {
+                const newCode = generateCode();
+                
+                // Save to user profile
+                const result = await window.firebaseAuth.updateUserProfile({
+                    referralCode: newCode,
+                    referralCreatedAt: new Date().toISOString()
+                });
+
+                if (result.success) {
+                    displayReferralCode(newCode);
+                    showToast('Referral code generated!', 'success');
+                } else {
+                    throw new Error('Failed to save code');
+                }
+            } catch (error) {
+                console.error('Error generating code:', error);
+                showToast('Error generating code. Please try again.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-magic"></i> Generate My Code';
+            }
+        }
+
+        // Display the referral code and link
+        function displayReferralCode(code) {
+            const codeDisplay = document.getElementById('codeDisplay');
+            const codePlaceholder = document.getElementById('codePlaceholder');
+            const codeValue = document.getElementById('codeValue');
+            const generateBtn = document.getElementById('generateBtn');
+            const linkCard = document.getElementById('linkCard');
+            const referralLink = document.getElementById('referralLink');
+
+            codeDisplay.classList.add('has-code');
+            codePlaceholder.classList.add('hidden');
+            codeValue.classList.remove('hidden');
+            codeValue.textContent = code;
+
+            generateBtn.disabled = true;
+            generateBtn.classList.add('generated');
+            generateBtn.innerHTML = '<i class="fas fa-check"></i> Code Generated';
+
+            // Show link card
+            linkCard.style.display = 'block';
+            referralLink.value = `https://coursecorner.netlify.app?ref=${code}`;
+        }
+
+        // Copy referral link
+        function copyReferralLink() {
+            const referralLink = document.getElementById('referralLink');
+            const copyBtn = document.getElementById('copyBtn');
+
+            navigator.clipboard.writeText(referralLink.value).then(() => {
+                copyBtn.classList.add('copied');
+                copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                showToast('Link copied to clipboard!', 'success');
+
+                setTimeout(() => {
+                    copyBtn.classList.remove('copied');
+                    copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+                }, 2000);
+            }).catch(() => {
+                // Fallback
+                referralLink.select();
+                document.execCommand('copy');
+                showToast('Link copied!', 'success');
+            });
+        }
+
+        // Update UI based on auth state
+        function updateViewForUser(user) {
+            const guestView = document.getElementById('guestView');
+            const dashboardView = document.getElementById('dashboardView');
+
+            if (user) {
+                guestView.classList.add('hidden');
+                dashboardView.classList.add('active');
+
+                // Load user's referral data
+                const profile = window.firebaseAuth.getProfile();
+                if (profile) {
+                    if (profile.referralCode) {
+                        displayReferralCode(profile.referralCode);
+                    }
+                    // Update stats (these would come from backend in production)
+                    document.getElementById('statReferrals').textContent = profile.referralCount || 0;
+                    document.getElementById('statPaid').textContent = profile.referralPaidCount || 0;
+                    document.getElementById('statEarnings').textContent = 'KES ' + (profile.referralEarnings || 0).toLocaleString();
+                    document.getElementById('statPending').textContent = 'KES ' + (profile.referralPending || 0).toLocaleString();
+                }
+            } else {
+                guestView.classList.remove('hidden');
+                dashboardView.classList.remove('active');
+            }
+        }
+
+        // Wait for Firebase Auth to initialize
+        function initReferralPage() {
+            if (window.firebaseAuth && window.firebaseAuth.initialized) {
+                window.firebaseAuth.onAuthStateChange(updateViewForUser);
+            } else {
+                setTimeout(initReferralPage, 100);
+            }
+        }
+
+        // Auth form handlers
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+            
+            btn.classList.add('btn-loading');
+            btn.disabled = true;
+            
+            const result = await window.firebaseAuth.signIn(email, password);
+            
+            btn.classList.remove('btn-loading');
+            btn.disabled = false;
+            
+            if (result.success) {
+                window.firebaseAuth.closeAuthModal();
+            }
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const btn = document.getElementById('signupBtn');
+            
+            btn.classList.add('btn-loading');
+            btn.disabled = true;
+            
+            const result = await window.firebaseAuth.signUp(email, password, name);
+            
+            btn.classList.remove('btn-loading');
+            btn.disabled = false;
+            
+            if (result.success) {
+                window.firebaseAuth.closeAuthModal();
+            }
+        }
+
+        async function handleForgotPassword(e) {
+            e.preventDefault();
+            const email = document.getElementById('forgotEmail').value;
+            const btn = document.getElementById('forgotBtn');
+            
+            btn.classList.add('btn-loading');
+            btn.disabled = true;
+            
+            await window.firebaseAuth.resetPassword(email);
+            
+            btn.classList.remove('btn-loading');
+            btn.disabled = false;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', initReferralPage);
+    </script>
+</body>
+</html>

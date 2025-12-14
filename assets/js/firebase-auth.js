@@ -252,6 +252,14 @@ class FirebaseAuthHandler {
                     business: '',
                     computer: ''
                 },
+                // Referral system fields
+                referralCode: '',
+                referralCreatedAt: null,
+                referralCount: 0,
+                referralPaidCount: 0,
+                referralEarnings: 0,
+                referralPending: 0,
+                referredBy: additionalData.referredBy || '',
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
             };

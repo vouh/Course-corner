@@ -392,6 +392,48 @@
                 </div>
             </div>
 
+            <!-- Referral Code Generator -->
+            <div class="bg-white rounded-xl shadow-md p-4 md:p-6 mb-4 md:mb-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-800">
+                        <i class="fas fa-gift text-green-600 mr-2"></i>Referral Code Generator
+                    </h3>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="md:col-span-2">
+                        <p class="text-sm text-gray-600 mb-3">Generate unique 5-character referral codes for promotional purposes.</p>
+                        <div class="flex gap-2">
+                            <div class="flex-1 relative">
+                                <input type="text" id="generated-code" readonly
+                                    class="w-full border-2 border-dashed border-gray-300 rounded-lg px-4 py-3 text-center text-2xl font-mono font-bold text-green-600 bg-gray-50"
+                                    placeholder="XXXXX">
+                            </div>
+                            <button onclick="generateAdminReferralCode()" 
+                                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition flex items-center gap-2">
+                                <i class="fas fa-magic"></i>
+                                <span class="hidden md:inline">Generate</span>
+                            </button>
+                            <button onclick="copyGeneratedCode()" id="copy-code-btn"
+                                class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition flex items-center gap-2">
+                                <i class="fas fa-copy"></i>
+                                <span class="hidden md:inline">Copy</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-green-50 rounded-lg p-4 border border-green-200">
+                        <div class="flex items-center gap-2 mb-2">
+                            <i class="fas fa-info-circle text-green-600"></i>
+                            <span class="font-semibold text-green-800 text-sm">How it works</span>
+                        </div>
+                        <p class="text-xs text-green-700">Share this code with users. When used, they get tracked and the code owner earns 10% on all their payments.</p>
+                    </div>
+                </div>
+                <div id="generated-codes-history" class="mt-4 pt-4 border-t hidden">
+                    <h4 class="text-sm font-semibold text-gray-700 mb-2">Recently Generated Codes</h4>
+                    <div id="codes-list" class="flex flex-wrap gap-2"></div>
+                </div>
+            </div>
+
             <!-- Filters & Actions -->
             <div class="bg-white rounded-xl shadow-md p-3 md:p-4 mb-4 md:mb-6">
                 <!-- Row 1: Search -->
@@ -1308,6 +1350,93 @@
             loadStats();
             filterTransactions();
         }
+
+        // ==================== REFERRAL CODE GENERATOR ====================
+        
+        let generatedCodes = JSON.parse(localStorage.getItem('adminGeneratedCodes') || '[]');
+        
+        function generateAdminReferralCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let code = '';
+            for (let i = 0; i < 5; i++) {
+                code += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            
+            document.getElementById('generated-code').value = code;
+            document.getElementById('generated-code').style.borderStyle = 'solid';
+            document.getElementById('generated-code').style.borderColor = '#16a34a';
+            
+            // Store in history
+            if (!generatedCodes.includes(code)) {
+                generatedCodes.unshift(code);
+                if (generatedCodes.length > 10) generatedCodes.pop();
+                localStorage.setItem('adminGeneratedCodes', JSON.stringify(generatedCodes));
+                updateCodesHistory();
+            }
+            
+            showNotification('Referral code generated: ' + code, 'success');
+        }
+        
+        function copyGeneratedCode() {
+            const code = document.getElementById('generated-code').value;
+            if (!code || code === 'XXXXX') {
+                showNotification('Generate a code first', 'warning');
+                return;
+            }
+            
+            const fullLink = 'https://coursecorner.netlify.app?ref=' + code;
+            
+            navigator.clipboard.writeText(fullLink).then(() => {
+                const btn = document.getElementById('copy-code-btn');
+                btn.innerHTML = '<i class="fas fa-check"></i><span class="hidden md:inline">Copied!</span>';
+                btn.classList.remove('bg-gray-100', 'text-gray-700');
+                btn.classList.add('bg-green-100', 'text-green-700');
+                
+                showNotification('Referral link copied: ' + fullLink, 'success');
+                
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-copy"></i><span class="hidden md:inline">Copy</span>';
+                    btn.classList.add('bg-gray-100', 'text-gray-700');
+                    btn.classList.remove('bg-green-100', 'text-green-700');
+                }, 2000);
+            }).catch(() => {
+                // Fallback
+                const input = document.getElementById('generated-code');
+                input.value = fullLink;
+                input.select();
+                document.execCommand('copy');
+                input.value = code;
+                showNotification('Link copied!', 'success');
+            });
+        }
+        
+        function updateCodesHistory() {
+            const container = document.getElementById('generated-codes-history');
+            const list = document.getElementById('codes-list');
+            
+            if (generatedCodes.length === 0) {
+                container.classList.add('hidden');
+                return;
+            }
+            
+            container.classList.remove('hidden');
+            list.innerHTML = generatedCodes.map(code => `
+                <span class="inline-flex items-center gap-1 bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm font-mono cursor-pointer hover:bg-green-100 hover:text-green-700 transition" onclick="selectCode('${code}')">
+                    ${code}
+                    <i class="fas fa-copy text-xs opacity-50"></i>
+                </span>
+            `).join('');
+        }
+        
+        function selectCode(code) {
+            document.getElementById('generated-code').value = code;
+            document.getElementById('generated-code').style.borderStyle = 'solid';
+            document.getElementById('generated-code').style.borderColor = '#16a34a';
+            copyGeneratedCode();
+        }
+        
+        // Initialize codes history on load
+        updateCodesHistory();
 
         // Close modals on outside click
         document.getElementById('detail-modal').addEventListener('click', function(e) {

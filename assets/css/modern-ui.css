@@ -2461,3 +2461,63 @@ textarea.cc-form-input {
         overflow: visible !important;
     }
 }
+
+/* ============================================
+   Floating Referral Bubble
+   ============================================ */
+.referral-bubble {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: linear-gradient(135deg, var(--cc-primary) 0%, var(--cc-primary-dark) 100%);
+    color: white;
+    padding: 0.875rem 1.25rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    box-shadow: 0 4px 20px rgba(22, 163, 74, 0.4);
+    transition: all 0.3s ease;
+    animation: bubble-pulse 2s infinite;
+}
+
+.referral-bubble:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 30px rgba(22, 163, 74, 0.5);
+    animation: none;
+    color: white;
+}
+
+.referral-bubble i {
+    font-size: 1.1rem;
+}
+
+@keyframes bubble-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+@media (max-width: 768px) {
+    .referral-bubble {
+        bottom: 1rem;
+        right: 1rem;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .referral-bubble span {
+        display: none;
+    }
+    
+    .referral-bubble {
+        width: 56px;
+        height: 56px;
+        padding: 0;
+        justify-content: center;
+        border-radius: 50%;
+    }
+}

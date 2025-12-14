@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Course Corner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" href="../assets/images/1.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <!-- jsPDF for PDF export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        /* Prevent body horizontal scroll */
+        html, body {
+            overflow-x: hidden;
+            max-width: 100vw;
+        }
+        
+        .stat-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        .table-row:hover { background-color: #f3f4f6; }
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #16a34a;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .checkbox-cell { width: 40px; }
+        .delete-selected-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* Mobile Navigation */
+        .mobile-menu {
+            display: none;
+        }
+        .mobile-menu.active {
+            display: flex;
+        }
+        
+        /* Mobile Card View for Table */
+        .mobile-card {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            /* Show table with horizontal scroll on mobile instead of cards */
+            .desktop-table {
+                display: block !important;
+            }
+            .mobile-card {
+                display: none !important;
+            }
+            
+            /* Horizontal scroll container for table */
+            .table-scroll-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                margin: 0 -1rem;
+                padding: 0 1rem;
+            }
+            
+            .desktop-table table {
+                min-width: 800px;
+                font-size: 0.75rem;
+            }
+            
+            .desktop-table th,
+            .desktop-table td {
+                padding: 0.5rem 0.75rem;
+                white-space: nowrap;
+            }
+            
+            /* Stat cards adjustments */
+            .stat-card p.text-3xl {
+                font-size: 1.5rem;
+            }
+            
+            /* Nav buttons */
+            .nav-buttons {
+                display: none;
+            }
+            .nav-buttons.active {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: #16a34a;
+                padding: 1rem;
+                gap: 0.5rem;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            }
+            
+            /* Filter adjustments */
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch !important;
+            }
+            .filter-row > div,
+            .filter-row > button {
+                width: 100%;
+            }
+            .filter-row select,
+            .filter-row input {
+                width: 100%;
+            }
+            
+            /* Export buttons */
+            .export-buttons {
+                flex-wrap: wrap;
+                width: 100%;
+                justify-content: space-between;
+            }
+            .export-buttons button {
+                flex: 1;
+                min-width: calc(50% - 0.25rem);
+            }
+            
+            /* Modal adjustments */
+            .modal-content {
+                margin: 0.5rem;
+                max-height: calc(100vh - 1rem);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .stat-card {
+                padding: 1rem;
+            }
+            .stat-card p.text-3xl {
+                font-size: 1.25rem;
+            }
+            .stat-card .text-xl {
+                font-size: 1rem;
+            }
+        }
+        
+        /* Transaction Mobile Card - Form Style */
+        .tx-mobile-card {
+            background: white;
+            border-radius: 0.75rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            overflow: hidden;
+        }
+        .tx-mobile-card .tx-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            background: linear-gradient(to right, #f8fafc, #f1f5f9);
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .tx-mobile-card.status-completed .tx-header {
+            background: linear-gradient(to right, #dcfce7, #f0fdf4);
+            border-bottom-color: #bbf7d0;
+        }
+        .tx-mobile-card.status-pending .tx-header {
+            background: linear-gradient(to right, #fef9c3, #fefce8);
+            border-bottom-color: #fde047;
+        }
+        .tx-mobile-card.status-failed .tx-header {
+            background: linear-gradient(to right, #fee2e2, #fef2f2);
+            border-bottom-color: #fecaca;
+        }
+        .tx-mobile-card .tx-body {
+            padding: 0;
+        }
+        .tx-mobile-card .tx-field {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .tx-mobile-card .tx-field:last-child {
+            border-bottom: none;
+        }
+        .tx-mobile-card .tx-field-label {
+            color: #6b7280;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .tx-mobile-card .tx-field-value {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #1f2937;
+            text-align: right;
+        }
+        .tx-mobile-card .tx-field-value.mpesa-code {
+            font-family: monospace;
+            color: #16a34a;
+            background: #f0fdf4;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+        .tx-mobile-card .tx-actions {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: #f9fafb;
+            border-top: 1px solid #e5e7eb;
+        }
+        .tx-mobile-card .tx-actions button {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <!-- Login Screen -->
+    <div id="login-screen" class="fixed inset-0 bg-gradient-to-br from-green-600 to-green-800 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+            <div class="text-center mb-8">
+                <img src="../assets/images/1.png" alt="Logo" class="h-16 w-auto mx-auto mb-4">
+                <h1 class="text-2xl font-bold text-gray-800">Admin Login</h1>
+                <p class="text-gray-500 mt-2">Sign in to access the dashboard</p>
+            </div>
+            
+            <form id="login-form" class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <i class="fas fa-envelope"></i>
+                        </span>
+                        <input type="email" id="login-email" required
+                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            placeholder="admin@example.com">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <input type="password" id="login-password" required
+                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
+                            placeholder="••••••••">
+                    </div>
+                </div>
+                
+                <div id="login-error" class="hidden bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg text-sm">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    <span id="login-error-message"></span>
+                </div>
+                
+                <button type="submit" id="login-btn"
+                    class="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center">
+                    <span id="login-btn-text">Sign In</span>
+                    <i id="login-spinner" class="fas fa-spinner fa-spin ml-2 hidden"></i>
+                </button>
+            </form>
+            
+            <p class="text-center text-gray-500 text-sm mt-6">
+                <i class="fas fa-shield-alt mr-1"></i> Secure Admin Access
+            </p>
+        </div>
+    </div>
+
+    <!-- Main Dashboard (hidden until logged in) -->
+    <div id="dashboard" class="hidden">
+        <!-- Navigation -->
+        <nav class="bg-green-600 text-white shadow-lg relative">
+            <div class="container mx-auto px-4">
+                <div class="flex justify-between items-center py-4">
+                    <div class="flex items-center">
+                        <img src="../assets/images/1.png" alt="Logo" class="h-8 md:h-10 w-auto mr-2 md:mr-3">
+                        <span class="text-lg md:text-xl font-bold">Admin</span>
+                        <span class="hidden sm:inline text-lg md:text-xl font-bold"> Dashboard</span>
+                    </div>
+                    
+                    <!-- Mobile Menu Button -->
+                    <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-green-700">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                    
+                    <!-- Desktop Navigation -->
+                    <div id="nav-buttons" class="nav-buttons hidden md:flex items-center space-x-4">
+                        <span id="user-email" class="text-green-100 text-sm hidden lg:inline">
+                            <i class="fas fa-user mr-1"></i>
+                            <span id="user-email-text"></span>
+                        </span>
+                        <button onclick="syncPendingTransactions()" class="bg-yellow-500 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-yellow-600 transition text-sm md:text-base" title="Sync pending transactions with M-Pesa">
+                            <i class="fas fa-cloud-download-alt md:mr-2"></i><span class="hidden md:inline">Sync</span>
+                        </button>
+                        <button onclick="refreshData()" class="bg-white text-green-600 px-3 md:px-4 py-2 rounded-lg hover:bg-gray-100 transition text-sm md:text-base">
+                            <i class="fas fa-sync-alt md:mr-2"></i><span class="hidden md:inline">Refresh</span>
+                        </button>
+                        <button onclick="logout()" class="bg-red-500 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-red-600 transition text-sm md:text-base">
+                            <i class="fas fa-sign-out-alt md:mr-2"></i><span class="hidden md:inline">Logout</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Mobile Menu -->
+                <div id="mobile-menu" class="mobile-menu flex-col pb-4 md:hidden">
+                    <span id="user-email-mobile" class="text-green-100 text-sm py-2">
+                        <i class="fas fa-user mr-2"></i>
+                        <span id="user-email-text-mobile"></span>
+                    </span>
+                    <button onclick="syncPendingTransactions(); toggleMobileMenu();" class="w-full bg-yellow-500 text-white px-4 py-3 rounded-lg hover:bg-yellow-600 transition text-left mt-2">
+                        <i class="fas fa-cloud-download-alt mr-2"></i>Sync Pending
+                    </button>
+                    <button onclick="refreshData(); toggleMobileMenu();" class="w-full bg-white text-green-600 px-4 py-3 rounded-lg hover:bg-gray-100 transition text-left mt-2">
+                        <i class="fas fa-sync-alt mr-2"></i>Refresh Data
+                    </button>
+                    <button onclick="logout()" class="w-full bg-red-500 text-white px-4 py-3 rounded-lg hover:bg-red-600 transition text-left mt-2">
+                        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="container mx-auto px-4 py-8">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+                <div class="stat-card bg-white rounded-xl shadow-md p-4 md:p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-xs md:text-sm font-medium">Total</p>
+                            <p id="stat-total" class="text-xl md:text-3xl font-bold text-gray-800">-</p>
+                        </div>
+                        <div class="bg-blue-100 p-2 md:p-3 rounded-full">
+                            <i class="fas fa-receipt text-blue-600 text-lg md:text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card bg-white rounded-xl shadow-md p-4 md:p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-xs md:text-sm font-medium">Completed</p>
+                            <p id="stat-completed" class="text-xl md:text-3xl font-bold text-green-600">-</p>
+                        </div>
+                        <div class="bg-green-100 p-2 md:p-3 rounded-full">
+                            <i class="fas fa-check-circle text-green-600 text-lg md:text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card bg-white rounded-xl shadow-md p-4 md:p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-xs md:text-sm font-medium">Failed</p>
+                            <p id="stat-failed" class="text-xl md:text-3xl font-bold text-red-600">-</p>
+                        </div>
+                        <div class="bg-red-100 p-2 md:p-3 rounded-full">
+                            <i class="fas fa-times-circle text-red-600 text-lg md:text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card bg-white rounded-xl shadow-md p-4 md:p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-500 text-xs md:text-sm font-medium">Revenue</p>
+                            <p id="stat-revenue" class="text-xl md:text-3xl font-bold text-gray-800">-</p>
+                        </div>
+                        <div class="bg-yellow-100 p-2 md:p-3 rounded-full">
+                            <i class="fas fa-coins text-yellow-600 text-lg md:text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters & Actions -->
+            <div class="bg-white rounded-xl shadow-md p-3 md:p-4 mb-4 md:mb-6">
+                <!-- Row 1: Search -->
+                <div class="mb-3">
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+                            <i class="fas fa-search"></i>
+                        </span>
+                        <input type="text" id="search-input" placeholder="Search phone, M-Pesa code..."
+                            class="w-full pl-10 pr-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm md:text-base"
+                            onkeyup="handleSearch()">
+                    </div>
+                </div>
+                
+                <!-- Row 2: Filter Dropdowns -->
+                <div class="filter-row grid grid-cols-2 md:flex md:flex-wrap items-center gap-2 md:gap-4 mb-3">
+                    <!-- Status Filter -->
+                    <select id="status-filter" onchange="applyAllFilters()" 
+                        class="border rounded-lg px-2 md:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                        <option value="">All Status</option>
+                        <option value="completed">Completed</option>
+                        <option value="pending">Pending</option>
+                        <option value="failed">Failed</option>
+                    </select>
+                    
+                    <!-- Category Filter -->
+                    <select id="category-filter" onchange="applyAllFilters()" 
+                        class="border rounded-lg px-2 md:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                        <option value="">All Categories</option>
+                        <option value="calculate-cluster-points">Cluster Pts</option>
+                        <option value="courses-only">Courses Only</option>
+                        <option value="point-and-courses">Pts & Courses</option>
+                    </select>
+                    
+                    <!-- Limit Filter -->
+                    <select id="limit-filter" onchange="filterTransactions()" 
+                        class="border rounded-lg px-2 md:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                        <option value="50">50 rows</option>
+                        <option value="100" selected>100 rows</option>
+                        <option value="200">200 rows</option>
+                    </select>
+                    
+                    <!-- Clear Filters -->
+                    <button onclick="clearAllFilters()" class="text-gray-500 hover:text-gray-700 px-2 md:px-3 py-2 text-sm">
+                        <i class="fas fa-times mr-1"></i><span class="hidden md:inline">Clear</span>
+                    </button>
+                </div>
+                
+                <!-- Row 3: Date Filters -->
+                <div class="grid grid-cols-2 gap-2 mb-3">
+                    <div>
+                        <label class="text-xs text-gray-500 mb-1 block">From Date</label>
+                        <input type="date" id="date-from" onchange="applyAllFilters()"
+                            class="w-full border rounded-lg px-2 md:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500 mb-1 block">To Date</label>
+                        <input type="date" id="date-to" onchange="applyAllFilters()"
+                            class="w-full border rounded-lg px-2 md:px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 text-sm">
+                    </div>
+                </div>
+                
+                <!-- Row 4: Actions -->
+                <div class="export-buttons flex flex-wrap gap-2">
+                    <button onclick="exportToCSV()" class="flex-1 md:flex-none bg-blue-500 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-blue-600 transition text-sm">
+                        <i class="fas fa-file-csv mr-1 md:mr-2"></i>CSV
+                    </button>
+                    <button onclick="exportToPDF()" class="flex-1 md:flex-none bg-red-500 text-white px-3 md:px-4 py-2 rounded-lg hover:bg-red-600 transition text-sm">
+                        <i class="fas fa-file-pdf mr-1 md:mr-2"></i>PDF
+                    </button>
+                    <button id="delete-selected-btn" onclick="deleteSelected()" disabled
+                        class="flex-1 md:flex-none delete-selected-btn bg-red-100 text-red-600 px-3 md:px-4 py-2 rounded-lg hover:bg-red-200 transition text-sm">
+                        <i class="fas fa-trash mr-1"></i>(<span id="selected-count">0</span>)
+                    </button>
+                </div>
+                
+                <div class="flex justify-between items-center mt-3 pt-3 border-t">
+                    <span id="results-count" class="text-xs md:text-sm text-gray-500">Showing 0</span>
+                    <span id="last-updated" class="text-xs md:text-sm text-gray-500"></span>
+                </div>
+            </div>
+
+            <!-- Transactions Table -->
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="px-4 md:px-6 py-3 md:py-4 border-b border-gray-200 flex justify-between items-center">
+                    <h2 class="text-lg md:text-xl font-bold text-gray-800">
+                        <i class="fas fa-list mr-2"></i><span class="hidden sm:inline">Transaction </span>Logs
+                    </h2>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="select-all" onchange="toggleSelectAll()" class="w-4 h-4 text-green-600 rounded">
+                        <label for="select-all" class="text-xs md:text-sm text-gray-600">Select All</label>
+                    </div>
+                </div>
+                
+                <!-- Loading State -->
+                <div id="loading" class="flex justify-center items-center py-12">
+                    <div class="loader"></div>
+                    <span class="ml-3 text-gray-500">Loading...</span>
+                </div>
+
+                <!-- Desktop Table -->
+                <div id="table-container" class="hidden desktop-table">
+                    <div class="table-scroll-container" style="overflow-x: auto; -webkit-overflow-scrolling: touch;">
+                        <table class="w-full" style="min-width: 850px;">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 checkbox-cell">
+                                        <input type="checkbox" id="select-all-header" onchange="toggleSelectAll()" class="w-4 h-4 text-green-600 rounded">
+                                    </th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">M-Pesa Code</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transactions-body" class="divide-y divide-gray-200">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- Mobile Cards -->
+                <div id="mobile-cards-container" class="hidden mobile-card p-3">
+                    <div id="transactions-mobile" class="space-y-3">
+                    </div>
+                </div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="hidden text-center py-12">
+                    <i class="fas fa-inbox text-gray-300 text-4xl md:text-5xl mb-4"></i>
+                    <p class="text-gray-500 text-sm md:text-base">No transactions found</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Detail Modal -->
+    <div id="detail-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+            <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-gray-800">Transaction Details</h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="modal-content" class="p-6"></div>
+            <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-2">
+                <button onclick="closeModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Close</button>
+                <button id="modal-delete-btn" onclick="deleteCurrentTransaction()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                    <i class="fas fa-trash mr-2"></i>Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-bold text-red-600">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>Confirm Delete
+                </h3>
+            </div>
+            <div class="p-6">
+                <p id="delete-message" class="text-gray-600">Are you sure you want to delete this transaction?</p>
+                <p class="text-sm text-gray-500 mt-2">This action cannot be undone.</p>
+            </div>
+            <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-2">
+                <button onclick="closeDeleteModal()" class="px-4 py-2 text-gray-600 hover:text-gray-800">Cancel</button>
+                <button id="confirm-delete-btn" onclick="confirmDelete()" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                    <i class="fas fa-trash mr-2"></i>Delete
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
+            authDomain: "course-corner.firebaseapp.com",
+            projectId: "course-corner",
+            storageBucket: "course-corner.firebasestorage.app",
+            messagingSenderId: "961706784572",
+            appId: "1:961706784572:web:7aa6c24946570ffda59039"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+
+        // Server URL
+        const SERVER_URL = 'https://course-corner-server.vercel.app/api';
+        
+        let allTransactions = [];
+        let filteredTransactions = [];
+        let selectedTransactions = new Set();
+        let currentTransactionId = null;
+        let deleteCallback = null;
+
+        // ==================== AUTH FUNCTIONS ====================
+        
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                showDashboard(user);
+            } else {
+                showLogin();
+            }
+        });
+
+        function showLogin() {
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+        }
+
+        function showDashboard(user) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('user-email-text').textContent = user.email;
+            document.getElementById('user-email-text-mobile').textContent = user.email;
+            document.getElementById('user-email').classList.remove('hidden');
+            loadStats();
+            loadTransactions();
+        }
+        
+        // ==================== MOBILE MENU ====================
+        
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            const btn = document.getElementById('mobile-menu-btn');
+            menu.classList.toggle('active');
+            
+            // Toggle icon
+            const icon = btn.querySelector('i');
+            if (menu.classList.contains('active')) {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            } else {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            }
+        }
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorDiv = document.getElementById('login-error');
+            const loginBtn = document.getElementById('login-btn');
+            const loginBtnText = document.getElementById('login-btn-text');
+            const loginSpinner = document.getElementById('login-spinner');
+            
+            loginBtn.disabled = true;
+            loginBtnText.textContent = 'Signing in...';
+            loginSpinner.classList.remove('hidden');
+            errorDiv.classList.add('hidden');
+            
+            try {
+                await auth.signInWithEmailAndPassword(email, password);
+            } catch (error) {
+                console.error('Login error:', error);
+                errorDiv.classList.remove('hidden');
+                document.getElementById('login-error-message').textContent = getAuthErrorMessage(error.code);
+            } finally {
+                loginBtn.disabled = false;
+                loginBtnText.textContent = 'Sign In';
+                loginSpinner.classList.add('hidden');
+            }
+        });
+
+        function getAuthErrorMessage(code) {
+            const messages = {
+                'auth/invalid-email': 'Invalid email address.',
+                'auth/user-disabled': 'This account has been disabled.',
+                'auth/user-not-found': 'No account found with this email.',
+                'auth/wrong-password': 'Incorrect password.',
+                'auth/invalid-credential': 'Invalid email or password.',
+                'auth/too-many-requests': 'Too many failed attempts. Please try again later.'
+            };
+            return messages[code] || 'Login failed. Please try again.';
+        }
+
+        function logout() {
+            auth.signOut();
+        }
+
+        // ==================== SYNC FUNCTIONS ====================
+        
+        async function syncPendingTransactions() {
+            showNotification('Syncing pending transactions with M-Pesa...', 'info');
+            
+            try {
+                const response = await fetch(`${SERVER_URL}/mpesa/admin/sync-pending`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    const r = data.results;
+                    let message = `Sync complete! Updated: ${r.updated}, Still Pending: ${r.stillPending}, Failed: ${r.failed}`;
+                    if (r.errors.length > 0) {
+                        message += ` (${r.errors.length} errors)`;
+                    }
+                    showNotification(message, r.updated > 0 ? 'success' : 'info');
+                    
+                    // Refresh data after sync
+                    await loadStats();
+                    await loadTransactions();
+                } else {
+                    showNotification(data.message || 'Sync failed', 'error');
+                }
+            } catch (error) {
+                console.error('Sync error:', error);
+                showNotification('Failed to sync: ' + error.message, 'error');
+            }
+        }
+
+        // ==================== DATA FUNCTIONS ====================
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleString('en-KE', {
+                year: 'numeric', month: 'short', day: 'numeric',
+                hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        function formatPhone(phone) {
+            if (!phone) return '-';
+            return phone.replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4');
+        }
+
+        function formatCategory(category) {
+            const categories = {
+                'calculate-cluster-points': 'Cluster Points',
+                'courses-only': 'Courses Only',
+                'point-and-courses': 'Points & Courses'
+            };
+            return categories[category] || category;
+        }
+
+        function getStatusBadge(status) {
+            const badges = {
+                'completed': '<span class="px-2 py-1 text-xs font-medium rounded-full bg-green-100 text-green-800">Completed</span>',
+                'pending': '<span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-100 text-yellow-800">Pending</span>',
+                'failed': '<span class="px-2 py-1 text-xs font-medium rounded-full bg-red-100 text-red-800">Failed</span>'
+            };
+            return badges[status] || `<span class="px-2 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-800">${status}</span>`;
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch(`${SERVER_URL}/mpesa/admin/stats`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const stats = data.data;
+                    document.getElementById('stat-total').textContent = stats.total || 0;
+                    document.getElementById('stat-completed').textContent = stats.completed || 0;
+                    document.getElementById('stat-failed').textContent = stats.failed || 0;
+                    document.getElementById('stat-revenue').textContent = `KSH ${(stats.completedAmount || 0).toLocaleString()}`;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        async function loadTransactions(status = '', limit = 100) {
+            const loading = document.getElementById('loading');
+            const tableContainer = document.getElementById('table-container');
+            const mobileCardsContainer = document.getElementById('mobile-cards-container');
+            const emptyState = document.getElementById('empty-state');
+            
+            loading.classList.remove('hidden');
+            tableContainer.classList.add('hidden');
+            mobileCardsContainer.classList.add('hidden');
+            emptyState.classList.add('hidden');
+
+            try {
+                let url = `${SERVER_URL}/mpesa/admin/transactions?limit=${limit}`;
+                if (status) url += `&status=${status}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                loading.classList.add('hidden');
+                
+                if (data.success && data.data.length > 0) {
+                    allTransactions = data.data;
+                    filteredTransactions = [...allTransactions];
+                    renderTransactions(filteredTransactions);
+                    tableContainer.classList.remove('hidden');
+                    mobileCardsContainer.classList.remove('hidden');
+                    updateResultsCount();
+                } else {
+                    allTransactions = [];
+                    filteredTransactions = [];
+                    emptyState.classList.remove('hidden');
+                    updateResultsCount();
+                }
+                
+                document.getElementById('last-updated').textContent = `${new Date().toLocaleTimeString()}`;
+                selectedTransactions.clear();
+                updateSelectedCount();
+                
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                loading.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+            }
+        }
+
+        function renderTransactions(transactions) {
+            // Render Desktop Table
+            const tbody = document.getElementById('transactions-body');
+            tbody.innerHTML = '';
+            
+            // Render Mobile Cards
+            const mobileContainer = document.getElementById('transactions-mobile');
+            mobileContainer.innerHTML = '';
+            
+            transactions.forEach((tx) => {
+                const isSelected = selectedTransactions.has(tx.id);
+                
+                // Desktop row
+                const row = document.createElement('tr');
+                row.className = 'table-row';
+                row.id = `row-${tx.id}`;
+                
+                row.innerHTML = `
+                    <td class="px-4 py-4 checkbox-cell">
+                        <input type="checkbox" ${isSelected ? 'checked' : ''} 
+                            onchange="toggleSelect('${tx.id}')" 
+                            class="w-4 h-4 text-green-600 rounded transaction-checkbox">
+                    </td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600">${formatDate(tx.createdAt)}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${formatPhone(tx.phoneNumber)}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600">KSH ${tx.amount || 0}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm text-gray-600">${formatCategory(tx.category)}</td>
+                    <td class="px-4 py-4 whitespace-nowrap">${getStatusBadge(tx.status)}</td>
+                    <td class="px-4 py-4 whitespace-nowrap text-sm font-mono text-green-700 font-bold">${tx.mpesaReceiptNumber || tx.transactionCode || '-'}</td>
+                    <td class="px-4 py-4 whitespace-nowrap">
+                        <button onclick="showDetail('${tx.id}')" class="text-green-600 hover:text-green-800 mr-3" title="View Details">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button onclick="promptDelete('${tx.id}')" class="text-red-500 hover:text-red-700" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                
+                tbody.appendChild(row);
+                
+                // Mobile card - Form style
+                const card = document.createElement('div');
+                card.className = `tx-mobile-card status-${tx.status}`;
+                card.id = `card-${tx.id}`;
+                
+                card.innerHTML = `
+                    <div class="tx-header">
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" ${isSelected ? 'checked' : ''} 
+                                onchange="toggleSelect('${tx.id}')" 
+                                class="w-4 h-4 text-green-600 rounded transaction-checkbox">
+                            <span class="font-semibold text-gray-800 text-sm">${formatPhone(tx.phoneNumber)}</span>
+                        </div>
+                        ${getStatusBadge(tx.status)}
+                    </div>
+                    <div class="tx-body">
+                        <div class="tx-field">
+                            <span class="tx-field-label">Amount</span>
+                            <span class="tx-field-value">KSH ${tx.amount || 0}</span>
+                        </div>
+                        <div class="tx-field">
+                            <span class="tx-field-label">Category</span>
+                            <span class="tx-field-value">${formatCategory(tx.category)}</span>
+                        </div>
+                        <div class="tx-field">
+                            <span class="tx-field-label">M-Pesa Code</span>
+                            <span class="tx-field-value ${tx.mpesaReceiptNumber || tx.transactionCode ? 'mpesa-code' : ''}">${tx.mpesaReceiptNumber || tx.transactionCode || '-'}</span>
+                        </div>
+                        <div class="tx-field">
+                            <span class="tx-field-label">Date</span>
+                            <span class="tx-field-value" style="font-weight: 400; font-size: 0.8rem;">${formatDate(tx.createdAt)}</span>
+                        </div>
+                    </div>
+                    <div class="tx-actions">
+                        <button onclick="showDetail('${tx.id}')" class="bg-green-100 text-green-700 hover:bg-green-200">
+                            <i class="fas fa-eye"></i>View
+                        </button>
+                        <button onclick="promptDelete('${tx.id}')" class="bg-red-100 text-red-600 hover:bg-red-200">
+                            <i class="fas fa-trash"></i>Delete
+                        </button>
+                    </div>
+                `;
+                
+                mobileContainer.appendChild(card);
+            });
+        }
+
+        // ==================== SEARCH & FILTER ====================
+
+        function handleSearch() {
+            applyAllFilters();
+        }
+
+        function applyAllFilters() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
+            const statusFilter = document.getElementById('status-filter').value;
+            const categoryFilter = document.getElementById('category-filter').value;
+            const dateFrom = document.getElementById('date-from').value;
+            const dateTo = document.getElementById('date-to').value;
+            
+            filteredTransactions = allTransactions.filter(tx => {
+                // Search filter
+                if (searchTerm) {
+                    const matchesSearch = (
+                        (tx.phoneNumber && tx.phoneNumber.toLowerCase().includes(searchTerm)) ||
+                        (tx.mpesaReceiptNumber && tx.mpesaReceiptNumber.toLowerCase().includes(searchTerm)) ||
+                        (tx.transactionCode && tx.transactionCode.toLowerCase().includes(searchTerm)) ||
+                        (tx.category && tx.category.toLowerCase().includes(searchTerm)) ||
+                        (tx.status && tx.status.toLowerCase().includes(searchTerm)) ||
+                        (tx.sessionId && tx.sessionId.toLowerCase().includes(searchTerm))
+                    );
+                    if (!matchesSearch) return false;
+                }
+                
+                // Status filter
+                if (statusFilter && tx.status !== statusFilter) {
+                    return false;
+                }
+                
+                // Category filter
+                if (categoryFilter && tx.category !== categoryFilter) {
+                    return false;
+                }
+                
+                // Date range filter
+                if (dateFrom || dateTo) {
+                    const txDate = new Date(tx.createdAt);
+                    if (isNaN(txDate.getTime())) return true; // Include if no valid date
+                    
+                    if (dateFrom) {
+                        const fromDate = new Date(dateFrom);
+                        fromDate.setHours(0, 0, 0, 0);
+                        if (txDate < fromDate) return false;
+                    }
+                    
+                    if (dateTo) {
+                        const toDate = new Date(dateTo);
+                        toDate.setHours(23, 59, 59, 999);
+                        if (txDate > toDate) return false;
+                    }
+                }
+                
+                return true;
+            });
+            
+            renderTransactions(filteredTransactions);
+            updateResultsCount();
+        }
+
+        function clearAllFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('status-filter').value = '';
+            document.getElementById('category-filter').value = '';
+            document.getElementById('date-from').value = '';
+            document.getElementById('date-to').value = '';
+            
+            filteredTransactions = [...allTransactions];
+            renderTransactions(filteredTransactions);
+            updateResultsCount();
+        }
+
+        function filterTransactions() {
+            const limit = document.getElementById('limit-filter').value;
+            loadTransactions('', limit);
+        }
+
+        function updateResultsCount() {
+            document.getElementById('results-count').textContent = 
+                `Showing ${filteredTransactions.length} of ${allTransactions.length} transactions`;
+        }
+
+        // ==================== SELECTION ====================
+
+        function toggleSelect(id) {
+            if (selectedTransactions.has(id)) {
+                selectedTransactions.delete(id);
+            } else {
+                selectedTransactions.add(id);
+            }
+            updateSelectedCount();
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('select-all-header').checked;
+            
+            if (selectAll) {
+                filteredTransactions.forEach(tx => selectedTransactions.add(tx.id));
+            } else {
+                selectedTransactions.clear();
+            }
+            
+            document.querySelectorAll('.transaction-checkbox').forEach(cb => {
+                cb.checked = selectAll;
+            });
+            
+            document.getElementById('select-all').checked = selectAll;
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const count = selectedTransactions.size;
+            document.getElementById('selected-count').textContent = count;
+            document.getElementById('delete-selected-btn').disabled = count === 0;
+        }
+
+        // ==================== DETAIL MODAL ====================
+
+        function showDetail(id) {
+            const tx = allTransactions.find(t => t.id === id);
+            if (!tx) return;
+            
+            currentTransactionId = id;
+            const modal = document.getElementById('detail-modal');
+            const content = document.getElementById('modal-content');
+            
+            content.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center pb-4 border-b">
+                        <span class="text-gray-500">Status</span>
+                        ${getStatusBadge(tx.status)}
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-sm text-gray-500">Phone Number</p>
+                            <p class="font-medium">${formatPhone(tx.phoneNumber)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Amount</p>
+                            <p class="font-medium">KSH ${tx.amount || 0}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Category</p>
+                            <p class="font-medium">${formatCategory(tx.category)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">M-Pesa Receipt Code</p>
+                            <p class="font-medium font-mono text-green-700">${tx.mpesaReceiptNumber || tx.transactionCode || '-'}</p>
+                        </div>
+                        <div class="col-span-2">
+                            <p class="text-sm text-gray-500">Session ID</p>
+                            <p class="font-medium text-xs font-mono break-all">${tx.sessionId || '-'}</p>
+                        </div>
+                        <div class="col-span-2">
+                            <p class="text-sm text-gray-500">Checkout Request ID</p>
+                            <p class="font-medium text-xs font-mono break-all">${tx.checkoutRequestId || '-'}</p>
+                        </div>
+                    </div>
+                    <div class="pt-4 border-t">
+                        <p class="text-sm text-gray-500">Result Description</p>
+                        <p class="font-medium">${tx.resultDesc || '-'}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 pt-4 border-t">
+                        <div>
+                            <p class="text-sm text-gray-500">Created</p>
+                            <p class="font-medium text-sm">${formatDate(tx.createdAt)}</p>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500">Updated</p>
+                            <p class="font-medium text-sm">${formatDate(tx.updatedAt)}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('detail-modal').classList.add('hidden');
+            document.getElementById('detail-modal').classList.remove('flex');
+            currentTransactionId = null;
+        }
+
+        // ==================== DELETE FUNCTIONS ====================
+
+        function promptDelete(id) {
+            currentTransactionId = id;
+            document.getElementById('delete-message').textContent = 'Are you sure you want to delete this transaction?';
+            deleteCallback = () => deleteSingleTransaction(id);
+            showDeleteModal();
+        }
+
+        function deleteCurrentTransaction() {
+            if (currentTransactionId) {
+                closeModal();
+                promptDelete(currentTransactionId);
+            }
+        }
+
+        function deleteSelected() {
+            if (selectedTransactions.size === 0) return;
+            
+            const count = selectedTransactions.size;
+            document.getElementById('delete-message').textContent = 
+                `Are you sure you want to delete ${count} selected transaction${count > 1 ? 's' : ''}?`;
+            deleteCallback = deleteMultipleTransactions;
+            showDeleteModal();
+        }
+
+        function showDeleteModal() {
+            document.getElementById('delete-modal').classList.remove('hidden');
+            document.getElementById('delete-modal').classList.add('flex');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('delete-modal').classList.add('hidden');
+            document.getElementById('delete-modal').classList.remove('flex');
+            deleteCallback = null;
+        }
+
+        async function confirmDelete() {
+            if (deleteCallback) {
+                await deleteCallback();
+            }
+            closeDeleteModal();
+        }
+
+        async function deleteSingleTransaction(id) {
+            try {
+                const response = await fetch(`${SERVER_URL}/mpesa/admin/transactions/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    allTransactions = allTransactions.filter(tx => tx.id !== id);
+                    filteredTransactions = filteredTransactions.filter(tx => tx.id !== id);
+                    selectedTransactions.delete(id);
+                    
+                    renderTransactions(filteredTransactions);
+                    updateResultsCount();
+                    updateSelectedCount();
+                    loadStats();
+                    
+                    showNotification('Transaction deleted successfully', 'success');
+                } else {
+                    showNotification(data.message || 'Failed to delete transaction', 'error');
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                showNotification('Failed to delete transaction', 'error');
+            }
+        }
+
+        async function deleteMultipleTransactions() {
+            const ids = Array.from(selectedTransactions);
+            let successCount = 0;
+            let failCount = 0;
+            
+            for (const id of ids) {
+                try {
+                    const response = await fetch(`${SERVER_URL}/mpesa/admin/transactions/${id}`, {
+                        method: 'DELETE'
+                    });
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        successCount++;
+                        allTransactions = allTransactions.filter(tx => tx.id !== id);
+                        filteredTransactions = filteredTransactions.filter(tx => tx.id !== id);
+                    } else {
+                        failCount++;
+                    }
+                } catch (error) {
+                    failCount++;
+                }
+            }
+            
+            selectedTransactions.clear();
+            renderTransactions(filteredTransactions);
+            updateResultsCount();
+            updateSelectedCount();
+            loadStats();
+            
+            if (failCount === 0) {
+                showNotification(`${successCount} transaction(s) deleted successfully`, 'success');
+            } else {
+                showNotification(`Deleted ${successCount}, failed ${failCount}`, 'warning');
+            }
+        }
+
+        // ==================== EXPORT FUNCTIONS ====================
+
+        function exportToCSV() {
+            if (filteredTransactions.length === 0) {
+                showNotification('No transactions to export', 'warning');
+                return;
+            }
+            
+            const headers = ['Date', 'Phone', 'Amount', 'Category', 'Status', 'M-Pesa Code', 'Session ID', 'Result'];
+            const rows = filteredTransactions.map(tx => [
+                formatDate(tx.createdAt),
+                tx.phoneNumber || '',
+                tx.amount || 0,
+                formatCategory(tx.category),
+                tx.status || '',
+                tx.mpesaReceiptNumber || tx.transactionCode || '',
+                tx.sessionId || '',
+                tx.resultDesc || ''
+            ]);
+            
+            let csvContent = headers.join(',') + '\n';
+            rows.forEach(row => {
+                csvContent += row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',') + '\n';
+            });
+            
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `transactions_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            
+            showNotification('CSV exported successfully', 'success');
+        }
+
+        function exportToPDF() {
+            if (filteredTransactions.length === 0) {
+                showNotification('No transactions to export', 'warning');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.setFontSize(18);
+            doc.setTextColor(22, 163, 74);
+            doc.text('Course Corner - Transaction Report', 14, 22);
+            
+            doc.setFontSize(10);
+            doc.setTextColor(100);
+            doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 30);
+            doc.text(`Total Transactions: ${filteredTransactions.length}`, 14, 36);
+            
+            const tableData = filteredTransactions.map(tx => [
+                formatDate(tx.createdAt),
+                tx.phoneNumber || '-',
+                `KSH ${tx.amount || 0}`,
+                formatCategory(tx.category),
+                tx.status || '-',
+                tx.mpesaReceiptNumber || tx.transactionCode || '-'
+            ]);
+            
+            doc.autoTable({
+                startY: 42,
+                head: [['Date', 'Phone', 'Amount', 'Category', 'Status', 'M-Pesa Code']],
+                body: tableData,
+                theme: 'striped',
+                headStyles: { fillColor: [22, 163, 74] },
+                styles: { fontSize: 8 },
+                columnStyles: {
+                    0: { cellWidth: 35 },
+                    1: { cellWidth: 30 },
+                    2: { cellWidth: 25 },
+                    3: { cellWidth: 30 },
+                    4: { cellWidth: 22 },
+                    5: { cellWidth: 30 }
+                }
+            });
+            
+            doc.save(`transactions_${new Date().toISOString().split('T')[0]}.pdf`);
+            
+            showNotification('PDF exported successfully', 'success');
+        }
+
+        // ==================== UTILITY FUNCTIONS ====================
+
+        function showNotification(message, type = 'info') {
+            const colors = {
+                success: 'bg-green-500',
+                error: 'bg-red-500',
+                warning: 'bg-yellow-500',
+                info: 'bg-blue-500'
+            };
+            
+            const icons = {
+                success: 'check-circle',
+                error: 'times-circle',
+                warning: 'exclamation-triangle',
+                info: 'info-circle'
+            };
+            
+            const notification = document.createElement('div');
+            notification.className = `fixed bottom-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-lg shadow-lg z-50 flex items-center`;
+            notification.innerHTML = `<i class="fas fa-${icons[type]} mr-2"></i>${message}`;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        function refreshData() {
+            loadStats();
+            filterTransactions();
+        }
+
+        // Close modals on outside click
+        document.getElementById('detail-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
+        });
+        
+        document.getElementById('delete-modal').addEventListener('click', function(e) {
+            if (e.target === this) closeDeleteModal();
+        });
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+                closeDeleteModal();
+            }
+        });
+    </script>
+</body>
+</html>

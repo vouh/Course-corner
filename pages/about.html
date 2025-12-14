@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - Course Corner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" href="../assets/images/1.png">
+    <link rel="stylesheet" href="../assets/css/modern-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles-confetti@2.12.0/tsparticles.confetti.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Modern Page Header */
+        .page-hero {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 50%, #166534 100%);
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .page-hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .page-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .page-hero p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* Content Section */
+        .about-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        
+        .intro-text {
+            font-size: 1.25rem;
+            line-height: 1.8;
+            color: #374151;
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f0fdf4 0%, #ffffff 100%);
+            border-radius: 1.5rem;
+            border-left: 4px solid #16a34a;
+        }
+        
+        /* Feature Cards */
+        .features-section {
+            display: grid;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+        }
+        
+        .feature-card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .feature-card h2 i {
+            color: #16a34a;
+            font-size: 1.25rem;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #16a34a;
+            margin: 1.5rem 0 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .feature-card p {
+            color: #4b5563;
+            line-height: 1.7;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+        
+        .feature-list li {
+            position: relative;
+            padding: 0.75rem 0 0.75rem 2rem;
+            color: #4b5563;
+            border-bottom: 1px solid #f3f4f6;
+            transition: all 0.3s ease;
+        }
+        
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        
+        .feature-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #16a34a;
+            font-weight: bold;
+        }
+        
+        .feature-list li:hover {
+            padding-left: 2.5rem;
+            color: #16a34a;
+        }
+        
+        /* CTA Card */
+        .cta-card {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            text-align: center;
+            color: white;
+            margin: 3rem 0;
+        }
+        
+        .cta-card h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-card p {
+            font-size: 1.125rem;
+            opacity: 0.95;
+            margin-bottom: 1.5rem;
+        }
+        
+        .celebration-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: white;
+            color: #16a34a;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .celebration-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+        }
+        
+        /* Conclusion Card */
+        .conclusion-card {
+            background: #f9fafb;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            border: 2px dashed #d1d5db;
+            text-align: center;
+        }
+        
+        .conclusion-card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1rem;
+        }
+        
+        .conclusion-card p {
+            color: #4b5563;
+            line-height: 1.8;
+            font-size: 1.0625rem;
+        }
+        
+        /* Animation */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in:nth-child(1) { animation-delay: 0.1s; }
+        .fade-in:nth-child(2) { animation-delay: 0.2s; }
+        .fade-in:nth-child(3) { animation-delay: 0.3s; }
+        .fade-in:nth-child(4) { animation-delay: 0.4s; }
+        .fade-in:nth-child(5) { animation-delay: 0.5s; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Modern Navigation -->
+    <header class="modern-header" id="mainHeader">
+        <div class="header-container">
+            <a href="../index.html" class="logo">
+                <span>Course Corner</span>
+            </a>
+            
+            <nav class="nav-desktop">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link active">About Us</a>
+                <a href="calculator.html" class="nav-link">Calculator</a>
+                <a href="cluster-points.html" class="nav-link">Cluster Points</a>
+                <a href="application-process.html" class="nav-link">Application Guide</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </nav>
+            
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="../index.html" class="mobile-nav-link">Home</a>
+            <a href="about.html" class="mobile-nav-link active">About Us</a>
+            <a href="calculator.html" class="mobile-nav-link">Calculator</a>
+            <a href="cluster-points.html" class="mobile-nav-link">Cluster Points</a>
+            <a href="application-process.html" class="mobile-nav-link">Application Guide</a>
+            <a href="contact.html" class="mobile-nav-link">Contact</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <h1>Empowering High School Students 🎓</h1>
+            <p>Your Guide to Making Informed Course Decisions ⭐</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="about-content">
+        <div class="intro-text fade-in">
+            Navigating the transition from high school to higher education can be a daunting experience for many 
+            students. With countless options available, it's easy to feel overwhelmed when it comes to choosing the 
+            right courses that align with your interests and career aspirations. That's where <strong>THE COURSE CORNER</strong>
+            comes in—a dedicated platform designed specifically for high school students to help them make 
+            informed decisions about their educational paths.
+        </div>
+
+        <div class="features-section">
+            <div class="feature-card fade-in">
+                <h2><i class="fas fa-question-circle"></i> Why Choose the Course Corner?</h2>
+                <p>At THE COURSE CORNER, we understand that every student is unique, with different strengths, 
+                    interests, and goals. Our mission is to empower students by providing personalized course 
+                    recommendations based on their exam scores and academic performance.</p>
+                
+                <h3><i class="fas fa-bullseye"></i> 1. Tailored Course Recommendations</h3>
+                <p>Our intelligent course recommendation system analyzes your exam scores and academic achievements to suggest the best courses that align with your strengths and interests.</p>
+
+                <h3><i class="fas fa-book-open"></i> 2. Comprehensive Articles and Resources</h3>
+                <ul class="feature-list">
+                    <li><strong>Understanding Your Interests:</strong> Discover how to identify your passions and align them with potential career paths.</li>
+                    <li><strong>Evaluating Course Content:</strong> Learn how to assess course syllabi and understand what to expect from different subjects.</li>
+                    <li><strong>Considering Future Opportunities:</strong> Explore how your course choices can impact your future career options.</li>
+                    <li><strong>Balancing Interests and Strengths:</strong> Find out how to strike a balance between what you love and what you excel at academically.</li>
+                </ul>
+
+                <h3><i class="fas fa-lightbulb"></i> 3. Expert Insights and Tips</h3>
+                <p>Our team of educational experts and career counselors contribute valuable insights to help students navigate their choices.</p>
+
+                <h3><i class="fas fa-users"></i> 4. Community Support</h3>
+                <p>Connect with peers who are facing similar challenges. Share experiences, ask questions, and gain support from fellow students.</p>
+
+                <h3><i class="fas fa-laptop"></i> 5. User-Friendly Interface</h3>
+                <p>With easy navigation and a clean layout, finding the information you need is just a click away.</p>
+            </div>
+        </div>
+
+        <div class="cta-card fade-in">
+            <h2>Join Us Today! 🚀</h2>
+            <p>If you're a high school student looking to make informed decisions about your educational future, THE 
+                COURSE CORNER is here to help. Access personalized course recommendations, 
+                insightful articles, and a supportive community of peers.</p>
+            <button class="celebration-button" id="celebrateBtn">
+                <i class="fas fa-party-horn"></i>
+                Celebrate With Us! 🎉
+            </button>
+        </div>
+
+        <div class="conclusion-card fade-in">
+            <h2>Conclusion</h2>
+            <p>Choosing the right courses is a critical step in shaping your future. With THE COURSE CORNER, you have 
+                the tools and resources you need to make informed decisions that align with your goals and aspirations. 
+                Join us today and embark on a journey toward academic success and personal fulfillment!</p>
+        </div>
+    </div>
+    </div>
+
+    <!-- Modern Footer -->
+    <footer class="modern-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-brand">
+                        <span>Course Corner</span>
+                    </div>
+                    <p class="footer-description">
+                        Empowering students to make informed decisions about their educational future through personalized course recommendations.
+                    </p>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="calculator.html">Calculator</a></li>
+                        <li><a href="cluster-points.html">Cluster Points</a></li>
+                        <li><a href="application-process.html">Application Guide</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">KUCCPS Guide 2024</a></li>
+                        <li><a href="#">Course Requirements</a></li>
+                        <li><a href="#">Application Forms</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> info@coursecorner.com</li>
+                        <li><i class="fas fa-phone"></i> +254 700 000000</li>
+                    </ul>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>© Course Corner <span id="currentYear"></span>. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set current year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        // Mobile menu toggle with state tracking
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        let isMenuOpen = false;
+        
+        function openMobileMenu() {
+            isMenuOpen = true;
+            mobileMenuBtn.classList.add('active');
+            mobileMenu.classList.add('active');
+        }
+        
+        function closeMobileMenu() {
+            isMenuOpen = false;
+            mobileMenuBtn.classList.remove('active');
+            mobileMenu.classList.remove('active');
+        }
+        
+        function toggleMobileMenu() {
+            if (isMenuOpen) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        }
+        
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMobileMenu();
+        });
+        
+        // Close mobile menu when clicking a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => closeMobileMenu());
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (isMenuOpen && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                closeMobileMenu();
+            }
+        });
+        
+        // Close on resize to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024 && isMenuOpen) {
+                closeMobileMenu();
+            }
+        });
+        
+        // Header scroll effect
+        const header = document.getElementById('mainHeader');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Celebration effect
+        document.getElementById('celebrateBtn').addEventListener('click', () => {
+            confetti({
+                particleCount: 150,
+                spread: 90,
+                origin: { y: 0.6 }
+            });
+        });
+    </script>
+</body>
+</html>

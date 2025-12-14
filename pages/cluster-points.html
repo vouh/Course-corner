@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cluster Points Guide - Course Corner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" href="../assets/images/1.png">
+    <link rel="stylesheet" href="../assets/css/modern-ui.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Modern Page Header */
+        .page-hero {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 50%, #166534 100%);
+            padding: 8rem 2rem 4rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .page-hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .page-hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 1rem;
+        }
+        
+        .page-hero p {
+            font-size: 1.25rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        /* Content */
+        .cluster-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
+        
+        /* Explanation Section */
+        .explanation-box {
+            background: white;
+            border-radius: 1.5rem;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-left: 4px solid #16a34a;
+        }
+        
+        .explanation-box h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .explanation-box h2 i {
+            color: #16a34a;
+        }
+        
+        .explanation-box p {
+            color: #4b5563;
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            border-left: 4px solid #f59e0b;
+            margin-top: 1.5rem;
+        }
+        
+        .warning-box p {
+            color: #78350f;
+            margin: 0;
+        }
+        
+        /* Cluster Grid */
+        .clusters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .cluster-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e7eb;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .cluster-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+            border-color: #16a34a;
+        }
+        
+        .cluster-header {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            padding: 1rem 1.25rem;
+            color: white;
+        }
+        
+        .cluster-number {
+            font-size: 0.875rem;
+            font-weight: 600;
+            opacity: 0.9;
+            margin-bottom: 0.25rem;
+        }
+        
+        .cluster-title {
+            font-size: 1rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+        
+        .cluster-body {
+            padding: 1.25rem;
+        }
+        
+        .cluster-subjects {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .cluster-subjects li {
+            position: relative;
+            padding: 0.5rem 0 0.5rem 1.5rem;
+            font-size: 0.875rem;
+            color: #4b5563;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        
+        .cluster-subjects li:last-child {
+            border-bottom: none;
+        }
+        
+        .cluster-subjects li::before {
+            content: '•';
+            position: absolute;
+            left: 0.5rem;
+            color: #16a34a;
+            font-weight: bold;
+        }
+        
+        /* CTA Section */
+        .cta-box {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        
+        .cta-box h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-box p {
+            color: #4b5563;
+            max-width: 600px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
+        }
+        
+        .cta-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(22, 163, 74, 0.4);
+        }
+        
+        @media (max-width: 640px) {
+            .page-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .clusters-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Modern Navigation -->
+    <header class="modern-header" id="mainHeader">
+        <div class="header-container">
+            <a href="../index.html" class="logo">
+                <span>Course Corner</span>
+            </a>
+            
+            <nav class="nav-desktop">
+                <a href="../index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About Us</a>
+                <a href="calculator.html" class="nav-link">Calculator</a>
+                <a href="cluster-points.html" class="nav-link active">Cluster Points</a>
+                <a href="application-process.html" class="nav-link">Application Guide</a>
+                <a href="contact.html" class="nav-link">Contact</a>
+            </nav>
+            
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="../index.html" class="mobile-nav-link">Home</a>
+            <a href="about.html" class="mobile-nav-link">About Us</a>
+            <a href="calculator.html" class="mobile-nav-link">Calculator</a>
+            <a href="cluster-points.html" class="mobile-nav-link active">Cluster Points</a>
+            <a href="application-process.html" class="mobile-nav-link">Application Guide</a>
+            <a href="contact.html" class="mobile-nav-link">Contact</a>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="page-hero">
+        <div class="page-hero-content">
+            <h1>Cluster Points Guide 📊</h1>
+            <p>Understanding how cluster points work is crucial for your university application process</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="cluster-content">
+        <!-- Explanation Section -->
+        <div class="explanation-box">
+            <h2><i class="fas fa-info-circle"></i> How Cluster Points Work</h2>
+            <p>
+                Each cluster for KUCCPS courses has <strong>4 major required subjects</strong>. These subjects are used in the formula to calculate cluster points. If a student did not take or study a required standalone subject for a specific cluster (e.g., Music for Cluster 18 or Physics for Cluster 4), the cluster points are automatically set to zero for that cluster.
+            </p>
+            <p>
+                This scoring system is competitive and helps students get into the institutions of their choice. Every university has specific cluster points requirements for each course. This system applies to students who have scored a <strong>C+ and above</strong>.
+            </p>
+            <div class="warning-box">
+                <p>
+                    <strong><i class="fas fa-exclamation-triangle"></i> Important Note:</strong> Cluster point requirements may vary by university and program. Please check specific university requirements for accurate information.
+                </p>
+            </div>
+        </div>
+
+        <!-- Clusters Grid -->
+        <div class="clusters-grid">
+            <!-- Cluster 1 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 1</div>
+                    <div class="cluster-title">Law and Related Courses</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>ENG/KIS</li>
+                        <li>MAT A/B or any GROUP II</li>
+                        <li>Any GROUP III</li>
+                        <li>GROUP II/2nd GROUP III/GROUP IV/GROUP V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 2 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 2</div>
+                    <div class="cluster-title">Business, Hospitality & Related</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>ENG/KIS</li>
+                        <li>ENG/KIS</li>
+                        <li>MAT A/B</li>
+                        <li>Any GROUP II or GROUP III</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 3 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 3</div>
+                    <div class="cluster-title">Social Sciences, Media, Fine Arts & Related</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>ENG/KIS</li>
+                        <li>MAT A/B or any GROUP II</li>
+                        <li>Any GROUP III</li>
+                        <li>GROUP II/2nd GROUP III/GROUP IV/GROUP V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 4 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 4</div>
+                    <div class="cluster-title">Geosciences & Related</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>MAT A</li>
+                        <li>PHY</li>
+                        <li>BIO/CHE/GEO</li>
+                        <li>GROUP II/GROUP III/GROUP IV/GROUP V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 5 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 5</div>
+                    <div class="cluster-title">Engineering & Technology</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>MAT A</li>
+                        <li>PHY</li>
+                        <li>BIO/CHE/GEO</li>
+                        <li>GROUP II/GROUP III/GROUP IV/GROUP V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 6 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 6</div>
+                    <div class="cluster-title">Architecture, Building & Construction</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>MAT A</li>
+                        <li>PHY</li>
+                        <li>Any GROUP III</li>
+                        <li>2nd GROUP II/III/GROUP IV/GROUP V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 7 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 7</div>
+                    <div class="cluster-title">Computing, IT & Related</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>MAT A</li>
+                        <li>PHY</li>
+                        <li>2nd GROUP II or any GROUP III</li>
+                        <li>GROUP II/III/GROUP IV/GROUP V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 8 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 8</div>
+                    <div class="cluster-title">Agribusiness & Related</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>MAT A</li>
+                        <li>BIO</li>
+                        <li>PHY or CHE</li>
+                        <li>3rd GROUP II/III/GROUP IV/GROUP V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 9 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 9</div>
+                    <div class="cluster-title">Biological Sciences, Physics, Chemistry</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>MAT A</li>
+                        <li>Any GROUP II</li>
+                        <li>2nd GROUP II</li>
+                        <li>3rd GROUP II/III/GROUP IV/GROUP V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 10 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 10</div>
+                    <div class="cluster-title">Actuarial Science, Accountancy, Economics</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>MAT A</li>
+                        <li>Any GROUP II</li>
+                        <li>Any GROUP III</li>
+                        <li>2nd GROUP II/III/GROUP IV/GROUP V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 11 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 11</div>
+                    <div class="cluster-title">Interior Design, Fashion, Textiles</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>CHE</li>
+                        <li>MAT A/B or PHY</li>
+                        <li>BIO/HSC</li>
+                        <li>ENG/KIS or GROUP III/IV/V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 12 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 12</div>
+                    <div class="cluster-title">Sport Science & Related</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>BIO/GSC</li>
+                        <li>MAT A/B</li>
+                        <li>Any GROUP II or III</li>
+                        <li>ENG/KIS or GROUP II/III/IV/V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 13 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 13</div>
+                    <div class="cluster-title">Medicine, Health, Veterinary</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>BIO</li>
+                        <li>CHE</li>
+                        <li>MAT A/PHY</li>
+                        <li>ENG/KIS or 3rd GROUP II/III/IV/V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 14 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 14</div>
+                    <div class="cluster-title">History, Archaeology & Related</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>HAG</li>
+                        <li>ENG/KIS</li>
+                        <li>MAT A/B or any GROUP II</li>
+                        <li>GROUP II/2nd GROUP III/IV/V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 15 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 15</div>
+                    <div class="cluster-title">Agriculture, Food Science, Environment</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>BIO</li>
+                        <li>CHE</li>
+                        <li>MAT A/PHY/GEO</li>
+                        <li>ENG/KIS or 3rd GROUP II/III/IV/V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 16 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 16</div>
+                    <div class="cluster-title">Pharmacy, Nursing, Public Health</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>BIO</li>
+                        <li>CHE</li>
+                        <li>MAT A/PHY</li>
+                        <li>ENG/KIS or 3rd GROUP II/III/IV/V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 17 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 17</div>
+                    <div class="cluster-title">Languages, Literature, Philosophy</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>ENG</li>
+                        <li>KIS</li>
+                        <li>Any GROUP III</li>
+                        <li>MAT A/B or GROUP II/III/IV/V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 18 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 18</div>
+                    <div class="cluster-title">Music & Related Courses</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>MUS</li>
+                        <li>ENG/KIS</li>
+                        <li>MAT A/B or any GROUP II</li>
+                        <li>GROUP III/IV/V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 19 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 19</div>
+                    <div class="cluster-title">Religious Studies & Related</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>CRE/IRE/HRE</li>
+                        <li>ENG/KIS</li>
+                        <li>Any GROUP III</li>
+                        <li>MAT A/B or GROUP II/III/IV/V</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Cluster 20 -->
+            <div class="cluster-card">
+                <div class="cluster-header">
+                    <div class="cluster-number">Cluster 20</div>
+                    <div class="cluster-title">Education & Teaching</div>
+                </div>
+                <div class="cluster-body">
+                    <ul class="cluster-subjects">
+                        <li>ENG/KIS</li>
+                        <li>MAT A/B or any GROUP II</li>
+                        <li>Any GROUP III</li>
+                        <li>GROUP II/III/IV/V</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA Section -->
+        <div class="cta-box">
+            <h2>Ready to Calculate Your Points?</h2>
+            <p>Use our free calculator to instantly find out your cluster points and discover eligible courses based on your KCSE grades.</p>
+            <a href="calculator.html" class="cta-btn">
+                <i class="fas fa-calculator"></i>
+                Open Calculator
+            </a>
+        </div>
+    </div>
+
+    <!-- Modern Footer -->
+    <footer class="modern-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-brand">
+                        <span>Course Corner</span>
+                    </div>
+                    <p class="footer-description">
+                        Empowering students to make informed decisions about their educational future through personalized course recommendations.
+                    </p>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="calculator.html">Calculator</a></li>
+                        <li><a href="cluster-points.html">Cluster Points</a></li>
+                        <li><a href="application-process.html">Application Guide</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">KUCCPS Guide 2024</a></li>
+                        <li><a href="#">Course Requirements</a></li>
+                        <li><a href="#">Application Forms</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-col">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> info@coursecorner.com</li>
+                        <li><i class="fas fa-phone"></i> +254 700 000000</li>
+                    </ul>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>© Course Corner <span id="currentYear"></span>. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set current year
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        // Mobile menu toggle with state tracking
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        let isMenuOpen = false;
+        
+        function openMobileMenu() {
+            isMenuOpen = true;
+            mobileMenuBtn.classList.add('active');
+            mobileMenu.classList.add('active');
+        }
+        
+        function closeMobileMenu() {
+            isMenuOpen = false;
+            mobileMenuBtn.classList.remove('active');
+            mobileMenu.classList.remove('active');
+        }
+        
+        function toggleMobileMenu() {
+            if (isMenuOpen) {
+                closeMobileMenu();
+            } else {
+                openMobileMenu();
+            }
+        }
+        
+        mobileMenuBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMobileMenu();
+        });
+        
+        // Close mobile menu when clicking a link
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => closeMobileMenu());
+        });
+        
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (isMenuOpen && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                closeMobileMenu();
+            }
+        });
+        
+        // Close on resize to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024 && isMenuOpen) {
+                closeMobileMenu();
+            }
+        });
+        
+        // Header scroll effect
+        const header = document.getElementById('mainHeader');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>

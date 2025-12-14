@@ -3,18 +3,26 @@
 <head>
     <meta name="description" content="Course Corner offers a wide range of courses to help you achieve your educational and career goals. Explore now!">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="calculator.js" type="module"></script>
-    <script src="courses-eligibility.js" type="module"></script>
+    <script src="assets/js/firebase-config.js" type="module"></script>
+    <script src="assets/js/calculator.js" type="module"></script>
+    <script src="assets/js/courses-eligibility.js" type="module"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Corner</title>
+    <title>Course Corner - Calculate Your Cluster Points & Find Eligible Courses</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/x-icon" href="1.png">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/modern-ui.css">
+    <link rel="icon" type="image/x-icon" href="assets/images/1.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="download-handler.js"></script>
+    <script src="assets/js/paymentHandler.js"></script>
+    <link rel="stylesheet" href="assets/css/auth.css">
+    <script src="assets/js/firebase-auth.js" defer></script>
+    
+    <!-- Custom Select for Mobile -->
+    <script src="assets/js/custom-select.js" defer></script>
+    
     <style>
         @keyframes blink {
             0% { opacity: 1; }
@@ -188,120 +196,205 @@
         <div class="loader mt-4"></div>
     </div>
 
-    <!-- Navigation -->
-    <nav class="bg-transparent shadow-lg">
-        <div class="container mx-auto px-4">
-            <div class="flex justify-between items-center py-4">
-                <div class="flex items-center">
-                    <img src="1.png" alt="Logo" class="h-16 w-auto">
-                    <span class="ml-3 text-2xl font-bold text-green-600">Course Corner</span>
+    <!-- Modern Sticky Navigation -->
+    <header class="modern-header" id="mainHeader">
+        <div class="header-container">
+            <!-- Logo -->
+            <a href="index.html" class="logo-container">
+                <span class="logo-text">Course Corner</span>
+            </a>
+
+            <!-- Desktop Navigation -->
+            <nav class="desktop-nav">
+                <div class="nav-links">
+                    <a href="index.html" class="modern-nav-link active">Home</a>
+                    <a href="pages/about.html" class="modern-nav-link">About Us</a>
+                    <a href="pages/cluster-points.html" class="modern-nav-link">Cluster Guide</a>
+                    <a href="pages/application-process.html" class="modern-nav-link">Application</a>
+                    <a href="pages/contact.html" class="modern-nav-link">Contact</a>
                 </div>
-                <!-- Add mobile menu button -->
-                <button id="mobile-menu-button" class="md:hidden flex items-center px-3 py-2 border rounded text-gray-500 border-gray-500 hover:text-green-600 hover:border-green-600">
-                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                    </svg>
+                
+                <!-- Auth Buttons -->
+                <div class="nav-auth-buttons">
+                    <div id="userAvatar" class="hidden"></div>
+                    <button id="profileBtn" class="btn-nav-profile hidden" onclick="window.firebaseAuth.openProfileModal()">
+                        <i class="fas fa-user-circle"></i>
+                        <span>Profile</span>
+                    </button>
+                    <button id="authBtn" class="btn-nav-login" onclick="window.firebaseAuth.openAuthModal()">
+                        <i class="fas fa-user"></i>
+                        <span>Login</span>
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div class="mobile-menu" id="mobileMenu">
+            <nav class="mobile-nav-links">
+                <a href="index.html" class="mobile-nav-link active">Home</a>
+                <a href="pages/about.html" class="mobile-nav-link">About Us</a>
+                <a href="pages/cluster-points.html" class="mobile-nav-link">Cluster Guide</a>
+                <a href="pages/application-process.html" class="mobile-nav-link">Application</a>
+                <a href="pages/contact.html" class="mobile-nav-link">Contact</a>
+            </nav>
+            <div class="mobile-auth-buttons">
+                <button id="profileBtnMobile" class="btn-nav-profile hidden" style="width:100%; justify-content:center;" onclick="window.firebaseAuth.openProfileModal()">
+                    <i class="fas fa-user-circle"></i>
+                    Profile
                 </button>
-                <!-- Modify the navigation links div -->
-                <div id="mobile-menu" class="hidden md:flex md:space-x-8 absolute md:relative top-20 md:top-0 left-0 right-0 bg-white md:bg-transparent shadow-lg md:shadow-none p-4 md:p-0 z-50">
-                    <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-8">
-                        <a href="#" class="nav-link active">Home</a>
-                        <a href="about.html" class="nav-link">About Us</a>
-                        <a href="cluster-points.html" class="nav-link">Cluster Points Guide</a>
-                        <a href="application-process.html" class="nav-link">Application Process</a>
-                        <a href="contact.html" class="nav-link">Contact</a>
+                <button id="authBtnMobile" class="btn-nav-login" style="width:100%; justify-content:center;" onclick="window.firebaseAuth.openAuthModal()">
+                    <i class="fas fa-user"></i>
+                    Login
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Modern Hero Section -->
+    <section class="modern-hero">
+        <!-- Background Pattern -->
+        <div class="hero-bg-pattern"></div>
+        
+        <!-- Floating Shapes -->
+        <div class="hero-shapes">
+            <div class="hero-shape hero-shape-1"></div>
+            <div class="hero-shape hero-shape-2"></div>
+            <div class="hero-shape hero-shape-3"></div>
+        </div>
+        
+        <!-- Hero Content -->
+        <div class="hero-content">
+            <div class="hero-badge">
+                <i class="fas fa-star"></i>
+                <span>Kenya's #1 Course Guidance Platform</span>
+            </div>
+            
+            <h1 class="hero-title">
+                Shape Your <span class="hero-title-highlight">Future</span> With Confidence
+            </h1>
+            
+            <p class="hero-subtitle">
+                Calculate your KCSE cluster points accurately and discover the perfect courses and universities for your career journey.
+            </p>
+            
+            <div class="hero-cta-container" style="display: flex; flex-direction: row; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+                <a href="pages/calculator.html" class="btn-hero-primary">
+                    <i class="fas fa-calculator"></i>
+                    Calculate Points
+                </a>
+                <a href="pages/cluster-points.html" class="btn-hero-secondary">
+                    <i class="fas fa-book-open"></i>
+                    Learn More
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modern Features Section -->
+    <section class="features-section">
+        <div class="features-container">
+            <div class="section-header">
+                <h2 class="section-title">Your Path to Success</h2>
+                <p class="section-subtitle">Four simple steps to discover your ideal career path and university placement</p>
+            </div>
+            
+            <div class="features-grid">
+                <!-- Feature Card 1 -->
+                <div class="modern-feature-card" onclick="window.location.href='pages/calculator.html'">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-calculator"></i>
                     </div>
+                    <h3 class="feature-title">Assess Grades</h3>
+                    <p class="feature-description">Input your KCSE grades and calculate your cluster points accurately</p>
+                </div>
+                
+                <!-- Feature Card 2 -->
+                <div class="modern-feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-compass"></i>
+                    </div>
+                    <h3 class="feature-title">Explore Courses</h3>
+                    <p class="feature-description">Discover courses that match your cluster points and interests</p>
+                </div>
+                
+                <!-- Feature Card 3 -->
+                <div class="modern-feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <h3 class="feature-title">Find Universities</h3>
+                    <p class="feature-description">Compare universities offering your chosen courses</p>
+                </div>
+                
+                <!-- Feature Card 4 -->
+                <div class="modern-feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 class="feature-title">Make Decision</h3>
+                    <p class="feature-description">Choose your path with confidence and clarity</p>
                 </div>
             </div>
         </div>
-    </nav>
+    </section>
 
-    <!-- Hero Section -->
-    <div class="hero-section">
-        <div class="imagec">
-            <img src="2.jpg" alt="Career Success" class="hero-image">
-        </div>
-        <div class="hero-overlay">
-            <div class="relative z-20 text-center px-4 max-w-5xl mx-auto pt-32">
-                <h1 class="text-5xl md:text-7xl font-bold text-white mb-12">
-                    Shape Your Future With Confidence
-                </h1>
-                <p class="text-xl md:text-2xl text-green-400 font-bold mb-12 opacity-90">
-                    Calculate your cluster points accurately and explore eligible courses
+    <!-- Calculator CTA Section -->
+    <section class="cta-section" id="calculator-cta">
+        <div class="cta-container">
+            <div class="cta-content">
+                <div class="cta-badge">
+                    <i class="fas fa-star"></i>
+                    <span>Start Your Journey</span>
+                </div>
+                <h2 class="cta-title">Ready to Calculate Your <span class="highlight">Cluster Points?</span></h2>
+                <p class="cta-description">
+                    Input your KCSE grades and instantly discover your cluster points, eligible courses, and university options. 
+                    Our comprehensive calculator covers all subject combinations and provides accurate results based on the latest KUCCPS guidelines.
                 </p>
-                <div class="flex flex-col md:flex-row gap-6 justify-center items-center">
-                    <button class="bg-green-600 text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-green-500 transition-all">
-                        Explore Your Options
-                    </button>
-                    <button class="border-2 border-white text-white px-8 py-4 rounded-full text-lg font-bold hover:bg-white hover:text-green-600 transition-all">
-                        Learn More
-                    </button>
+                <div class="cta-features">
+                    <div class="cta-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Instant Results</span>
+                    </div>
+                    <div class="cta-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>All Subject Groups</span>
+                    </div>
+                    <div class="cta-feature">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Course Recommendations</span>
+                    </div>
                 </div>
+                <a href="pages/calculator.html" class="cta-button">
+                    <i class="fas fa-calculator"></i>
+                    Open Calculator
+                    <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
-        </div>
-    </div>
-
-    <!-- Add this new section below the hero section -->
-    <section class="career-path-section">
-        <div class="container mx-auto">
-            <h2 class="text-4xl font-bold text-center text-gray-800 mb-8">Your Path to Success</h2>
-            <div class="card-container">
-                <!-- Card 1 -->
-                <div class="flip-card">
-                    <div class="flip-card-inner">
-                        <div class="flip-card-front">
-                            <i class="fas fa-calculator card-icon"></i>
-                            <h3 class="text-xl font-bold mb-2">Assess Your Grades</h3>
-                            <p class="text-gray-600">Calculate your cluster points</p>
-                        </div>
-                        <div class="flip-card-back">
-                            <h3 class="text-xl font-bold mb-4">Grade Assessment</h3>
-                            <p>Input your grades in our calculator to determine your cluster points accurately.</p>
-                        </div>
+            <div class="cta-visual">
+                <div class="cta-card">
+                    <div class="cta-card-header">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Sample Result</span>
                     </div>
-                </div>
-
-                <!-- Card 2 -->
-                <div class="flip-card">
-                    <div class="flip-card-inner">
-                        <div class="flip-card-front">
-                            <i class="fas fa-compass card-icon"></i>
-                            <h3 class="text-xl font-bold mb-2">Explore Courses</h3>
-                            <p class="text-gray-600">Discover your options</p>
+                    <div class="cta-card-body">
+                        <div class="cta-score">
+                            <span class="score-number">72</span>
+                            <span class="score-label">/ 84 Points</span>
                         </div>
-                        <div class="flip-card-back">
-                            <h3 class="text-xl font-bold mb-4">Course Discovery</h3>
-                            <p>Browse through courses that match your cluster points and interests.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 3 -->
-                <div class="flip-card">
-                    <div class="flip-card-inner">
-                        <div class="flip-card-front">
-                            <i class="fas fa-university card-icon"></i>
-                            <h3 class="text-xl font-bold mb-2">Check Universities</h3>
-                            <p class="text-gray-600">Find your ideal institution</p>
-                        </div>
-                        <div class="flip-card-back">
-                            <h3 class="text-xl font-bold mb-4">University Selection</h3>
-                            <p>Compare universities offering your chosen courses and their requirements.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Card 4 -->
-                <div class="flip-card">
-                    <div class="flip-card-inner">
-                        <div class="flip-card-front">
-                            <i class="fas fa-check-circle card-icon"></i>
-                            <h3 class="text-xl font-bold mb-2">Make Your Choice</h3>
-                            <p class="text-gray-600">Take the next step</p>
-                        </div>
-                        <div class="flip-card-back">
-                            <h3 class="text-xl font-bold mb-4">Decision Time</h3>
-                            <p>Make an informed decision about your future career path with confidence.</p>
+                        <div class="cta-courses">
+                            <div class="course-tag">Medicine</div>
+                            <div class="course-tag">Engineering</div>
+                            <div class="course-tag">Law</div>
+                            <div class="course-tag">+50 more</div>
                         </div>
                     </div>
                 </div>
@@ -309,592 +402,153 @@
         </div>
     </section>
 
-    <!-- Main Calculator Section -->
-    <div id="calculator" class="container mx-auto px-4 py-12">
-        <div class="max-w-4xl mx-auto">
-            <!-- Grade Input (replacing Cluster Selection) -->
-            <div class="mb-6">
-                <label class="block text-gray-700 text-sm font-bold mb-2">Your Overall Grade (0-84) is:</label>
-                <input 
-                    type="number" 
-                    id="overallGrade" 
-                    class="w-full p-2 border rounded" 
-                    min="0" 
-                    max="84" 
-                    placeholder="Automatically calculated"
-                    readonly
-                >
-                <p class="text-sm text-gray-600 mt-1">Automatically calculated from your 7 best subjects</p>
-            </div>
-
-            <!-- Subject Selection Form -->
-            <div id="subjectForm" class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-2xl font-semibold mb-4">Enter Subject Grades</h2>
-                
-                <!-- Group 1: Communication Subjects -->
-                <div class="mb-6">
-                    <h3 class="font-bold mb-3">Group 1: Communication Subjects</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm mb-1">English</label>
-                            <select id="english" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Kiswahili</label>
-                            <select id="kiswahili" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Group 2: Sciences -->
-                <div class="mb-6">
-                    <h3 class="font-bold mb-3">Group 2: Sciences</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-sm mb-1">Mathematics</label>
-                            <select id="mathematics" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Biology</label>
-                            <select id="biology" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Physics</label>
-                            <select id="physics" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Chemistry</label>
-                            <select id="chemistry" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Group 3: Humanities -->
-                <div class="mb-6">
-                    <h3 class="font-bold mb-3">Group 3: Humanities</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                        <div>
-                            <label class="block text-sm mb-1">History and Government</label>
-                            <select id="history" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Geography</label>
-                            <select id="geography" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">CRE</label>
-                            <select id="cre" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">IRE</label>
-                            <select id="ire" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">HRE</label>
-                            <select id="hre" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Group 4: Technical and Applied Subjects -->
-                <div class="mb-6">
-                    <h3 class="font-bold mb-3">Group 4: Technical and Applied Subjects</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
-                        <div>
-                            <label class="block text-sm mb-1">Agriculture</label>
-                            <select id="agriculture" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Home Science</label>
-                            <select id="homeScience" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Business Studies</label>
-                            <select id="business" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Music</label>
-                            <select id="music" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Computer Studies</label>
-                            <select id="computerStudies" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <!-- Grade options will be populated by JS -->
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Aviation</label>
-                            <select id="aviation" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Woodwork</label>
-                            <select id="woodwork" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Metal Work</label>
-                            <select id="metalWork" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Building & Construction</label>
-                            <select id="buildingConstruction" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Art & Design</label>
-                            <select id="artDesign" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Group 5: Foreign Languages -->
-                <div class="mb-6">
-                    <h3 class="font-bold mb-3">Group 5: Foreign Languages</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div>
-                            <label class="block text-sm mb-1">French</label>
-                            <select id="french" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">German</label>
-                            <select id="german" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Arabic</label>
-                            <select id="arabic" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm mb-1">Sign Language</label>
-                            <select id="signLanguage" class="grade-select w-full p-2 border rounded">
-                                <option value="">Select grade</option>
-                                <option value="12">A</option>
-                                <option value="11">A-</option>
-                                <option value="10">B+</option>
-                                <option value="9">B</option>
-                                <option value="8">B-</option>
-                                <option value="7">C+</option>
-                                <option value="6">C</option>
-                                <option value="5">C-</option>
-                                <option value="4">D+</option>
-                                <option value="3">D</option>
-                                <option value="2">D-</option>
-                                <option value="1">E</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Replace the single Calculate Button with these three buttons -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                    <button id="calculateBtn" class="blink-button w-full bg-green-600 text-white py-3 px-4 rounded-lg hover:bg-green-500 transition transform hover:scale-105">
-                        Calculate Cluster Points
-                    </button>
-                    
-                    <button id="calculateBtn2" class="blink-button w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-500 transition transform hover:scale-105">
-                        Courses Only
-                    </button>
-                    
-                    <button id="calculateBtn3" class="blink-button w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-500 transition transform hover:scale-105">
-                        Point & Courses
-                    </button>
-                </div>
-
-                <!-- Results Section -->
-                <div id="results" class="mt-6 p-4 bg-gray-50 rounded-lg hidden">
-                    <h3 class="font-bold mb-2">Results</h3>
-                    <p id="clusterPoints" class="text-xl">Cluster Points: <span class="font-bold">0</span></p>
-                    <div id="eligibleCourses" class="mt-4">
-                        <h4 class="font-semibold mb-2">Eligible Courses:</h4>
-                        <ul class="list-disc pl-5" id="coursesList">
-                        </ul>
-                    </div>
-                    <!-- Added disclaimer message -->
-                    <div class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-gray-600">
-                        <p>Note: We strive to provide the most accurate calculations possible. However, due to KUCCPS standardization, actual cluster points may vary by ±2.5 points. These results should be used as a close approximation for making preliminary decisions.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="calculator.js"></script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Mobile menu toggle
-            const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const mobileMenu = document.getElementById('mobile-menu');
+            // Modern Header Scroll Effect
+            const header = document.getElementById('mainHeader');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
             
-            mobileMenuButton.addEventListener('click', () => {
-                mobileMenu.classList.toggle('hidden');
+            // Mobile menu toggle
+            const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+            const mobileMenu = document.getElementById('mobileMenu');
+            let isMenuOpen = false;
+            
+            function openMobileMenu() {
+                isMenuOpen = true;
+                mobileMenuBtn.classList.add('active');
+                mobileMenu.classList.add('show');
+            }
+            
+            function closeMobileMenu() {
+                isMenuOpen = false;
+                mobileMenuBtn.classList.remove('active');
+                mobileMenu.classList.remove('show');
+            }
+            
+            function toggleMobileMenu() {
+                if (isMenuOpen) {
+                    closeMobileMenu();
+                } else {
+                    openMobileMenu();
+                }
+            }
+            
+            mobileMenuBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleMobileMenu();
+            });
+            
+            // Close mobile menu when clicking a link
+            mobileMenu.querySelectorAll('a, button').forEach(link => {
+                link.addEventListener('click', () => {
+                    closeMobileMenu();
+                });
             });
 
             // Close mobile menu when clicking outside
             document.addEventListener('click', (e) => {
-                if (!mobileMenu.contains(e.target) && !mobileMenuButton.contains(e.target)) {
-                    mobileMenu.classList.add('hidden');
+                if (isMenuOpen && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
+                    closeMobileMenu();
                 }
             });
 
             // Close mobile menu when window is resized to desktop size
             window.addEventListener('resize', () => {
-                if (window.innerWidth >= 768) { // 768px is the md breakpoint in Tailwind
-                    mobileMenu.classList.add('hidden');
+                if (window.innerWidth >= 1024 && isMenuOpen) {
+                    closeMobileMenu();
                 }
             });
+            
+            // Close mobile menu on escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && isMenuOpen) {
+                    closeMobileMenu();
+                }
+            });
+            
+            // Update score display when grades change
+            document.querySelectorAll('.modern-grade-select, .grade-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    // Add visual feedback when a grade is selected
+                    if (this.value) {
+                        this.classList.add('has-value');
+                    } else {
+                        this.classList.remove('has-value');
+                    }
+                    // Update the overall grade display
+                    updateOverallGradeDisplay();
+                });
+            });
+            
+            function updateOverallGradeDisplay() {
+                const overallGrade = document.getElementById('overallGrade');
+                const display = document.getElementById('overallGradeDisplay');
+                if (overallGrade && display) {
+                    display.textContent = overallGrade.value || '0';
+                }
+            }
         });
     </script>
 
     <!-- Footer -->
-    <footer class="bg-green-600 text-white py-12 mt-16">
-        <div class="container mx-auto px-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <!-- Navigation Links -->
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
-                    <ul class="space-y-2">
-                        <li><a href="index3.html" class="hover:text-gray-300">Home</a></li>
-                        <li><a href="index3.html#calculator" class="hover:text-gray-300">Calculator</a></li>
-                        <li><a href="cluster-points.html" class="hover:text-gray-300">Cluster Points Guide</a></li>
-                        <li><a href="application-process.html" class="hover:text-gray-300">Application Process</a></li>
+    <footer class="modern-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <!-- Brand -->
+                <div class="footer-col">
+                    <div class="footer-brand">
+                        <span>Course Corner</span>
+                    </div>
+                    <p class="footer-description">
+                        Empowering students to make informed decisions about their educational future through personalized course recommendations.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="pages/calculator.html">Calculator</a></li>
+                        <li><a href="pages/cluster-points.html">Cluster Points Guide</a></li>
+                        <li><a href="pages/application-process.html">Application Process</a></li>
                     </ul>
                 </div>
 
-                <!-- Social Media -->
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Connect With Us</h3>
-                    <ul class="space-y-2">
-                        <li>
-                            <a href="#" target="_blank" class="flex items-center hover:text-gray-300">
-                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/>
-                                </svg>
-                                TikTok
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" target="_blank" class="flex items-center hover:text-gray-300">
-                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
-                                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                                </svg>
-                                WhatsApp
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-
-                <!-- Important Documents -->
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Important Documents</h3>
-                    <ul class="space-y-2">
-                        <li>
-                            <a href="#" class="hover:text-gray-300" download>
-                                KUCCPS Guide 2024
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-gray-300" download>
-                                Course Requirements
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" class="hover:text-gray-300" download>
-                                Application Forms
-                            </a>
-                        </li>
+                <!-- Resources -->
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">KUCCPS Guide 2024</a></li>
+                        <li><a href="#">Course Requirements</a></li>
+                        <li><a href="#">Application Forms</a></li>
                     </ul>
                 </div>
 
                 <!-- Contact Us -->
-                <div>
-                    <h3 class="text-xl font-bold mb-4">Contact Us</h3>
-                    <ul class="space-y-2">
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
-                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
-                            </svg>
-                            <a href="mailto:info@coursecorner.com">info@coursecorner.com</a>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
-                            </svg>
-                            <span>+254 700 000000</span>
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
-                            </svg>
-                            <span>Get Updates</span>
-                        </li>
+                <div class="footer-col">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> info@coursecorner.com</li>
+                        <li><i class="fas fa-phone"></i> +254 700 000000</li>
                     </ul>
                 </div>
             </div>
 
             <!-- Copyright -->
-            <div class="text-center mt-8 pt-8 border-t border-green-500">
+            <div class="footer-bottom">
                 <p>© Course Corner <span id="currentYear"></span>. All rights reserved.</p>
             </div>
         </div>
@@ -917,7 +571,7 @@
                 setTimeout(() => {
                     preloader.style.display = 'none';
                 }, 500);
-            }, 1500);
+            }, 10);
         });
     </script>
 
@@ -1015,18 +669,7 @@
             // document.getElementById('results').classList.remove('hidden');
         }
 
-        // Add separate function for calculate button
-        document.getElementById('calculateButton').addEventListener('click', function() {
-            calculateTotalPoints();
-            document.getElementById('results').classList.remove('hidden');
-        });
-    </script>
-
-    <script>
-        document.getElementById('calculateBtn2').addEventListener('click', function() {
-            this.classList.add('pop-animation');
-            setTimeout(() => this.classList.remove('pop-animation'), 300);
-        });
+        // Old button listeners removed - Payment is now required first
     </script>
 
     <!-- Add this script after the existing scripts -->
@@ -1555,6 +1198,962 @@
                 });
             }
         }
+    </script>
+
+    <!-- Payment Button Handlers - Unified Payment Flow -->
+    <script>
+        // ===== UNIFIED PAYMENT FLOW =====
+        // All payment logic is centralized here to prevent duplicate handlers
+        
+        // Clear any existing payment handlers from courses-eligibility.js
+        window.PAYMENT_HANDLERS_INITIALIZED = true;
+        
+        // Initialize Payment Handler with your server URL
+        // Server is hosted on Vercel
+        const SERVER_URL = 'https://course-corner-server.vercel.app/api';
+
+        // Create single payment handler instance
+        if (!window.paymentHandler) {
+            window.paymentHandler = new PaymentHandler(SERVER_URL);
+        }
+
+        // Validate student subjects before payment
+        function validateSubjects() {
+            const errors = [];
+            
+            // Check compulsory subjects
+            const english = document.getElementById('english')?.value;
+            const kiswahili = document.getElementById('kiswahili')?.value;
+            const mathematics = document.getElementById('mathematics')?.value;
+            
+            if (!english) errors.push('English');
+            if (!kiswahili) errors.push('Kiswahili');
+            if (!mathematics) errors.push('Mathematics');
+            
+            // Count total subjects selected
+            let totalSubjects = 0;
+            document.querySelectorAll('.grade-select').forEach(select => {
+                if (select.value) totalSubjects++;
+            });
+            
+            return {
+                valid: errors.length === 0 && totalSubjects >= 7,
+                missingCompulsory: errors,
+                totalSubjects: totalSubjects,
+                needMore: Math.max(0, 7 - totalSubjects)
+            };
+        }
+
+        // Main payment processing function
+        async function processPayment(category, amount) {
+            const grades = getStudentGrades ? getStudentGrades() : {};
+            const overallGrade = document.getElementById('overallGrade').value;
+            
+            // Validate subjects before showing payment window
+            const validation = validateSubjects();
+            
+            if (!validation.valid) {
+                let errorHtml = '<div class="text-left">';
+                
+                if (validation.missingCompulsory.length > 0) {
+                    errorHtml += `<p class="mb-2"><strong>Missing compulsory subjects:</strong></p>`;
+                    errorHtml += `<ul class="list-disc list-inside mb-3 text-red-600">`;
+                    validation.missingCompulsory.forEach(subj => {
+                        errorHtml += `<li>${subj}</li>`;
+                    });
+                    errorHtml += `</ul>`;
+                }
+                
+                if (validation.needMore > 0) {
+                    errorHtml += `<p class="text-gray-600">You need <strong>${validation.needMore} more subject(s)</strong> (minimum 7 required).</p>`;
+                    errorHtml += `<p class="text-sm text-gray-500 mt-2">Currently selected: ${validation.totalSubjects} subjects</p>`;
+                }
+                
+                errorHtml += '</div>';
+                
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Please Complete Your Grades',
+                    html: errorHtml,
+                    confirmButtonColor: '#16a34a',
+                    confirmButtonText: 'Fill Grades'
+                });
+                
+                // Scroll to the grades section
+                document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth' });
+                return false;
+            }
+
+            // Get phone number from user
+            const { value: phoneNumber } = await Swal.fire({
+                title: 'M-Pesa Payment',
+                html: `
+                    <div class="text-left mb-4">
+                        <p class="text-gray-600 mb-2">Service: <strong>${getCategoryName(category)}</strong></p>
+                        <p class="text-gray-600">Amount: <strong class="text-green-600">KSH ${amount}</strong></p>
+                    </div>
+                `,
+                input: 'text',
+                inputLabel: 'Enter your M-Pesa phone number',
+                inputPlaceholder: '0712345678 or 254712345678',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: 'Pay Now',
+                confirmButtonColor: '#16a34a',
+                cancelButtonText: 'Cancel',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Phone number is required!';
+                    }
+                    if (!/\d{9,}/.test(value.replace(/[^\d]/g, ''))) {
+                        return 'Please enter a valid phone number';
+                    }
+                }
+            });
+
+            if (!phoneNumber) return false; // User cancelled
+
+            try {
+                // Show payment processing message
+                Swal.fire({
+                    title: 'Initiating Payment...',
+                    html: `
+                        <p class="mb-2">Amount: <strong>KSH ${amount}</strong></p>
+                        <p>Phone: <strong>${phoneNumber}</strong></p>
+                        <p class="mt-4 text-sm text-gray-500">Sending STK push to your phone...</p>
+                    `,
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                // Initiate payment
+                await window.paymentHandler.initiatePayment(phoneNumber, category);
+
+                // Show payment status and start polling immediately
+                const paymentStatusDiv = document.getElementById('paymentStatus');
+                const paymentMessage = document.getElementById('paymentMessage');
+                paymentStatusDiv.classList.remove('hidden');
+                paymentMessage.textContent = 'Waiting for M-Pesa confirmation...';
+
+                // Show waiting for M-Pesa with real-time status updates (no button click required)
+                let paymentCancelled = false;
+                Swal.fire({
+                    title: '📱 Check Your Phone!',
+                    html: `
+                        <div class="text-center">
+                            <p class="mb-3">An M-Pesa prompt has been sent to:</p>
+                            <p class="text-xl font-bold text-green-600 mb-4">${phoneNumber}</p>
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-4 text-left">
+                                <p class="text-sm text-yellow-800">
+                                    <strong>Enter your M-Pesa PIN</strong> on your phone to complete the payment.
+                                </p>
+                            </div>
+                            <div id="swal-status-container" class="mt-4 p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center justify-center mb-2">
+                                    <span class="inline-block w-3 h-3 bg-yellow-500 rounded-full animate-pulse mr-2"></span>
+                                    <span id="swal-status-text" class="text-sm font-medium text-gray-700">Waiting for your PIN entry...</span>
+                                </div>
+                                <p id="swal-attempt-text" class="text-xs text-gray-400">Listening for M-Pesa response...</p>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-3">Click Cancel if you didn't receive the prompt</p>
+                        </div>
+                    `,
+                    allowOutsideClick: true,
+                    allowEscapeKey: true,
+                    showConfirmButton: false,
+                    showCancelButton: true,
+                    cancelButtonText: 'Cancel',
+                    cancelButtonColor: '#6b7280',
+                    didOpen: () => Swal.showLoading()
+                }).then((result) => {
+                    if (result.dismiss === Swal.DismissReason.cancel) {
+                        paymentCancelled = true;
+                    }
+                });
+
+                // Wait for payment with status callback (starts immediately, no button click needed)
+                await window.paymentHandler.pollPaymentStatus(40, 3000, (status, attempt, maxAttempts) => {
+                    const statusText = document.getElementById('swal-status-text');
+                    const attemptText = document.getElementById('swal-attempt-text');
+                    if (statusText) {
+                        if (status === 'pending') {
+                            statusText.textContent = 'Waiting for M-Pesa confirmation...';
+                        } else if (status === 'completed') {
+                            statusText.textContent = 'Payment confirmed! ✅';
+                        } else if (status === 'failed') {
+                            statusText.textContent = 'Payment failed ❌';
+                        }
+                    }
+                    if (attemptText) {
+                        const timeRemaining = Math.max(0, (maxAttempts - attempt) * 3);
+                        attemptText.textContent = `Checking... ${attempt}/${maxAttempts} • Timeout in ~${timeRemaining}s`;
+                    }
+                });
+
+                // Check if cancelled
+                if (paymentCancelled) {
+                    window.paymentHandler.clearSession();
+                    return false;
+                }
+
+                // Payment successful - approve access
+                await window.paymentHandler.approveAccess();
+
+                // Hide payment status
+                paymentStatusDiv.classList.add('hidden');
+
+                // Show brief success message then auto-redirect to results
+                await Swal.fire({
+                    icon: 'success',
+                    title: 'Payment Successful! ✅',
+                    html: `<p class="text-green-600 mb-2">Your payment has been confirmed!</p>`,
+                    showConfirmButton: false,
+                    timer: 1500,
+                    timerProgressBar: true,
+                    willClose: () => {
+                        document.body.classList.remove('swal2-shown');
+                    }
+                });
+
+                // Show results after dialog closes
+                showResultsAfterPayment(category);
+                
+                // Scroll to results section
+                document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
+
+                return true; // Payment successful
+
+            } catch (error) {
+                document.getElementById('paymentStatus').classList.add('hidden');
+                
+                // Close any existing dialogs first
+                Swal.close();
+                
+                // Determine icon and title based on error message
+                let icon = 'error';
+                let title = 'Payment Failed';
+                const errorMsg = error.message || 'An error occurred during payment verification';
+                
+                if (errorMsg.toLowerCase().includes('cancel')) {
+                    icon = 'warning';
+                    title = 'Payment Cancelled';
+                } else if (errorMsg.toLowerCase().includes('pin') || errorMsg.toLowerCase().includes('wrong')) {
+                    icon = 'error';
+                    title = 'Wrong PIN';
+                } else if (errorMsg.toLowerCase().includes('insufficient') || errorMsg.toLowerCase().includes('balance')) {
+                    icon = 'warning';
+                    title = 'Insufficient Balance';
+                } else if (errorMsg.toLowerCase().includes('timeout') || errorMsg.toLowerCase().includes('timed out')) {
+                    icon = 'info';
+                    title = 'Request Timed Out';
+                }
+                
+                await Swal.fire({
+                    icon: icon,
+                    title: title,
+                    html: `
+                        <p class="mb-3">${errorMsg}</p>
+                        <p class="text-sm text-gray-500">You can try again by clicking the button.</p>
+                    `,
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#16a34a',
+                    allowOutsideClick: true,
+                    allowEscapeKey: true,
+                    willClose: () => {
+                        document.body.classList.remove('swal2-shown');
+                    }
+                });
+                
+                window.paymentHandler.clearSession();
+                return false;
+            }
+        }
+
+        // Helper function to get category display name
+        function getCategoryName(category) {
+            const names = {
+                'calculate-cluster-points': 'Cluster Points Calculation',
+                'courses-only': 'Eligible Courses',
+                'point-and-courses': 'Cluster Points & Courses'
+            };
+            return names[category] || category;
+        }
+
+        // Handle calculate results after payment
+        function showResultsAfterPayment(category) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.classList.remove('hidden');
+
+            if (category === 'calculate-cluster-points') {
+                // Calculate and show cluster points only
+                if (typeof calculateClusterPoints === 'function') {
+                    calculateClusterPoints();
+                }
+            } else if (category === 'courses-only') {
+                // Show eligible courses only
+                if (typeof getStudentGrades === 'function' && typeof getEligibleCourses === 'function') {
+                    const grades = getStudentGrades();
+                    const eligibleCourses = getEligibleCourses(grades);
+                    if (typeof displayAllResults === 'function') {
+                        displayAllResults(eligibleCourses);
+                    }
+                }
+            } else if (category === 'point-and-courses') {
+                // Show both cluster points and courses
+                if (typeof calculateClusterPoints === 'function') {
+                    calculateClusterPoints();
+                }
+                if (typeof getStudentGrades === 'function' && typeof getEligibleCourses === 'function') {
+                    const grades = getStudentGrades();
+                    const eligibleCourses = getEligibleCourses(grades);
+                    if (typeof displayCombinedResults === 'function') {
+                        displayCombinedResults(eligibleCourses);
+                    }
+                }
+            }
+
+            // Scroll to results
+            setTimeout(() => {
+                resultsDiv.scrollIntoView({ behavior: 'smooth' });
+            }, 300);
+        }
+
+        // Initialize payment button handlers on DOM ready
+        document.addEventListener('DOMContentLoaded', function() {
+            // Remove any previous handlers and add unified ones
+            const paymentBtns = document.querySelectorAll('.payment-btn');
+            
+            paymentBtns.forEach(btn => {
+                // Clone to remove old handlers
+                const newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                
+                newBtn.addEventListener('click', async function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    const category = this.getAttribute('data-category');
+                    const amount = this.getAttribute('data-amount');
+                    
+                    console.log('Payment button clicked:', category, amount);
+                    
+                    // Process payment first
+                    const paymentSuccess = await processPayment(category, amount);
+                    
+                    // Only show results if payment was successful
+                    if (paymentSuccess) {
+                        showResultsAfterPayment(category);
+                    }
+                });
+            });
+            
+            console.log('Unified payment handlers initialized for', paymentBtns.length, 'buttons');
+        });
+
+        // Check if user already has paid access on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            const sessionId = localStorage.getItem('paymentSessionId');
+            if (sessionId) {
+                try {
+                    const access = await window.paymentHandler.hasAccessToCategory();
+                    if (access.hasAccess) {
+                        console.log('User has existing paid access');
+                    }
+                } catch (error) {
+                    console.log('Access check skipped:', error.message);
+                }
+            }
+        });
+    </script>
+
+    <!-- Authentication Modal -->
+    <div id="authModal" class="auth-modal-overlay hidden">
+        <div class="auth-modal">
+            <div class="modal-header">
+                <h2>Welcome to Course Corner</h2>
+                <button class="modal-close-btn" onclick="window.firebaseAuth.closeAuthModal()">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Auth Tabs -->
+                <div class="auth-tabs">
+                    <button id="loginTab" class="auth-tab active" onclick="window.firebaseAuth.switchAuthMode('login')">
+                        Login
+                    </button>
+                    <button id="signupTab" class="auth-tab" onclick="window.firebaseAuth.switchAuthMode('signup')">
+                        Sign Up
+                    </button>
+                </div>
+
+                <!-- Login Form -->
+                <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label for="loginEmail">Email Address</label>
+                        <input type="email" id="loginEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                    </div>
+                    <div class="forgot-password-link">
+                        <a class="auth-link text-sm" onclick="window.firebaseAuth.switchAuthMode('forgot')">Forgot password?</a>
+                    </div>
+                    <button type="submit" id="loginBtn" class="btn-primary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </button>
+                </form>
+
+                <!-- Signup Form -->
+                <form id="signupForm" class="auth-form hidden" onsubmit="handleSignup(event)">
+                    <div class="form-group">
+                        <label for="signupName">Full Name</label>
+                        <input type="text" id="signupName" class="form-input" placeholder="Enter your full name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupEmail">Email Address</label>
+                        <input type="email" id="signupEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="signupPassword">Password</label>
+                        <input type="password" id="signupPassword" class="form-input" placeholder="Create a password (min 6 characters)" required minlength="6">
+                    </div>
+                    <div class="form-group">
+                        <label for="signupConfirmPassword">Confirm Password</label>
+                        <input type="password" id="signupConfirmPassword" class="form-input" placeholder="Confirm your password" required>
+                    </div>
+                    <button type="submit" id="signupBtn" class="btn-primary">
+                        <i class="fas fa-user-plus"></i>
+                        Create Account
+                    </button>
+                </form>
+
+                <!-- Forgot Password Section -->
+                <div id="forgotPasswordSection" class="auth-form hidden">
+                    <p class="text-gray-600 mb-4">Enter your email address and we'll send you a link to reset your password.</p>
+                    <div class="form-group">
+                        <label for="resetEmail">Email Address</label>
+                        <input type="email" id="resetEmail" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <button type="button" onclick="handleResetPassword()" class="btn-primary">
+                        <i class="fas fa-paper-plane"></i>
+                        Send Reset Link
+                    </button>
+                    <div class="text-center mt-4">
+                        <a class="auth-link" onclick="window.firebaseAuth.switchAuthMode('login')">
+                            <i class="fas fa-arrow-left mr-1"></i>
+                            Back to Login
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Divider -->
+                <div class="auth-divider">
+                    <span>or continue with</span>
+                </div>
+
+                <!-- Google Sign In -->
+                <button type="button" onclick="handleGoogleSignIn()" class="btn-google">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google">
+                    Sign in with Google
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profileModal" class="auth-modal-overlay hidden">
+        <div class="auth-modal profile-modal">
+            <div class="modal-header">
+                <h2>My Profile</h2>
+                <button class="modal-close-btn" onclick="window.firebaseAuth.closeProfileModal()">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- User Info Display -->
+                <div id="userInfoDisplay" class="user-info-display">
+                    <div id="userAvatarLarge" class="user-avatar-large">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <h3 id="userDisplayName">User</h3>
+                    </div>
+                </div>
+
+                <!-- Personal Information Section -->
+                <div class="profile-section">
+                    <h3 class="profile-section-title">
+                        <i class="fas fa-user mr-2"></i>Personal Information
+                    </h3>
+                    <div class="form-group mb-3">
+                        <label for="profileEmail">Email Address</label>
+                        <input type="email" id="profileEmail" class="form-input bg-gray-100" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="profilePhone">Phone Number</label>
+                        <input type="tel" id="profilePhone" class="form-input" placeholder="e.g., 0712345678">
+                    </div>
+                </div>
+
+                <!-- KCSE Information Section -->
+                <div class="profile-section">
+                    <h3 class="profile-section-title">
+                        <i class="fas fa-graduation-cap mr-2"></i>KCSE Information
+                    </h3>
+                    <div class="form-group mb-4">
+                        <label for="profileKcseYear">KCSE Year</label>
+                        <select id="profileKcseYear" class="form-select">
+                            <option value="">Select Year</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- KCSE Grades Section -->
+                <div class="profile-section">
+                    <h3 class="profile-section-title">
+                        <i class="fas fa-chart-bar mr-2"></i>KCSE Grades
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-3">Save your grades to auto-fill the cluster calculator</p>
+                    <div class="grades-grid">
+                        <!-- Core Subjects -->
+                        <div class="form-group">
+                            <label for="profile_mathematics">Mathematics</label>
+                            <select id="profile_mathematics" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_english">English</label>
+                            <select id="profile_english" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_kiswahili">Kiswahili</label>
+                            <select id="profile_kiswahili" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <!-- Sciences -->
+                        <div class="form-group">
+                            <label for="profile_biology">Biology</label>
+                            <select id="profile_biology" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_chemistry">Chemistry</label>
+                            <select id="profile_chemistry" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_physics">Physics</label>
+                            <select id="profile_physics" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <!-- Humanities -->
+                        <div class="form-group">
+                            <label for="profile_history">History</label>
+                            <select id="profile_history" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_geography">Geography</label>
+                            <select id="profile_geography" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_cre">CRE/IRE/HRE</label>
+                            <select id="profile_cre" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <!-- Technical/Applied -->
+                        <div class="form-group">
+                            <label for="profile_agriculture">Agriculture</label>
+                            <select id="profile_agriculture" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_business">Business Studies</label>
+                            <select id="profile_business" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_computer">Computer Studies</label>
+                            <select id="profile_computer" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="window.firebaseAuth.closeProfileModal()" class="btn-secondary flex-1">
+                        Cancel
+                    </button>
+                    <button type="button" onclick="handleSaveProfile()" id="saveProfileBtn" class="btn-primary flex-1">
+                        <i class="fas fa-save mr-2"></i>
+                        Save Changes
+                    </button>
+                </div>
+
+                <!-- Logout Button -->
+                <div class="mt-4 pt-4 border-t">
+                    <button type="button" onclick="handleLogout()" class="btn-secondary w-full text-red-600 border-red-200 hover:bg-red-50">
+                        <i class="fas fa-sign-out-alt mr-2"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Form Handlers Script -->
+    <script>
+        // Login handler
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+            
+            btn.classList.add('btn-loading');
+            btn.disabled = true;
+            
+            const result = await window.firebaseAuth.signIn(email, password);
+            
+            btn.classList.remove('btn-loading');
+            btn.disabled = false;
+            
+            if (result.success) {
+                window.firebaseAuth.closeAuthModal();
+            }
+        }
+
+        // Signup handler
+        async function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const btn = document.getElementById('signupBtn');
+            
+            if (password !== confirmPassword) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Passwords do not match',
+                    text: 'Please make sure both passwords are the same'
+                });
+                return;
+            }
+            
+            btn.classList.add('btn-loading');
+            btn.disabled = true;
+            
+            const result = await window.firebaseAuth.signUp(email, password, name);
+            
+            btn.classList.remove('btn-loading');
+            btn.disabled = false;
+            
+            if (result.success) {
+                window.firebaseAuth.closeAuthModal();
+            }
+        }
+
+        // Google sign in handler
+        async function handleGoogleSignIn() {
+            const result = await window.firebaseAuth.signInWithGoogle();
+            if (result.success) {
+                window.firebaseAuth.closeAuthModal();
+            }
+        }
+
+        // Password reset handler
+        async function handleResetPassword() {
+            const email = document.getElementById('resetEmail').value;
+            if (!email) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Email Required',
+                    text: 'Please enter your email address'
+                });
+                return;
+            }
+            await window.firebaseAuth.resetPassword(email);
+        }
+
+        // Save profile handler
+        async function handleSaveProfile() {
+            const btn = document.getElementById('saveProfileBtn');
+            btn.classList.add('btn-loading');
+            btn.disabled = true;
+            
+            await window.firebaseAuth.saveProfile();
+            
+            btn.classList.remove('btn-loading');
+            btn.disabled = false;
+        }
+
+        // Logout handler
+        async function handleLogout() {
+            await window.firebaseAuth.logout();
+            window.firebaseAuth.closeProfileModal();
+        }
+
+        // Update profile modal with user data when opened
+        window.firebaseAuth?.onAuthStateChange?.((user) => {
+            if (user) {
+                const nameEl = document.getElementById('userDisplayName');
+                const emailEl = document.getElementById('userDisplayEmail');
+                const avatarEl = document.getElementById('userAvatarLarge');
+                
+                if (nameEl) nameEl.textContent = user.displayName || 'User';
+                if (emailEl) emailEl.textContent = user.email || '';
+                
+                if (avatarEl) {
+                    if (user.photoURL) {
+                        avatarEl.innerHTML = `<img src="${user.photoURL}" alt="Profile">`;
+                    } else {
+                        const initial = (user.displayName || user.email || 'U')[0].toUpperCase();
+                        avatarEl.innerHTML = initial;
+                    }
+                }
+            }
+        });
+
+        // Close modal when clicking outside
+        document.getElementById('authModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'authModal') {
+                window.firebaseAuth.closeAuthModal();
+            }
+        });
+
+        document.getElementById('profileModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'profileModal') {
+                window.firebaseAuth.closeProfileModal();
+            }
+        });
+    </script>
+
+    <!-- Firebase -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
+            authDomain: "course-corner.firebaseapp.com",
+            projectId: "course-corner",
+            storageBucket: "course-corner.firebasestorage.app",
+            messagingSenderId: "961706784572",
+            appId: "1:961706784572:web:7aa6c24946570ffda59039",
+            measurementId: "G-QGJ7NZ31Z0"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        
+        // Initialize Firestore
+        const { getFirestore, collection, addDoc } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
+        const db = getFirestore(app);
+        
+        // Make Firebase available globally
+        window.firebaseApp = app;
+        window.firebaseAnalytics = analytics;
+        window.firebaseDb = db;
+        
+        // Helper to save payment to Firestore
+        window.savePaymentToFirebase = async function(paymentData) {
+            try {
+                const docRef = await addDoc(collection(db, "payments"), {
+                    ...paymentData,
+                    timestamp: new Date().toISOString()
+                });
+                console.log("💾 Payment saved to Firebase:", docRef.id);
+                return docRef.id;
+            } catch (error) {
+                console.error("Firebase save error:", error);
+            }
+        };
+        
+        // Helper to track events
+        window.trackFirebaseEvent = function(eventName, params = {}) {
+            import("https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js").then(({ logEvent }) => {
+                logEvent(analytics, eventName, params);
+                console.log("📊 Event:", eventName, params);
+            });
+        };
+        
+        console.log('🔥 Firebase initialized successfully');
     </script>
 </body>
 </html>

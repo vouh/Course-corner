@@ -150,113 +150,114 @@
             justify-content: space-between;
             gap: 1rem;
             padding-bottom: 0.75rem;
+        }
 
-            /* Card Grid (like screenshot) */
-            .cards-header {
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                gap: 1rem;
-                margin: 1rem 0 0.75rem;
-                color: #6b7280;
-                font-weight: 700;
-            }
+        /* Card Grid (like screenshot) */
+        .cards-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin: 1rem 0 0.75rem;
+            color: #6b7280;
+            font-weight: 700;
+        }
 
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 1.25rem;
+        }
+
+        @media (max-width: 1280px) {
             .resource-grid {
-                display: grid;
-                grid-template-columns: repeat(4, minmax(0, 1fr));
-                gap: 1.25rem;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
             }
+        }
 
-            @media (max-width: 1280px) {
-                .resource-grid {
-                    grid-template-columns: repeat(3, minmax(0, 1fr));
-                }
+        @media (max-width: 980px) {
+            .resource-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
+        }
 
-            @media (max-width: 980px) {
-                .resource-grid {
-                    grid-template-columns: repeat(2, minmax(0, 1fr));
-                }
+        @media (max-width: 640px) {
+            .resource-grid {
+                grid-template-columns: 1fr;
             }
+        }
 
-            @media (max-width: 640px) {
-                .resource-grid {
-                    grid-template-columns: 1fr;
-                }
-            }
+        .resource-card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 1.25rem;
+            overflow: hidden;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            min-height: 420px;
+        }
 
-            .resource-card {
-                background: #ffffff;
-                border: 1px solid #e5e7eb;
-                border-radius: 1.25rem;
-                overflow: hidden;
-                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
-                transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-                display: flex;
-                flex-direction: column;
-                min-height: 420px;
-            }
+        .resource-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 16px 36px rgba(0, 0, 0, 0.1);
+            border-color: #bbf7d0;
+        }
 
-            .resource-card:hover {
-                transform: translateY(-4px);
-                box-shadow: 0 16px 36px rgba(0, 0, 0, 0.1);
-                border-color: #bbf7d0;
-            }
+        .card-media {
+            position: relative;
+            height: 170px;
+            background: #f3f4f6;
+        }
 
-            .card-media {
-                position: relative;
-                height: 170px;
-                background: #f3f4f6;
-            }
+        .card-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
 
-            .card-media img {
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-                display: block;
-            }
+        .rating-badge {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: rgba(255, 255, 255, 0.95);
+            border: 1px solid #e5e7eb;
+            border-radius: 999px;
+            padding: 0.25rem 0.55rem;
+            font-weight: 900;
+            color: #111827;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.9rem;
+        }
 
-            .rating-badge {
-                position: absolute;
-                top: 0.75rem;
-                right: 0.75rem;
-                background: rgba(255, 255, 255, 0.95);
-                border: 1px solid #e5e7eb;
-                border-radius: 999px;
-                padding: 0.25rem 0.55rem;
-                font-weight: 900;
-                color: #111827;
-                display: inline-flex;
-                align-items: center;
-                gap: 0.35rem;
-                font-size: 0.9rem;
-            }
+        .rating-badge i {
+            color: #f59e0b;
+        }
 
-            .rating-badge i {
-                color: #f59e0b;
-            }
+        .card-body {
+            padding: 1rem 1.1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+            flex: 1;
+        }
 
-            .card-body {
-                padding: 1rem 1.1rem;
-                display: flex;
-                flex-direction: column;
-                gap: 0.6rem;
-                flex: 1;
-            }
-
-            .category-pill {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.45rem;
-                background: #fee2e2;
-                color: #b91c1c;
-                font-weight: 900;
-                border-radius: 999px;
-                padding: 0.25rem 0.7rem;
-                width: fit-content;
-                font-size: 0.85rem;
-            }
+        .category-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            background: #fee2e2;
+            color: #b91c1c;
+            font-weight: 900;
+            border-radius: 999px;
+            padding: 0.25rem 0.7rem;
+            width: fit-content;
+            font-size: 0.85rem;
+        }
 
             .resource-title {
                 font-size: 1.15rem;
@@ -344,6 +345,16 @@
                 align-items: center;
                 gap: 0.5rem;
             }
+
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Modern Navigation -->
+    <header class="modern-header" id="mainHeader">
+        <div class="header-container">
+            <a href="../index.html" class="logo">
+                <span>Course Corner</span>
+            </a>
 
             <nav class="nav-desktop">
                 <a href="../index.html" class="nav-link">Home</a>
@@ -433,8 +444,9 @@
                     <h4>Resources</h4>
                     <ul>
                         <li><a href="resources.html">Resources Library</a></li>
-                        <li><a href="cluster-points.html">Cluster Guide</a></li>
-                        <li><a href="application-process.html">Application Guide</a></li>
+                        <li><a href="guide.html">How to Use</a></li>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="terms-of-service.html">Terms of Service</a></li>
                     </ul>
                 </div>
 

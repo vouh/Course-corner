@@ -15,8 +15,9 @@ document.addEventListener('DOMContentLoaded', function () {
     rightArrow.className = 'slider-arrow slider-arrow-right';
     rightArrow.innerHTML = '&#8594;';
 
-    grid.parentNode.insertBefore(leftArrow, grid);
-    grid.parentNode.appendChild(rightArrow);
+    // Place arrows inside the grid (card area)
+    grid.appendChild(leftArrow);
+    grid.appendChild(rightArrow);
 
     function updateSlider() {
         grid.style.transform = `translateX(-${current * 100}vw)`;

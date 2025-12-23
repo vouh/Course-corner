@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+            <script src="assets/js/init-swiper.js" defer></script>
+        <!-- Swiper.js CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+        <!-- Swiper.js JS -->
+        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <meta name="description" content="Course Corner offers a wide range of courses to help you achieve your educational and career goals. Explore now!">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="assets/js/firebase-config.js" type="module"></script>
@@ -290,41 +295,53 @@
             </div>
             
             <div class="features-grid">
-                <!-- Feature Card 1 -->
-                <div class="modern-feature-card" onclick="window.location.href='pages/calculator.html'">
-                    <div class="feature-icon-wrapper">
-                        <i class="fas fa-calculator"></i>
-                    </div>
-                    <h3 class="feature-title">Assess Grades</h3>
-                    <p class="feature-description">Input your KCSE grades and calculate your cluster points accurately</p>
-                </div>
-                
-                <!-- Feature Card 2 -->
-                <div class="modern-feature-card">
-                    <div class="feature-icon-wrapper">
-                        <i class="fas fa-compass"></i>
-                    </div>
-                    <h3 class="feature-title">Explore Courses</h3>
-                    <p class="feature-description">Discover courses that match your cluster points and interests</p>
-                </div>
-                
-                <!-- Feature Card 3 -->
-                <div class="modern-feature-card">
-                    <div class="feature-icon-wrapper">
-                        <i class="fas fa-university"></i>
-                    </div>
-                    <h3 class="feature-title">Find Universities</h3>
-                    <p class="feature-description">Compare universities offering your chosen courses</p>
-                </div>
-                
-                <!-- Feature Card 4 -->
-                <div class="modern-feature-card">
-                    <div class="feature-icon-wrapper">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <h3 class="feature-title">Make Decision</h3>
-                    <p class="feature-description">Choose your path with confidence and clarity</p>
-                </div>
+                                <div class="swiper">
+                                    <div class="swiper-wrapper">
+                                        <!-- Feature Card 1 -->
+                                        <div class="swiper-slide">
+                                            <div class="modern-feature-card" onclick="window.location.href='pages/calculator.html'">
+                                                <div class="feature-icon-wrapper">
+                                                    <i class="fas fa-calculator"></i>
+                                                </div>
+                                                <h3 class="feature-title">Assess Grades</h3>
+                                                <p class="feature-description">Input your KCSE grades and calculate your cluster points accurately</p>
+                                            </div>
+                                        </div>
+                                        <!-- Feature Card 2 -->
+                                        <div class="swiper-slide">
+                                            <div class="modern-feature-card">
+                                                <div class="feature-icon-wrapper">
+                                                    <i class="fas fa-compass"></i>
+                                                </div>
+                                                <h3 class="feature-title">Explore Courses</h3>
+                                                <p class="feature-description">Discover courses that match your cluster points and interests</p>
+                                            </div>
+                                        </div>
+                                        <!-- Feature Card 3 -->
+                                        <div class="swiper-slide">
+                                            <div class="modern-feature-card">
+                                                <div class="feature-icon-wrapper">
+                                                    <i class="fas fa-university"></i>
+                                                </div>
+                                                <h3 class="feature-title">Find Universities</h3>
+                                                <p class="feature-description">Compare universities offering your chosen courses</p>
+                                            </div>
+                                        </div>
+                                        <!-- Feature Card 4 -->
+                                        <div class="swiper-slide">
+                                            <div class="modern-feature-card">
+                                                <div class="feature-icon-wrapper">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </div>
+                                                <h3 class="feature-title">Make Decision</h3>
+                                                <p class="feature-description">Choose your path with confidence and clarity</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Add Arrows -->
+                                    <div class="swiper-button-prev"></div>
+                                    <div class="swiper-button-next"></div>
+                                </div>
             </div>
         </div>
     </section>

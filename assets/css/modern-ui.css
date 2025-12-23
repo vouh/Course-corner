@@ -1622,22 +1622,34 @@ html {
         max-width: 100vw !important;
     }
     .features-grid {
-        display: block !important;
+        display: flex !important;
+        flex-direction: row !important;
         width: 100vw !important;
         margin: 0 !important;
         padding: 0 !important;
-        overflow: hidden;
+        overflow: hidden !important;
         position: relative;
         min-height: 350px;
+        align-items: stretch;
+        justify-content: flex-start;
+        transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
     }
     .modern-feature-card {
-        width: 100vw !important;
+        min-width: 100vw !important;
         max-width: 100vw !important;
-        margin: 0 auto !important;
+        margin: 0 !important;
         border-radius: 0 !important;
         box-sizing: border-box;
         padding-left: 0 !important;
         padding-right: 0 !important;
+        flex: 0 0 100vw !important;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    .slider-arrow {
+        z-index: 20;
     }
     .slider-arrow {
         position: absolute;

@@ -4,8 +4,6 @@ document.addEventListener('DOMContentLoaded', function () {
     if (!grid) return;
     if (window.innerWidth > 480) return;
 
-    // Wrap cards in a slider container
-    grid.classList.add('feature-slider');
     const cards = Array.from(grid.children);
     let current = 0;
 
@@ -21,9 +19,7 @@ document.addEventListener('DOMContentLoaded', function () {
     grid.parentNode.appendChild(rightArrow);
 
     function updateSlider() {
-        cards.forEach((card, i) => {
-            card.style.display = i === current ? 'block' : 'none';
-        });
+        grid.style.transform = `translateX(-${current * 100}vw)`;
     }
 
     leftArrow.onclick = function () {
@@ -35,5 +31,6 @@ document.addEventListener('DOMContentLoaded', function () {
         updateSlider();
     };
 
+    // Ensure grid is at the right position on load
     updateSlider();
 });

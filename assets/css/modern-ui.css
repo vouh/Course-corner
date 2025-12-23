@@ -1,4 +1,24 @@
 @media (max-width: 480px) {
+    .features-section {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        box-sizing: border-box;
+    }
+    .features-container {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        box-sizing: border-box;
+    }
+}
+@media (max-width: 480px) {
     .features-grid {
         width: 100vw;
         max-width: 100vw;
@@ -2103,16 +2123,19 @@ textarea.cc-form-input {
         padding: 0;
         margin: 0 auto;
         min-height: 1px;
+        box-sizing: border-box;
     }
     .modern-feature-card {
         width: 100vw !important;
         max-width: 100vw !important;
-        min-width: 100vw !important;
+        min-width: 0 !important;
         margin: 0 auto !important;
-        box-sizing: border-box;
+        box-sizing: border-box !important;
         display: block;
         flex: 0 0 100vw;
         overflow: hidden;
+        padding-left: 0;
+        padding-right: 0;
     }
     .slider-arrow {
         position: absolute;
@@ -2141,34 +2164,7 @@ textarea.cc-form-input {
         right: 0;
         margin-right: 4px;
     }
-}
-        font-size: 2.5rem;
-    }
-    
-    .hero-title {
-        font-size: 2rem;
-    }
-    
-    .hero-subtitle {
-        font-size: 1rem;
-    }
-    
-    .hero-cta-container {
-        flex-direction: row !important;
-        flex-wrap: nowrap !important;
-        justify-content: center;
-        gap: 0.75rem;
-    }
-    
-    .btn-hero-primary,
-    .btn-hero-secondary {
-        width: auto;
-        flex: 0 1 auto;
-        padding: 0.625rem 1rem;
-        font-size: 0.8125rem;
-        white-space: nowrap;
-    }
-}
+/* Removed invalid/stray lines and fixed media query closure */
 
 /* ============================================
    CTA Section
@@ -2636,4 +2632,4 @@ textarea.cc-form-input {
         justify-content: center;
         border-radius: 50%;
     }
-}
+}}

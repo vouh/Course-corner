@@ -1,13 +1,15 @@
 // Minimal slider for feature cards on mobile
 // Only activates on screens <= 480px
 
+// Improved slider for feature cards on mobile
+// Ensures only one card is visible, no horizontal scroll, arrows at card edges
+
 document.addEventListener('DOMContentLoaded', function () {
   const grid = document.querySelector('.features-grid');
   if (!grid) return;
   const cards = Array.from(grid.children);
   if (cards.length < 2) return;
 
-  // Only activate slider on mobile
   function isMobile() {
     return window.innerWidth <= 480;
   }
@@ -19,8 +21,6 @@ document.addEventListener('DOMContentLoaded', function () {
   function showCard(idx) {
     cards.forEach((card, i) => {
       card.style.display = i === idx ? 'block' : 'none';
-      card.style.width = '100%';
-      card.style.margin = '0 auto';
     });
     if (leftBtn) leftBtn.disabled = idx === 0;
     if (rightBtn) rightBtn.disabled = idx === cards.length - 1;
@@ -35,7 +35,8 @@ document.addEventListener('DOMContentLoaded', function () {
     rightBtn.className = 'slider-arrow right-arrow';
     leftBtn.onclick = () => { if (current > 0) { current--; showCard(current); } };
     rightBtn.onclick = () => { if (current < cards.length - 1) { current++; showCard(current); } };
-    grid.parentNode.insertBefore(leftBtn, grid);
+    grid.parentNode.style.position = 'relative';
+    grid.parentNode.appendChild(leftBtn);
     grid.parentNode.appendChild(rightBtn);
   }
 
@@ -53,7 +54,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   function deactivateSlider() {
-    cards.forEach(card => { card.style.display = ''; card.style.width = ''; card.style.margin = ''; });
+    cards.forEach(card => { card.style.display = ''; });
     destroyArrows();
     sliderActive = false;
     current = 0;

@@ -1615,6 +1615,56 @@ html {
     margin: 0 auto;
 }
 
+@media (max-width: 480px) {
+    .features-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100vw !important;
+    }
+    .features-grid {
+        display: block !important;
+        width: 100vw !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        overflow: hidden;
+        position: relative;
+        min-height: 350px;
+    }
+    .modern-feature-card {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        margin: 0 auto !important;
+        border-radius: 0 !important;
+        box-sizing: border-box;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+    .slider-arrow {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+        background: var(--cc-primary);
+        color: #fff;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.85;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    .slider-arrow-left {
+        left: 8px;
+    }
+    .slider-arrow-right {
+        right: 8px;
+    }
+}
 @media (min-width: 768px) {
     .cc-stats-grid {
         grid-template-columns: repeat(4, 1fr);

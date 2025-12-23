@@ -1480,6 +1480,27 @@ html {
 }
 
 @media (max-width: 480px) {
+            .modern-hero {
+                margin-bottom: 0 !important;
+                padding-bottom: 0 !important;
+            }
+            .wave-separator--between {
+                margin-bottom: 0 !important;
+                margin-top: 0 !important;
+                padding-bottom: 0 !important;
+                padding-top: 0 !important;
+                height: 16px !important;
+                min-height: 0 !important;
+            }
+            .features-section {
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+            }
+            .section-header {
+                margin-bottom: 1rem !important;
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+            }
         .modern-hero {
             margin-bottom: -40 !important;
             padding-bottom: -40 !important;

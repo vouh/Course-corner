@@ -1,3 +1,19 @@
+/* Desktop: show grid, hide mobile slider */
+.features-slider-mobile {
+    display: none;
+}
+
+@media (max-width: 480px) {
+    .features-grid {
+        display: none !important;
+    }
+    .features-slider-mobile {
+        display: block !important;
+        width: 100vw !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}
 /*
  * Course Corner - Modern UI Design System
  * A comprehensive, stunning design for all pages

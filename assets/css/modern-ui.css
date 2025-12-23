@@ -1480,6 +1480,19 @@ html {
 }
 
 @media (max-width: 480px) {
+        .modern-hero {
+            margin-bottom: 0 !important;
+            padding-bottom: 0 !important;
+        }
+        .features-section {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+        .section-header {
+            margin-bottom: 1.2rem !important;
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
     .hero-title {
         font-size: 1.75rem;
     }

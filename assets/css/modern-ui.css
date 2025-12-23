@@ -1481,12 +1481,12 @@ html {
 
 @media (max-width: 480px) {
         .modern-hero {
-            margin-bottom: -10 !important;
-            padding-bottom: -10 !important;
+            margin-bottom: -40 !important;
+            padding-bottom: -40 !important;
         }
         .features-section {
-            margin-top: -10 !important;
-            padding-top: -10 !important;
+            margin-top: -40 !important;
+            padding-top: -40 !important;
         }
         .section-header {
             margin-bottom: 1.2rem !important;

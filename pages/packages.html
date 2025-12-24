@@ -59,24 +59,29 @@
 </head>
 <body class="bg-gray-100">
 
-    <!-- Header copied from index.html -->
+    <!-- Modern Sticky Navigation -->
     <header class="modern-header" id="mainHeader">
         <div class="header-container">
-            <a href="../index.html" class="logo-container">
-                <img src="../assets/images/logo.png" alt="Course Corner logo" />
+            <!-- Logo -->
+            <a href="index.html" class="logo-container">
+                <img src="assets/images/logo.png" alt="Course Corner logo" />
                 <span class="logo-text">Course Corner</span>
             </a>
+
+            <!-- Desktop Navigation -->
             <nav class="desktop-nav">
                 <div class="nav-links">
-                    <a href="../index.html" class="modern-nav-link">Home</a>
-                    <a href="about.html" class="modern-nav-link">About Us</a>
-                    <a href="cluster-points.html" class="modern-nav-link">Cluster Guide</a>
-                    <a href="calculator.html" class="modern-nav-link">Calculator</a>
-                    <a href="application-process.html" class="modern-nav-link">Application</a>
-                    <a href="resources.html" class="modern-nav-link">Resources</a>
-                    <a href="guide.html" class="modern-nav-link">Guide</a>
-                    <a href="contact.html" class="modern-nav-link">Contact</a>
+                    <a href="index.html" class="modern-nav-link active">Home</a>
+                    <a href="pages/about.html" class="modern-nav-link">About Us</a>
+                    <a href="pages/cluster-points.html" class="modern-nav-link">Cluster Guide</a>
+                    <a href="pages/calculator.html" class="modern-nav-link">Calculator</a>
+                    <a href="pages/application-process.html" class="modern-nav-link">Application</a>
+                    <a href="pages/resources.html" class="modern-nav-link">Resources</a>
+                    <a href="pages/guide.html" class="modern-nav-link">Guide</a>
+                    <a href="pages/contact.html" class="modern-nav-link">Contact</a>
                 </div>
+                
+                <!-- Auth Buttons -->
                 <div class="nav-auth-buttons">
                     <div id="userAvatar" class="hidden"></div>
                     <button id="profileBtn" class="btn-nav-profile hidden" onclick="window.firebaseAuth.openProfileModal()">
@@ -89,22 +94,26 @@
                     </button>
                 </div>
             </nav>
+
+            <!-- Mobile Menu Button -->
             <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
         </div>
+
+        <!-- Mobile Menu -->
         <div class="mobile-menu" id="mobileMenu">
             <nav class="mobile-nav-links">
-                <a href="../index.html" class="mobile-nav-link active">Home</a>
-                <a href="about.html" class="mobile-nav-link">About Us</a>
-                <a href="cluster-points.html" class="mobile-nav-link">Cluster Guide</a>
-                <a href="calculator.html" class="mobile-nav-link">Calculator</a>
-                <a href="application-process.html" class="mobile-nav-link">Application</a>
-                <a href="resources.html" class="mobile-nav-link">Resources</a>
-                <a href="guide.html" class="mobile-nav-link">Guide</a>
-                <a href="contact.html" class="mobile-nav-link">Contact</a>
+                <a href="index.html" class="mobile-nav-link active">Home</a>
+                <a href="pages/about.html" class="mobile-nav-link">About Us</a>
+                <a href="pages/cluster-points.html" class="mobile-nav-link">Cluster Guide</a>
+                <a href="pages/calculator.html" class="mobile-nav-link">Calculator</a>
+                <a href="pages/application-process.html" class="mobile-nav-link">Application</a>
+                <a href="pages/resources.html" class="mobile-nav-link">Resources</a>
+                <a href="pages/guide.html" class="mobile-nav-link">Guide</a>
+                <a href="pages/contact.html" class="mobile-nav-link">Contact</a>
             </nav>
             <div class="mobile-auth-buttons">
                 <button id="profileBtnMobile" class="btn-nav-profile hidden" style="width:100%; justify-content:center;" onclick="window.firebaseAuth.openProfileModal()">
@@ -118,6 +127,7 @@
             </div>
         </div>
     </header>
+
 
     <main class="max-w-6xl mx-auto py-8 px-2">
         <h1 class="text-3xl md:text-4xl font-bold text-center text-green-700 mb-6">Choose Your Plan</h1>
@@ -174,17 +184,64 @@
         </div>
     </main>
 
-    <!-- Footer copied from index.html -->
-    <footer class="bg-gray-900 text-white py-6 mt-10">
-        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-4 md:mb-0">
-                <span class="font-bold">Course Corner</span> &copy; 2025
+   <!-- Footer -->
+    <footer class="modern-footer">
+        <div class="footer-container">
+            <div class="footer-grid">
+                <!-- Brand -->
+                <div class="footer-col">
+                    <div class="footer-brand">
+                        <img class="footer-logo" src="assets/images/logo.png" alt="Course Corner logo" />
+                        <span>Course Corner</span>
+                    </div>
+                    <p class="footer-description">
+                        Empowering students to make informed decisions about their educational future through personalized course recommendations.
+                    </p>
+                    <div class="social-links">
+                        <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="pages/calculator.html">Calculator</a></li>
+                        <li><a href="pages/cluster-points.html">Cluster Points Guide</a></li>
+                        <li><a href="pages/application-process.html">Application Process</a></li>
+                    </ul>
+                </div>
+
+                <!-- Resources -->
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="pages/resources.html">Resources Library</a></li>
+                        <li><a href="pages/guide.html">How to Use</a></li>
+                        <li><a href="pages/privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="pages/terms-of-service.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Us -->
+                <div class="footer-col">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> info@coursecorner.com</li>
+                        <li><i class="fas fa-phone"></i> +254 700 000000</li>
+                    </ul>
+                </div>
             </div>
-            <div class="flex space-x-4">
-                <a href="../pages/privacy-policy.html" class="hover:underline">Privacy Policy</a>
-                <a href="../pages/terms-of-service.html" class="hover:underline">Terms of Service</a>
+
+            <!-- Copyright -->
+            <div class="footer-bottom">
+                <p>© Course Corner <span id="currentYear"></span>. All rights reserved.</p>
             </div>
         </div>
     </footer>
+
 </body>
 </html>

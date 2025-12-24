@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Packages - Course Corner</title>
+    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/modern-ui.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/x-icon" href="../assets/images/1.png">
+    <style>
+        .package-card {
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .package-card:hover {
+            transform: scale(1.04);
+            box-shadow: 0 8px 32px rgba(22,163,74,0.15);
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <header class="modern-header">
+        <div class="header-container">
+            <a href="../index.html" class="logo-container">
+                <img src="../assets/images/logo.png" alt="Course Corner logo" />
+                <span class="logo-text">Course Corner</span>
+            </a>
+        </div>
+    </header>
+    <main class="max-w-6xl mx-auto py-12 px-4">
+        <h1 class="text-4xl font-bold text-center text-green-700 mb-10">Our Packages</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Card 1 -->
+            <div class="package-card bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center">
+                <h2 class="text-2xl font-bold text-green-700 mb-2">Cluster Points</h2>
+                <p class="mb-4 text-gray-700 text-center">Get your official cluster points calculated for university placement.</p>
+                <div class="text-3xl font-bold text-green-600 mb-2">Ksh 100</div>
+            </div>
+            <!-- Card 2 -->
+            <div class="package-card bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center">
+                <h2 class="text-2xl font-bold text-green-700 mb-2">Cluster Points & Courses</h2>
+                <p class="mb-4 text-gray-700 text-center">Calculate your cluster points and see all eligible courses based on your results.</p>
+                <div class="text-3xl font-bold text-green-600 mb-2">Ksh 200</div>
+            </div>
+            <!-- Card 3 -->
+            <div class="package-card bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center">
+                <h2 class="text-2xl font-bold text-green-700 mb-2">Courses Only</h2>
+                <p class="mb-4 text-gray-700 text-center">Explore all available courses and their requirements without cluster calculation.</p>
+                <div class="text-3xl font-bold text-green-600 mb-2">Ksh 300</div>
+            </div>
+            <!-- Card 4 -->
+            <div class="package-card bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center">
+                <h2 class="text-2xl font-bold text-green-700 mb-2">Universities & Courses</h2>
+                <p class="mb-4 text-gray-700 text-center">Browse universities and the courses they offer, including entry requirements.</p>
+                <div class="text-3xl font-bold text-green-600 mb-2">Ksh 400</div>
+            </div>
+            <!-- Card 5 -->
+            <div class="package-card bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center">
+                <h2 class="text-2xl font-bold text-green-700 mb-2">University Courses & Cluster Points</h2>
+                <p class="mb-4 text-gray-700 text-center">See university courses matched to your cluster points for targeted guidance.</p>
+                <div class="text-3xl font-bold text-green-600 mb-2">Ksh 500</div>
+            </div>
+            <!-- Card 6 -->
+            <div class="package-card bg-white rounded-2xl shadow-lg p-8 flex flex-col items-center border-4 border-green-600">
+                <h2 class="text-2xl font-bold text-green-700 mb-2">All-in-One: Cluster, Courses, Universities & Expert Analysis</h2>
+                <p class="mb-4 text-gray-700 text-center">Get everything: cluster points, eligible courses, university options, and expert analysis for the best career path.</p>
+                <div class="text-3xl font-bold text-green-600 mb-2">Ksh 600</div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

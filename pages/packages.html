@@ -21,23 +21,26 @@
                 grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
             }
             .package-card {
-                padding: 1rem !important;
-                font-size: 0.95rem;
+                padding: 0.5rem !important;
+                font-size: 0.85rem;
+                min-width: 0;
             }
             .package-card h2 {
-                font-size: 1.1rem !important;
+                font-size: 0.95rem !important;
             }
             .package-card p {
-                font-size: 0.85rem !important;
+                font-size: 0.7rem !important;
+                margin-bottom: 0.5rem !important;
             }
-            .package-card .text-3xl {
-                font-size: 1.2rem !important;
+            .package-card .text-2xl {
+                font-size: 1rem !important;
             }
         }
     </style>
 </head>
 <body class="bg-gray-100">
-    <!-- Header copied from main site -->
+
+    <!-- Use the same header as about.html -->
     <header class="modern-header" id="mainHeader">
         <div class="header-container">
             <a href="../index.html" class="logo-container">
@@ -57,60 +60,104 @@
                 </div>
             </nav>
         </div>
+        <!-- Mobile menu and other scripts are included in about.html, assumed to be globally available -->
     </header>
 
     <main class="max-w-6xl mx-auto py-8 px-2">
         <h1 class="text-3xl md:text-4xl font-bold text-center text-green-700 mb-6">Choose Your Plan</h1>
         <p class="text-center text-gray-600 mb-8">Flexible packages for every student. Pick what fits you best!</p>
-        <div class="packages-grid grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-8">
-            <!-- Card 1 -->
-            <div class="package-card bg-green-100 rounded-2xl shadow-lg p-6 flex flex-col items-center">
-                <h2 class="font-bold text-green-700 mb-1">Cluster Points</h2>
-                <p class="mb-2 text-gray-700 text-center">Get your cluster points.</p>
-                <div class="text-xl font-bold text-green-600 mb-1">Ksh 100</div>
-            </div>
-            <!-- Card 2 -->
-            <div class="package-card bg-blue-100 rounded-2xl shadow-lg p-6 flex flex-col items-center">
-                <h2 class="font-bold text-blue-700 mb-1">Cluster + Courses</h2>
-                <p class="mb-2 text-gray-700 text-center">Cluster points & eligible courses.</p>
-                <div class="text-xl font-bold text-blue-600 mb-1">Ksh 200</div>
-            </div>
-            <!-- Card 3 -->
-            <div class="package-card bg-yellow-100 rounded-2xl shadow-lg p-6 flex flex-col items-center">
-                <h2 class="font-bold text-yellow-700 mb-1">Courses Only</h2>
-                <p class="mb-2 text-gray-700 text-center">All courses & requirements.</p>
-                <div class="text-xl font-bold text-yellow-600 mb-1">Ksh 300</div>
-            </div>
-            <!-- Card 4 -->
-            <div class="package-card bg-purple-100 rounded-2xl shadow-lg p-6 flex flex-col items-center">
-                <h2 class="font-bold text-purple-700 mb-1">Unis & Courses</h2>
-                <p class="mb-2 text-gray-700 text-center">Universities & their courses.</p>
-                <div class="text-xl font-bold text-purple-600 mb-1">Ksh 400</div>
-            </div>
-            <!-- Card 5 -->
-            <div class="package-card bg-pink-100 rounded-2xl shadow-lg p-6 flex flex-col items-center">
-                <h2 class="font-bold text-pink-700 mb-1">Uni Courses + Cluster</h2>
-                <p class="mb-2 text-gray-700 text-center">Courses matched to your cluster.</p>
-                <div class="text-xl font-bold text-pink-600 mb-1">Ksh 500</div>
-            </div>
-            <!-- Card 6 -->
-            <div class="package-card bg-orange-100 rounded-2xl shadow-lg p-6 flex flex-col items-center border-4 border-green-600">
-                <h2 class="font-bold text-orange-700 mb-1">All-in-One + Expert</h2>
-                <p class="mb-2 text-gray-700 text-center">Everything + expert analysis.</p>
-                <div class="text-xl font-bold text-orange-600 mb-1">Ksh 600</div>
-            </div>
+        <div class="packages-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            <!-- Gold Package -->
+            <a href="calculator.html" class="package-card bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-2xl shadow-lg p-8 flex flex-col items-center relative cursor-pointer transition-transform" style="text-decoration:none;">
+                <span class="absolute top-4 right-4 bg-yellow-700 text-white text-xs font-bold px-3 py-1 rounded-full">Gold</span>
+                <h2 class="font-bold text-yellow-900 mb-2">Gold Plan</h2>
+                <p class="mb-3 text-yellow-900 text-center">All-in-one + Expert</p>
+                <div class="text-2xl font-bold text-yellow-900 mb-1">Ksh 600</div>
+            </a>
+            <!-- Silver Package -->
+            <a href="calculator.html" class="package-card bg-gradient-to-br from-gray-200 to-gray-400 rounded-2xl shadow-lg p-8 flex flex-col items-center relative cursor-pointer transition-transform" style="text-decoration:none;">
+                <span class="absolute top-4 right-4 bg-gray-700 text-white text-xs font-bold px-3 py-1 rounded-full">Silver</span>
+                <h2 class="font-bold text-gray-900 mb-2">Silver Plan</h2>
+                <p class="mb-3 text-gray-900 text-center">Uni Courses + Cluster</p>
+                <div class="text-2xl font-bold text-gray-900 mb-1">Ksh 500</div>
+            </a>
+            <!-- Bronze Package -->
+            <a href="calculator.html" class="package-card bg-gradient-to-br from-orange-200 to-orange-400 rounded-2xl shadow-lg p-8 flex flex-col items-center relative cursor-pointer transition-transform" style="text-decoration:none;">
+                <span class="absolute top-4 right-4 bg-orange-700 text-white text-xs font-bold px-3 py-1 rounded-full">Bronze</span>
+                <h2 class="font-bold text-orange-900 mb-2">Bronze Plan</h2>
+                <p class="mb-3 text-orange-900 text-center">Unis & Courses</p>
+                <div class="text-2xl font-bold text-orange-900 mb-1">Ksh 400</div>
+            </a>
+            <!-- Blue Package (Popular) -->
+            <a href="calculator.html" class="package-card bg-gradient-to-br from-blue-300 to-blue-500 rounded-2xl shadow-lg p-8 flex flex-col items-center relative cursor-pointer transition-transform" style="text-decoration:none;">
+                <span class="absolute top-4 right-4 bg-pink-600 text-white text-xs font-bold px-3 py-1 rounded-full">Popular</span>
+                <h2 class="font-bold text-blue-900 mb-2">Points & Courses</h2>
+                <p class="mb-3 text-blue-900 text-center">Points & Courses</p>
+                <div class="text-2xl font-bold text-blue-900 mb-1">Ksh 300</div>
+            </a>
+            <!-- Green Package -->
+            <a href="calculator.html" class="package-card bg-gradient-to-br from-green-300 to-green-500 rounded-2xl shadow-lg p-8 flex flex-col items-center relative cursor-pointer transition-transform" style="text-decoration:none;">
+                <span class="absolute top-4 right-4 bg-green-700 text-white text-xs font-bold px-3 py-1 rounded-full">Starter</span>
+                <h2 class="font-bold text-green-900 mb-2">Calculate Points</h2>
+                <p class="mb-3 text-green-900 text-center">Cluster Points</p>
+                <div class="text-2xl font-bold text-green-900 mb-1">Ksh 100</div>
+            </a>
+            <!-- Aqua Package -->
+            <a href="calculator.html" class="package-card bg-gradient-to-br from-cyan-200 to-cyan-400 rounded-2xl shadow-lg p-8 flex flex-col items-center relative cursor-pointer transition-transform" style="text-decoration:none;">
+                <span class="absolute top-4 right-4 bg-cyan-700 text-white text-xs font-bold px-3 py-1 rounded-full">Aqua</span>
+                <h2 class="font-bold text-cyan-900 mb-2">Courses Only</h2>
+                <p class="mb-3 text-cyan-900 text-center">Courses Only</p>
+                <div class="text-2xl font-bold text-cyan-900 mb-1">Ksh 200</div>
+            </a>
         </div>
     </main>
 
-    <!-- Footer copied from main site -->
-    <footer class="bg-gray-900 text-white py-6 mt-10">
-        <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center">
-            <div class="mb-4 md:mb-0">
-                <span class="font-bold">Course Corner</span> &copy; 2025
+    <!-- Use the same footer as about.html -->
+    <footer class="footer-section">
+        <div class="footer-container">
+            <div class="footer-row">
+                <div class="footer-col">
+                    <div class="footer-logo-row">
+                        <img class="footer-logo" src="../assets/images/logo.png" alt="Course Corner logo" />
+                        <span>Course Corner</span>
+                    </div>
+                    <p class="footer-description">
+                        Empowering students to make informed decisions about their educational future through personalized course recommendations.
+                    </p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../index.html">Home</a></li>
+                        <li><a href="calculator.html">Calculator</a></li>
+                        <li><a href="cluster-points.html">Cluster Points</a></li>
+                        <li><a href="application-process.html">Application Guide</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="resources.html">Resources Library</a></li>
+                        <li><a href="guide.html">How to Use</a></li>
+                        <li><a href="privacy-policy.html">Privacy Policy</a></li>
+                        <li><a href="terms-of-service.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact Us</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> info@coursecorner.com</li>
+                        <li><i class="fas fa-phone"></i> +254 700 000000</li>
+                    </ul>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                    </div>
+                </div>
             </div>
-            <div class="flex space-x-4">
-                <a href="../pages/privacy-policy.html" class="hover:underline">Privacy Policy</a>
-                <a href="../pages/terms-of-service.html" class="hover:underline">Terms of Service</a>
+            <div class="footer-bottom">
+                <p>© Course Corner <span id="currentYear"></span>. All rights reserved.</p>
             </div>
         </div>
     </footer>

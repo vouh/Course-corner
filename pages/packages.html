@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,54 +10,121 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/x-icon" href="../assets/images/1.png">
     <style>
+        /* Modern Package Card Styles */
         .package-card {
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 4px 24px 0 #16a34a22, 0 1px 8px #0002;
-            border-radius: 1.5rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08), 0 2px 8px rgba(0, 0, 0, 0.04);
+            border-radius: 1.25rem;
             position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
+
+        .package-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .package-card:hover::before {
+            left: 100%;
+        }
+
         .package-card:hover {
-            transform: scale(1.04) translateY(-4px);
-            box-shadow: 0 8px 32px 0 #16a34a44, 0 2px 16px #0003;
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
         }
+
         .package-card .card-glow {
             position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            border-radius: 1.5rem;
-            box-shadow: 0 0 32px 8px #16a34a33;
-            z-index: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 1.25rem;
+            opacity: 0;
+            transition: opacity 0.4s;
             pointer-events: none;
         }
+
+        .package-card:hover .card-glow {
+            opacity: 1;
+        }
+
+        .package-card h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+        }
+
+        .package-card p {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            opacity: 0.9;
+        }
+
+        .package-card .text-2xl {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
         @media (max-width: 480px) {
             .packages-grid {
                 grid-template-columns: 1fr !important;
+                gap: 1rem !important;
+                padding: 0 0.5rem;
             }
+
             .package-card {
-                padding: 0.75rem !important;
+                padding: 1.5rem !important;
                 font-size: 0.9rem;
                 min-width: 0;
             }
+
             .package-card h2 {
-                font-size: 1.1rem !important;
+                font-size: 1.25rem !important;
             }
+
             .package-card p {
-                font-size: 0.8rem !important;
-                margin-bottom: 0.5rem !important;
+                font-size: 0.875rem !important;
+                margin-bottom: 0.75rem !important;
             }
+
             .package-card .text-2xl {
-                font-size: 1.1rem !important;
+                font-size: 1.5rem !important;
+            }
+
+            .package-card span.absolute {
+                font-size: 0.75rem !important;
+                padding: 0.375rem 0.75rem !important;
             }
         }
+
+        @media (min-width: 481px) and (max-width: 768px) {
+            .packages-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+        }
+
         .footer-section {
             background: linear-gradient(135deg, #16a34a 0%, #15803d 50%, #166534 100%);
             color: #fff;
         }
+
         .footer-logo-row span {
             color: #fff;
         }
     </style>
     </style>
 </head>
+
 <body class="bg-gray-100">
 
     <!-- Modern Sticky Navigation -->
@@ -80,11 +148,12 @@
                     <a href="pages/guide.html" class="modern-nav-link">Guide</a>
                     <a href="pages/contact.html" class="modern-nav-link">Contact</a>
                 </div>
-                
+
                 <!-- Auth Buttons -->
                 <div class="nav-auth-buttons">
                     <div id="userAvatar" class="hidden"></div>
-                    <button id="profileBtn" class="btn-nav-profile hidden" onclick="window.firebaseAuth.openProfileModal()">
+                    <button id="profileBtn" class="btn-nav-profile hidden"
+                        onclick="window.firebaseAuth.openProfileModal()">
                         <i class="fas fa-user-circle"></i>
                         <span>Profile</span>
                     </button>
@@ -116,11 +185,13 @@
                 <a href="pages/contact.html" class="mobile-nav-link">Contact</a>
             </nav>
             <div class="mobile-auth-buttons">
-                <button id="profileBtnMobile" class="btn-nav-profile hidden" style="width:100%; justify-content:center;" onclick="window.firebaseAuth.openProfileModal()">
+                <button id="profileBtnMobile" class="btn-nav-profile hidden" style="width:100%; justify-content:center;"
+                    onclick="window.firebaseAuth.openProfileModal()">
                     <i class="fas fa-user-circle"></i>
                     Profile
                 </button>
-                <button id="authBtnMobile" class="btn-nav-login" style="width:100%; justify-content:center;" onclick="window.firebaseAuth.openAuthModal()">
+                <button id="authBtnMobile" class="btn-nav-login" style="width:100%; justify-content:center;"
+                    onclick="window.firebaseAuth.openAuthModal()">
                     <i class="fas fa-user"></i>
                     Login
                 </button>
@@ -134,49 +205,67 @@
         <p class="text-center text-gray-600 mb-8">Flexible packages for every student. Pick what fits you best!</p>
         <div class="packages-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             <!-- Gold Package -->
-            <a href="calculator.html" class="package-card bg-gradient-to-br from-yellow-300 to-yellow-500 p-8 flex flex-col items-center relative cursor-pointer transition-transform" style="text-decoration:none;">
+            <a href="calculator.html"
+                class="package-card bg-gradient-to-br from-yellow-300 to-yellow-500 p-8 flex flex-col items-center relative cursor-pointer transition-transform"
+                style="text-decoration:none;">
                 <div class="card-glow"></div>
-                <span class="absolute top-4 right-4 bg-yellow-700 text-white text-xs font-bold px-3 py-1 rounded-full">Gold</span>
+                <span
+                    class="absolute top-4 right-4 bg-yellow-700 text-white text-xs font-bold px-3 py-1 rounded-full">Gold</span>
                 <h2 class="font-bold text-yellow-900 mb-2">Gold Package</h2>
                 <p class="mb-3 text-yellow-900 text-center">All-in-one + Expert</p>
                 <div class="text-2xl font-bold text-yellow-900 mb-1">Ksh 600</div>
             </a>
             <!-- Silver Package -->
-            <a href="calculator.html" class="package-card bg-gradient-to-br from-gray-200 to-gray-400 p-8 flex flex-col items-center relative cursor-pointer transition-transform" style="text-decoration:none;">
+            <a href="calculator.html"
+                class="package-card bg-gradient-to-br from-gray-200 to-gray-400 p-8 flex flex-col items-center relative cursor-pointer transition-transform"
+                style="text-decoration:none;">
                 <div class="card-glow"></div>
-                <span class="absolute top-4 right-4 bg-gray-700 text-white text-xs font-bold px-3 py-1 rounded-full">Silver</span>
+                <span
+                    class="absolute top-4 right-4 bg-gray-700 text-white text-xs font-bold px-3 py-1 rounded-full">Silver</span>
                 <h2 class="font-bold text-gray-900 mb-2">Silver Package</h2>
                 <p class="mb-3 text-gray-900 text-center">Uni Courses + Cluster</p>
                 <div class="text-2xl font-bold text-gray-900 mb-1">Ksh 500</div>
             </a>
             <!-- Bronze Package -->
-            <a href="calculator.html" class="package-card bg-gradient-to-br from-orange-200 to-orange-400 p-8 flex flex-col items-center relative cursor-pointer transition-transform" style="text-decoration:none;">
+            <a href="calculator.html"
+                class="package-card bg-gradient-to-br from-orange-200 to-orange-400 p-8 flex flex-col items-center relative cursor-pointer transition-transform"
+                style="text-decoration:none;">
                 <div class="card-glow"></div>
-                <span class="absolute top-4 right-4 bg-orange-700 text-white text-xs font-bold px-3 py-1 rounded-full">Bronze</span>
+                <span
+                    class="absolute top-4 right-4 bg-orange-700 text-white text-xs font-bold px-3 py-1 rounded-full">Bronze</span>
                 <h2 class="font-bold text-orange-900 mb-2">Bronze Plan</h2>
                 <p class="mb-3 text-orange-900 text-center">Unis & Courses</p>
                 <div class="text-2xl font-bold text-orange-900 mb-1">Ksh 400</div>
             </a>
             <!-- Starter Package -->
-            <a href="calculator.html" class="package-card bg-gradient-to-br from-green-200 to-green-400 p-8 flex flex-col items-center relative cursor-pointer transition-transform" style="text-decoration:none;">
+            <a href="calculator.html"
+                class="package-card bg-gradient-to-br from-green-200 to-green-400 p-8 flex flex-col items-center relative cursor-pointer transition-transform"
+                style="text-decoration:none;">
                 <div class="card-glow"></div>
-                <span class="absolute top-4 right-4 bg-green-700 text-white text-xs font-bold px-3 py-1 rounded-full">premeum</span>
+                <span
+                    class="absolute top-4 right-4 bg-green-700 text-white text-xs font-bold px-3 py-1 rounded-full">premeum</span>
                 <h2 class="font-bold text-green-900 mb-2">premeum Package</h2>
                 <p class="mb-3 text-green-900 text-center">Points & Courses</p>
                 <div class="text-2xl font-bold text-green-900 mb-1">Ksh 300</div>
             </a>
             <!-- Premium Package -->
-            <a href="calculator.html" class="package-card bg-gradient-to-br from-blue-200 to-blue-400 p-8 flex flex-col items-center relative cursor-pointer transition-transform" style="text-decoration:none;">
+            <a href="calculator.html"
+                class="package-card bg-gradient-to-br from-blue-200 to-blue-400 p-8 flex flex-col items-center relative cursor-pointer transition-transform"
+                style="text-decoration:none;">
                 <div class="card-glow"></div>
-                <span class="absolute top-4 right-4 bg-blue-700 text-white text-xs font-bold px-3 py-1 rounded-full">starter</span>
+                <span
+                    class="absolute top-4 right-4 bg-blue-700 text-white text-xs font-bold px-3 py-1 rounded-full">starter</span>
                 <h2 class="font-bold text-blue-900 mb-2">starter package</h2>
                 <p class="mb-3 text-blue-900 text-center">Calculate Points</p>
                 <div class="text-2xl font-bold text-blue-900 mb-1">Ksh 100</div>
             </a>
             <!-- Standard Package -->
-            <a href="calculator.html" class="package-card bg-gradient-to-br from-pink-200 to-pink-400 p-8 flex flex-col items-center relative cursor-pointer transition-transform" style="text-decoration:none;">
+            <a href="calculator.html"
+                class="package-card bg-gradient-to-br from-pink-200 to-pink-400 p-8 flex flex-col items-center relative cursor-pointer transition-transform"
+                style="text-decoration:none;">
                 <div class="card-glow"></div>
-                <span class="absolute top-4 right-4 bg-pink-700 text-white text-xs font-bold px-3 py-1 rounded-full">Standard</span>
+                <span
+                    class="absolute top-4 right-4 bg-pink-700 text-white text-xs font-bold px-3 py-1 rounded-full">Standard</span>
                 <h2 class="font-bold text-pink-900 mb-2">Standard Package</h2>
                 <p class="mb-3 text-pink-900 text-center">Courses Only</p>
                 <div class="text-2xl font-bold text-pink-900 mb-1">Ksh 200</div>
@@ -184,7 +273,7 @@
         </div>
     </main>
 
-   <!-- Footer -->
+    <!-- Footer -->
     <footer class="modern-footer">
         <div class="footer-container">
             <div class="footer-grid">
@@ -195,7 +284,8 @@
                         <span>Course Corner</span>
                     </div>
                     <p class="footer-description">
-                        Empowering students to make informed decisions about their educational future through personalized course recommendations.
+                        Empowering students to make informed decisions about their educational future through
+                        personalized course recommendations.
                     </p>
                     <div class="social-links">
                         <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
@@ -244,4 +334,5 @@
     </footer>
 
 </body>
+
 </html>

@@ -306,9 +306,94 @@
 
 
     <style>
+        /* Modern Button Section Styles */
+        .modern-cta-buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            padding: 2rem 1.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .modern-cta-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);
+            position: relative;
+            overflow: hidden;
+            flex: 0 1 auto;
+            max-width: 280px;
+            min-width: 180px;
+        }
+
+        .modern-cta-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .modern-cta-btn:hover::before {
+            left: 100%;
+        }
+
+        .modern-cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(22, 163, 74, 0.3);
+        }
+
+        .modern-cta-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-packages {
+            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            color: white;
+        }
+
+        .btn-calculator {
+            background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+            color: white;
+        }
+
+        .modern-cta-btn i {
+            font-size: 1.1rem;
+        }
+
         @media (max-width: 480px) {
 
             /* Button section improvements */
+            .modern-cta-buttons {
+                padding: 1.5rem 1rem;
+                gap: 0.75rem;
+            }
+
+            .modern-cta-btn {
+                padding: 0.875rem 1.25rem;
+                font-size: 0.875rem;
+                min-width: 140px;
+                max-width: 48%;
+                flex: 1;
+            }
+
+            .modern-cta-btn i {
+                font-size: 1rem;
+            }
+
             .glow-btn {
                 width: 100%;
                 font-size: 1rem;
@@ -372,6 +457,13 @@
             }
         }
 
+        @media (min-width: 481px) and (max-width: 768px) {
+            .modern-cta-btn {
+                max-width: 240px;
+                min-width: 200px;
+            }
+        }
+
         .glow-btn {
             box-shadow: 0 0 24px 2px #16a34a55, 0 2px 8px #16a34a33;
         }
@@ -386,15 +478,16 @@
     </div>
 
 
-    <!-- Two Column Buttons Section (Packages & Calculator) -->
-    <section class="my-8 flex flex-col md:flex-row justify-center items-center gap-6">
-        <div class="w-full flex flex-col gap-4 sm:flex-row sm:gap-6 sm:justify-center">
-            <a href="pages/packages.html"
-                class="flex-1 text-center py-5 px-6 rounded-xl bg-green-600 text-white text-xl font-bold shadow-lg hover:bg-green-700 transition-all duration-200 glow-btn">Our
-                Packages</a>
-            <a href="pages/calculator.html"
-                class="flex-1 text-center py-5 px-6 rounded-xl bg-green-600 text-white text-xl font-bold shadow-lg hover:bg-green-700 transition-all duration-200 glow-btn">Calculator</a>
-        </div>
+    <!-- Modern Two Column Buttons Section (Packages & Calculator) -->
+    <section class="modern-cta-buttons">
+        <a href="pages/packages.html" class="modern-cta-btn btn-packages">
+            <i class="fas fa-box-open"></i>
+            <span>Our Packages</span>
+        </a>
+        <a href="pages/calculator.html" class="modern-cta-btn btn-calculator">
+            <i class="fas fa-calculator"></i>
+            <span>Calculator</span>
+        </a>
     </section>
 
 

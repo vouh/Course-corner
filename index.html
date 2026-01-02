@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-            <script src="assets/js/init-swiper.js" defer></script>
-        <!-- Swiper.js CSS -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-        <!-- Swiper.js JS -->
-        <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <meta name="description" content="Course Corner offers a wide range of courses to help you achieve your educational and career goals. Explore now!">
+    <script src="assets/js/init-swiper.js" defer></script>
+    <!-- Swiper.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <!-- Swiper.js JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <meta name="description"
+        content="Course Corner offers a wide range of courses to help you achieve your educational and career goals. Explore now!">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="assets/js/firebase-config.js" type="module"></script>
     <script src="assets/js/calculator.js" type="module"></script>
@@ -26,15 +28,23 @@
     <script src="assets/js/feature-slider.js" defer></script>
     <link rel="stylesheet" href="assets/css/auth.css">
     <script src="assets/js/firebase-auth.js" defer></script>
-    
+
     <!-- Custom Select for Mobile -->
     <script src="assets/js/custom-select.js" defer></script>
-    
+
     <style>
         @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0.6; }
-            100% { opacity: 1; }
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.6;
+            }
+
+            100% {
+                opacity: 1;
+            }
         }
 
         .blink-button {
@@ -45,13 +55,21 @@
         .blink-button:hover {
             animation: none;
             transform: scale(1.05);
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
         }
 
         @keyframes pop {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
         }
 
         .pop-animation {
@@ -68,12 +86,13 @@
         .hero-image {
             width: 100%;
             height: 130%;
-            object-fit:100%,100%;
+            object-fit: 100%, 100%;
         }
-        .imagec{
+
+        .imagec {
             width: 100%;
             height: 100%;
-            object-fit:contain;
+            object-fit: contain;
         }
 
         .hero-overlay {
@@ -120,7 +139,8 @@
             transform: rotateY(180deg);
         }
 
-        .flip-card-front, .flip-card-back {
+        .flip-card-front,
+        .flip-card-back {
             position: absolute;
             width: 100%;
             height: 100%;
@@ -136,7 +156,7 @@
 
         .flip-card-front {
             background-color: white;
-            color: #16a34a; 
+            color: #16a34a;
         }
 
         .flip-card-back {
@@ -189,10 +209,11 @@
         }
     </style>
 </head>
+
 <body class="bg-gray-100 loading">
     <!-- Preloader -->
 
-    
+
     <div id="preloader" class="fixed inset-0 bg-white z-50 flex flex-col items-center justify-center">
         <div class="text-center mb-4">
             <h2 class="text-3xl font-bold text-green-600 mb-2 animate-fade-in">Welcome to</h2>
@@ -224,11 +245,12 @@
                     <a href="pages/guide.html" class="modern-nav-link">Guide</a>
                     <a href="pages/contact.html" class="modern-nav-link">Contact</a>
                 </div>
-                
+
                 <!-- Auth Buttons -->
                 <div class="nav-auth-buttons">
                     <div id="userAvatar" class="hidden"></div>
-                    <button id="profileBtn" class="btn-nav-profile hidden" onclick="window.firebaseAuth.openProfileModal()">
+                    <button id="profileBtn" class="btn-nav-profile hidden"
+                        onclick="window.firebaseAuth.openProfileModal()">
                         <i class="fas fa-user-circle"></i>
                         <span>Profile</span>
                     </button>
@@ -260,11 +282,13 @@
                 <a href="pages/contact.html" class="mobile-nav-link">Contact</a>
             </nav>
             <div class="mobile-auth-buttons">
-                <button id="profileBtnMobile" class="btn-nav-profile hidden" style="width:100%; justify-content:center;" onclick="window.firebaseAuth.openProfileModal()">
+                <button id="profileBtnMobile" class="btn-nav-profile hidden" style="width:100%; justify-content:center;"
+                    onclick="window.firebaseAuth.openProfileModal()">
                     <i class="fas fa-user-circle"></i>
                     Profile
                 </button>
-                <button id="authBtnMobile" class="btn-nav-login" style="width:100%; justify-content:center;" onclick="window.firebaseAuth.openAuthModal()">
+                <button id="authBtnMobile" class="btn-nav-login" style="width:100%; justify-content:center;"
+                    onclick="window.firebaseAuth.openAuthModal()">
                     <i class="fas fa-user"></i>
                     Login
                 </button>
@@ -283,6 +307,8 @@
 
     <style>
         @media (max-width: 480px) {
+
+            /* Button section improvements */
             .glow-btn {
                 width: 100%;
                 font-size: 1rem;
@@ -290,35 +316,84 @@
                 margin: 0 auto;
                 box-shadow: 0 0 16px 2px #16a34a55;
             }
+
             .flex-1 {
                 min-width: 0;
             }
+
             .my-8 {
                 margin-top: 1.5rem;
                 margin-bottom: 1.5rem;
             }
+
             .sm\:flex-row {
                 flex-direction: column !important;
             }
+
+            /* Prevent section overlapping */
+            section {
+                margin-bottom: 1rem !important;
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+
+            /* Features section spacing */
+            .features-section {
+                padding-top: 2rem !important;
+                padding-bottom: 2rem !important;
+                margin-top: 1rem !important;
+            }
+
+            /* Section headers */
+            .section-header {
+                padding: 0 1rem;
+                margin-bottom: 1.5rem !important;
+            }
+
+            .section-title {
+                font-size: 1.5rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+
+            .section-subtitle {
+                font-size: 0.875rem !important;
+            }
+
+            /* Wave separator adjustments */
+            .wave-separator {
+                margin: 0 !important;
+                height: 60px;
+            }
+
+            /* CTA section spacing */
+            .cta-section {
+                padding: 2rem 1rem !important;
+                margin-top: 1rem !important;
+            }
         }
+
         .glow-btn {
             box-shadow: 0 0 24px 2px #16a34a55, 0 2px 8px #16a34a33;
         }
     </style>
 
     <div class="wave-separator wave-separator--between" aria-hidden="true">
-    <div class="wave-separator wave-separator--between" aria-hidden="true">
         <svg viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg">
-            <path fill="#f9fafb" fill-opacity="1" d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z"></path>
+            <path fill="#f9fafb" fill-opacity="1"
+                d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z">
+            </path>
         </svg>
     </div>
 
 
-        <!-- Two Column Buttons Section (Packages & Calculator) -->
+    <!-- Two Column Buttons Section (Packages & Calculator) -->
     <section class="my-8 flex flex-col md:flex-row justify-center items-center gap-6">
         <div class="w-full flex flex-col gap-4 sm:flex-row sm:gap-6 sm:justify-center">
-            <a href="pages/packages.html" class="flex-1 text-center py-5 px-6 rounded-xl bg-green-600 text-white text-xl font-bold shadow-lg hover:bg-green-700 transition-all duration-200 glow-btn">Our Packages</a>
-            <a href="pages/calculator.html" class="flex-1 text-center py-5 px-6 rounded-xl bg-green-600 text-white text-xl font-bold shadow-lg hover:bg-green-700 transition-all duration-200 glow-btn">Calculator</a>
+            <a href="pages/packages.html"
+                class="flex-1 text-center py-5 px-6 rounded-xl bg-green-600 text-white text-xl font-bold shadow-lg hover:bg-green-700 transition-all duration-200 glow-btn">Our
+                Packages</a>
+            <a href="pages/calculator.html"
+                class="flex-1 text-center py-5 px-6 rounded-xl bg-green-600 text-white text-xl font-bold shadow-lg hover:bg-green-700 transition-all duration-200 glow-btn">Calculator</a>
         </div>
     </section>
 
@@ -326,103 +401,102 @@
     <!-- Modern Features Section -->
     <section class="features-section">
         <div class="features-container">
-                        <div class="section-header">
-                                <h2 class="section-title">Your Path to Success</h2>
-                                <p class="section-subtitle">Four simple steps to discover your ideal career path and university placement</p>
-                        </div>
-                        <!-- Desktop grid layout -->
-                        <div class="features-grid">
-                                <!-- Feature Card 1 -->
-                                <div class="modern-feature-card" onclick="window.location.href='pages/calculator.html'">
-                                        <div class="feature-icon-wrapper">
-                                                <i class="fas fa-calculator"></i>
-                                        </div>
-                                        <h3 class="feature-title">Assess Grades</h3>
-                                        <p class="feature-description">Input your KCSE grades and calculate your cluster points accurately</p>
-                                </div>
-                                <!-- Feature Card 2 -->
-                                <div class="modern-feature-card">
-                                        <div class="feature-icon-wrapper">
-                                                <i class="fas fa-compass"></i>
-                                        </div>
-                                        <h3 class="feature-title">Explore Courses</h3>
-                                        <p class="feature-description">Discover courses that match your cluster points and interests</p>
-                                </div>
-                                <!-- Feature Card 3 -->
-                                <div class="modern-feature-card">
-                                        <div class="feature-icon-wrapper">
-                                                <i class="fas fa-university"></i>
-                                        </div>
-                                        <h3 class="feature-title">Find Universities</h3>
-                                        <p class="feature-description">Compare universities offering your chosen courses</p>
-                                </div>
-                                <!-- Feature Card 4 -->
-                                <div class="modern-feature-card">
-                                        <div class="feature-icon-wrapper">
-                                                <i class="fas fa-check-circle"></i>
-                                        </div>
-                                        <h3 class="feature-title">Make Decision</h3>
-                                        <p class="feature-description">Choose your path with confidence and clarity</p>
-                                </div>
-                        </div>
-
-                        
-    <!-- Two Column Buttons Section -->
-    <section class="flex flex-col md:flex-row justify-center items-center gap-6 my-8">
-        <a href="pages/packages.html" class="w-64 md:w-80 text-center py-6 px-8 rounded-lg bg-green-600 text-white text-2xl font-bold shadow-lg hover:bg-green-700 transition-all duration-200">Our Packages</a>
-        <a href="pages/calculator.html" class="w-64 md:w-80 text-center py-6 px-8 rounded-lg bg-green-600 text-white text-2xl font-bold shadow-lg hover:bg-green-700 transition-all duration-200">Calculator</a>
-    </section>
-                        <!-- Mobile slider layout -->
-                        <div class="features-slider-mobile">
-                                <div class="swiper">
-                                    <div class="swiper-wrapper">
-                                        <!-- Feature Card 1 -->
-                                        <div class="swiper-slide">
-                                            <div class="modern-feature-card" onclick="window.location.href='pages/calculator.html'">
-                                                <div class="feature-icon-wrapper">
-                                                    <i class="fas fa-calculator"></i>
-                                                </div>
-                                                <h3 class="feature-title">Assess Grades</h3>
-                                                <p class="feature-description">Input your KCSE grades and calculate your cluster points accurately</p>
-                                            </div>
-                                        </div>
-                                        <!-- Feature Card 2 -->
-                                        <div class="swiper-slide">
-                                            <div class="modern-feature-card">
-                                                <div class="feature-icon-wrapper">
-                                                    <i class="fas fa-compass"></i>
-                                                </div>
-                                                <h3 class="feature-title">Explore Courses</h3>
-                                                <p class="feature-description">Discover courses that match your cluster points and interests</p>
-                                            </div>
-                                        </div>
-                                        <!-- Feature Card 3 -->
-                                        <div class="swiper-slide">
-                                            <div class="modern-feature-card">
-                                                <div class="feature-icon-wrapper">
-                                                    <i class="fas fa-university"></i>
-                                                </div>
-                                                <h3 class="feature-title">Find Universities</h3>
-                                                <p class="feature-description">Compare universities offering your chosen courses</p>
-                                            </div>
-                                        </div>
-                                        <!-- Feature Card 4 -->
-                                        <div class="swiper-slide">
-                                            <div class="modern-feature-card">
-                                                <div class="feature-icon-wrapper">
-                                                    <i class="fas fa-check-circle"></i>
-                                                </div>
-                                                <h3 class="feature-title">Make Decision</h3>
-                                                <p class="feature-description">Choose your path with confidence and clarity</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <!-- Add Arrows -->
-                                    <div class="swiper-button-prev"></div>
-                                    <div class="swiper-button-next"></div>
-                                </div>
-                        </div>
+            <div class="section-header">
+                <h2 class="section-title">Your Path to Success</h2>
+                <p class="section-subtitle">Four simple steps to discover your ideal career path and university
+                    placement</p>
             </div>
+            <!-- Desktop grid layout -->
+            <div class="features-grid">
+                <!-- Feature Card 1 -->
+                <div class="modern-feature-card" onclick="window.location.href='pages/calculator.html'">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-calculator"></i>
+                    </div>
+                    <h3 class="feature-title">Assess Grades</h3>
+                    <p class="feature-description">Input your KCSE grades and calculate your cluster points accurately
+                    </p>
+                </div>
+                <!-- Feature Card 2 -->
+                <div class="modern-feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-compass"></i>
+                    </div>
+                    <h3 class="feature-title">Explore Courses</h3>
+                    <p class="feature-description">Discover courses that match your cluster points and interests</p>
+                </div>
+                <!-- Feature Card 3 -->
+                <div class="modern-feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-university"></i>
+                    </div>
+                    <h3 class="feature-title">Find Universities</h3>
+                    <p class="feature-description">Compare universities offering your chosen courses</p>
+                </div>
+                <!-- Feature Card 4 -->
+                <div class="modern-feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3 class="feature-title">Make Decision</h3>
+                    <p class="feature-description">Choose your path with confidence and clarity</p>
+                </div>
+            </div>
+
+
+            <!-- Mobile slider layout -->
+            <div class="features-slider-mobile">
+                <div class="swiper">
+                    <div class="swiper-wrapper">
+                        <!-- Feature Card 1 -->
+                        <div class="swiper-slide">
+                            <div class="modern-feature-card" onclick="window.location.href='pages/calculator.html'">
+                                <div class="feature-icon-wrapper">
+                                    <i class="fas fa-calculator"></i>
+                                </div>
+                                <h3 class="feature-title">Assess Grades</h3>
+                                <p class="feature-description">Input your KCSE grades and calculate your cluster points
+                                    accurately</p>
+                            </div>
+                        </div>
+                        <!-- Feature Card 2 -->
+                        <div class="swiper-slide">
+                            <div class="modern-feature-card">
+                                <div class="feature-icon-wrapper">
+                                    <i class="fas fa-compass"></i>
+                                </div>
+                                <h3 class="feature-title">Explore Courses</h3>
+                                <p class="feature-description">Discover courses that match your cluster points and
+                                    interests</p>
+                            </div>
+                        </div>
+                        <!-- Feature Card 3 -->
+                        <div class="swiper-slide">
+                            <div class="modern-feature-card">
+                                <div class="feature-icon-wrapper">
+                                    <i class="fas fa-university"></i>
+                                </div>
+                                <h3 class="feature-title">Find Universities</h3>
+                                <p class="feature-description">Compare universities offering your chosen courses</p>
+                            </div>
+                        </div>
+                        <!-- Feature Card 4 -->
+                        <div class="swiper-slide">
+                            <div class="modern-feature-card">
+                                <div class="feature-icon-wrapper">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <h3 class="feature-title">Make Decision</h3>
+                                <p class="feature-description">Choose your path with confidence and clarity</p>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Add Arrows -->
+                    <div class="swiper-button-prev"></div>
+                    <div class="swiper-button-next"></div>
+                </div>
+            </div>
+        </div>
         </div>
     </section>
 
@@ -436,8 +510,10 @@
                 </div>
                 <h2 class="cta-title">Ready to Calculate Your <span class="highlight">Cluster Points?</span></h2>
                 <p class="cta-description">
-                    Input your KCSE grades and instantly discover your cluster points, eligible courses, and university options. 
-                    Our comprehensive calculator covers all subject combinations and provides accurate results based on the latest KUCCPS guidelines.
+                    Input your KCSE grades and instantly discover your cluster points, eligible courses, and university
+                    options.
+                    Our comprehensive calculator covers all subject combinations and provides accurate results based on
+                    the latest KUCCPS guidelines.
                 </p>
                 <div class="cta-features">
                     <div class="cta-feature">
@@ -483,7 +559,7 @@
     </section>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Modern Header Scroll Effect
             const header = document.getElementById('mainHeader');
             window.addEventListener('scroll', () => {
@@ -493,24 +569,24 @@
                     header.classList.remove('scrolled');
                 }
             });
-            
+
             // Mobile menu toggle
             const mobileMenuBtn = document.getElementById('mobileMenuBtn');
             const mobileMenu = document.getElementById('mobileMenu');
             let isMenuOpen = false;
-            
+
             function openMobileMenu() {
                 isMenuOpen = true;
                 mobileMenuBtn.classList.add('active');
                 mobileMenu.classList.add('show');
             }
-            
+
             function closeMobileMenu() {
                 isMenuOpen = false;
                 mobileMenuBtn.classList.remove('active');
                 mobileMenu.classList.remove('show');
             }
-            
+
             function toggleMobileMenu() {
                 if (isMenuOpen) {
                     closeMobileMenu();
@@ -518,13 +594,13 @@
                     openMobileMenu();
                 }
             }
-            
+
             mobileMenuBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 toggleMobileMenu();
             });
-            
+
             // Close mobile menu when clicking a link
             mobileMenu.querySelectorAll('a, button').forEach(link => {
                 link.addEventListener('click', () => {
@@ -545,17 +621,17 @@
                     closeMobileMenu();
                 }
             });
-            
+
             // Close mobile menu on escape key
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'Escape' && isMenuOpen) {
                     closeMobileMenu();
                 }
             });
-            
+
             // Update score display when grades change
             document.querySelectorAll('.modern-grade-select, .grade-select').forEach(select => {
-                select.addEventListener('change', function() {
+                select.addEventListener('change', function () {
                     // Add visual feedback when a grade is selected
                     if (this.value) {
                         this.classList.add('has-value');
@@ -566,7 +642,7 @@
                     updateOverallGradeDisplay();
                 });
             });
-            
+
             function updateOverallGradeDisplay() {
                 const overallGrade = document.getElementById('overallGrade');
                 const display = document.getElementById('overallGradeDisplay');
@@ -587,7 +663,8 @@
                 </div>
                 <h2 class="referral-title">Earn Money by <span class="highlight">Referring Friends</span></h2>
                 <p class="referral-description">
-                    Share Course Corner with your friends and earn <strong>10% commission</strong> on every payment they make! 
+                    Share Course Corner with your friends and earn <strong>10% commission</strong> on every payment they
+                    make!
                     Generate your unique referral code, share it, and watch your earnings grow.
                 </p>
                 <div class="referral-features">
@@ -869,8 +946,15 @@
         }
 
         @keyframes bubble-pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
         }
 
         @media (max-width: 768px) {
@@ -880,11 +964,11 @@
                 padding: 0.75rem 1rem;
                 font-size: 0.875rem;
             }
-            
+
             .referral-bubble span {
                 display: none;
             }
-            
+
             .referral-bubble {
                 width: 56px;
                 height: 56px;
@@ -912,7 +996,8 @@
                         <span>Course Corner</span>
                     </div>
                     <p class="footer-description">
-                        Empowering students to make informed decisions about their educational future through personalized course recommendations.
+                        Empowering students to make informed decisions about their educational future through
+                        personalized course recommendations.
                     </p>
                     <div class="social-links">
                         <a href="#" target="_blank"><i class="fab fa-tiktok"></i></a>
@@ -963,27 +1048,27 @@
     <script>
         // Update copyright year
         document.getElementById('currentYear').textContent = new Date().getFullYear();
-        
+
         // 3D Tilt Effect for Hero Elements
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const tiltElements = document.querySelectorAll('[data-tilt]');
-            
+
             tiltElements.forEach(element => {
-                element.addEventListener('mousemove', function(e) {
+                element.addEventListener('mousemove', function (e) {
                     const rect = element.getBoundingClientRect();
                     const x = e.clientX - rect.left;
                     const y = e.clientY - rect.top;
-                    
+
                     const centerX = rect.width / 2;
                     const centerY = rect.height / 2;
-                    
+
                     const rotateX = (y - centerY) / 10;
                     const rotateY = (centerX - x) / 10;
-                    
+
                     element.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(20px) scale(1.05)`;
                 });
-                
-                element.addEventListener('mouseleave', function() {
+
+                element.addEventListener('mouseleave', function () {
                     element.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0) scale(1)';
                 });
             });
@@ -992,10 +1077,10 @@
 
     <!-- Preloader -->
     <script>
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             const preloader = document.getElementById('preloader');
             const body = document.body;
-            
+
             setTimeout(() => {
                 body.classList.remove('loading');
                 preloader.classList.add('fade-out');
@@ -1038,7 +1123,7 @@
         function calculateTotalPoints() {
             let total = 0;
             const scores = {};
-            
+
             // Get all selected grades
             document.querySelectorAll('.grade-select').forEach(select => {
                 if (select.value) {
@@ -1067,21 +1152,21 @@
             const languageScores = languages
                 .filter(lang => scores[lang])
                 .map(lang => ({ subject: lang, score: scores[lang] }));
-            
+
             if (languageScores.length === 0) {
                 document.getElementById('overallGrade').value = "";
                 return;
             }
 
-            const bestLanguage = languageScores.reduce((best, current) => 
+            const bestLanguage = languageScores.reduce((best, current) =>
                 current.score > best.score ? current : best
             );
             total += bestLanguage.score;
 
             // 3. Get all remaining subjects (excluding mathematics and best language)
             const remainingSubjects = Object.entries(scores)
-                .filter(([subject]) => 
-                    subject !== 'mathematics' && 
+                .filter(([subject]) =>
+                    subject !== 'mathematics' &&
                     subject !== bestLanguage.subject
                 )
                 .map(([subject, score]) => ({ subject, score }))
@@ -1111,7 +1196,7 @@
             else if (points >= 74) return "A-"
             else if (points >= 67) return "B+"
             else if (points >= 60) return "B"
-            else if (points >= 53) return "B-" 
+            else if (points >= 53) return "B-"
             else if (points >= 46) return "C+"
             else if (points >= 39) return "C"
             else if (points >= 32) return "C-"
@@ -1125,7 +1210,7 @@
         function initializeDownloadButton() {
             const downloadBtn = document.getElementById('downloadBtn');
             if (downloadBtn) {
-                downloadBtn.addEventListener('click', async function() {
+                downloadBtn.addEventListener('click', async function () {
                     try {
                         // Prompt for student name
                         const studentName = await Swal.fire({
@@ -1155,7 +1240,7 @@
                             doc.setTextColor(230, 230, 230);
                             doc.setFontSize(60);
                             doc.setFont('helvetica', 'bold');
-                            doc.text('Course Corner', pageWidth/2, pageHeight/2, {
+                            doc.text('Course Corner', pageWidth / 2, pageHeight / 2, {
                                 align: 'center',
                                 angle: 45
                             });
@@ -1166,7 +1251,7 @@
                             doc.setTextColor(255, 255, 255);
                             doc.setFontSize(16);
                             doc.setFont('helvetica', 'bold');
-                            doc.text('Course Corner', pageWidth/2, 13, { align: 'center' });
+                            doc.text('Course Corner', pageWidth / 2, 13, { align: 'center' });
 
                             // Add student info section with border
                             doc.setDrawColor(200, 200, 200);
@@ -1176,7 +1261,7 @@
                             doc.setFontSize(12);
                             doc.text(`Student Name: ${studentName.value}`, 15, 35);
                             doc.text(`Total Points: ${studentPoints}`, 15, 42);
-                            doc.text(`Overall Grade: ${grade}`, pageWidth/2, 42);
+                            doc.text(`Overall Grade: ${grade}`, pageWidth / 2, 42);
 
                             // Cluster Points Section with pink theme
                             let yPos = 60;
@@ -1255,7 +1340,7 @@
                             // Add footer
                             doc.setTextColor(128, 128, 128);
                             doc.setFontSize(8);
-                            doc.text('© Course Corner 2025', pageWidth/2, pageHeight - 10, { align: 'center' });
+                            doc.text('© Course Corner 2025', pageWidth / 2, pageHeight - 10, { align: 'center' });
 
                             // Save the PDF
                             const fileName = `${studentName.value.replace(/\s+/g, '_')}_report.pdf`;
@@ -1343,7 +1428,7 @@
                     doc.setTextColor(230, 230, 230);
                     doc.setFontSize(60);
                     doc.setFont('helvetica', 'bold');
-                    doc.text('Course Corner', pageWidth/2, pageHeight/2, {
+                    doc.text('Course Corner', pageWidth / 2, pageHeight / 2, {
                         align: 'center',
                         angle: 45
                     });
@@ -1354,7 +1439,7 @@
                     doc.setTextColor(255, 255, 255);
                     doc.setFontSize(16);
                     doc.setFont('helvetica', 'bold');
-                    doc.text('Course Corner', pageWidth/2, 13, { align: 'center' });
+                    doc.text('Course Corner', pageWidth / 2, 13, { align: 'center' });
 
                     // Add student info section with border
                     doc.setDrawColor(200, 200, 200);
@@ -1364,7 +1449,7 @@
                     doc.setFontSize(12);
                     doc.text(`Student Name: ${studentName.value}`, 15, 35);
                     doc.text(`Total Points: ${overallGrade.value}`, 15, 42);
-                    doc.text(`Overall Grade: ${get_grade_from_points(parseInt(overallGrade.value))}`, pageWidth/2, 42);
+                    doc.text(`Overall Grade: ${get_grade_from_points(parseInt(overallGrade.value))}`, pageWidth / 2, 42);
 
                     // Cluster Points Section with pink theme
                     let yPos = 60;
@@ -1443,7 +1528,7 @@
                     // Add footer
                     doc.setTextColor(128, 128, 128);
                     doc.setFontSize(8);
-                    doc.text('© Course Corner 2025', pageWidth/2, pageHeight - 10, { align: 'center' });
+                    doc.text('© Course Corner 2025', pageWidth / 2, pageHeight - 10, { align: 'center' });
 
                     // Save the PDF
                     const fileName = `${studentName.value.replace(/\s+/g, '_')}_report.pdf`;
@@ -1474,7 +1559,7 @@
         }
 
         // Add click handler to the third button
-        document.getElementById('calculateBtn3').addEventListener('click', function() {
+        document.getElementById('calculateBtn3').addEventListener('click', function () {
             setTimeout(() => {
                 const downloadBtn = document.getElementById('downloadBtn');
                 if (downloadBtn) {
@@ -1523,7 +1608,7 @@
                     doc.setTextColor(230, 230, 230);
                     doc.setFontSize(60);
                     doc.setFont('helvetica', 'bold');
-                    doc.text('Course Corner', pageWidth/2, pageHeight/2, {
+                    doc.text('Course Corner', pageWidth / 2, pageHeight / 2, {
                         align: 'center',
                         angle: 90
                     });
@@ -1534,7 +1619,7 @@
                     doc.setTextColor(255, 255, 255);
                     doc.setFontSize(16);
                     doc.setFont('helvetica', 'bold');
-                    doc.text('Course Corner', pageWidth/2, 13, { align: 'center' });
+                    doc.text('Course Corner', pageWidth / 2, 13, { align: 'center' });
 
                     // Add student info section with border
                     doc.setDrawColor(200, 200, 200);
@@ -1596,7 +1681,7 @@
                     // Add footer
                     doc.setTextColor(128, 128, 128);
                     doc.setFontSize(8);
-                    doc.text('© Course Corner 2025', pageWidth/2, pageHeight - 10, { align: 'center' });
+                    doc.text('© Course Corner 2025', pageWidth / 2, pageHeight - 10, { align: 'center' });
 
                     // Save the PDF
                     const fileName = `${studentName.value.replace(/\s+/g, '_')}_courses.pdf`;
@@ -1604,7 +1689,7 @@
 
                     // Close loading alert and show success message
                     loadingAlert.close();
-                    
+
                     setTimeout(() => {
                         Swal.fire({
                             icon: 'success',
@@ -1635,10 +1720,10 @@
     <script>
         // ===== UNIFIED PAYMENT FLOW =====
         // All payment logic is centralized here to prevent duplicate handlers
-        
+
         // Clear any existing payment handlers from courses-eligibility.js
         window.PAYMENT_HANDLERS_INITIALIZED = true;
-        
+
         // Initialize Payment Handler with your server URL
         // Server is hosted on Vercel
         const SERVER_URL = 'https://course-corner-server.vercel.app/api';
@@ -1651,22 +1736,22 @@
         // Validate student subjects before payment
         function validateSubjects() {
             const errors = [];
-            
+
             // Check compulsory subjects
             const english = document.getElementById('english')?.value;
             const kiswahili = document.getElementById('kiswahili')?.value;
             const mathematics = document.getElementById('mathematics')?.value;
-            
+
             if (!english) errors.push('English');
             if (!kiswahili) errors.push('Kiswahili');
             if (!mathematics) errors.push('Mathematics');
-            
+
             // Count total subjects selected
             let totalSubjects = 0;
             document.querySelectorAll('.grade-select').forEach(select => {
                 if (select.value) totalSubjects++;
             });
-            
+
             return {
                 valid: errors.length === 0 && totalSubjects >= 7,
                 missingCompulsory: errors,
@@ -1679,13 +1764,13 @@
         async function processPayment(category, amount) {
             const grades = getStudentGrades ? getStudentGrades() : {};
             const overallGrade = document.getElementById('overallGrade').value;
-            
+
             // Validate subjects before showing payment window
             const validation = validateSubjects();
-            
+
             if (!validation.valid) {
                 let errorHtml = '<div class="text-left">';
-                
+
                 if (validation.missingCompulsory.length > 0) {
                     errorHtml += `<p class="mb-2"><strong>Missing compulsory subjects:</strong></p>`;
                     errorHtml += `<ul class="list-disc list-inside mb-3 text-red-600">`;
@@ -1694,14 +1779,14 @@
                     });
                     errorHtml += `</ul>`;
                 }
-                
+
                 if (validation.needMore > 0) {
                     errorHtml += `<p class="text-gray-600">You need <strong>${validation.needMore} more subject(s)</strong> (minimum 7 required).</p>`;
                     errorHtml += `<p class="text-sm text-gray-500 mt-2">Currently selected: ${validation.totalSubjects} subjects</p>`;
                 }
-                
+
                 errorHtml += '</div>';
-                
+
                 Swal.fire({
                     icon: 'warning',
                     title: 'Please Complete Your Grades',
@@ -1709,7 +1794,7 @@
                     confirmButtonColor: '#16a34a',
                     confirmButtonText: 'Fill Grades'
                 });
-                
+
                 // Scroll to the grades section
                 document.getElementById('calculator')?.scrollIntoView({ behavior: 'smooth' });
                 return false;
@@ -1848,7 +1933,7 @@
 
                 // Show results after dialog closes
                 showResultsAfterPayment(category);
-                
+
                 // Scroll to results section
                 document.getElementById('results')?.scrollIntoView({ behavior: 'smooth' });
 
@@ -1856,15 +1941,15 @@
 
             } catch (error) {
                 document.getElementById('paymentStatus').classList.add('hidden');
-                
+
                 // Close any existing dialogs first
                 Swal.close();
-                
+
                 // Determine icon and title based on error message
                 let icon = 'error';
                 let title = 'Payment Failed';
                 const errorMsg = error.message || 'An error occurred during payment verification';
-                
+
                 if (errorMsg.toLowerCase().includes('cancel')) {
                     icon = 'warning';
                     title = 'Payment Cancelled';
@@ -1878,7 +1963,7 @@
                     icon = 'info';
                     title = 'Request Timed Out';
                 }
-                
+
                 await Swal.fire({
                     icon: icon,
                     title: title,
@@ -1894,7 +1979,7 @@
                         document.body.classList.remove('swal2-shown');
                     }
                 });
-                
+
                 window.paymentHandler.clearSession();
                 return false;
             }
@@ -1950,34 +2035,34 @@
         }
 
         // Initialize payment button handlers on DOM ready
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Remove any previous handlers and add unified ones
             const paymentBtns = document.querySelectorAll('.payment-btn');
-            
+
             paymentBtns.forEach(btn => {
                 // Clone to remove old handlers
                 const newBtn = btn.cloneNode(true);
                 btn.parentNode.replaceChild(newBtn, btn);
-                
-                newBtn.addEventListener('click', async function(e) {
+
+                newBtn.addEventListener('click', async function (e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    
+
                     const category = this.getAttribute('data-category');
                     const amount = this.getAttribute('data-amount');
-                    
+
                     console.log('Payment button clicked:', category, amount);
-                    
+
                     // Process payment first
                     const paymentSuccess = await processPayment(category, amount);
-                    
+
                     // Only show results if payment was successful
                     if (paymentSuccess) {
                         showResultsAfterPayment(category);
                     }
                 });
             });
-            
+
             console.log('Unified payment handlers initialized for', paymentBtns.length, 'buttons');
         });
 
@@ -2025,10 +2110,12 @@
                     </div>
                     <div class="form-group">
                         <label for="loginPassword">Password</label>
-                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password"
+                            required>
                     </div>
                     <div class="forgot-password-link">
-                        <a class="auth-link text-sm" onclick="window.firebaseAuth.switchAuthMode('forgot')">Forgot password?</a>
+                        <a class="auth-link text-sm" onclick="window.firebaseAuth.switchAuthMode('forgot')">Forgot
+                            password?</a>
                     </div>
                     <button type="submit" id="loginBtn" class="btn-primary">
                         <i class="fas fa-sign-in-alt"></i>
@@ -2040,7 +2127,8 @@
                 <form id="signupForm" class="auth-form hidden" onsubmit="handleSignup(event)">
                     <div class="form-group">
                         <label for="signupName">Full Name</label>
-                        <input type="text" id="signupName" class="form-input" placeholder="Enter your full name" required>
+                        <input type="text" id="signupName" class="form-input" placeholder="Enter your full name"
+                            required>
                     </div>
                     <div class="form-group">
                         <label for="signupEmail">Email Address</label>
@@ -2048,11 +2136,13 @@
                     </div>
                     <div class="form-group">
                         <label for="signupPassword">Password</label>
-                        <input type="password" id="signupPassword" class="form-input" placeholder="Create a password (min 6 characters)" required minlength="6">
+                        <input type="password" id="signupPassword" class="form-input"
+                            placeholder="Create a password (min 6 characters)" required minlength="6">
                     </div>
                     <div class="form-group">
                         <label for="signupConfirmPassword">Confirm Password</label>
-                        <input type="password" id="signupConfirmPassword" class="form-input" placeholder="Confirm your password" required>
+                        <input type="password" id="signupConfirmPassword" class="form-input"
+                            placeholder="Confirm your password" required>
                     </div>
                     <button type="submit" id="signupBtn" class="btn-primary">
                         <i class="fas fa-user-plus"></i>
@@ -2062,7 +2152,8 @@
 
                 <!-- Forgot Password Section -->
                 <div id="forgotPasswordSection" class="auth-form hidden">
-                    <p class="text-gray-600 mb-4">Enter your email address and we'll send you a link to reset your password.</p>
+                    <p class="text-gray-600 mb-4">Enter your email address and we'll send you a link to reset your
+                        password.</p>
                     <div class="form-group">
                         <label for="resetEmail">Email Address</label>
                         <input type="email" id="resetEmail" class="form-input" placeholder="Enter your email" required>
@@ -2384,7 +2475,8 @@
 
                 <!-- Save Button -->
                 <div class="flex gap-3 mt-6">
-                    <button type="button" onclick="window.firebaseAuth.closeProfileModal()" class="btn-secondary flex-1">
+                    <button type="button" onclick="window.firebaseAuth.closeProfileModal()"
+                        class="btn-secondary flex-1">
                         Cancel
                     </button>
                     <button type="button" onclick="handleSaveProfile()" id="saveProfileBtn" class="btn-primary flex-1">
@@ -2395,16 +2487,20 @@
 
                 <!-- Referral Program Button -->
                 <div class="mt-4 pt-4 border-t">
-                    <a href="pages/referral.html" class="btn-referral w-full" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: 600; text-decoration: none; transition: all 0.2s ease;">
+                    <a href="pages/referral.html" class="btn-referral w-full"
+                        style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: 600; text-decoration: none; transition: all 0.2s ease;">
                         <i class="fas fa-gift"></i>
                         My Referral Dashboard
-                        <span style="background: rgba(255,255,255,0.2); padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; margin-left: 0.25rem;">Earn 10%</span>
+                        <span
+                            style="background: rgba(255,255,255,0.2); padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; margin-left: 0.25rem;">Earn
+                            10%</span>
                     </a>
                 </div>
 
                 <!-- Logout Button -->
                 <div class="mt-4 pt-4 border-t">
-                    <button type="button" onclick="handleLogout()" class="btn-secondary w-full text-red-600 border-red-200 hover:bg-red-50">
+                    <button type="button" onclick="handleLogout()"
+                        class="btn-secondary w-full text-red-600 border-red-200 hover:bg-red-50">
                         <i class="fas fa-sign-out-alt mr-2"></i>
                         Logout
                     </button>
@@ -2421,15 +2517,15 @@
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const btn = document.getElementById('loginBtn');
-            
+
             btn.classList.add('btn-loading');
             btn.disabled = true;
-            
+
             const result = await window.firebaseAuth.signIn(email, password);
-            
+
             btn.classList.remove('btn-loading');
             btn.disabled = false;
-            
+
             if (result.success) {
                 window.firebaseAuth.closeAuthModal();
             }
@@ -2443,7 +2539,7 @@
             const password = document.getElementById('signupPassword').value;
             const confirmPassword = document.getElementById('signupConfirmPassword').value;
             const btn = document.getElementById('signupBtn');
-            
+
             if (password !== confirmPassword) {
                 Swal.fire({
                     icon: 'error',
@@ -2452,15 +2548,15 @@
                 });
                 return;
             }
-            
+
             btn.classList.add('btn-loading');
             btn.disabled = true;
-            
+
             const result = await window.firebaseAuth.signUp(email, password, name);
-            
+
             btn.classList.remove('btn-loading');
             btn.disabled = false;
-            
+
             if (result.success) {
                 window.firebaseAuth.closeAuthModal();
             }
@@ -2493,9 +2589,9 @@
             const btn = document.getElementById('saveProfileBtn');
             btn.classList.add('btn-loading');
             btn.disabled = true;
-            
+
             await window.firebaseAuth.saveProfile();
-            
+
             btn.classList.remove('btn-loading');
             btn.disabled = false;
         }
@@ -2512,10 +2608,10 @@
                 const nameEl = document.getElementById('userDisplayName');
                 const emailEl = document.getElementById('userDisplayEmail');
                 const avatarEl = document.getElementById('userAvatarLarge');
-                
+
                 if (nameEl) nameEl.textContent = user.displayName || 'User';
                 if (emailEl) emailEl.textContent = user.email || '';
-                
+
                 if (avatarEl) {
                     if (user.photoURL) {
                         avatarEl.innerHTML = `<img src="${user.photoURL}" alt="Profile">`;
@@ -2561,18 +2657,18 @@
         // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const analytics = getAnalytics(app);
-        
+
         // Initialize Firestore
         const { getFirestore, collection, addDoc } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
         const db = getFirestore(app);
-        
+
         // Make Firebase available globally
         window.firebaseApp = app;
         window.firebaseAnalytics = analytics;
         window.firebaseDb = db;
-        
+
         // Helper to save payment to Firestore
-        window.savePaymentToFirebase = async function(paymentData) {
+        window.savePaymentToFirebase = async function (paymentData) {
             try {
                 const docRef = await addDoc(collection(db, "payments"), {
                     ...paymentData,
@@ -2584,16 +2680,17 @@
                 console.error("Firebase save error:", error);
             }
         };
-        
+
         // Helper to track events
-        window.trackFirebaseEvent = function(eventName, params = {}) {
+        window.trackFirebaseEvent = function (eventName, params = {}) {
             import("https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js").then(({ logEvent }) => {
                 logEvent(analytics, eventName, params);
                 console.log("📊 Event:", eventName, params);
             });
         };
-        
+
         console.log('🔥 Firebase initialized successfully');
     </script>
 </body>
+
 </html>

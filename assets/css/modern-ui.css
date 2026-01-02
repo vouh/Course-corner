@@ -13,6 +13,33 @@
         margin: 0 !important;
         padding: 0 !important;
     }
+    
+    /* Prevent container overflow */
+    .features-container {
+        padding: 1rem !important;
+        overflow: hidden;
+    }
+    
+    /* Ensure proper spacing between sections */
+    .features-section {
+        margin-bottom: 2rem !important;
+    }
+    
+    /* Fix any potential text overflow */
+    .section-title,
+    .section-subtitle,
+    .feature-title,
+    .feature-description {
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+    }
+    
+    /* Ensure buttons don't overflow */
+    a[href*="packages"],
+    a[href*="calculator"] {
+        max-width: 100%;
+        box-sizing: border-box;
+    }
 }
 /*
  * Course Corner - Modern UI Design System

@@ -98,6 +98,21 @@
             <div class="cc-calculator-wrapper">
 
 
+
+                <!-- Score Card (Top Position) -->
+                <div class="cc-score-card">
+                    <div class="cc-grade-display-large" id="mainGradeDisplay">-</div>
+                    <div class="cc-score-content">
+                        <span class="cc-score-label">Your Overall Grade</span>
+                        <div class="cc-score-value-wrapper">
+                            <span class="cc-score-value" id="overallGradeDisplay">0</span>
+                            <span class="cc-score-max">/ 84</span>
+                        </div>
+                        <span class="cc-score-note" id="gradeMessage">Calculated from your 7 best subjects</span>
+                    </div>
+                    <input type="hidden" id="overallGrade" value="0">
+                </div>
+
                 <!-- Calculator Form -->
                 <div class="cc-calculator-form">
                     <div class="cc-form-header">
@@ -118,7 +133,7 @@
                             <div class="cc-grade-item">
                                 <label for="english">English</label>
                                 <select id="english" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -136,7 +151,7 @@
                             <div class="cc-grade-item">
                                 <label for="kiswahili">Kiswahili</label>
                                 <select id="kiswahili" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -167,7 +182,7 @@
                             <div class="cc-grade-item">
                                 <label for="mathematics">Mathematics</label>
                                 <select id="mathematics" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -185,7 +200,7 @@
                             <div class="cc-grade-item">
                                 <label for="biology">Biology</label>
                                 <select id="biology" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -203,7 +218,7 @@
                             <div class="cc-grade-item">
                                 <label for="physics">Physics</label>
                                 <select id="physics" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -221,7 +236,7 @@
                             <div class="cc-grade-item">
                                 <label for="chemistry">Chemistry</label>
                                 <select id="chemistry" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -252,7 +267,7 @@
                             <div class="cc-grade-item">
                                 <label for="history">History & Govt</label>
                                 <select id="history" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -270,7 +285,7 @@
                             <div class="cc-grade-item">
                                 <label for="geography">Geography</label>
                                 <select id="geography" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -288,7 +303,7 @@
                             <div class="cc-grade-item">
                                 <label for="cre">CRE</label>
                                 <select id="cre" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -306,7 +321,7 @@
                             <div class="cc-grade-item">
                                 <label for="ire">IRE</label>
                                 <select id="ire" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -324,7 +339,7 @@
                             <div class="cc-grade-item">
                                 <label for="hre">HRE</label>
                                 <select id="hre" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -355,7 +370,7 @@
                             <div class="cc-grade-item">
                                 <label for="agriculture">Agriculture</label>
                                 <select id="agriculture" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -373,7 +388,7 @@
                             <div class="cc-grade-item">
                                 <label for="homeScience">Home Science</label>
                                 <select id="homeScience" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -391,7 +406,7 @@
                             <div class="cc-grade-item">
                                 <label for="business">Business Studies</label>
                                 <select id="business" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -409,7 +424,7 @@
                             <div class="cc-grade-item">
                                 <label for="computerStudies">Computer Studies</label>
                                 <select id="computerStudies" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -427,7 +442,7 @@
                             <div class="cc-grade-item">
                                 <label for="music">Music</label>
                                 <select id="music" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -445,7 +460,7 @@
                             <div class="cc-grade-item">
                                 <label for="aviation">Aviation</label>
                                 <select id="aviation" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -463,7 +478,7 @@
                             <div class="cc-grade-item">
                                 <label for="woodwork">Woodwork</label>
                                 <select id="woodwork" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -481,7 +496,7 @@
                             <div class="cc-grade-item">
                                 <label for="metalWork">Metal Work</label>
                                 <select id="metalWork" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -499,7 +514,7 @@
                             <div class="cc-grade-item">
                                 <label for="buildingConstruction">Building & Const.</label>
                                 <select id="buildingConstruction" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -517,7 +532,7 @@
                             <div class="cc-grade-item">
                                 <label for="artDesign">Art & Design</label>
                                 <select id="artDesign" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -548,7 +563,7 @@
                             <div class="cc-grade-item">
                                 <label for="french">French</label>
                                 <select id="french" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -566,7 +581,7 @@
                             <div class="cc-grade-item">
                                 <label for="german">German</label>
                                 <select id="german" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -584,7 +599,7 @@
                             <div class="cc-grade-item">
                                 <label for="arabic">Arabic</label>
                                 <select id="arabic" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -602,7 +617,7 @@
                             <div class="cc-grade-item">
                                 <label for="signLanguage">Sign Language</label>
                                 <select id="signLanguage" class="cc-grade-select grade-select">
-                                    <option value="">Clear</option>
+                                    <option value="">Select Grade</option>
                                     <option value="12">A</option>
                                     <option value="11">A-</option>
                                     <option value="10">B+</option>
@@ -618,20 +633,7 @@
                             </div>
                         </div>
 
-                        <!-- Score Display Card (Moved) -->
-                        <div class="cc-score-card">
-                            <div class="cc-grade-display-large" id="mainGradeDisplay">-</div>
-                            <div class="cc-score-content">
-                                <span class="cc-score-label">Your Overall Grade</span>
-                                <div class="cc-score-value-wrapper">
-                                    <span class="cc-score-value" id="overallGradeDisplay">0</span>
-                                    <span class="cc-score-max">/ 84</span>
-                                </div>
-                                <span class="cc-score-note" id="gradeMessage">Calculated from your 7 best
-                                    subjects</span>
-                            </div>
-                            <input type="hidden" id="overallGrade" value="0">
-                        </div>
+
 
                         <!-- Package Selector Card -->
                         <div class="cc-package-selector-wrapper">
@@ -644,26 +646,26 @@
                                 <div class="cc-package-dropdown-container">
                                     <label for="packageSelect">Choose a service package:</label>
                                     <select id="packageSelect" class="cc-package-select">
-                                        <option value="" data-amount="0" data-description="">Select a package...
+                                        <option value="" data-amount="0" data-description="">Select a Service...
                                         </option>
                                         <option value="gold-package" data-amount="600"
-                                            data-description="All-in-one + Expert Consultation">Gold Package - KES 600
-                                        </option>
+                                            data-description="All-in-one + Expert Consultation">Gold Package (Complete
+                                            Bundle)</option>
                                         <option value="silver-package" data-amount="500"
-                                            data-description="University Courses + Cluster Points">Silver Package - KES
-                                            500</option>
+                                            data-description="University Courses + Cluster Points">Silver Package
+                                            (Courses + Points)</option>
                                         <option value="bronze-package" data-amount="400"
-                                            data-description="Universities & Courses List">Bronze Package - KES 400
-                                        </option>
+                                            data-description="Universities & Courses List">Bronze Package (Universities
+                                            List)</option>
                                         <option value="point-and-courses" data-amount="300"
-                                            data-description="Cluster Points & Eligible Courses">Premium Package - KES
-                                            300</option>
+                                            data-description="Cluster Points & Eligible Courses">Premium Package (Points
+                                            & Courses)</option>
                                         <option value="courses-only" data-amount="200"
-                                            data-description="View Eligible Courses Only">Standard Package - KES 200
-                                        </option>
+                                            data-description="View Eligible Courses Only">Standard Package (Courses
+                                            Only)</option>
                                         <option value="calculate-cluster-points" data-amount="100"
-                                            data-description="Calculate Your Cluster Points">Starter Package - KES 100
-                                        </option>
+                                            data-description="Calculate Your Cluster Points">Starter Package (Cluster
+                                            Points)</option>
                                     </select>
                                 </div>
 

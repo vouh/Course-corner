@@ -632,19 +632,17 @@ html {
     box-shadow: var(--cc-shadow-xl), var(--cc-shadow-glow);
 }
 
-.cc-score-icon {
+.cc-grade-display-large {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 80px;
-    height: 80px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: var(--cc-radius-xl);
-    flex-shrink: 0;
-}
-
-.cc-score-icon i {
-    font-size: 2rem;
+    font-size: 4rem;
+    font-weight: 800;
+    line-height: 1;
+    color: white;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 80px;
+    text-align: center;
 }
 
 .cc-score-content {
@@ -1207,14 +1205,9 @@ html {
         text-align: center;
     }
 
-    .cc-score-icon {
-        width: 70px;
-        height: 70px;
-        margin: 0 auto var(--cc-space-md);
-    }
-
-    .cc-score-icon span {
-        font-size: 2rem !important;
+    .cc-grade-display-large {
+        font-size: 3.5rem;
+        margin-bottom: var(--cc-space-sm);
     }
 
     .cc-score-value {

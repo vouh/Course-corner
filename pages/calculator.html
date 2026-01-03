@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Calculate your KCSE cluster points and discover eligible university courses with Course Corner's accurate calculator.">
+    <meta name="description"
+        content="Calculate your KCSE cluster points and discover eligible university courses with Course Corner's accurate calculator.">
     <title>Cluster Points Calculator - Course Corner</title>
-    
+
     <!-- Scripts -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="../assets/js/firebase-config.js" type="module"></script>
@@ -15,21 +17,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../assets/js/paymentHandler.js"></script>
-    
+
     <!-- Styles -->
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/modern-ui.css">
     <link rel="stylesheet" href="../assets/css/auth.css">
     <link rel="icon" type="image/x-icon" href="../assets/images/1.png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
     <!-- Firebase Auth -->
     <script src="../assets/js/firebase-auth.js" defer></script>
-    
+
     <!-- Custom Select for Mobile -->
     <script src="../assets/js/custom-select.js" defer></script>
 </head>
+
 <body class="cc-body">
     <!-- Modern Navigation -->
     <header class="cc-header" id="mainHeader">
@@ -38,7 +42,7 @@
                 <img src="../assets/images/logo.png" alt="Course Corner logo" />
                 <span>Course Corner</span>
             </a>
-            
+
             <nav class="cc-nav-desktop">
                 <a href="../index.html" class="cc-nav-link">Home</a>
                 <a href="about.html" class="cc-nav-link">About</a>
@@ -49,7 +53,7 @@
                 <a href="guide.html" class="cc-nav-link">Guide</a>
                 <a href="contact.html" class="cc-nav-link">Contact</a>
             </nav>
-            
+
             <div class="cc-nav-actions">
                 <button id="authBtn" class="cc-btn-login" onclick="window.firebaseAuth?.openAuthModal()">
                     <i class="fas fa-user"></i>
@@ -60,14 +64,14 @@
                     <span>Profile</span>
                 </button>
             </div>
-            
+
             <button class="cc-mobile-toggle" id="mobileMenuBtn" aria-label="Toggle menu">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
         </div>
-        
+
         <!-- Mobile Menu -->
         <div class="cc-mobile-menu" id="mobileMenu">
             <nav class="cc-mobile-nav">
@@ -94,15 +98,14 @@
             <div class="cc-calculator-wrapper">
                 <!-- Score Display Card -->
                 <div class="cc-score-card">
-                    <div class="cc-score-icon">
-                        <i class="fas fa-chart-line"></i>
+                    <div class="cc-score-icon" id="scoreIconDisplay">
+                        <span style="font-size: 2.5rem; font-weight: 800; color: white;">-</span>
                     </div>
                     <div class="cc-score-content">
                         <span class="cc-score-label">Your Overall Grade</span>
                         <div class="cc-score-value-wrapper">
                             <span class="cc-score-value" id="overallGradeDisplay">0</span>
                             <span class="cc-score-max">/ 84</span>
-                            <span class="cc-grade-letter" id="gradeLetter" style="margin-left: 12px; font-size: 1.5rem; font-weight: 700; background: rgba(255,255,255,0.2); padding: 4px 12px; border-radius: 8px;"></span>
                         </div>
                         <span class="cc-score-note" id="gradeMessage">Calculated from your 7 best subjects</span>
                     </div>
@@ -626,67 +629,99 @@
                                     <option value="3">D</option>
                                     <option value="2">D-</option>
                                     <option value="1">E</option>
-                                </select>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Action Buttons -->
-                    <div class="cc-action-buttons">
-                        <button id="calculateBtn" class="cc-btn-primary payment-btn" data-category="calculate-cluster-points" data-amount="1">
-                            <i class="fas fa-calculator"></i>
-                            <span>Calculate Points</span>
-                            <span class="cc-btn-price">KES 1</span>
-                        </button>
-                        
-                        <button id="calculateBtn2" class="cc-btn-secondary payment-btn" data-category="courses-only" data-amount="1">
-                            <i class="fas fa-book"></i>
-                            <span>Courses Only</span>
-                            <span class="cc-btn-price">KES 1</span>
-                        </button>
-                        
-                        <button id="calculateBtn3" class="cc-btn-featured payment-btn" data-category="point-and-courses" data-amount="160">
-                            <span class="cc-popular-badge">Popular</span>
-                            <i class="fas fa-star"></i>
-                            <span>Points & Courses</span>
-                            <span class="cc-btn-price">KES 160</span>
-                        </button>
-                    </div>
+                        <!-- Package Selector Card -->
+                        <div class="cc-package-selector-wrapper">
+                            <div class="cc-package-selector-card">
+                                <div class="cc-package-header">
+                                    <i class="fas fa-box-open"></i>
+                                    <h3>Select Your Package</h3>
+                                </div>
 
-                    <!-- Payment Status -->
-                    <div id="paymentStatus" class="cc-payment-status hidden">
-                        <div class="cc-payment-content">
-                            <div class="cc-payment-spinner"></div>
-                            <div>
-                                <h4>Processing Payment</h4>
-                                <p id="paymentMessage">Please wait while we process your payment...</p>
+                                <div class="cc-package-dropdown-container">
+                                    <label for="packageSelect">Choose a service package:</label>
+                                    <select id="packageSelect" class="cc-package-select">
+                                        <option value="" data-amount="0" data-description="">Select a package...
+                                        </option>
+                                        <option value="gold-package" data-amount="600"
+                                            data-description="All-in-one + Expert Consultation">Gold Package - KES 600
+                                        </option>
+                                        <option value="silver-package" data-amount="500"
+                                            data-description="University Courses + Cluster Points">Silver Package - KES
+                                            500</option>
+                                        <option value="bronze-package" data-amount="400"
+                                            data-description="Universities & Courses List">Bronze Package - KES 400
+                                        </option>
+                                        <option value="point-and-courses" data-amount="300"
+                                            data-description="Cluster Points & Eligible Courses">Premium Package - KES
+                                            300</option>
+                                        <option value="courses-only" data-amount="200"
+                                            data-description="View Eligible Courses Only">Standard Package - KES 200
+                                        </option>
+                                        <option value="calculate-cluster-points" data-amount="100"
+                                            data-description="Calculate Your Cluster Points">Starter Package - KES 100
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <div class="cc-package-display" id="packageDisplay">
+                                    <div class="cc-package-info">
+                                        <div class="cc-package-service">
+                                            <span class="cc-service-label">Service:</span>
+                                            <span class="cc-service-name" id="serviceName">Select a package above</span>
+                                        </div>
+                                        <div class="cc-package-cost">
+                                            <span class="cc-cost-label">Cost:</span>
+                                            <span class="cc-cost-amount" id="costAmount">KES 0</span>
+                                        </div>
+                                    </div>
+                                    <button id="payButton" class="cc-btn-pay payment-btn" disabled data-category=""
+                                        data-amount="0">
+                                        <i class="fas fa-credit-card"></i>
+                                        <span>Click to Pay</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <!-- Results Section -->
-                    <div id="results" class="cc-results hidden">
-                        <div class="cc-results-header">
-                            <i class="fas fa-trophy"></i>
-                            <h3>Your Results</h3>
-                        </div>
-                        <div class="cc-results-body">
-                            <p id="clusterPoints" class="cc-cluster-points">
-                                Cluster Points: <span>0</span>
-                            </p>
-                            <div id="eligibleCourses" class="cc-eligible-courses">
-                                <h4><i class="fas fa-graduation-cap"></i> Eligible Courses</h4>
-                                <ul id="coursesList"></ul>
+                        <!-- Payment Status -->
+                        <div id="paymentStatus" class="cc-payment-status hidden">
+                            <div class="cc-payment-content">
+                                <div class="cc-payment-spinner"></div>
+                                <div>
+                                    <h4>Processing Payment</h4>
+                                    <p id="paymentMessage">Please wait while we process your payment...</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="cc-results-disclaimer">
-                            <i class="fas fa-info-circle"></i>
-                            <p>Note: Due to KUCCPS standardization, actual cluster points may vary by ±2.5 points. Use these results as a close approximation.</p>
+
+                        <!-- Results Section -->
+                        <div id="results" class="cc-results hidden">
+                            <div class="cc-results-header">
+                                <i class="fas fa-trophy"></i>
+                                <h3>Your Results</h3>
+                            </div>
+                            <div class="cc-results-body">
+                                <p id="clusterPoints" class="cc-cluster-points">
+                                    Cluster Points: <span>0</span>
+                                </p>
+                                <div id="eligibleCourses" class="cc-eligible-courses">
+                                    <h4><i class="fas fa-graduation-cap"></i> Eligible Courses</h4>
+                                    <ul id="coursesList"></ul>
+                                </div>
+                            </div>
+                            <div class="cc-results-disclaimer">
+                                <i class="fas fa-info-circle"></i>
+                                <p>Note: Due to KUCCPS standardization, actual cluster points may vary by ±2.5 points.
+                                    Use
+                                    these results as a close approximation.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
     </section>
 
     <!-- Modern Footer -->
@@ -704,7 +739,7 @@
                         <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
                     </div>
                 </div>
-                
+
                 <div class="cc-footer-links">
                     <h4>Quick Links</h4>
                     <ul>
@@ -714,7 +749,7 @@
                         <li><a href="application-process.html">Application Process</a></li>
                     </ul>
                 </div>
-                
+
                 <div class="cc-footer-links">
                     <h4>Resources</h4>
                     <ul>
@@ -724,7 +759,7 @@
                         <li><a href="terms-of-service.html">Terms of Service</a></li>
                     </ul>
                 </div>
-                
+
                 <div class="cc-footer-contact">
                     <h4>Contact Us</h4>
                     <ul>
@@ -734,7 +769,7 @@
                     </ul>
                 </div>
             </div>
-            
+
             <div class="cc-footer-bottom">
                 <p>&copy; <span id="currentYear"></span> Course Corner. All rights reserved.</p>
             </div>
@@ -743,30 +778,30 @@
 
     <script>
         document.getElementById('currentYear').textContent = new Date().getFullYear();
-        
+
         // Header scroll effect
         const header = document.getElementById('mainHeader');
         window.addEventListener('scroll', () => {
             header.classList.toggle('scrolled', window.scrollY > 50);
         });
-        
+
         // Mobile menu toggle
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
         let isMenuOpen = false;
-        
+
         function openMobileMenu() {
             isMenuOpen = true;
             mobileMenuBtn.classList.add('active');
             mobileMenu.classList.add('show');
         }
-        
+
         function closeMobileMenu() {
             isMenuOpen = false;
             mobileMenuBtn.classList.remove('active');
             mobileMenu.classList.remove('show');
         }
-        
+
         function toggleMobileMenu() {
             if (isMenuOpen) {
                 closeMobileMenu();
@@ -774,41 +809,41 @@
                 openMobileMenu();
             }
         }
-        
+
         mobileMenuBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             toggleMobileMenu();
         });
-        
+
         // Close mobile menu when clicking a link
         mobileMenu.querySelectorAll('a, button').forEach(link => {
             link.addEventListener('click', () => {
                 closeMobileMenu();
             });
         });
-        
+
         // Close mobile menu when clicking outside
         document.addEventListener('click', (e) => {
             if (isMenuOpen && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
                 closeMobileMenu();
             }
         });
-        
+
         // Close mobile menu on resize to desktop
         window.addEventListener('resize', () => {
             if (window.innerWidth >= 1024 && isMenuOpen) {
                 closeMobileMenu();
             }
         });
-        
+
         // Close mobile menu on escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && isMenuOpen) {
                 closeMobileMenu();
             }
         });
-        
+
         // Grade details function
         function getGradeDetails(points) {
             if (points >= 81 && points <= 84) return { grade: 'A', message: '🎉 Excellent! You have a strong foundation for top university courses.' };
@@ -824,10 +859,10 @@
             if (points >= 11 && points <= 17) return { grade: 'D-', message: '📝 Consider certificate programs.' };
             return { grade: 'E', message: '💡 Look into skill-based training programs.' };
         }
-        
+
         // Calculate total points
         document.querySelectorAll('.grade-select').forEach(select => {
-            select.addEventListener('change', function() {
+            select.addEventListener('change', function () {
                 // Toggle has-value class for styling
                 if (this.value) {
                     this.classList.add('has-value');
@@ -837,11 +872,11 @@
                 calculateTotalPoints();
             });
         });
-        
+
         function calculateTotalPoints() {
             let total = 0;
             const scores = {};
-            
+
             document.querySelectorAll('.grade-select').forEach(select => {
                 if (select.value) {
                     scores[select.id] = parseInt(select.value);
@@ -851,7 +886,7 @@
             const totalSubjectsSelected = Object.keys(scores).length;
             const gradeLetterEl = document.getElementById('gradeLetter');
             const gradeMessageEl = document.getElementById('gradeMessage');
-            
+
             if (totalSubjectsSelected < 7) {
                 document.getElementById('overallGrade').value = "";
                 document.getElementById('overallGradeDisplay').textContent = "0";
@@ -873,7 +908,7 @@
             const languageScores = languages
                 .filter(lang => scores[lang])
                 .map(lang => ({ subject: lang, score: scores[lang] }));
-            
+
             if (languageScores.length === 0) {
                 document.getElementById('overallGrade').value = "";
                 document.getElementById('overallGradeDisplay').textContent = "0";
@@ -882,14 +917,14 @@
                 return;
             }
 
-            const bestLanguage = languageScores.reduce((best, current) => 
+            const bestLanguage = languageScores.reduce((best, current) =>
                 current.score > best.score ? current : best
             );
             total += bestLanguage.score;
 
             const remainingSubjects = Object.entries(scores)
-                .filter(([subject]) => 
-                    subject !== 'mathematics' && 
+                .filter(([subject]) =>
+                    subject !== 'mathematics' &&
                     subject !== bestLanguage.subject
                 )
                 .map(([subject, score]) => ({ subject, score }))
@@ -902,10 +937,13 @@
 
             document.getElementById('overallGrade').value = total;
             document.getElementById('overallGradeDisplay').textContent = total;
-            
+
             // Update grade letter and message
             const gradeInfo = getGradeDetails(total);
-            gradeLetterEl.textContent = gradeInfo.grade;
+            const scoreIconDisplay = document.getElementById('scoreIconDisplay');
+            if (scoreIconDisplay) {
+                scoreIconDisplay.innerHTML = `<span style="font-size: 2.5rem; font-weight: 800; color: white;">${gradeInfo.grade}</span>`;
+            }
             gradeMessageEl.textContent = gradeInfo.message;
         }
 
@@ -923,16 +961,16 @@
             const english = document.getElementById('english')?.value;
             const kiswahili = document.getElementById('kiswahili')?.value;
             const mathematics = document.getElementById('mathematics')?.value;
-            
+
             if (!english) errors.push('English');
             if (!kiswahili) errors.push('Kiswahili');
             if (!mathematics) errors.push('Mathematics');
-            
+
             let totalSubjects = 0;
             document.querySelectorAll('.grade-select').forEach(select => {
                 if (select.value) totalSubjects++;
             });
-            
+
             return {
                 valid: errors.length === 0 && totalSubjects >= 7,
                 missingCompulsory: errors,
@@ -953,7 +991,7 @@
         // Main payment processing function
         async function processPayment(category, amount) {
             const validation = validateSubjects();
-            
+
             if (!validation.valid) {
                 let errorHtml = '<div class="text-left">';
                 if (validation.missingCompulsory.length > 0) {
@@ -968,7 +1006,7 @@
                     errorHtml += `<p class="text-gray-600">You need <strong>${validation.needMore} more subject(s)</strong> (minimum 7 required).</p>`;
                 }
                 errorHtml += '</div>';
-                
+
                 Swal.fire({
                     icon: 'warning',
                     title: 'Please Complete Your Grades',
@@ -1042,16 +1080,16 @@
 
                 // Poll with timeout
                 const pollPromise = window.paymentHandler.pollPaymentStatus(40, 3000);
-                const timeoutPromise = new Promise((_, reject) => 
+                const timeoutPromise = new Promise((_, reject) =>
                     setTimeout(() => reject(new Error('Payment verification timed out. Please check your M-Pesa messages.')), 130000)
                 );
-                
+
                 await Promise.race([pollPromise, timeoutPromise]);
-                
+
                 if (cancelled) {
                     return false;
                 }
-                
+
                 await window.paymentHandler.approveAccess();
 
                 // Auto-close and show results
@@ -1076,7 +1114,7 @@
             } catch (error) {
                 // Close any existing dialogs first
                 Swal.close();
-                
+
                 await Swal.fire({
                     icon: 'error',
                     title: 'Payment Failed',
@@ -1096,7 +1134,7 @@
         // Show results after successful payment
         function showResultsAfterPayment(category) {
             console.log('showResultsAfterPayment called with category:', category);
-            
+
             // Call the calculate function
             if (typeof window.calculateClusterPoints === 'function') {
                 console.log('Calling window.calculateClusterPoints');
@@ -1104,14 +1142,14 @@
             } else {
                 console.error('calculateClusterPoints not found on window');
             }
-            
+
             // Show results div
             const resultsDiv = document.getElementById('results');
             if (resultsDiv) {
                 console.log('Showing results div');
                 resultsDiv.classList.remove('hidden');
                 resultsDiv.style.display = 'block';
-                
+
                 // Scroll to results after a brief delay
                 setTimeout(() => {
                     resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1122,29 +1160,59 @@
         }
 
         // Initialize payment button handlers
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
+            // Package selector handler
+            const packageSelect = document.getElementById('packageSelect');
+            const serviceName = document.getElementById('serviceName');
+            const costAmount = document.getElementById('costAmount');
+            const payButton = document.getElementById('payButton');
+
+            if (packageSelect) {
+                packageSelect.addEventListener('change', function () {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const category = selectedOption.value;
+                    const amount = selectedOption.getAttribute('data-amount');
+                    const description = selectedOption.getAttribute('data-description');
+
+                    if (category && amount) {
+                        serviceName.textContent = description;
+                        costAmount.textContent = `KES ${amount}`;
+                        payButton.disabled = false;
+                        payButton.setAttribute('data-category', category);
+                        payButton.setAttribute('data-amount', amount);
+                    } else {
+                        serviceName.textContent = 'Select a package above';
+                        costAmount.textContent = 'KES 0';
+                        payButton.disabled = true;
+                        payButton.setAttribute('data-category', '');
+                        payButton.setAttribute('data-amount', '0');
+                    }
+                });
+            }
+
+            // Payment button handler
             const paymentBtns = document.querySelectorAll('.payment-btn');
-            
+
             paymentBtns.forEach(btn => {
                 const newBtn = btn.cloneNode(true);
                 btn.parentNode.replaceChild(newBtn, btn);
-                
-                newBtn.addEventListener('click', async function(e) {
+
+                newBtn.addEventListener('click', async function (e) {
                     e.preventDefault();
                     e.stopPropagation();
-                    
+
                     const category = this.getAttribute('data-category');
                     const amount = this.getAttribute('data-amount');
-                    
+
                     console.log('Payment button clicked:', category, amount);
-                    
+
                     const paymentSuccess = await processPayment(category, amount);
                     if (paymentSuccess) {
                         showResultsAfterPayment(category);
                     }
                 });
             });
-            
+
             console.log('Payment handlers initialized for', paymentBtns.length, 'buttons');
         });
     </script>
@@ -1177,10 +1245,12 @@
                     </div>
                     <div class="form-group">
                         <label for="loginPassword">Password</label>
-                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password"
+                            required>
                     </div>
                     <div class="forgot-password-link">
-                        <a class="auth-link text-sm" onclick="window.firebaseAuth.switchAuthMode('forgot')">Forgot password?</a>
+                        <a class="auth-link text-sm" onclick="window.firebaseAuth.switchAuthMode('forgot')">Forgot
+                            password?</a>
                     </div>
                     <button type="submit" id="loginBtn" class="btn-primary">
                         <i class="fas fa-sign-in-alt"></i>
@@ -1192,7 +1262,8 @@
                 <form id="signupForm" class="auth-form hidden" onsubmit="handleSignup(event)">
                     <div class="form-group">
                         <label for="signupName">Full Name</label>
-                        <input type="text" id="signupName" class="form-input" placeholder="Enter your full name" required>
+                        <input type="text" id="signupName" class="form-input" placeholder="Enter your full name"
+                            required>
                     </div>
                     <div class="form-group">
                         <label for="signupEmail">Email Address</label>
@@ -1200,11 +1271,13 @@
                     </div>
                     <div class="form-group">
                         <label for="signupPassword">Password</label>
-                        <input type="password" id="signupPassword" class="form-input" placeholder="Create a password (min 6 characters)" required minlength="6">
+                        <input type="password" id="signupPassword" class="form-input"
+                            placeholder="Create a password (min 6 characters)" required minlength="6">
                     </div>
                     <div class="form-group">
                         <label for="signupConfirmPassword">Confirm Password</label>
-                        <input type="password" id="signupConfirmPassword" class="form-input" placeholder="Confirm your password" required>
+                        <input type="password" id="signupConfirmPassword" class="form-input"
+                            placeholder="Confirm your password" required>
                     </div>
                     <button type="submit" id="signupBtn" class="btn-primary">
                         <i class="fas fa-user-plus"></i>
@@ -1214,7 +1287,8 @@
 
                 <!-- Forgot Password Section -->
                 <div id="forgotPasswordSection" class="auth-form hidden">
-                    <p class="text-gray-600 mb-4">Enter your email address and we'll send you a link to reset your password.</p>
+                    <p class="text-gray-600 mb-4">Enter your email address and we'll send you a link to reset your
+                        password.</p>
                     <div class="form-group">
                         <label for="resetEmail">Email Address</label>
                         <input type="email" id="resetEmail" class="form-input" placeholder="Enter your email" required>
@@ -1253,14 +1327,14 @@
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const btn = document.getElementById('loginBtn');
-            
+
             try {
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
-                
+
                 await window.firebaseAuth.login(email, password);
                 window.firebaseAuth.closeAuthModal();
-                
+
                 Swal.fire({
                     icon: 'success',
                     title: 'Welcome back!',
@@ -1288,7 +1362,7 @@
             const password = document.getElementById('signupPassword').value;
             const confirmPassword = document.getElementById('signupConfirmPassword').value;
             const btn = document.getElementById('signupBtn');
-            
+
             if (password !== confirmPassword) {
                 Swal.fire({
                     icon: 'error',
@@ -1297,14 +1371,14 @@
                 });
                 return;
             }
-            
+
             try {
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
-                
+
                 await window.firebaseAuth.signup(email, password, name);
                 window.firebaseAuth.closeAuthModal();
-                
+
                 Swal.fire({
                     icon: 'success',
                     title: 'Account Created!',
@@ -1329,7 +1403,7 @@
             try {
                 await window.firebaseAuth.signInWithGoogle();
                 window.firebaseAuth.closeAuthModal();
-                
+
                 Swal.fire({
                     icon: 'success',
                     title: 'Welcome!',
@@ -1349,7 +1423,7 @@
         // Handle password reset
         async function handleResetPassword() {
             const email = document.getElementById('resetEmail').value;
-            
+
             if (!email) {
                 Swal.fire({
                     icon: 'warning',
@@ -1358,7 +1432,7 @@
                 });
                 return;
             }
-            
+
             try {
                 await window.firebaseAuth.resetPassword(email);
                 Swal.fire({
@@ -1390,4 +1464,5 @@
         <span>Earn 10%</span>
     </a>
 </body>
+
 </html>

@@ -12,14 +12,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Get all grade select dropdowns
     const gradeSelects = document.querySelectorAll('.grade-select');
     
-    // For each select dropdown
-    gradeSelects.forEach(select => {
-        select.addEventListener('change', function(e) {
-            if (e.target.value === '' && e.target.selectedIndex === 1) {
-                e.target.selectedIndex = 0;
-            }
-        });
-    });
+
 });
 
 function initializeGradeSelects() {
@@ -43,17 +36,11 @@ function initializeGradeSelects() {
         // Clear existing options
         select.innerHTML = '';
         
-        // Add default "Select grade" option
+        // Add default "Clear Grade" option
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
-        defaultOption.textContent = 'Select grade';
+        defaultOption.textContent = 'Clear Grade';
         select.appendChild(defaultOption);
-        
-        // Add "Clear selection" option - only once
-        const clearOption = document.createElement('option');
-        clearOption.value = '';
-        clearOption.textContent = 'Clear selection';
-        select.appendChild(clearOption);
         
         // Add grade options
         grades.forEach(grade => {

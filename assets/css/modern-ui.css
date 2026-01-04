@@ -1205,6 +1205,10 @@ html {
         text-align: center;
     }
 
+    .cc-score-value-wrapper {
+        justify-content: center;
+    }
+
     .cc-grade-display-large {
         font-size: 3.5rem;
         margin-bottom: var(--cc-space-sm);
@@ -1274,8 +1278,9 @@ html {
 
     .cc-package-select {
         font-size: 0.875rem;
-        padding: 0.625rem 0.875rem;
+        padding: 0.875rem 1rem;
         padding-right: 35px;
+        height: auto;
     }
 
     .cc-service-name {
@@ -1288,7 +1293,8 @@ html {
 
     .cc-btn-pay {
         font-size: 1rem;
-        padding: 0.875rem;
+        padding: 0.875rem 1rem;
+        height: auto;
     }
 }
 

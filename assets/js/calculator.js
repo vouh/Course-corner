@@ -1,47 +1,47 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Initialize grade selects
     initializeGradeSelects();
-    
+
     // NOTE: Payment buttons are handled by paymentHandler.js
     // Direct calculation is ONLY done after payment is confirmed
     // Do NOT add click listener to calculateBtn here
-    
+
     // Export calculateClusterPoints to window for payment handler
     window.calculateClusterPoints = calculateClusterPoints;
-    
+
     // Get all grade select dropdowns
     const gradeSelects = document.querySelectorAll('.grade-select');
-    
+
 
 });
 
 function initializeGradeSelects() {
     const gradeSelects = document.querySelectorAll('.grade-select');
     const grades = [
-        {value: '12', text: 'A'},
-        {value: '11', text: 'A-'},
-        {value: '10', text: 'B+'},
-        {value: '9', text: 'B'},
-        {value: '8', text: 'B-'},
-        {value: '7', text: 'C+'},
-        {value: '6', text: 'C'},
-        {value: '5', text: 'C-'},
-        {value: '4', text: 'D+'},
-        {value: '3', text: 'D'},
-        {value: '2', text: 'D-'},
-        {value: '1', text: 'E'}
+        { value: '12', text: 'A' },
+        { value: '11', text: 'A-' },
+        { value: '10', text: 'B+' },
+        { value: '9', text: 'B' },
+        { value: '8', text: 'B-' },
+        { value: '7', text: 'C+' },
+        { value: '6', text: 'C' },
+        { value: '5', text: 'C-' },
+        { value: '4', text: 'D+' },
+        { value: '3', text: 'D' },
+        { value: '2', text: 'D-' },
+        { value: '1', text: 'E' }
     ];
 
     gradeSelects.forEach(select => {
         // Clear existing options
         select.innerHTML = '';
-        
-        // Add default "Clear Grade" option
+
+        // Add default "Select Grade" option
         const defaultOption = document.createElement('option');
         defaultOption.value = '';
-        defaultOption.textContent = 'Clear Grade';
+        defaultOption.textContent = 'Select Grade';
         select.appendChild(defaultOption);
-        
+
         // Add grade options
         grades.forEach(grade => {
             const option = document.createElement('option');
@@ -65,32 +65,32 @@ function calculateClusterPoints() {
     // Get all subject scores
     const scores = getAllSubjectScores();
     console.log('Scores:', scores);
-    
+
     // Calculate cluster points for all clusters (1-20)
     const allClusterPoints = {};
     for (let i = 1; i <= 20; i++) {
         // Get cluster subjects for this cluster
         const clusterSubjects = selectClusterSubjects(scores, i);
-        
+
         // Skip if cluster subjects is null
         if (!clusterSubjects) {
             console.log(`Skipping cluster ${i} due to missing required subjects`);
             allClusterPoints[`Cluster ${i}`] = 0;
             continue;
         }
-        
+
         // Calculate r (sum of cluster subjects)
         const r = Object.values(clusterSubjects).reduce((sum, subject) => sum + subject.score, 0);
         console.log(`Cluster ${i} - r:`, r);
-        
+
         // Get t (total KCSE points)
         const t = parseInt(document.getElementById('overallGrade').value);
         console.log(`Cluster ${i} - t:`, t);
-        
+
         // Calculate final cluster points using the formula: C = √((r/48) × (t/84)) × 48
-        allClusterPoints[`Cluster ${i}`] = (Math.sqrt((r/48) * (t/84)) * 48)-2.785;
+        allClusterPoints[`Cluster ${i}`] = (Math.sqrt((r / 48) * (t / 84)) * 48) - 2.785;
     }
-    
+
     console.log('All cluster points:', allClusterPoints);
     // Display results
     displayResults(allClusterPoints);
@@ -98,16 +98,16 @@ function calculateClusterPoints() {
 
 function validateInputs() {
     const errors = [];
-    
+
     // Check compulsory subjects
     if (!document.getElementById('kiswahili').value) errors.push("Kiswahili is required");
     if (!document.getElementById('mathematics').value) errors.push("Mathematics is required");
-    
+
     // Check at least one science subject
     const sciences = ['biology', 'physics', 'chemistry'];
     const hasScience = sciences.some(subject => document.getElementById(subject).value);
     if (!hasScience) errors.push("At least one science subject is required");
-    
+
     // Check overall grade
     const overallGrade = document.getElementById('overallGrade').value;
     if (!overallGrade) {
@@ -115,7 +115,7 @@ function validateInputs() {
     } else if (overallGrade < 0 || overallGrade > 84) {
         errors.push("Overall grade must be between 0 and 84");
     }
-    
+
     // Display errors only once
     if (errors.length > 0) {
         alert(errors.join("\n"));
@@ -134,7 +134,7 @@ function getAllSubjectScores() {
         'computerStudies', 'aviation', 'woodwork', 'metalWork',
         'buildingConstruction', 'artDesign'
     ];
-    
+
     const scores = {};
     subjects.forEach(subject => {
         const element = document.getElementById(subject);
@@ -150,9 +150,9 @@ const SUBJECT_GROUPS = {
     GROUP_II: ['mathematics', 'biology', 'physics', 'chemistry'],
     GROUP_III: ['history', 'geography', 'cre', 'ire', 'hre'],
     GROUP_IV: [
-        'agriculture', 
-        'homeScience', 
-        'business', 
+        'agriculture',
+        'homeScience',
+        'business',
         'music',
         'computerStudies',
         'aviation',
@@ -173,7 +173,7 @@ function selectClusterSubjects(scores, clusterNum) {
         return true;
     };
 
-    switch(clusterNum) {
+    switch (clusterNum) {
         case 1:
             if (!validateRequiredSubject(scores.mathematics, 'Mathematics', 1)) {
                 return null;
@@ -340,7 +340,7 @@ function getBestScore(subjects, scores, excludeFirst = false) {
             score: scores[subject] || 0
         }))
         .sort((a, b) => b.score - a.score);
-    
+
     return excludeFirst ? subjectScores[1] || subjectScores[0] : subjectScores[0];
 }
 
@@ -357,14 +357,14 @@ function getBestRemainingScore(scores, excludeSubjects) {
 function displayResults(allClusterPoints) {
     // Extract the HTML generation into a separate function
     const clusterPointsHTML = generateClusterPointsHTML(allClusterPoints);
-    
+
     // If called directly (from first button), display in results div
     const resultsDiv = document.getElementById('results');
     if (resultsDiv) {
         resultsDiv.classList.remove('hidden');
         resultsDiv.innerHTML = clusterPointsHTML;
     }
-    
+
     // Store the results for reuse
     window.lastClusterPoints = allClusterPoints;
     return clusterPointsHTML;
@@ -373,7 +373,7 @@ function displayResults(allClusterPoints) {
 // New function to generate cluster points HTML
 function generateClusterPointsHTML(allClusterPoints) {
     const overallGrade = parseInt(document.getElementById('overallGrade').value);
-    
+
     // Check if overall grade is below C+ (45 points)
     if (overallGrade < 45) {
         return `
@@ -401,15 +401,15 @@ function generateClusterPointsHTML(allClusterPoints) {
             </div>
         `;
     }
-    
+
     // Generate cluster points cards HTML
     let clusterCardsHTML = `
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             ${Object.entries(allClusterPoints).map(([cluster, points]) => {
-                const percentage = (points / 48) * 100;
-                const isEligible = points >= 45;
-                
-                return `
+        const percentage = (points / 48) * 100;
+        const isEligible = points >= 45;
+
+        return `
                     <div class="cluster-card bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-all fade-in-up">
                         <h4 class="text-xl font-bold mb-2">${cluster}</h4>
                         <div class="relative pt-1">
@@ -428,7 +428,7 @@ function generateClusterPointsHTML(allClusterPoints) {
                         </div>
                     </div>
                 `;
-            }).join('')}
+    }).join('')}
         </div>
         <div class="mt-6 space-y-4">
             <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-gray-600">
@@ -436,6 +436,6 @@ function generateClusterPointsHTML(allClusterPoints) {
             </div>
         </div>
     `;
-    
+
     return clusterCardsHTML;
 } 

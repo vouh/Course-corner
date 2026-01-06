@@ -1158,6 +1158,13 @@ html {
     }
 }
 
+@media (max-width: 640px) {
+    .cc-btn-glow {
+        padding: 0.5rem 1.25rem;
+        font-size: 0.9rem;
+    }
+}
+
 .cc-package-display {
     background: white;
     border-radius: var(--cc-radius-xl);

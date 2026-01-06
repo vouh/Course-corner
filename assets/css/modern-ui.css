@@ -1310,39 +1310,78 @@ html {
         text-overflow: ellipsis;
     }
 
-    /* Package selector mobile */
-    .cc-package-selector-wrapper {
+    /* Calculator Header Mobile Optimization */
+    .cc-form-header {
         padding: 1rem;
     }
 
-    .cc-package-selector-card {
-        padding: 1.25rem;
+    .cc-form-header h2 {
+        font-size: 1.1rem;
+        flex-wrap: wrap;
     }
 
-    .cc-package-header h3 {
-        font-size: 1.125rem;
+    /* Subject Group Mobile Optimization */
+    .cc-group-header {
+        padding: 0.75rem 1rem;
+        gap: 0.75rem;
     }
 
-    .cc-package-select {
-        font-size: 0.875rem;
-        padding: 0.875rem 1rem;
-        padding-right: 35px;
-        height: auto;
-    }
-
-    .cc-service-name {
-        font-size: 0.875rem;
-    }
-
-    .cc-cost-amount {
-        font-size: 1.25rem;
-    }
-
-    .cc-btn-pay {
+    .cc-group-icon {
+        width: 36px;
+        height: 36px;
         font-size: 1rem;
-        padding: 0.875rem 1rem;
-        height: auto;
     }
+
+    .cc-group-info h3 {
+        font-size: 0.9rem;
+    }
+
+    .cc-group-info span {
+        font-size: 0.75rem;
+        display: block;
+        /* Ensure subtitle breaks to new line if needed */
+    }
+
+    /* Service Card Mobile Optimization */
+    .cc-package-display {
+        margin-top: 1.5rem;
+        padding: 1rem;
+    }
+}
+
+/* Package selector mobile */
+.cc-package-selector-wrapper {
+    padding: 1rem;
+}
+
+.cc-package-selector-card {
+    padding: 1rem;
+}
+
+.cc-package-header h3 {
+    font-size: 1.125rem;
+}
+
+.cc-package-select {
+    font-size: 0.875rem;
+    padding: 0.875rem 1rem;
+    padding-right: 35px;
+    height: auto;
+}
+
+.cc-service-name {
+    font-size: 0.875rem;
+}
+
+.cc-cost-amount {
+    font-size: 1.25rem;
+}
+
+.cc-btn-pay {
+    font-size: 1rem;
+    padding: 0.875rem 1rem;
+    height: auto;
+}
 }
 
 /* Results Section */

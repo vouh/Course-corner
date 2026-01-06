@@ -92,6 +92,9 @@ class CustomSelect {
         Array.from(this.select.options).forEach((option, index) => {
             const optionEl = document.createElement('div');
             optionEl.className = 'custom-select-option';
+            optionEl.dataset.value = option.value;
+            optionEl.dataset.index = index;
+
             if (option.value === '') {
                 optionEl.textContent = 'Clear Grade';
                 optionEl.classList.add('placeholder');

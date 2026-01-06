@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,12 +11,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
         }
-        
+
         /* Modern Page Header */
         .page-hero {
             background: linear-gradient(135deg, #16a34a 0%, #15803d 50%, #166534 100%);
@@ -23,7 +25,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .page-hero::before {
             content: '';
             position: absolute;
@@ -33,7 +35,7 @@
             bottom: 0;
             background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
-        
+
         .page-hero-content {
             max-width: 800px;
             margin: 0 auto;
@@ -41,26 +43,26 @@
             position: relative;
             z-index: 1;
         }
-        
+
         .page-hero h1 {
             font-size: 3rem;
             font-weight: 800;
             color: white;
             margin-bottom: 1rem;
         }
-        
+
         .page-hero p {
             font-size: 1.25rem;
             color: rgba(255, 255, 255, 0.9);
         }
-        
+
         /* Content */
         .cluster-content {
             max-width: 1400px;
             margin: 0 auto;
             padding: 4rem 2rem;
         }
-        
+
         /* Explanation Section */
         .explanation-box {
             background: white;
@@ -70,7 +72,7 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             border-left: 4px solid #16a34a;
         }
-        
+
         .explanation-box h2 {
             font-size: 1.75rem;
             font-weight: 700;
@@ -80,17 +82,17 @@
             align-items: center;
             gap: 0.75rem;
         }
-        
+
         .explanation-box h2 i {
             color: #16a34a;
         }
-        
+
         .explanation-box p {
             color: #4b5563;
             line-height: 1.8;
             margin-bottom: 1rem;
         }
-        
+
         .warning-box {
             background: linear-gradient(135deg, #fef3c7 0%, #fef9c3 100%);
             border-radius: 0.75rem;
@@ -98,19 +100,19 @@
             border-left: 4px solid #f59e0b;
             margin-top: 1.5rem;
         }
-        
+
         .warning-box p {
             color: #78350f;
             margin: 0;
         }
-        
+
         /* Cluster Grid */
         .clusters-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 1.5rem;
         }
-        
+
         .cluster-card {
             background: white;
             border-radius: 1rem;
@@ -119,42 +121,42 @@
             overflow: hidden;
             transition: all 0.3s ease;
         }
-        
+
         .cluster-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
             border-color: #16a34a;
         }
-        
+
         .cluster-header {
             background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
             padding: 1rem 1.25rem;
             color: white;
         }
-        
+
         .cluster-number {
             font-size: 0.875rem;
             font-weight: 600;
             opacity: 0.9;
             margin-bottom: 0.25rem;
         }
-        
+
         .cluster-title {
             font-size: 1rem;
             font-weight: 700;
             line-height: 1.3;
         }
-        
+
         .cluster-body {
             padding: 1.25rem;
         }
-        
+
         .cluster-subjects {
             list-style: none;
             padding: 0;
             margin: 0;
         }
-        
+
         .cluster-subjects li {
             position: relative;
             padding: 0.5rem 0 0.5rem 1.5rem;
@@ -162,11 +164,11 @@
             color: #4b5563;
             border-bottom: 1px solid #f3f4f6;
         }
-        
+
         .cluster-subjects li:last-child {
             border-bottom: none;
         }
-        
+
         .cluster-subjects li::before {
             content: '•';
             position: absolute;
@@ -174,7 +176,7 @@
             color: #16a34a;
             font-weight: bold;
         }
-        
+
         /* CTA Section */
         .cta-box {
             background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
@@ -183,20 +185,20 @@
             margin-top: 3rem;
             text-align: center;
         }
-        
+
         .cta-box h2 {
             font-size: 1.75rem;
             font-weight: 700;
             color: #111827;
             margin-bottom: 1rem;
         }
-        
+
         .cta-box p {
             color: #4b5563;
             max-width: 600px;
             margin: 0 auto 1.5rem;
         }
-        
+
         .cta-btn {
             display: inline-flex;
             align-items: center;
@@ -210,19 +212,60 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(22, 163, 74, 0.3);
         }
-        
+
         .cta-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(22, 163, 74, 0.4);
         }
-        
+
         @media (max-width: 640px) {
-            .page-hero h1 {
-                font-size: 2rem;
+            .page-hero {
+                padding: 6rem 1rem 3rem;
             }
-            
+
+            .page-hero h1 {
+                font-size: 1.75rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .page-hero p {
+                font-size: 1rem;
+            }
+
+            .cluster-content {
+                padding: 2rem 1rem;
+            }
+
+            .explanation-box {
+                padding: 1.5rem;
+                margin-bottom: 2rem;
+            }
+
+            .explanation-box h2 {
+                font-size: 1.35rem;
+                margin-bottom: 1rem;
+            }
+
+            .explanation-box p {
+                font-size: 0.95rem;
+                line-height: 1.6;
+            }
+
+            .warning-box {
+                padding: 1rem;
+            }
+
             .clusters-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .cta-box {
+                padding: 2rem 1.5rem;
+                margin-top: 2rem;
+            }
+
+            .cta-box h2 {
+                font-size: 1.5rem;
             }
         }
 
@@ -304,6 +347,7 @@
         }
     </style>
 </head>
+
 <body class="bg-gray-50">
     <!-- Modern Navigation -->
     <header class="modern-header" id="mainHeader">
@@ -312,7 +356,7 @@
                 <img src="../assets/images/logo.png" alt="Course Corner logo" />
                 <span>Course Corner</span>
             </a>
-            
+
             <nav class="nav-desktop">
                 <a href="../index.html" class="nav-link">Home</a>
                 <a href="about.html" class="nav-link">About Us</a>
@@ -323,14 +367,14 @@
                 <a href="guide.html" class="nav-link">Guide</a>
                 <a href="contact.html" class="nav-link">Contact</a>
             </nav>
-            
+
             <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
         </div>
-        
+
         <!-- Mobile Menu -->
         <div class="mobile-menu" id="mobileMenu">
             <a href="../index.html" class="mobile-nav-link">Home</a>
@@ -350,14 +394,21 @@
         <div class="explanation-box">
             <h2><i class="fas fa-info-circle"></i> How Cluster Points Work</h2>
             <p>
-                Each cluster for KUCCPS courses has <strong>4 major required subjects</strong>. These subjects are used in the formula to calculate cluster points. If a student did not take or study a required standalone subject for a specific cluster (e.g., Music for Cluster 18 or Physics for Cluster 4), the cluster points are automatically set to zero for that cluster.
+                Each cluster for KUCCPS courses has <strong>4 major required subjects</strong>. These subjects are used
+                in the formula to calculate cluster points. If a student did not take or study a required standalone
+                subject for a specific cluster (e.g., Music for Cluster 18 or Physics for Cluster 4), the cluster points
+                are automatically set to zero for that cluster.
             </p>
             <p>
-                This scoring system is competitive and helps students get into the institutions of their choice. Every university has specific cluster points requirements for each course. This system applies to students who have scored a <strong>C+ and above</strong>.
+                This scoring system is competitive and helps students get into the institutions of their choice. Every
+                university has specific cluster points requirements for each course. This system applies to students who
+                have scored a <strong>C+ and above</strong>.
             </p>
             <div class="warning-box">
                 <p>
-                    <strong><i class="fas fa-exclamation-triangle"></i> Important Note:</strong> Cluster point requirements may vary by university and program. Please check specific university requirements for accurate information.
+                    <strong><i class="fas fa-exclamation-triangle"></i> Important Note:</strong> Cluster point
+                    requirements may vary by university and program. Please check specific university requirements for
+                    accurate information.
                 </p>
             </div>
         </div>
@@ -368,7 +419,8 @@
         <!-- CTA Section -->
         <div class="cta-box">
             <h2>Ready to Calculate Your Points?</h2>
-            <p>Use our free calculator to instantly find out your cluster points and discover eligible courses based on your KCSE grades.</p>
+            <p>Use our free calculator to instantly find out your cluster points and discover eligible courses based on
+                your KCSE grades.</p>
             <a href="calculator.html" class="cta-btn">
                 <i class="fas fa-calculator"></i>
                 Open Calculator
@@ -386,10 +438,11 @@
                         <span>Course Corner</span>
                     </div>
                     <p class="footer-description">
-                        Empowering students to make informed decisions about their educational future through personalized course recommendations.
+                        Empowering students to make informed decisions about their educational future through
+                        personalized course recommendations.
                     </p>
                 </div>
-                
+
                 <div class="footer-col">
                     <h4>Quick Links</h4>
                     <ul>
@@ -399,7 +452,7 @@
                         <li><a href="application-process.html">Application Guide</a></li>
                     </ul>
                 </div>
-                
+
                 <div class="footer-col">
                     <h4>Resources</h4>
                     <ul>
@@ -409,7 +462,7 @@
                         <li><a href="terms-of-service.html">Terms of Service</a></li>
                     </ul>
                 </div>
-                
+
                 <div class="footer-col">
                     <h4>Contact Us</h4>
                     <ul>
@@ -423,7 +476,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="footer-bottom">
                 <p>© Course Corner <span id="currentYear"></span>. All rights reserved.</p>
             </div>
@@ -478,24 +531,24 @@
                 `;
             }).join('');
         }
-        
+
         // Mobile menu toggle with state tracking
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
         let isMenuOpen = false;
-        
+
         function openMobileMenu() {
             isMenuOpen = true;
             mobileMenuBtn.classList.add('active');
             mobileMenu.classList.add('active');
         }
-        
+
         function closeMobileMenu() {
             isMenuOpen = false;
             mobileMenuBtn.classList.remove('active');
             mobileMenu.classList.remove('active');
         }
-        
+
         function toggleMobileMenu() {
             if (isMenuOpen) {
                 closeMobileMenu();
@@ -503,32 +556,32 @@
                 openMobileMenu();
             }
         }
-        
+
         mobileMenuBtn.addEventListener('click', (e) => {
             e.preventDefault();
             e.stopPropagation();
             toggleMobileMenu();
         });
-        
+
         // Close mobile menu when clicking a link
         mobileMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => closeMobileMenu());
         });
-        
+
         // Close mobile menu when clicking outside
         document.addEventListener('click', (e) => {
             if (isMenuOpen && !mobileMenu.contains(e.target) && !mobileMenuBtn.contains(e.target)) {
                 closeMobileMenu();
             }
         });
-        
+
         // Close on resize to desktop
         window.addEventListener('resize', () => {
             if (window.innerWidth >= 1024 && isMenuOpen) {
                 closeMobileMenu();
             }
         });
-        
+
         // Header scroll effect
         const header = document.getElementById('mainHeader');
         window.addEventListener('scroll', () => {
@@ -546,4 +599,5 @@
         <span>Earn 10%</span>
     </a>
 </body>
+
 </html>

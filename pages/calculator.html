@@ -644,88 +644,86 @@
                                     <h3>Select Your Package</h3>
                                 </div>
 
-                                <div class="cc-package-dropdown-container">
-                                    <label for="packageSelect">Choose a service package:</label>
-                                    <select id="packageSelect" class="cc-package-select">
-                                        <option value="" data-amount="0" data-description="">Select a Service...
-                                        </option>
-                                        <option value="gold-package" data-amount="600"
-                                            data-description="All-in-one + Expert Consultation">Gold Package (Complete
-                                            Bundle)</option>
-                                        <option value="silver-package" data-amount="500"
-                                            data-description="University Courses + Cluster Points">Silver Package
-                                            (Courses + Points)</option>
-                                        <option value="bronze-package" data-amount="400"
-                                            data-description="Universities & Courses List">Bronze Package (Universities
-                                            List)</option>
-                                        <option value="point-and-courses" data-amount="300"
-                                            data-description="Cluster Points & Eligible Courses">Premium Package (Points
-                                            & Courses)</option>
-                                        <option value="courses-only" data-amount="200"
-                                            data-description="View Eligible Courses Only">Standard Package (Courses
-                                            Only)</option>
-                                        <option value="calculate-cluster-points" data-amount="100"
-                                            data-description="Calculate Your Cluster Points">Starter Package (Cluster
-                                            Points)</option>
-                                    </select>
-                                </div>
+                                <label for="packageSelect">Choose a service package:</label>
+                                <select id="packageSelect" class="cc-package-select">
+                                    <option value="" data-amount="0" data-description="">Select a Service...
+                                    </option>
 
-                                <div class="cc-package-display" id="packageDisplay">
-                                    <div class="cc-package-info">
-                                        <div class="cc-package-service">
-                                            <span class="cc-service-label">Service:</span>
-                                            <span class="cc-service-name" id="serviceName">Select a package above</span>
-                                        </div>
-                                        <div class="cc-package-cost">
-                                            <span class="cc-cost-label">Cost:</span>
-                                            <span class="cc-cost-amount" id="costAmount">KES 0</span>
-                                        </div>
+                
+                                    <option value="point-and-courses" data-amount="300"
+                                        data-description="Cluster Points & Eligible Courses">Premium Package (Points
+                                        & Courses)</option>
+                                    <option value="courses-only" data-amount="200"
+                                        data-description="View Eligible Courses Only">Standard Package (Courses
+                                        Only)</option>
+                                    <option value="calculate-cluster-points" data-amount="100"
+                                        data-description="Calculate Your Cluster Points">Starter Package (Cluster
+                                        Points)</option>
+                                </select>
+
+                                <div class="mt-4 text-center">
+                                    <a href="packages.html" class="cc-btn-glow">
+                                        See Packages
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="cc-package-display" id="packageDisplay">
+                                <div class="cc-package-info">
+                                    <div class="cc-package-service">
+                                        <span class="cc-service-label">Service:</span>
+                                        <span class="cc-service-name" id="serviceName">Select a package above</span>
                                     </div>
-                                    <button id="payButton" class="cc-btn-pay payment-btn" disabled data-category=""
-                                        data-amount="0">
-                                        <i class="fas fa-credit-card"></i>
-                                        <span>Click to Pay</span>
-                                    </button>
+                                    <div class="cc-package-cost">
+                                        <span class="cc-cost-label">Cost:</span>
+                                        <span class="cc-cost-amount" id="costAmount">KES 0</span>
+                                    </div>
                                 </div>
+                                <button id="payButton" class="cc-btn-pay payment-btn" disabled data-category=""
+                                    data-amount="0">
+                                    <i class="fas fa-credit-card"></i>
+                                    <span>Click to Pay</span>
+                                </button>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Payment Status -->
-                        <div id="paymentStatus" class="cc-payment-status hidden">
-                            <div class="cc-payment-content">
-                                <div class="cc-payment-spinner"></div>
-                                <div>
-                                    <h4>Processing Payment</h4>
-                                    <p id="paymentMessage">Please wait while we process your payment...</p>
-                                </div>
+                    <!-- Payment Status -->
+                    <div id="paymentStatus" class="cc-payment-status hidden">
+                        <div class="cc-payment-content">
+                            <div class="cc-payment-spinner"></div>
+                            <div>
+                                <h4>Processing Payment</h4>
+                                <p id="paymentMessage">Please wait while we process your payment...</p>
                             </div>
                         </div>
+                    </div>
 
-                        <!-- Results Section -->
-                        <div id="results" class="cc-results hidden">
-                            <div class="cc-results-header">
-                                <i class="fas fa-trophy"></i>
-                                <h3>Your Results</h3>
+                    <!-- Results Section -->
+                    <div id="results" class="cc-results hidden">
+                        <div class="cc-results-header">
+                            <i class="fas fa-trophy"></i>
+                            <h3>Your Results</h3>
+                        </div>
+                        <div class="cc-results-body">
+                            <p id="clusterPoints" class="cc-cluster-points">
+                                Cluster Points: <span>0</span>
+                            </p>
+                            <div id="eligibleCourses" class="cc-eligible-courses">
+                                <h4><i class="fas fa-graduation-cap"></i> Eligible Courses</h4>
+                                <ul id="coursesList"></ul>
                             </div>
-                            <div class="cc-results-body">
-                                <p id="clusterPoints" class="cc-cluster-points">
-                                    Cluster Points: <span>0</span>
-                                </p>
-                                <div id="eligibleCourses" class="cc-eligible-courses">
-                                    <h4><i class="fas fa-graduation-cap"></i> Eligible Courses</h4>
-                                    <ul id="coursesList"></ul>
-                                </div>
-                            </div>
-                            <div class="cc-results-disclaimer">
-                                <i class="fas fa-info-circle"></i>
-                                <p>Note: Due to KUCCPS standardization, actual cluster points may vary by ±2.5 points.
-                                    Use
-                                    these results as a close approximation.</p>
-                            </div>
+                        </div>
+                        <div class="cc-results-disclaimer">
+                            <i class="fas fa-info-circle"></i>
+                            <p>Note: Due to KUCCPS standardization, actual cluster points may vary by ±2.5 points.
+                                Use
+                                these results as a close approximation.</p>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
     </section>
 
     <!-- Modern Footer -->

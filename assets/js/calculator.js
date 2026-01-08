@@ -6,8 +6,9 @@ document.addEventListener('DOMContentLoaded', function () {
     // Direct calculation is ONLY done after payment is confirmed
     // Do NOT add click listener to calculateBtn here
 
-    // Export calculateClusterPoints to window for payment handler
+    // Export functions to window for payment handler
     window.calculateClusterPoints = calculateClusterPoints;
+    window.displayResults = displayResults;
 
     // Get all grade select dropdowns
     const gradeSelects = document.querySelectorAll('.grade-select');
@@ -93,6 +94,10 @@ function calculateClusterPoints() {
 
     console.log('All cluster points:', allClusterPoints);
     window.lastClusterPoints = allClusterPoints; // Store for eligibility display
+
+    // Automatically trigger display
+    displayResults(allClusterPoints);
+
     return allClusterPoints;
 }
 
@@ -129,15 +134,12 @@ function validateInputs() {
         errors.push("Overall grade calculation is incomplete");
     }
 
-    // Display errors
+    // Log errors
     if (errors.length > 0) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Incomplete Grades',
-            html: `<ul class="text-left list-disc list-inside text-red-600">${errors.map(e => `<li>${e}</li>`).join('')}</ul>`,
-            confirmButtonColor: '#16a34a'
-        });
-        return false;
+        console.error('Validation errors:', errors);
+        // We still return true if we want to try and show results anyway 
+        // especially if it's called after a successful payment
+        return true;
     }
     return true;
 }

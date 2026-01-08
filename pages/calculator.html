@@ -1098,28 +1098,10 @@
                 return false;
             }
 
-            // Check C+ Threshold vs Cluster Packages
-            const isClusterPackage = category === 'point-and-courses' || category === 'calculate-cluster-points';
-            if (isClusterPackage && overallPoints < 46) {
-                await Swal.fire({
-                    icon: 'error',
-                    title: 'Grade Threshold Restriction',
-                    html: `
-                        <div class="text-left text-sm space-y-4 py-2">
-                            <p class="text-gray-700">The package you selected (<strong>${getCategoryName(category)}</strong>) provides Cluster Points for Degree courses.</p>
-                            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
-                                <p class="text-red-800 font-bold mb-1">RESTRICTION:</p>
-                                <p class="text-red-700">Cluster points are only applicable for students with a mean grade of <strong>C+ (46 points)</strong> and above.</p>
-                            </div>
-                            <p class="text-gray-600 font-medium">Since your points are <strong>${overallPoints}/84</strong>, please select the <span class="text-indigo-600">Standard Package</span> instead to view Diploma and KMTC courses.</p>
-                        </div>
-                    `,
-                    confirmButtonColor: '#16a34a',
-                    confirmButtonText: 'Change Package',
-                    customClass: { popup: 'premium-modal' }
-                });
-                return false;
-            }
+            // The Grade Threshold check (points < 46) is now handled automatically
+            // in the results display logic (displayCombinedResults), which will
+            // show Diploma/KMTC fallback instead of an error message.
+            // This allows users to pay for any package they want.
 
             // 2. T&C Acceptance Modal (Only if validation passed)
             const { value: acceptTerms } = await Swal.fire({
@@ -1329,27 +1311,46 @@
         function showResultsAfterPayment(category) {
             console.log('showResultsAfterPayment called with category:', category);
 
-            // Call the calculate function
-            if (typeof window.calculateClusterPoints === 'function') {
-                console.log('Calling window.calculateClusterPoints');
-                window.calculateClusterPoints();
-            } else {
-                console.error('calculateClusterPoints not found on window');
+            // Ensure points are fresh
+            if (typeof calculateTotalPoints === 'function') {
+                calculateTotalPoints();
             }
 
-            // Show results div
             const resultsDiv = document.getElementById('results');
             if (resultsDiv) {
-                console.log('Showing results div');
                 resultsDiv.classList.remove('hidden');
                 resultsDiv.style.display = 'block';
+            }
 
-                // Scroll to results after a brief delay
+            if (category === 'calculate-cluster-points') {
+                if (typeof window.calculateClusterPoints === 'function') {
+                    window.calculateClusterPoints();
+                }
+            } else if (category === 'courses-only') {
+                if (typeof window.getStudentGrades === 'function') {
+                    const grades = window.getStudentGrades();
+                    if (typeof window.getEligibleCourses === 'function' && typeof window.displayAllResults === 'function') {
+                        const eligibleCourses = window.getEligibleCourses(grades);
+                        window.displayAllResults(eligibleCourses);
+                    }
+                }
+            } else if (category === 'point-and-courses') {
+                if (typeof window.calculateClusterPoints === 'function') {
+                    window.calculateClusterPoints();
+                }
+                if (typeof window.getStudentGrades === 'function') {
+                    const grades = window.getStudentGrades();
+                    if (typeof window.getEligibleCourses === 'function' && typeof window.displayCombinedResults === 'function') {
+                        const eligibleCourses = window.getEligibleCourses(grades);
+                        window.displayCombinedResults(eligibleCourses);
+                    }
+                }
+            }
+
+            if (resultsDiv) {
                 setTimeout(() => {
                     resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 100);
-            } else {
-                console.error('Results div not found');
             }
         }
 

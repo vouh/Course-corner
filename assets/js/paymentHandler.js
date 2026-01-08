@@ -9,17 +9,18 @@ class PaymentHandler {
         console.log('PaymentHandler initialized with server URL:', serverUrl);
     }
 
-    // Payment amounts mapping
-    static AMOUNTS = {
-        'calculate-cluster-points': 1,
-        'courses-only': 1,
-        'point-and-courses': 160
-    };
+    // Base configuration
+    constructor(serverUrl = 'https://course-corner-server.vercel.app/api') {
+        this.serverUrl = serverUrl;
+        this.sessionId = localStorage.getItem('paymentSessionId') || null;
+        this.isPaymentCompleted = false;
+        console.log('PaymentHandler initialized');
+    }
 
     // Initiate payment
-    async initiatePayment(phoneNumber, category, referralCode = null) {
+    async initiatePayment(phoneNumber, category, amount, referralCode = null) {
         try {
-            console.log('Initiating payment:', { phoneNumber, category, referralCode });
+            console.log('Initiating payment:', { phoneNumber, category, amount, referralCode });
 
             // Validate inputs
             if (!phoneNumber) {
@@ -29,6 +30,7 @@ class PaymentHandler {
             if (!category) {
                 throw new Error('Invalid category selected');
             }
+            if (!amount) throw new Error('Invalid amount');
 
             // Call backend to initiate STK push
             const response = await fetch(`${this.serverUrl}/mpesa/stkpush`, {
@@ -39,6 +41,7 @@ class PaymentHandler {
                 body: JSON.stringify({
                     phoneNumber,
                     category,
+                    amount: parseInt(amount),
                     referralCode
                 })
             });

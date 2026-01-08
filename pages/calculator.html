@@ -965,11 +965,20 @@
                 if (validation.totalSubjects >= 7 && packageSelected) {
                     payButton.classList.add('ready-to-pay');
                     payButton.disabled = false;
+                    if (gradeMessageEl && validation.valid) {
+                        gradeMessageEl.innerHTML = '<span class="text-green-600"><i class="fas fa-check-circle"></i> Ready to proceed!</span>';
+                    }
                 } else {
                     payButton.classList.remove('ready-to-pay');
-                    // Only disable if package is missing, otherwise leave it to the package listener
                     if (!packageSelected) {
                         payButton.disabled = true;
+                    }
+                    if (gradeMessageEl) {
+                        if (validation.needMore > 0) {
+                            gradeMessageEl.textContent = `Need ${validation.needMore} more subjects (7 total)`;
+                        } else if (validation.missingCompulsory.length > 0) {
+                            gradeMessageEl.innerHTML = `<span class="text-red-500">Missing: ${validation.missingCompulsory.join(', ')}</span>`;
+                        }
                     }
                 }
             }
@@ -1019,6 +1028,31 @@
         // Main payment processing function
         async function processPayment(category, amount) {
             const validation = validateSubjects();
+            const overallPoints = parseInt(document.getElementById('overallGrade').value) || 0;
+
+            // 1. Grade Threshold Check (C+ for Cluster Points)
+            if (category === 'point-and-courses' && overallPoints < 46) {
+                const { isConfirmed } = await Swal.fire({
+                    title: '<span class="text-yellow-600">Grade Notice</span>',
+                    html: `
+                        <div class="text-left text-sm space-y-3">
+                            <p class="text-gray-700">Your grade is <strong>${overallPoints}/84</strong> (Below C+).</p>
+                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3">
+                                <p class="text-yellow-800 italic text-xs">Full cluster points & Degree courses are only available for C+ and above.</p>
+                            </div>
+                            <p class="text-gray-600">You will still see <strong>Diploma and KMTC</strong> eligibility. Do you wish to proceed with this package?</p>
+                        </div>
+                    `,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, Proceed',
+                    cancelButtonText: 'No, Change',
+                    confirmButtonColor: '#16a34a',
+                    cancelButtonColor: '#6b7280',
+                    customClass: { popup: 'premium-modal' }
+                });
+                if (!isConfirmed) return false;
+            }
 
             if (!validation.valid) {
                 let errorHtml = '<div class="text-left">';
@@ -1040,7 +1074,8 @@
                     title: 'Please Complete Your Grades',
                     html: errorHtml,
                     confirmButtonColor: '#16a34a',
-                    confirmButtonText: 'Fill Grades'
+                    confirmButtonText: 'Fill Grades',
+                    customClass: { popup: 'premium-modal' }
                 });
                 return false;
             }
@@ -1066,6 +1101,7 @@
                 confirmButtonText: 'Proceed to Payment',
                 confirmButtonColor: '#16a34a',
                 cancelButtonColor: '#6b7280',
+                customClass: { popup: 'premium-modal' },
                 preConfirm: () => {
                     if (!document.getElementById('termsCheckbox').checked) {
                         Swal.showValidationMessage('Please check the box to confirm you agree');
@@ -1111,6 +1147,7 @@
                 confirmButtonText: 'Pay Now',
                 confirmButtonColor: '#16a34a',
                 cancelButtonText: 'Cancel',
+                customClass: { popup: 'premium-modal' },
                 didOpen: () => {
                     document.getElementById('alreadyPaidBtn').addEventListener('click', () => {
                         Swal.close();
@@ -1145,32 +1182,39 @@
                 // Show access check result for referral if any (optional future step)
 
                 Swal.fire({
-                    title: 'Initiating Payment...',
+                    title: '<div class="premium-loader"></div>Initiating Secure Payment',
                     html: `
-                        <div class="text-center p-2">
-                            <p class="mb-2">Developing STK Push connection...</p>
-                            <p class="text-sm text-gray-500">Phone: <strong>${phoneNumber}</strong></p>
+                        <div class="text-center p-4">
+                            <p class="text-gray-500 mb-2">Connecting to M-Pesa API...</p>
+                            <p class="text-sm font-bold text-gray-800">Amount: KES ${amount}</p>
                         </div>
                     `,
                     allowOutsideClick: false,
+                    showConfirmButton: false,
+                    customClass: { popup: 'premium-modal' },
                     didOpen: () => Swal.showLoading()
                 });
 
                 // Update: Include referral code if needed by backend
-                await window.paymentHandler.initiatePayment(phoneNumber, category, referralCode);
+                await window.paymentHandler.initiatePayment(phoneNumber, category, amount, referralCode);
 
                 // Show waiting dialog with cancel option
                 let cancelled = false;
                 Swal.fire({
-                    title: '📱 Check Your Phone!',
+                    title: '<span class="text-green-600 font-black tracking-tighter">M-PESA PUSH SENT</span>',
                     html: `
-                        <div class="text-center">
-                            <p class="mb-3">An M-Pesa prompt has been sent to:</p>
-                            <p class="text-xl font-bold text-green-600 mb-4">${phoneNumber}</p>
-                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3 mb-4 text-left">
-                                <p class="text-sm text-yellow-800"><strong>Enter your M-Pesa PIN</strong> to complete the payment.</p>
+                        <div class="text-center py-4">
+                            <div class="stk-push-visual mb-6">
+                                <i class="fas fa-mobile-alt text-4xl text-gray-300"></i>
+                                <i class="fas fa-arrow-right text-green-500 mx-4 animate-pulse"></i>
+                                <i class="fas fa-lock text-4xl text-green-600"></i>
                             </div>
-                            <p class="text-xs text-gray-400">Click Cancel if you didn't receive the prompt</p>
+                            <p class="text-gray-600 mb-1">Prompt sent to:</p>
+                            <p class="text-2xl font-black text-gray-800 mb-6 font-mono">${phoneNumber}</p>
+                            <div class="bg-gray-900 text-white p-4 rounded-xl shadow-2xl text-left border-l-4 border-green-500">
+                                <p class="text-xs uppercase font-bold text-green-400">Action Required</p>
+                                <p class="text-sm mt-1">Check your phone and <strong>Enter M-Pesa PIN</strong> to pay KES ${amount}.</p>
+                            </div>
                         </div>
                     `,
                     allowOutsideClick: true,
@@ -1179,6 +1223,7 @@
                     showCancelButton: true,
                     cancelButtonText: 'Cancel',
                     cancelButtonColor: '#6b7280',
+                    customClass: { popup: 'premium-modal' },
                     didOpen: () => Swal.showLoading()
                 }).then((result) => {
                     if (result.dismiss === Swal.DismissReason.cancel) {

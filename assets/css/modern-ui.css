@@ -3187,3 +3187,99 @@ textarea.cc-form-input {
         transform: translateX(5px);
     }
 }
+
+/* Premium Luxury Modals */
+.premium-modal {
+    border-radius: 24px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+}
+
+.premium-modal .swal2-title {
+    color: #111827 !important;
+    font-weight: 900 !important;
+    letter-spacing: -0.025em !important;
+}
+
+.premium-modal .swal2-confirm {
+    border-radius: 12px !important;
+    padding: 12px 32px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.4) !important;
+}
+
+.premium-modal .swal2-cancel {
+    border-radius: 12px !important;
+    background: #f3f4f6 !important;
+    color: #4b5563 !important;
+    font-weight: 600 !important;
+}
+
+/* Loader and Push Visuals */
+.premium-loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #f3f4f6;
+    border-top: 5px solid #16a34a;
+    border-radius: 50%;
+    margin: 0 auto 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.stk-push-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 20px 0;
+}
+
+.stk-push-visual i {
+    filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+.animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: .5;
+    }
+}
+
+/* Custom Input Styling for SWAL */
+.premium-modal .swal2-input {
+    border-radius: 12px !important;
+    border: 2px solid #f3f4f6 !important;
+    padding: 15px 20px !important;
+    font-size: 16px !important;
+    box-shadow: none !important;
+    transition: all 0.2s !important;
+}
+
+.premium-modal .swal2-input:focus {
+    border-color: #16a34a !important;
+    background: #fff !important;
+    box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.1) !important;
+}

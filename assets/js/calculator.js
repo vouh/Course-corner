@@ -69,56 +69,74 @@ function calculateClusterPoints() {
     // Calculate cluster points for all clusters (1-20)
     const allClusterPoints = {};
     for (let i = 1; i <= 20; i++) {
-        // Get cluster subjects for this cluster
+        // Create cluster subjects logic
         const clusterSubjects = selectClusterSubjects(scores, i);
 
         // Skip if cluster subjects is null
         if (!clusterSubjects) {
-            console.log(`Skipping cluster ${i} due to missing required subjects`);
             allClusterPoints[`Cluster ${i}`] = 0;
             continue;
         }
 
-        // Calculate r (sum of cluster subjects)
-        const r = Object.values(clusterSubjects).reduce((sum, subject) => sum + subject.score, 0);
-        console.log(`Cluster ${i} - r:`, r);
+        // Calculate r (sum of 4 cluster subjects scores)
+        const r = Object.values(clusterSubjects).reduce((sum, sub) => sum + (sub.score || 0), 0);
 
-        // Get t (total KCSE points)
-        const t = parseInt(document.getElementById('overallGrade').value);
-        console.log(`Cluster ${i} - t:`, t);
+        // Get t (total KCSE points - 84 max)
+        const t = parseInt(document.getElementById('overallGrade').value) || 0;
 
-        // Calculate final cluster points using the formula: C = √((r/48) × (t/84)) × 48
-        allClusterPoints[`Cluster ${i}`] = (Math.sqrt((r / 48) * (t / 84)) * 48) - 2.785;
+        // Formula: C = sqrt((r/48) * (t/84)) * 48
+        // Formula: C = sqrt((r / 48) * (t / 84)) * 48
+        // User requested 1c, 1b etc not included, just 1-20
+        const points = (Math.sqrt((r / 48) * (t / 84)) * 48);
+        allClusterPoints[`Cluster ${i}`] = points;
     }
 
     console.log('All cluster points:', allClusterPoints);
-    // Display results
-    displayResults(allClusterPoints);
+    window.lastClusterPoints = allClusterPoints; // Store for eligibility display
+    return allClusterPoints;
 }
 
 function validateInputs() {
     const errors = [];
+    const scores = getAllSubjectScores();
+    const filledCount = Object.values(scores).filter(s => s.score > 0).length;
 
-    // Check compulsory subjects
-    if (!document.getElementById('kiswahili').value) errors.push("Kiswahili is required");
-    if (!document.getElementById('mathematics').value) errors.push("Mathematics is required");
-
-    // Check at least one science subject
-    const sciences = ['biology', 'physics', 'chemistry'];
-    const hasScience = sciences.some(subject => document.getElementById(subject).value);
-    if (!hasScience) errors.push("At least one science subject is required");
-
-    // Check overall grade
-    const overallGrade = document.getElementById('overallGrade').value;
-    if (!overallGrade) {
-        errors.push("Overall grade is required");
-    } else if (overallGrade < 0 || overallGrade > 84) {
-        errors.push("Overall grade must be between 0 and 84");
+    // 1. Check 7 subjects rule
+    if (filledCount < 7) {
+        errors.push("Please select at least 7 subjects (You have filled " + filledCount + ")");
     }
 
-    // Display errors only once
+    // 2. Check compulsory subjects (Math, 2 Sciences, 1 Language)
+    if (!scores.mathematics || scores.mathematics.score === 0) {
+        errors.push("Mathematics is compulsory");
+    }
+
+    const sciences = ['biology', 'physics', 'chemistry'];
+    const filledSciences = sciences.filter(s => scores[s] && scores[s].score > 0);
+    if (filledSciences.length < 2) {
+        errors.push("At least two science subjects are required");
+    }
+
+    const languages = ['english', 'kiswahili'];
+    const filledLanguages = languages.filter(l => scores[l] && scores[l].score > 0);
+    if (filledLanguages.length === 0) {
+        errors.push("At least one language (English or Kiswahili) is required");
+    }
+
+    // Check overall grade
+    const overallGrade = parseInt(document.getElementById('overallGrade').value);
+    if (!overallGrade) {
+        errors.push("Overall grade calculation is incomplete");
+    }
+
+    // Display errors
     if (errors.length > 0) {
-        alert(errors.join("\n"));
+        Swal.fire({
+            icon: 'error',
+            title: 'Incomplete Grades',
+            html: `<ul class="text-left list-disc list-inside text-red-600">${errors.map(e => `<li>${e}</li>`).join('')}</ul>`,
+            confirmButtonColor: '#16a34a'
+        });
         return false;
     }
     return true;
@@ -139,7 +157,10 @@ function getAllSubjectScores() {
     subjects.forEach(subject => {
         const element = document.getElementById(subject);
         if (element) {
-            scores[subject] = parseInt(element.value) || 0;
+            scores[subject] = {
+                score: parseInt(element.value) || 0,
+                name: element.previousElementSibling ? element.previousElementSibling.textContent : subject
+            };
         }
     });
     return scores;

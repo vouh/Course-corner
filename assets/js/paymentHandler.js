@@ -17,10 +17,10 @@ class PaymentHandler {
     };
 
     // Initiate payment
-    async initiatePayment(phoneNumber, category) {
+    async initiatePayment(phoneNumber, category, referralCode = null) {
         try {
-            console.log('Initiating payment:', { phoneNumber, category });
-            
+            console.log('Initiating payment:', { phoneNumber, category, referralCode });
+
             // Validate inputs
             if (!phoneNumber) {
                 throw new Error('Please enter your phone number');
@@ -38,7 +38,8 @@ class PaymentHandler {
                 },
                 body: JSON.stringify({
                     phoneNumber,
-                    category
+                    category,
+                    referralCode
                 })
             });
 
@@ -109,7 +110,7 @@ class PaymentHandler {
                         } else {
                             clearInterval(pollInterval);
                             console.log('Payment failed!');
-                            
+
                             // Get detailed error message from M-Pesa
                             const errorMessage = this.getMpesaErrorMessage(resultDesc);
                             reject(new Error(errorMessage));
@@ -140,12 +141,12 @@ class PaymentHandler {
     // Get user-friendly M-Pesa error message
     getMpesaErrorMessage(resultDesc) {
         if (!resultDesc) return 'Payment failed. Please try again.';
-        
+
         // Check for WRONG_PIN prefix first (from server)
         if (resultDesc.startsWith('WRONG_PIN:')) {
             return '🔐 Wrong M-Pesa PIN entered! Please try again with the correct PIN.';
         }
-        
+
         const errorMessages = {
             'Request cancelled by user': 'You cancelled the payment request.',
             'The initiator information is invalid': 'Payment service error. Please try again.',

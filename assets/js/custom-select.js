@@ -234,10 +234,11 @@ class CustomSelect {
  * Initialize custom selects for grade dropdowns
  */
 function initCustomSelects() {
-    // Target grade selects specifically
-    const gradeSelects = document.querySelectorAll('.grade-select, .cc-grade-select');
+    // Target grade and package selects
+    const selectors = '.grade-select, .cc-grade-select, .cc-package-select';
+    const targets = document.querySelectorAll(selectors);
 
-    gradeSelects.forEach(select => {
+    targets.forEach(select => {
         // Skip if already initialized
         if (select.dataset.customSelectInit) return;
         select.dataset.customSelectInit = 'true';

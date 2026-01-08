@@ -3143,3 +3143,47 @@ textarea.cc-form-input {
         border-radius: 50%;
     }
 }
+
+/* Pay Button Active State */
+.cc-btn-pay.ready-to-pay {
+    background: linear-gradient(135deg, #16a34a 0%, #15803d 100%) !important;
+    box-shadow: 0 10px 15px -3px rgba(22, 163, 74, 0.4) !important;
+    opacity: 1 !important;
+    cursor: pointer !important;
+    animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+    0% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.4);
+    }
+
+    70% {
+        box-shadow: 0 0 0 10px rgba(22, 163, 74, 0);
+    }
+
+    100% {
+        box-shadow: 0 0 0 0 rgba(22, 163, 74, 0);
+    }
+}
+
+/* Custom Select Wrapper for Package */
+.cc-package-selector-card .custom-select-wrapper {
+    margin-bottom: var(--cc-space-md);
+}
+
+.ready-to-pay i {
+    animation: bounce-horiz 1s infinite;
+}
+
+@keyframes bounce-horiz {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    50% {
+        transform: translateX(5px);
+    }
+}

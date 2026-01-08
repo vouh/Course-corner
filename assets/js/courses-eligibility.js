@@ -18,15 +18,15 @@ Promise.all([
     fetch(`${basePath}data/diploma.json`).then(response => response.json()),
     fetch(`${basePath}data/dip.json`).then(response => response.json())
 ])
-.then(([courses, diploma, technical]) => {
-    coursesData = courses;
-    diplomaData = diploma;
-    technicalCoursesData = technical;
-    console.log('📚 Course data loaded successfully');
-})
-.catch(error => {
-    console.error('Error loading data:', error);
-});
+    .then(([courses, diploma, technical]) => {
+        coursesData = courses;
+        diplomaData = diploma;
+        technicalCoursesData = technical;
+        console.log('📚 Course data loaded successfully');
+    })
+    .catch(error => {
+        console.error('Error loading data:', error);
+    });
 
 // Grade mapping for comparisons
 const GRADE_POINTS = {
@@ -78,14 +78,14 @@ const GROUP_DEFINITIONS = {
 const SubjectMapper = {
     // Convert JSON key to internal subject key
     getSubjectFromJsonKey(jsonKey) {
-        return Object.entries(SUBJECT_MAPPING).find(([_, data]) => 
+        return Object.entries(SUBJECT_MAPPING).find(([_, data]) =>
             data.jsonKeys.includes(jsonKey)
         )?.[0];
     },
 
     // Convert HTML ID to internal subject key
     getSubjectFromHtmlId(htmlId) {
-        return Object.entries(SUBJECT_MAPPING).find(([_, data]) => 
+        return Object.entries(SUBJECT_MAPPING).find(([_, data]) =>
             data.htmlIds.includes(htmlId)
         )?.[0];
     },
@@ -145,11 +145,11 @@ function meetsGradeRequirement(studentGrade, requiredGrade) {
 function checkAlternativeSubjects(subjects, grades, minGrade) {
     const alternatives = subjects.split('/');
     return alternatives.some(subject => {
-        const htmlId = Object.keys(SUBJECT_MAPPING).find(key => 
+        const htmlId = Object.keys(SUBJECT_MAPPING).find(key =>
             SUBJECT_MAPPING[key] === subject
         );
-        return htmlId && grades[htmlId] && 
-               (!minGrade || meetsGradeRequirement(grades[htmlId], minGrade));
+        return htmlId && grades[htmlId] &&
+            (!minGrade || meetsGradeRequirement(grades[htmlId], minGrade));
     });
 }
 
@@ -158,7 +158,7 @@ function checkGroupRequirement(groupName, grades, minGrade) {
     const groups = groupName.split('/');
     return groups.some(group => {
         const subjects = SUBJECT_GROUPS[group] || [];
-        return subjects.some(subject => 
+        return subjects.some(subject =>
             grades[subject] && (!minGrade || meetsGradeRequirement(grades[subject], minGrade))
         );
     });
@@ -187,11 +187,11 @@ function checkClusterRequirements(grades, requirements) {
         } else if (name.startsWith('GROUP')) {
             requirementMet = checkGroupRequirement(name, grades, minGrade);
         } else {
-            const htmlId = Object.keys(SUBJECT_MAPPING).find(key => 
+            const htmlId = Object.keys(SUBJECT_MAPPING).find(key =>
                 SUBJECT_MAPPING[key] === name
             );
-            requirementMet = htmlId && grades[htmlId] && 
-                            (!minGrade || meetsGradeRequirement(grades[htmlId], minGrade));
+            requirementMet = htmlId && grades[htmlId] &&
+                (!minGrade || meetsGradeRequirement(grades[htmlId], minGrade));
         }
 
         console.log(`Requirement ${i} met:`, requirementMet);
@@ -205,7 +205,7 @@ function checkKMTCCourseEligibility(grades, course) {
     // Check mean grade requirement
     const studentPoints = parseInt(document.getElementById('overallGrade').value);
     const studentMeanGrade = get_grade_from_points(studentPoints);
-    
+
     // Map required grade to minimum points
     const gradeToMinPoints = {
         'C': 39,  // C is 39-45 points
@@ -222,7 +222,7 @@ function checkKMTCCourseEligibility(grades, course) {
     }
 
     // For courses that only have mean grade requirement
-    if (!course.requirements || course.requirements.length === 0 || 
+    if (!course.requirements || course.requirements.length === 0 ||
         (course.requirements.length === 1 && course.requirements[0].mean_grade)) {
         return true;
     }
@@ -230,11 +230,11 @@ function checkKMTCCourseEligibility(grades, course) {
     // Check each subject requirement
     for (const requirement of course.requirements) {
         let requirementMet = false;
-        
+
         // Get subject codes and required grade
         const subjectKey = Object.keys(requirement).find(key => key.startsWith('subject_'));
         if (!subjectKey) continue;
-        
+
         const subjectCodes = requirement[subjectKey].split('/');
         const requiredGrade = requirement.grade;
 
@@ -250,7 +250,7 @@ function checkKMTCCourseEligibility(grades, course) {
                     }
                 }
             } else {
-                const htmlId = Object.keys(SUBJECT_MAPPING).find(key => 
+                const htmlId = Object.keys(SUBJECT_MAPPING).find(key =>
                     SUBJECT_MAPPING[key] === subjectCode
                 );
                 if (htmlId && grades[htmlId] && meetsGradeRequirement(grades[htmlId], requiredGrade)) {
@@ -286,25 +286,37 @@ function getEligibleCourses(grades) {
         }
     }
 
-    // If below C+ (46 points), only show KMTC courses if any are eligible
+    // If below C+ (46 points), only show Diploma and KMTC courses
     if (overallPoints < 46) {
-        // Remove the error return and just add KMTC courses if any
+        // Clear degree possibilities if any by chance
+        results.courses = {};
+
+        // Add technical (Diploma/KMTC) results
+        const technicalResults = getTechnicalCourses(grades);
+        if (technicalResults.courses) {
+            Object.assign(results.courses, technicalResults.courses);
+        }
+
         if (kmtcCourses.length > 0) {
             results.courses['KMTC PROGRAMS'] = kmtcCourses;
         }
-        return results; // Return results without error, allowing other course types to be shown
+        return results;
     }
 
     // For C+ and above, show both degree and KMTC programs
     // Process degree programs
-    Object.entries(coursesData.clusters).forEach(([clusterId, cluster]) => {
-        Object.entries(cluster.subClusters).forEach(([subClusterId, subCluster]) => {
-            if (checkClusterRequirements(grades, subCluster.requirements)) {
-                const clusterName = `${cluster.name} (${subClusterId})`;
-                results.courses[clusterName] = subCluster.courses;
+    if (coursesData && coursesData.clusters) {
+        Object.entries(coursesData.clusters).forEach(([clusterId, cluster]) => {
+            if (cluster.subClusters) {
+                Object.entries(cluster.subClusters).forEach(([subClusterId, subCluster]) => {
+                    if (checkClusterRequirements(grades, subCluster.requirements)) {
+                        const clusterName = `${cluster.name} (${subClusterId})`;
+                        results.courses[clusterName] = subCluster.courses;
+                    }
+                });
             }
         });
-    });
+    }
 
     // Add KMTC programs if any are eligible
     if (kmtcCourses.length > 0) {
@@ -334,7 +346,7 @@ function getGradeDetails(points) {
 function checkMinimumSubjects(grades) {
     // First check if 7 subjects are selected
     const filledSubjects = Object.values(grades).filter(grade => grade !== null && grade !== undefined && grade !== "").length;
-    
+
     if (filledSubjects < 7) {
         return {
             isValid: false,
@@ -393,7 +405,7 @@ function checkMinimumSubjects(grades) {
 // Add event listeners for both second and third buttons
 // NOTE: Payment handlers are now managed by index.html's unified payment system
 // These handlers are called AFTER payment is confirmed via showResultsAfterPayment()
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Load confetti script once at start
     const confettiScript = document.createElement('script');
     confettiScript.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
@@ -403,7 +415,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // All payment button click handlers are managed in index.html's unified payment system
     // The functions below (displayAllResults, displayCombinedResults) are called 
     // ONLY after successful payment confirmation
-    
+
     console.log('courses-eligibility.js loaded - payment handlers deferred to unified system');
 });
 
@@ -414,7 +426,7 @@ function displayCombinedResults(results) {
     resultsDiv.classList.remove('hidden');
 
     const studentPoints = parseInt(document.getElementById('overallGrade').value);
-    
+
     // First check if student qualifies for combined view (C+ and above)
     if (!studentPoints || studentPoints < 46) {
         resultsDiv.innerHTML = `
@@ -469,29 +481,29 @@ function displayCombinedResults(results) {
         const degreeCourses = Object.entries(results.courses)
             .filter(([name]) => !name.includes('KMTC'))
             .reduce((acc, [_, courses]) => acc + courses.length, 0);
-            
+
         if (degreeCourses > 0) {
-        html += generateCollapsibleSection(
-            'degree-programs',
-            'Degree Programs',
-            degreeCourses,
-            'green',
-            Object.entries(results.courses)
-                .filter(([name]) => !name.includes('KMTC'))
-                .map(([clusterName, courses]) => generateClusterHTML(clusterName, courses))
-                .join('')
-        );
-    }
+            html += generateCollapsibleSection(
+                'degree-programs',
+                'Degree Programs',
+                degreeCourses,
+                'green',
+                Object.entries(results.courses)
+                    .filter(([name]) => !name.includes('KMTC'))
+                    .map(([clusterName, courses]) => generateClusterHTML(clusterName, courses))
+                    .join('')
+            );
+        }
 
         // Add KMTC programs
         if (results.courses['KMTC PROGRAMS']) {
-        html += generateCollapsibleSection(
-            'kmtc-programs',
-            'KMTC Programs',
+            html += generateCollapsibleSection(
+                'kmtc-programs',
+                'KMTC Programs',
                 results.courses['KMTC PROGRAMS'].length,
-            'red',
-            generateClusterHTML('KMTC PROGRAMS', results.courses['KMTC PROGRAMS'], 'red')
-        );
+                'red',
+                generateClusterHTML('KMTC PROGRAMS', results.courses['KMTC PROGRAMS'], 'red')
+            );
         }
     }
 
@@ -510,24 +522,24 @@ function displayCombinedResults(results) {
 
         // Add certificate programs
         if (technicalResults.courses['CERTIFICATE PROGRAMS']?.length > 0) {
-        html += generateCollapsibleSection(
-            'certificate-programs',
-            'Certificate Programs',
+            html += generateCollapsibleSection(
+                'certificate-programs',
+                'Certificate Programs',
                 technicalResults.courses['CERTIFICATE PROGRAMS'].reduce((acc, cat) => acc + cat.programs.length, 0),
-            'purple',
-            generateTechnicalCategoryHTML('CERTIFICATE PROGRAMS', technicalResults, 'purple')
-        );
-    }
+                'purple',
+                generateTechnicalCategoryHTML('CERTIFICATE PROGRAMS', technicalResults, 'purple')
+            );
+        }
 
         // Add artisan programs
         if (technicalResults.courses['ARTISAN PROGRAMS']?.length > 0) {
-        html += generateCollapsibleSection(
-            'artisan-programs',
-            'Artisan Programs',
+            html += generateCollapsibleSection(
+                'artisan-programs',
+                'Artisan Programs',
                 technicalResults.courses['ARTISAN PROGRAMS'].reduce((acc, cat) => acc + cat.programs.length, 0),
-            'orange',
-            generateTechnicalCategoryHTML('ARTISAN PROGRAMS', technicalResults, 'orange')
-        );
+                'orange',
+                generateTechnicalCategoryHTML('ARTISAN PROGRAMS', technicalResults, 'orange')
+            );
         }
     }
 
@@ -583,25 +595,130 @@ function initializeCollapsibleSections() {
 
 // Add helper function for collapsible sections
 function generateCollapsibleSection(id, title, count, color, content) {
+    const colorClasses = {
+        'yellow': 'bg-yellow-500 border-yellow-500',
+        'green': 'bg-green-500 border-green-500',
+        'red': 'bg-red-500 border-red-500',
+        'blue': 'bg-blue-500 border-blue-500',
+        'purple': 'bg-purple-500 border-purple-500',
+        'orange': 'bg-orange-500 border-orange-500'
+    };
+
     return `
-        <div class="mb-6">
-            <button class="collapsible-header w-full bg-white p-4 rounded-lg shadow-lg flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors duration-200">
+        <div class="mb-6 overflow-hidden rounded-xl shadow-lg border border-gray-100 bg-white">
+            <button class="collapsible-header w-full p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-all duration-200 group">
                 <div class="flex items-center">
-                    <div class="w-2 h-12 bg-${color}-500 rounded-full mr-4"></div>
-                    <div>
-                        <h3 class="text-xl font-semibold text-gray-800">${title}</h3>
-                        <p class="text-sm text-gray-600">${count} course${count !== 1 ? 's' : ''} available</p>
+                    <div class="w-1.5 h-10 ${colorClasses[color].split(' ')[0]} rounded-full mr-5 group-hover:scale-y-110 transition-transform"></div>
+                    <div class="text-left">
+                        <h3 class="text-lg font-bold text-gray-800">${title}</h3>
+                        <p class="text-xs font-medium text-gray-500 uppercase tracking-widest">${count} ${typeof count === 'string' ? '' : (count === 1 ? 'Entry' : 'Entries')} Found</p>
                     </div>
                 </div>
-                <svg class="collapse-icon w-6 h-6 text-gray-400 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                </svg>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs font-bold text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">Click to view</span>
+                    <i class="fas fa-chevron-down collapse-icon text-gray-400 group-hover:text-gray-600 transition-transform duration-300"></i>
+                </div>
             </button>
-            <div class="collapsible-content hidden mt-4 pl-6 border-l-2 border-${color}-500">
-                ${content}
+            <div class="collapsible-content hidden border-t border-gray-50 bg-gray-50/30">
+                <div class="p-6">
+                    ${content}
+                </div>
             </div>
         </div>
     `;
+}
+
+// Function to generate cluster points HTML with progress bars
+function generateClusterPointsHTML(points) {
+    let html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
+    Object.entries(points).forEach(([name, score]) => {
+        const percentage = Math.min(100, (score / 48) * 100);
+        const barColor = score >= 35 ? 'bg-green-500' : (score >= 25 ? 'bg-yellow-500' : 'bg-red-500');
+
+        html += `
+            <div class="bg-white p-4 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="font-bold text-gray-700">${name}</span>
+                    <span class="text-lg font-black ${barColor.replace('bg-', 'text-')}">${score.toFixed(3)}</span>
+                </div>
+                <div class="w-full bg-gray-100 rounded-full h-2.5">
+                    <div class="${barColor} h-2.5 rounded-full shadow-sm" style="width: ${percentage}%"></div>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    return html;
+}
+
+// Function to generate Cluster Group HTML (Degree)
+function generateClusterHTML(title, courses, color = 'green') {
+    return `
+        <div class="mb-6 last:mb-0">
+            <h4 class="text-sm font-bold text-gray-400 mb-3 flex items-center gap-2">
+                <i class="fas fa-layer-group"></i> ${title.toUpperCase()}
+            </h4>
+            <div class="grid grid-cols-1 gap-2">
+                ${courses.map(course => `
+                    <div class="p-3 bg-white rounded-lg border-l-4 border-${color}-400 shadow-sm text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors">
+                        ${course}
+                    </div>
+                `).join('')}
+            </div>
+        </div>
+    `;
+}
+
+// Initialize Download Button
+function initializeDownloadButton() {
+    const btn = document.getElementById('downloadBtn');
+    if (!btn) return;
+
+    btn.onclick = async function () {
+        const { jsPDF } = window.jspdf;
+        const resultsEl = document.getElementById('results');
+
+        // Show loading
+        Swal.fire({
+            title: 'Generating PDF...',
+            text: 'Please wait while we prepare your results',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        try {
+            // Expand all sections for capture
+            document.querySelectorAll('.collapsible-content').forEach(c => c.classList.remove('hidden'));
+
+            const canvas = await html2canvas(resultsEl, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                backgroundColor: '#ffffff'
+            });
+
+            // Re-hide sections if they were hidden (optional, but keep expanded for now)
+
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgProps = pdf.getImageProperties(imgData);
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`Course-Corner-Results-${new Date().getTime()}.pdf`);
+
+            Swal.fire({
+                icon: 'success',
+                title: 'PDF Downloaded!',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        } catch (error) {
+            console.error('PDF Generation Error:', error);
+            Swal.fire('Error', 'Failed to generate PDF. Please try again.', 'error');
+        }
+    };
 }
 
 // Add helper function for PDF content generation
@@ -640,10 +757,10 @@ function generatePDFContent(results, technicalResults, points, gradeInfo) {
 // Helper function to generate PDF sections
 function generatePDFSections(results, technicalResults) {
     let sections = '';
-    
+
     // Add each category of courses...
     // (Similar structure to displayAllResults but formatted for PDF)
-    
+
     return sections;
 }
 
@@ -770,7 +887,7 @@ function getTechnicalCourses(grades) {
                             });
                         } else {
                             // If programs is an array of objects with program-specific requirements
-                            const eligiblePrograms = subCat.programs.filter(program => 
+                            const eligiblePrograms = subCat.programs.filter(program =>
                                 checkTechnicalRequirements(grades, program.requirements)
                             ).map(program => program.program);
 
@@ -837,7 +954,7 @@ function checkTechnicalRequirements(grades, requirements) {
 
     const studentPoints = parseInt(document.getElementById('overallGrade').value);
     const studentMeanGrade = get_grade_from_points(studentPoints);
-    
+
     // Check mean grade requirement
     if (requirements.meanGrade && !meetsGradeRequirement(studentMeanGrade, requirements.meanGrade)) {
         return false;
@@ -854,18 +971,18 @@ function checkTechnicalRequirements(grades, requirements) {
             // Handle alternative subjects
             const alternatives = subject.split('/');
             const meetsAny = alternatives.some(alt => {
-                const subjectId = Object.keys(SUBJECT_MAPPING).find(key => 
+                const subjectId = Object.keys(SUBJECT_MAPPING).find(key =>
                     SUBJECT_MAPPING[key] === alt
                 );
-                return subjectId && grades[subjectId] && 
-                       meetsGradeRequirement(grades[subjectId], normalizedRequiredGrade);
+                return subjectId && grades[subjectId] &&
+                    meetsGradeRequirement(grades[subjectId], normalizedRequiredGrade);
             });
             if (!meetsAny) return false;
         } else {
-            const subjectId = Object.keys(SUBJECT_MAPPING).find(key => 
+            const subjectId = Object.keys(SUBJECT_MAPPING).find(key =>
                 SUBJECT_MAPPING[key] === subject
             );
-            if (!subjectId || !grades[subjectId] || 
+            if (!subjectId || !grades[subjectId] ||
                 !meetsGradeRequirement(grades[subjectId], normalizedRequiredGrade)) {
                 return false;
             }
@@ -933,7 +1050,7 @@ function get_grade_from_points(points) {
     else if (points >= 74) return "A-"
     else if (points >= 67) return "B+"
     else if (points >= 60) return "B"
-    else if (points >= 53) return "B-" 
+    else if (points >= 53) return "B-"
     else if (points >= 46) return "C+"
     else if (points >= 39) return "C"
     else if (points >= 32) return "C-"
@@ -985,18 +1102,18 @@ function displayAllResults(results) {
     `;
 
     // Count eligible courses in each category
-    const degreeCourses = studentPoints >= 46 && results.courses ? 
+    const degreeCourses = studentPoints >= 46 && results.courses ?
         Object.entries(results.courses).filter(([name]) => !name.includes('KMTC')).reduce((acc, [_, courses]) => acc + courses.length, 0) : 0;
-    
+
     const kmtcCourses = results.courses?.['KMTC PROGRAMS']?.length || 0;
 
-    const diplomaCourses = technicalResults?.courses?.['DIPLOMA PROGRAMS']?.reduce((acc, category) => 
+    const diplomaCourses = technicalResults?.courses?.['DIPLOMA PROGRAMS']?.reduce((acc, category) =>
         acc + category.programs.length, 0) || 0;
 
-    const certificateCourses = technicalResults?.courses?.['CERTIFICATE PROGRAMS']?.reduce((acc, category) => 
+    const certificateCourses = technicalResults?.courses?.['CERTIFICATE PROGRAMS']?.reduce((acc, category) =>
         acc + category.programs.length, 0) || 0;
 
-    const artisanCourses = technicalResults?.courses?.['ARTISAN PROGRAMS']?.reduce((acc, category) => 
+    const artisanCourses = technicalResults?.courses?.['ARTISAN PROGRAMS']?.reduce((acc, category) =>
         acc + category.programs.length, 0) || 0;
 
     // Add degree programs section
@@ -1064,7 +1181,7 @@ function displayAllResults(results) {
     initializeDownloadButton();
 
     // Trigger confetti if any courses are available
-    if ((results.courses && Object.keys(results.courses).length > 0) || 
+    if ((results.courses && Object.keys(results.courses).length > 0) ||
         (technicalResults?.courses && Object.values(technicalResults.courses).some(arr => arr.length > 0))) {
         if (window.confetti) {
             confetti({
@@ -1105,7 +1222,7 @@ async function generateClusterPointsPDF() {
     if (studentName.isConfirmed) {
         const pdfGenerator = new PDFGenerator();
         const studentGrade = get_grade_from_points(parseInt(calculatedPoints));
-        
+
         // Get all the calculated cluster points from the results
         const clusterResults = {};
         document.querySelectorAll('.cluster').forEach(cluster => {

@@ -1309,32 +1309,44 @@
 
         // Show results after successful payment
         function showResultsAfterPayment(category) {
-            console.log('showResultsAfterPayment called with category:', category);
+            console.log('--- showResultsAfterPayment ---');
+            console.log('Category selected:', category);
 
             // Ensure points are fresh
             if (typeof calculateTotalPoints === 'function') {
+                console.log('Recalculating total points...');
                 calculateTotalPoints();
             }
 
             const resultsDiv = document.getElementById('results');
             if (resultsDiv) {
+                console.log('Making results div visible');
                 resultsDiv.classList.remove('hidden');
                 resultsDiv.style.display = 'block';
+                // Clear any old content to prevent flickering/conflicts
+                resultsDiv.innerHTML = '<div class="text-center p-8"><i class="fas fa-spinner fa-spin text-4xl text-green-500"></i><p class="mt-4">Loading your results...</p></div>';
             }
 
             if (category === 'calculate-cluster-points') {
+                console.log('Branch: calculate-cluster-points');
                 if (typeof window.calculateClusterPoints === 'function') {
-                    window.calculateClusterPoints();
+                    const points = window.calculateClusterPoints();
+                    if (typeof window.displayResults === 'function') {
+                        window.displayResults(points);
+                    }
                 }
             } else if (category === 'courses-only') {
+                console.log('Branch: courses-only');
                 if (typeof window.getStudentGrades === 'function') {
                     const grades = window.getStudentGrades();
                     if (typeof window.getEligibleCourses === 'function' && typeof window.displayAllResults === 'function') {
                         const eligibleCourses = window.getEligibleCourses(grades);
+                        console.log('Displaying courses only...');
                         window.displayAllResults(eligibleCourses);
                     }
                 }
             } else if (category === 'point-and-courses') {
+                console.log('Branch: point-and-courses');
                 if (typeof window.calculateClusterPoints === 'function') {
                     window.calculateClusterPoints();
                 }
@@ -1342,6 +1354,7 @@
                     const grades = window.getStudentGrades();
                     if (typeof window.getEligibleCourses === 'function' && typeof window.displayCombinedResults === 'function') {
                         const eligibleCourses = window.getEligibleCourses(grades);
+                        console.log('Displaying points and courses...');
                         window.displayCombinedResults(eligibleCourses);
                     }
                 }
@@ -1350,7 +1363,7 @@
             if (resultsDiv) {
                 setTimeout(() => {
                     resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 100);
+                }, 300); // Slightly longer delay for rendering
             }
         }
 

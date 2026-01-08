@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Export functions to window for payment handler
     window.calculateClusterPoints = calculateClusterPoints;
     window.displayResults = displayResults;
+    window.generateClusterPointsHTML = generateClusterPointsHTML;
 
     // Get all grade select dropdowns
     const gradeSelects = document.querySelectorAll('.grade-select');
@@ -89,14 +90,17 @@ function calculateClusterPoints() {
         // Formula: C = sqrt((r / 48) * (t / 84)) * 48
         // User requested 1c, 1b etc not included, just 1-20
         const points = (Math.sqrt((r / 48) * (t / 84)) * 48);
-        allClusterPoints[`Cluster ${i}`] = points;
+
+        if (isNaN(points)) {
+            console.error(`Cluster ${i} produced NaN. r=${r}, t=${t}`);
+            allClusterPoints[`Cluster ${i}`] = 0;
+        } else {
+            allClusterPoints[`Cluster ${i}`] = points;
+        }
     }
 
-    console.log('All cluster points:', allClusterPoints);
+    console.log('Final calculations:', allClusterPoints);
     window.lastClusterPoints = allClusterPoints; // Store for eligibility display
-
-    // Automatically trigger display
-    displayResults(allClusterPoints);
 
     return allClusterPoints;
 }
@@ -203,7 +207,7 @@ function selectClusterSubjects(scores, clusterNum) {
             }
             return {
                 subject1: getBestScore(['english', 'kiswahili'], scores),
-                subject2: { name: 'Mathematics', score: scores.mathematics || 0 },
+                subject2: { name: 'Mathematics', score: scores.mathematics?.score || 0 },
                 subject3: getBestScore(['biology', 'physics', 'chemistry'], scores),
                 subject4: getBestRemainingScore(scores, ['mathematics'])
             };
@@ -215,7 +219,7 @@ function selectClusterSubjects(scores, clusterNum) {
             return {
                 subject1: getBestScore(['english', 'kiswahili'], scores),
                 subject2: getBestScore(['english', 'kiswahili'], scores, true),
-                subject3: { name: 'Mathematics', score: scores.mathematics || 0 },
+                subject3: { name: 'Mathematics', score: scores.mathematics?.score || 0 },
                 subject4: getBestGroupScore([...SUBJECT_GROUPS.GROUP_III], scores)
             };
 
@@ -228,8 +232,8 @@ function selectClusterSubjects(scores, clusterNum) {
                 return null;
             }
             return {
-                subject1: { name: 'Mathematics', score: scores.mathematics || 0 },
-                subject2: { name: 'Physics', score: scores.physics || 0 },
+                subject1: { name: 'Mathematics', score: scores.mathematics?.score || 0 },
+                subject2: { name: 'Physics', score: scores.physics?.score || 0 },
                 subject3: getBestScore(['biology', 'chemistry', 'geography'], scores),
                 subject4: getBestGroupScore([...SUBJECT_GROUPS.GROUP_II, ...SUBJECT_GROUPS.GROUP_III, ...SUBJECT_GROUPS.GROUP_IV, ...SUBJECT_GROUPS.GROUP_V], scores)
             };
@@ -240,8 +244,8 @@ function selectClusterSubjects(scores, clusterNum) {
                 return null;
             }
             return {
-                subject1: { name: 'Mathematics', score: scores.mathematics || 0 },
-                subject2: { name: 'Biology', score: scores.biology || 0 },
+                subject1: { name: 'Mathematics', score: scores.mathematics?.score || 0 },
+                subject2: { name: 'Biology', score: scores.biology?.score || 0 },
                 subject3: getBestScore(['physics', 'chemistry'], scores),
                 subject4: getBestGroupScore([...SUBJECT_GROUPS.GROUP_II, ...SUBJECT_GROUPS.GROUP_III, ...SUBJECT_GROUPS.GROUP_IV, ...SUBJECT_GROUPS.GROUP_V], scores, true)
             };
@@ -251,7 +255,7 @@ function selectClusterSubjects(scores, clusterNum) {
                 return null;
             }
             return {
-                subject1: { name: 'Chemistry', score: scores.chemistry || 0 },
+                subject1: { name: 'Chemistry', score: scores.chemistry?.score || 0 },
                 subject2: getBestScore(['mathematics', 'physics'], scores),
                 subject3: getBestScore(['biology', 'homeScience'], scores),
                 subject4: getBestGroupScore(['english', 'kiswahili', ...SUBJECT_GROUPS.GROUP_III, ...SUBJECT_GROUPS.GROUP_IV, ...SUBJECT_GROUPS.GROUP_V], scores)
@@ -264,8 +268,8 @@ function selectClusterSubjects(scores, clusterNum) {
                 return null;
             }
             return {
-                subject1: { name: 'Biology', score: scores.biology || 0 },
-                subject2: { name: 'Chemistry', score: scores.chemistry || 0 },
+                subject1: { name: 'Biology', score: scores.biology?.score || 0 },
+                subject2: { name: 'Chemistry', score: scores.chemistry?.score || 0 },
                 subject3: getBestScore(['mathematics', 'physics', 'geography'], scores),
                 subject4: getBestGroupScore(['english', 'kiswahili', ...SUBJECT_GROUPS.GROUP_II, ...SUBJECT_GROUPS.GROUP_III, ...SUBJECT_GROUPS.GROUP_IV, ...SUBJECT_GROUPS.GROUP_V], scores)
             };
@@ -276,8 +280,8 @@ function selectClusterSubjects(scores, clusterNum) {
                 return null;
             }
             return {
-                subject1: { name: 'Geography', score: scores.geography || 0 },
-                subject2: { name: 'Mathematics', score: scores.mathematics || 0 },
+                subject1: { name: 'Geography', score: scores.geography?.score || 0 },
+                subject2: { name: 'Mathematics', score: scores.mathematics?.score || 0 },
                 subject3: getBestGroupScore(SUBJECT_GROUPS.GROUP_II, scores),
                 subject4: getBestGroupScore([...SUBJECT_GROUPS.GROUP_II, ...SUBJECT_GROUPS.GROUP_III, ...SUBJECT_GROUPS.GROUP_IV, ...SUBJECT_GROUPS.GROUP_V], scores, true)
             };
@@ -287,7 +291,7 @@ function selectClusterSubjects(scores, clusterNum) {
                 return null;
             }
             return {
-                subject1: { name: 'English', score: scores.english || 0 },
+                subject1: { name: 'English', score: scores.english?.score || 0 },
                 subject2: getBestGroupScore(['mathematics', ...SUBJECT_GROUPS.GROUP_II], scores),
                 subject3: getBestGroupScore(SUBJECT_GROUPS.GROUP_II, scores, true),
                 subject4: getBestGroupScore(['kiswahili', ...SUBJECT_GROUPS.GROUP_II, ...SUBJECT_GROUPS.GROUP_III, ...SUBJECT_GROUPS.GROUP_IV, ...SUBJECT_GROUPS.GROUP_V], scores)
@@ -314,7 +318,7 @@ function selectClusterSubjects(scores, clusterNum) {
 
         case 17:
             // Validate that either French or German is present
-            if (!scores.french && !scores.german) {
+            if (!scores.french?.score && !scores.german?.score) {
                 console.log('Cluster 17: Required subject French or German missing');
                 return null;
             }
@@ -332,7 +336,7 @@ function selectClusterSubjects(scores, clusterNum) {
                 return null;
             }
             return {
-                subject1: { name: 'Music', score: scores.music || 0 },
+                subject1: { name: 'Music', score: scores.music?.score || 0 },
                 subject2: getBestScore(['english', 'kiswahili'], scores),
                 subject3: getBestGroupScore([...SUBJECT_GROUPS.GROUP_II, ...SUBJECT_GROUPS.GROUP_III], scores),
                 subject4: getBestGroupScore(['english', 'kiswahili', ...SUBJECT_GROUPS.GROUP_II, ...SUBJECT_GROUPS.GROUP_III, ...SUBJECT_GROUPS.GROUP_IV, ...SUBJECT_GROUPS.GROUP_V], scores)
@@ -344,8 +348,8 @@ function selectClusterSubjects(scores, clusterNum) {
                 return null;
             }
             return {
-                subject1: { name: 'Mathematics', score: scores.mathematics || 0 },
-                subject2: { name: 'Biology', score: scores.biology || 0 },
+                subject1: { name: 'Mathematics', score: scores.mathematics?.score || 0 },
+                subject2: { name: 'Biology', score: scores.biology?.score || 0 },
                 subject3: getBestScore(['physics', 'chemistry'], scores),
                 subject4: getBestGroupScore([...SUBJECT_GROUPS.GROUP_II, ...SUBJECT_GROUPS.GROUP_III, ...SUBJECT_GROUPS.GROUP_IV, ...SUBJECT_GROUPS.GROUP_V], scores, true)
             };
@@ -360,7 +364,7 @@ function getBestScore(subjects, scores, excludeFirst = false) {
     const subjectScores = subjects
         .map(subject => ({
             name: subject.charAt(0).toUpperCase() + subject.slice(1),
-            score: scores[subject] || 0
+            score: scores[subject]?.score || 0
         }))
         .sort((a, b) => b.score - a.score);
 
@@ -436,7 +440,7 @@ function generateClusterPointsHTML(allClusterPoints) {
                     <div class="cluster-card bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-all fade-in-up">
                         <h4 class="text-xl font-bold mb-2">${cluster}</h4>
                         <div class="relative pt-1">
-                            <div class="overflow-hidden h-2 mb-4 text-xs flex 'bg-green-100">
+                            <div class="overflow-hidden h-2 mb-4 text-xs flex bg-green-100">
                                 <div 
                                     class="progress-bar-fill shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center ${isEligible ? 'bg-green-500' : 'bg-red-500'}"
                                     style="width: ${percentage}%">

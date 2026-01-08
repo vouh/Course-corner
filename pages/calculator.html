@@ -886,7 +886,7 @@
             });
 
             const totalSubjectsSelected = Object.keys(scores).length;
-            const gradeLetterEl = document.getElementById('gradeLetter');
+            const gradeLetterEl = document.getElementById('mainGradeDisplay');
             const gradeMessageEl = document.getElementById('gradeMessage');
 
             if (totalSubjectsSelected < 7) {
@@ -940,6 +940,16 @@
             document.getElementById('overallGrade').value = total;
             document.getElementById('overallGradeDisplay').textContent = total;
 
+            // Update grade letter and message
+            const gradeInfo = getGradeDetails(total);
+
+            if (gradeLetterEl) {
+                gradeLetterEl.textContent = gradeInfo.grade;
+            }
+            if (gradeMessageEl) {
+                gradeMessageEl.textContent = gradeInfo.message;
+            }
+
             // Update pay button state
             updatePayButtonState();
         }
@@ -947,13 +957,20 @@
         function updatePayButtonState() {
             const validation = validateSubjects();
             const payButton = document.getElementById('payButton');
+            const packageSelect = document.getElementById('packageSelect');
+
             if (payButton) {
-                if (validation.totalSubjects >= 7) {
+                const packageSelected = packageSelect && packageSelect.value !== "";
+
+                if (validation.totalSubjects >= 7 && packageSelected) {
                     payButton.classList.add('ready-to-pay');
-                    // We don't enable it yet, the package selector does that
-                    // but we style it to show it's "ready"
+                    payButton.disabled = false;
                 } else {
                     payButton.classList.remove('ready-to-pay');
+                    // Only disable if package is missing, otherwise leave it to the package listener
+                    if (!packageSelected) {
+                        payButton.disabled = true;
+                    }
                 }
             }
         }
@@ -1265,18 +1282,30 @@
                     const amount = selectedOption.getAttribute('data-amount');
                     const description = selectedOption.getAttribute('data-description');
 
-                    if (category && amount) {
-                        serviceName.textContent = description;
-                        costAmount.textContent = `KES ${amount}`;
-                        payButton.disabled = false;
-                        payButton.setAttribute('data-category', category);
-                        payButton.setAttribute('data-amount', amount);
+                    // Always get the latest button from DOM because it might have been cloned/replaced
+                    const currentPayBtn = document.getElementById('payButton');
+                    if (!currentPayBtn) return;
+
+                    const btnText = currentPayBtn.querySelector('span');
+
+                    if (category && amount && amount !== "0") {
+                        if (serviceName) serviceName.textContent = description;
+                        if (costAmount) costAmount.textContent = `KES ${amount}`;
+                        currentPayBtn.disabled = false;
+                        currentPayBtn.setAttribute('data-category', category);
+                        currentPayBtn.setAttribute('data-amount', amount);
+                        if (btnText) btnText.textContent = `Click to Pay - KES ${amount}`;
+
+                        // Check if we should add the ready-to-pay class
+                        updatePayButtonState();
                     } else {
-                        serviceName.textContent = 'Select a package above';
-                        costAmount.textContent = 'KES 0';
-                        payButton.disabled = true;
-                        payButton.setAttribute('data-category', '');
-                        payButton.setAttribute('data-amount', '0');
+                        if (serviceName) serviceName.textContent = 'Select a package above';
+                        if (costAmount) costAmount.textContent = 'KES 0';
+                        currentPayBtn.disabled = true;
+                        currentPayBtn.setAttribute('data-category', '');
+                        currentPayBtn.setAttribute('data-amount', '0');
+                        if (btnText) btnText.textContent = 'Click to Pay';
+                        currentPayBtn.classList.remove('ready-to-pay');
                     }
                 });
             }

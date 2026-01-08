@@ -1049,133 +1049,187 @@ function get_grade_from_points(points) {
 
 // Add back displayAllResults function
 function displayAllResults(results) {
-    const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = '';
-    resultsDiv.classList.remove('hidden');
+    try {
+        console.log('displayAllResults called with:', results);
+        const resultsDiv = document.getElementById('results');
 
-    const studentPoints = parseInt(document.getElementById('overallGrade').value);
-    const gradeInfo = getGradeDetails(studentPoints);
-    const technicalResults = getTechnicalCourses(getStudentGrades());
+        if (!resultsDiv) {
+            console.error('Results div not found!');
+            return;
+        }
 
-    // Success message with download button
-    let html = `
-        <div class="bg-green-50 border-l-4 border-green-500 p-6 mb-8 rounded-lg shadow-lg">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
-                    <div class="flex-shrink-0">
-                        <svg class="h-8 w-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
+        resultsDiv.innerHTML = '';
+        resultsDiv.classList.remove('hidden');
+
+        const studentPoints = parseInt(document.getElementById('overallGrade').value);
+        const gradeInfo = getGradeDetails(studentPoints);
+
+        let technicalResults;
+        try {
+            technicalResults = getTechnicalCourses(getStudentGrades());
+        } catch (techError) {
+            console.error('Error getting technical courses:', techError);
+            technicalResults = { courses: {} };
+        }
+
+        // Success message with download button
+        let html = `
+            <div class="bg-green-50 border-l-4 border-green-500 p-6 mb-8 rounded-lg shadow-lg">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-8 w-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-2xl font-bold text-green-800">Your Results</h3>
+                            <div class="mt-2">
+                                <p class="text-lg text-green-700">
+                                    You have scored <span class="font-bold">${studentPoints} points</span> 
+                                    (Grade ${gradeInfo.grade})
+                                </p>
+                                <p class="text-green-600 mt-1">${gradeInfo.message}</p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="ml-4">
-                        <h3 class="text-2xl font-bold text-green-800">Your Results</h3>
-                        <div class="mt-2">
-                            <p class="text-lg text-green-700">
-                                You have scored <span class="font-bold">${studentPoints} points</span> 
-                                (Grade ${gradeInfo.grade})
-                            </p>
-                            <p class="text-green-600 mt-1">${gradeInfo.message}</p>
+                    <button id="downloadBtn" class="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg shadow-lg hover:bg-green-700 transition-all duration-200 gap-2 hover:shadow-green-200 hover:shadow-xl">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                        </svg>
+                        <span>Download PDF</span>
+                    </button>
+                </div>
+            </div>
+        `;
+
+        // Count eligible courses in each category
+        const degreeCourses = studentPoints >= 46 && results.courses ?
+            Object.entries(results.courses).filter(([name]) => !name.includes('KMTC')).reduce((acc, [_, courses]) => acc + courses.length, 0) : 0;
+
+        const kmtcCourses = results.courses?.['KMTC PROGRAMS']?.length || 0;
+
+        const diplomaCourses = technicalResults?.courses?.['DIPLOMA PROGRAMS']?.reduce((acc, category) =>
+            acc + category.programs.length, 0) || 0;
+
+        const certificateCourses = technicalResults?.courses?.['CERTIFICATE PROGRAMS']?.reduce((acc, category) =>
+            acc + category.programs.length, 0) || 0;
+
+        const artisanCourses = technicalResults?.courses?.['ARTISAN PROGRAMS']?.reduce((acc, category) =>
+            acc + category.programs.length, 0) || 0;
+
+        // Add degree programs section
+        if (studentPoints >= 46 && results.courses) {
+            html += generateCollapsibleSection(
+                'degree-programs',
+                'Degree Programs',
+                degreeCourses,
+                'green',
+                Object.entries(results.courses)
+                    .filter(([name]) => !name.includes('KMTC'))
+                    .map(([clusterName, courses]) => generateClusterHTML(clusterName, courses))
+                    .join('')
+            );
+        }
+
+        // Add diploma programs section
+        if (technicalResults?.courses?.['DIPLOMA PROGRAMS']?.length > 0) {
+            html += generateCollapsibleSection(
+                'diploma-programs',
+                'Diploma Programs',
+                diplomaCourses,
+                'blue',
+                generateTechnicalCategoryHTML('DIPLOMA PROGRAMS', technicalResults, 'blue')
+            );
+        }
+
+        // Add KMTC programs section
+        if (results.courses?.['KMTC PROGRAMS']) {
+            html += generateCollapsibleSection(
+                'kmtc-programs',
+                'KMTC Programs',
+                kmtcCourses,
+                'red',
+                generateClusterHTML('KMTC PROGRAMS', results.courses['KMTC PROGRAMS'], 'red')
+            );
+        }
+
+        // Add certificate programs section
+        if (technicalResults?.courses?.['CERTIFICATE PROGRAMS']?.length > 0) {
+            html += generateCollapsibleSection(
+                'certificate-programs',
+                'Certificate Programs',
+                certificateCourses,
+                'purple',
+                generateTechnicalCategoryHTML('CERTIFICATE PROGRAMS', technicalResults, 'purple')
+            );
+        }
+
+        // Add artisan programs section
+        if (technicalResults?.courses?.['ARTISAN PROGRAMS']?.length > 0) {
+            html += generateCollapsibleSection(
+                'artisan-programs',
+                'Artisan Programs',
+                artisanCourses,
+                'orange',
+                generateTechnicalCategoryHTML('ARTISAN PROGRAMS', technicalResults, 'orange')
+            );
+        }
+
+        // Check if we have any content to show
+        if (degreeCourses === 0 && kmtcCourses === 0 && diplomaCourses === 0 && certificateCourses === 0 && artisanCourses === 0) {
+            html += `
+                <div class="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-triangle text-2xl text-yellow-500"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-yellow-800">No Eligible Courses Found</h3>
+                            <p class="text-yellow-700 mt-2">Based on your current grades, we couldn't find any matching courses. Please verify your grades are entered correctly.</p>
                         </div>
                     </div>
                 </div>
-                <button id="downloadBtn" class="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg shadow-lg hover:bg-green-700 transition-all duration-200 gap-2 hover:shadow-green-200 hover:shadow-xl">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                    </svg>
-                    <span>Download PDF</span>
-                </button>
-            </div>
-        </div>
-    `;
+            `;
+        }
 
-    // Count eligible courses in each category
-    const degreeCourses = studentPoints >= 46 && results.courses ?
-        Object.entries(results.courses).filter(([name]) => !name.includes('KMTC')).reduce((acc, [_, courses]) => acc + courses.length, 0) : 0;
+        resultsDiv.innerHTML = html;
 
-    const kmtcCourses = results.courses?.['KMTC PROGRAMS']?.length || 0;
+        // Initialize collapsible sections and download button
+        initializeCollapsibleSections();
+        initializeDownloadButton();
 
-    const diplomaCourses = technicalResults?.courses?.['DIPLOMA PROGRAMS']?.reduce((acc, category) =>
-        acc + category.programs.length, 0) || 0;
+        // Trigger confetti if any courses are available
+        if ((results.courses && Object.keys(results.courses).length > 0) ||
+            (technicalResults?.courses && Object.values(technicalResults.courses).some(arr => arr.length > 0))) {
+            if (window.confetti) {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
 
-    const certificateCourses = technicalResults?.courses?.['CERTIFICATE PROGRAMS']?.reduce((acc, category) =>
-        acc + category.programs.length, 0) || 0;
-
-    const artisanCourses = technicalResults?.courses?.['ARTISAN PROGRAMS']?.reduce((acc, category) =>
-        acc + category.programs.length, 0) || 0;
-
-    // Add degree programs section
-    if (studentPoints >= 46 && results.courses) {
-        html += generateCollapsibleSection(
-            'degree-programs',
-            'Degree Programs',
-            degreeCourses,
-            'green',
-            Object.entries(results.courses)
-                .filter(([name]) => !name.includes('KMTC'))
-                .map(([clusterName, courses]) => generateClusterHTML(clusterName, courses))
-                .join('')
-        );
-    }
-
-    // Add diploma programs section
-    if (technicalResults?.courses?.['DIPLOMA PROGRAMS']?.length > 0) {
-        html += generateCollapsibleSection(
-            'diploma-programs',
-            'Diploma Programs',
-            diplomaCourses,
-            'blue',
-            generateTechnicalCategoryHTML('DIPLOMA PROGRAMS', technicalResults, 'blue')
-        );
-    }
-
-    // Add KMTC programs section
-    if (results.courses?.['KMTC PROGRAMS']) {
-        html += generateCollapsibleSection(
-            'kmtc-programs',
-            'KMTC Programs',
-            kmtcCourses,
-            'red',
-            generateClusterHTML('KMTC PROGRAMS', results.courses['KMTC PROGRAMS'], 'red')
-        );
-    }
-
-    // Add certificate programs section
-    if (technicalResults?.courses?.['CERTIFICATE PROGRAMS']?.length > 0) {
-        html += generateCollapsibleSection(
-            'certificate-programs',
-            'Certificate Programs',
-            certificateCourses,
-            'purple',
-            generateTechnicalCategoryHTML('CERTIFICATE PROGRAMS', technicalResults, 'purple')
-        );
-    }
-
-    // Add artisan programs section
-    if (technicalResults?.courses?.['ARTISAN PROGRAMS']?.length > 0) {
-        html += generateCollapsibleSection(
-            'artisan-programs',
-            'Artisan Programs',
-            artisanCourses,
-            'orange',
-            generateTechnicalCategoryHTML('ARTISAN PROGRAMS', technicalResults, 'orange')
-        );
-    }
-
-    resultsDiv.innerHTML = html;
-
-    // Initialize collapsible sections and download button
-    initializeCollapsibleSections();
-    initializeDownloadButton();
-
-    // Trigger confetti if any courses are available
-    if ((results.courses && Object.keys(results.courses).length > 0) ||
-        (technicalResults?.courses && Object.values(technicalResults.courses).some(arr => arr.length > 0))) {
-        if (window.confetti) {
-            confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
-            });
+        console.log('displayAllResults completed successfully');
+    } catch (error) {
+        console.error('Critical error in displayAllResults:', error);
+        const resultsDiv = document.getElementById('results');
+        if (resultsDiv) {
+            resultsDiv.innerHTML = `
+                <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-circle text-2xl text-red-500"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-red-800">Error Loading Results</h3>
+                            <p class="text-red-700 mt-2">We encountered an error while loading your results. Please try again or contact support.</p>
+                            <p class="text-red-600 text-sm mt-2">Error: ${error.message}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
         }
     }
 }

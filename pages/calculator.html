@@ -876,111 +876,139 @@
         });
 
         function calculateTotalPoints() {
-            let total = 0;
-            const scores = {};
+            try {
+                let total = 0;
+                const scores = {};
 
-            document.querySelectorAll('.grade-select').forEach(select => {
-                if (select.value) {
-                    scores[select.id] = parseInt(select.value);
+                document.querySelectorAll('.grade-select').forEach(select => {
+                    if (select.value && select.value !== "") {
+                        scores[select.id] = parseInt(select.value);
+                    }
+                });
+
+                const totalSubjectsSelected = Object.keys(scores).length;
+                const gradeLetterEl = document.getElementById('mainGradeDisplay');
+                const gradeMessageEl = document.getElementById('gradeMessage');
+
+                console.log('--- Calculation Started ---');
+                console.log('Selected count:', totalSubjectsSelected);
+
+                if (totalSubjectsSelected < 7) {
+                    document.getElementById('overallGrade').value = "";
+                    document.getElementById('overallGradeDisplay').textContent = "0";
+                    if (gradeLetterEl) gradeLetterEl.textContent = "";
+                    if (gradeMessageEl) gradeMessageEl.textContent = "Exactly 7 subjects needed";
+                    updatePayButtonState();
+                    return;
                 }
-            });
 
-            const totalSubjectsSelected = Object.keys(scores).length;
-            const gradeLetterEl = document.getElementById('mainGradeDisplay');
-            const gradeMessageEl = document.getElementById('gradeMessage');
+                if (!scores.mathematics) {
+                    document.getElementById('overallGrade').value = "";
+                    document.getElementById('overallGradeDisplay').textContent = "0";
+                    if (gradeLetterEl) gradeLetterEl.textContent = "";
+                    if (gradeMessageEl) gradeMessageEl.textContent = "Mathematics is required";
+                    updatePayButtonState();
+                    return;
+                }
+                total += scores.mathematics;
 
-            if (totalSubjectsSelected < 7) {
-                document.getElementById('overallGrade').value = "";
-                document.getElementById('overallGradeDisplay').textContent = "0";
-                gradeLetterEl.textContent = "";
-                gradeMessageEl.textContent = "Calculated from your 7 best subjects";
-                return;
+                const languages = ['english', 'kiswahili', 'french', 'german', 'arabic', 'signLanguage'];
+                const languageScores = languages
+                    .filter(lang => scores[lang])
+                    .map(lang => ({ subject: lang, score: scores[lang] }));
+
+                if (languageScores.length === 0) {
+                    document.getElementById('overallGrade').value = "";
+                    document.getElementById('overallGradeDisplay').textContent = "0";
+                    if (gradeLetterEl) gradeLetterEl.textContent = "";
+                    if (gradeMessageEl) gradeMessageEl.textContent = "At least one language is required";
+                    updatePayButtonState();
+                    return;
+                }
+
+                const bestLanguage = languageScores.reduce((best, current) =>
+                    current.score > best.score ? current : best
+                );
+                total += bestLanguage.score;
+
+                const remainingSubjects = Object.entries(scores)
+                    .filter(([subject]) =>
+                        subject !== 'mathematics' &&
+                        subject !== bestLanguage.subject
+                    )
+                    .map(([subject, score]) => ({ subject, score }))
+                    .sort((a, b) => b.score - a.score);
+
+                const bestFiveRemaining = remainingSubjects.slice(0, 5);
+                bestFiveRemaining.forEach(subject => {
+                    total += subject.score;
+                });
+
+                document.getElementById('overallGrade').value = total;
+                document.getElementById('overallGradeDisplay').textContent = total;
+
+                // Update grade letter and message
+                const gradeInfo = getGradeDetails(total);
+
+                if (gradeLetterEl) {
+                    gradeLetterEl.textContent = gradeInfo.grade;
+                }
+                if (gradeMessageEl) {
+                    gradeMessageEl.textContent = gradeInfo.message;
+                }
+
+                console.log('Final calculated points:', total);
+                updatePayButtonState();
+            } catch (err) {
+                console.error('Error in calculateTotalPoints:', err);
             }
-
-            if (!scores.mathematics) {
-                document.getElementById('overallGrade').value = "";
-                document.getElementById('overallGradeDisplay').textContent = "0";
-                gradeLetterEl.textContent = "";
-                gradeMessageEl.textContent = "Mathematics is required";
-                return;
-            }
-            total += scores.mathematics;
-
-            const languages = ['english', 'kiswahili', 'french', 'german', 'arabic', 'signLanguage'];
-            const languageScores = languages
-                .filter(lang => scores[lang])
-                .map(lang => ({ subject: lang, score: scores[lang] }));
-
-            if (languageScores.length === 0) {
-                document.getElementById('overallGrade').value = "";
-                document.getElementById('overallGradeDisplay').textContent = "0";
-                gradeLetterEl.textContent = "";
-                gradeMessageEl.textContent = "At least one language is required";
-                return;
-            }
-
-            const bestLanguage = languageScores.reduce((best, current) =>
-                current.score > best.score ? current : best
-            );
-            total += bestLanguage.score;
-
-            const remainingSubjects = Object.entries(scores)
-                .filter(([subject]) =>
-                    subject !== 'mathematics' &&
-                    subject !== bestLanguage.subject
-                )
-                .map(([subject, score]) => ({ subject, score }))
-                .sort((a, b) => b.score - a.score);
-
-            const bestFiveRemaining = remainingSubjects.slice(0, 5);
-            bestFiveRemaining.forEach(subject => {
-                total += subject.score;
-            });
-
-            document.getElementById('overallGrade').value = total;
-            document.getElementById('overallGradeDisplay').textContent = total;
-
-            // Update grade letter and message
-            const gradeInfo = getGradeDetails(total);
-
-            if (gradeLetterEl) {
-                gradeLetterEl.textContent = gradeInfo.grade;
-            }
-            if (gradeMessageEl) {
-                gradeMessageEl.textContent = gradeInfo.message;
-            }
-
-            // Update pay button state
-            updatePayButtonState();
         }
 
         function updatePayButtonState() {
-            const validation = validateSubjects();
-            const payButton = document.getElementById('payButton');
-            const packageSelect = document.getElementById('packageSelect');
+            try {
+                const validation = validateSubjects();
+                const payButton = document.getElementById('payButton');
+                const packageSelect = document.getElementById('packageSelect');
+                const gradeMessageEl = document.getElementById('gradeMessage');
 
-            if (payButton) {
-                const packageSelected = packageSelect && packageSelect.value !== "";
+                const packageSelected = packageSelect && packageSelect.value && packageSelect.value !== "";
+                const subjectsPopulated = validation.totalSubjects >= 7;
 
-                if (validation.totalSubjects >= 7 && packageSelected) {
-                    payButton.classList.add('ready-to-pay');
-                    payButton.disabled = false;
-                    if (gradeMessageEl && validation.valid) {
-                        gradeMessageEl.innerHTML = '<span class="text-green-600"><i class="fas fa-check-circle"></i> Ready to proceed!</span>';
-                    }
-                } else {
-                    payButton.classList.remove('ready-to-pay');
-                    if (!packageSelected) {
+                console.log('--- Pay Button Status Update ---');
+                console.log('Subjects >= 7:', subjectsPopulated, '(Actual count:', validation.totalSubjects, ')');
+                console.log('Package Picked:', packageSelected, '(Value:', packageSelect ? packageSelect.value : 'MISSING', ')');
+                console.log('Full Validation:', validation.valid);
+
+                if (payButton) {
+                    if (subjectsPopulated && packageSelected) {
+                        console.log('SUCCESS: Enabling Button');
+                        payButton.classList.add('ready-to-pay');
+                        payButton.disabled = false;
+                        if (gradeMessageEl) {
+                            if (validation.valid) {
+                                gradeMessageEl.innerHTML = '<span class="text-green-600 font-bold"><i class="fas fa-check-circle"></i> Ready for submission</span>';
+                            } else {
+                                gradeMessageEl.innerHTML = '<span class="text-indigo-600 italic">Click to view requirements</span>';
+                            }
+                        }
+                    } else {
+                        console.log('FAILED: Disabling Button');
+                        payButton.classList.remove('ready-to-pay');
                         payButton.disabled = true;
-                    }
-                    if (gradeMessageEl) {
-                        if (validation.needMore > 0) {
-                            gradeMessageEl.textContent = `Need ${validation.needMore} more subjects (7 total)`;
-                        } else if (validation.missingCompulsory.length > 0) {
-                            gradeMessageEl.innerHTML = `<span class="text-red-500">Missing: ${validation.missingCompulsory.join(', ')}</span>`;
+
+                        if (gradeMessageEl) {
+                            if (!subjectsPopulated) {
+                                gradeMessageEl.textContent = `Need ${validation.needMore} more subjects (7 total)`;
+                            } else if (!packageSelected) {
+                                gradeMessageEl.innerHTML = '<span class="text-indigo-600 border-b border-indigo-200">Please select a package below</span>';
+                            }
                         }
                     }
+                } else {
+                    console.error('CRITICAL: payButton element not found in DOM!');
                 }
+            } catch (err) {
+                console.error('Error in updatePayButtonState:', err);
             }
         }
 
@@ -999,9 +1027,20 @@
             const kiswahili = document.getElementById('kiswahili')?.value;
             const mathematics = document.getElementById('mathematics')?.value;
 
-            if (!english) errors.push('English');
-            if (!kiswahili) errors.push('Kiswahili');
+            // Compulsory: Mathematics
             if (!mathematics) errors.push('Mathematics');
+
+            // Compulsory: At least one Language (English or Kiswahili)
+            if (!english && !kiswahili) {
+                errors.push('Language (English/Kiswahili)');
+            }
+
+            // Compulsory: At least 2 Sciences
+            const sciences = ['biology', 'physics', 'chemistry'];
+            const scienceCount = sciences.filter(s => document.getElementById(s)?.value).length;
+            if (scienceCount < 2) {
+                errors.push('at least 2 Sciences');
+            }
 
             let totalSubjects = 0;
             document.querySelectorAll('.grade-select').forEach(select => {
@@ -1030,57 +1069,59 @@
             const validation = validateSubjects();
             const overallPoints = parseInt(document.getElementById('overallGrade').value) || 0;
 
-            // 1. Grade Threshold Check (C+ for Cluster Points)
-            if (category === 'point-and-courses' && overallPoints < 46) {
-                const { isConfirmed } = await Swal.fire({
-                    title: '<span class="text-yellow-600">Grade Notice</span>',
-                    html: `
-                        <div class="text-left text-sm space-y-3">
-                            <p class="text-gray-700">Your grade is <strong>${overallPoints}/84</strong> (Below C+).</p>
-                            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-3">
-                                <p class="text-yellow-800 italic text-xs">Full cluster points & Degree courses are only available for C+ and above.</p>
-                            </div>
-                            <p class="text-gray-600">You will still see <strong>Diploma and KMTC</strong> eligibility. Do you wish to proceed with this package?</p>
-                        </div>
-                    `,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Yes, Proceed',
-                    cancelButtonText: 'No, Change',
-                    confirmButtonColor: '#16a34a',
-                    cancelButtonColor: '#6b7280',
-                    customClass: { popup: 'premium-modal' }
-                });
-                if (!isConfirmed) return false;
-            }
+            // 1. ALL ERROR HANDLING BEFORE TERMS/PAYMENT
 
+            // Check Compulsory Subjects
             if (!validation.valid) {
-                let errorHtml = '<div class="text-left">';
+                let errorHtml = '<div class="text-left py-2">';
                 if (validation.missingCompulsory.length > 0) {
-                    errorHtml += `<p class="mb-2"><strong>Missing compulsory subjects:</strong></p>`;
-                    errorHtml += `<ul class="list-disc list-inside mb-3 text-red-600">`;
+                    errorHtml += `<p class="mb-2 font-bold text-gray-800">Please fill the following compulsory subjects:</p>`;
+                    errorHtml += `<ul class="space-y-1 mb-4">`;
                     validation.missingCompulsory.forEach(subj => {
-                        errorHtml += `<li>${subj}</li>`;
+                        errorHtml += `<li class="text-red-600 bg-red-50 p-2 rounded flex items-center gap-2"><i class="fas fa-exclamation-circle text-xs"></i> <span>${subj}</span></li>`;
                     });
                     errorHtml += `</ul>`;
                 }
                 if (validation.needMore > 0) {
-                    errorHtml += `<p class="text-gray-600">You need <strong>${validation.needMore} more subject(s)</strong> (minimum 7 required).</p>`;
+                    errorHtml += `<p class="text-gray-600 bg-gray-50 p-3 rounded-lg border border-gray-100">You still need to select <strong>${validation.needMore} more subject(s)</strong> for a valid KCSE mean grade.</p>`;
                 }
                 errorHtml += '</div>';
 
                 Swal.fire({
-                    icon: 'warning',
-                    title: 'Please Complete Your Grades',
+                    icon: 'error',
+                    title: 'Incomplete Grades',
                     html: errorHtml,
                     confirmButtonColor: '#16a34a',
-                    confirmButtonText: 'Fill Grades',
+                    confirmButtonText: 'Got it, let me fix',
                     customClass: { popup: 'premium-modal' }
                 });
                 return false;
             }
 
-            // 1. T&C Acceptance Modal
+            // Check C+ Threshold vs Cluster Packages
+            const isClusterPackage = category === 'point-and-courses' || category === 'calculate-cluster-points';
+            if (isClusterPackage && overallPoints < 46) {
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Grade Threshold Restriction',
+                    html: `
+                        <div class="text-left text-sm space-y-4 py-2">
+                            <p class="text-gray-700">The package you selected (<strong>${getCategoryName(category)}</strong>) provides Cluster Points for Degree courses.</p>
+                            <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                                <p class="text-red-800 font-bold mb-1">RESTRICTION:</p>
+                                <p class="text-red-700">Cluster points are only applicable for students with a mean grade of <strong>C+ (46 points)</strong> and above.</p>
+                            </div>
+                            <p class="text-gray-600 font-medium">Since your points are <strong>${overallPoints}/84</strong>, please select the <span class="text-indigo-600">Standard Package</span> instead to view Diploma and KMTC courses.</p>
+                        </div>
+                    `,
+                    confirmButtonColor: '#16a34a',
+                    confirmButtonText: 'Change Package',
+                    customClass: { popup: 'premium-modal' }
+                });
+                return false;
+            }
+
+            // 2. T&C Acceptance Modal (Only if validation passed)
             const { value: acceptTerms } = await Swal.fire({
                 title: 'Terms and Privacy Policy',
                 html: `
@@ -1378,7 +1419,9 @@
                 });
             });
 
-            console.log('Payment handlers initialized for', paymentBtns.length, 'buttons');
+            // Initial state check
+            updatePayButtonState();
+            console.log('Initial button state check completed');
         });
     </script>
 

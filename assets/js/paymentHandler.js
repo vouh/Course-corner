@@ -9,13 +9,7 @@ class PaymentHandler {
         console.log('PaymentHandler initialized with server URL:', serverUrl);
     }
 
-    // Base configuration
-    constructor(serverUrl = 'https://course-corner-server.vercel.app/api') {
-        this.serverUrl = serverUrl;
-        this.sessionId = localStorage.getItem('paymentSessionId') || null;
-        this.isPaymentCompleted = false;
-        console.log('PaymentHandler initialized');
-    }
+    // Base configuration is handled in the first constructor
 
     // Initiate payment
     async initiatePayment(phoneNumber, category, amount, referralCode = null) {

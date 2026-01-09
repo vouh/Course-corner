@@ -162,10 +162,13 @@
         });
     }
 
-    // Check cluster requirements
+    // Check cluster requirements - with subject tracking to prevent double-counting
     function checkClusterRequirements(grades, requirements) {
         console.log('Checking requirements:', requirements);
         console.log('With grades:', grades);
+
+        // Track which subjects have been used to satisfy requirements
+        const usedSubjects = new Set();
 
         for (let i = 1; i <= 4; i++) {
             const requirement = requirements[`subject${i}`];
@@ -175,25 +178,73 @@
             console.log(`Checking requirement ${i}:`, requirement);
 
             let requirementMet = false;
+            let subjectUsed = null;
 
             if (name.includes('/')) {
                 if (name.startsWith('GROUP')) {
-                    requirementMet = checkGroupRequirement(name, grades, minGrade);
+                    // Check groups
+                    const result = checkGroupRequirementWithTracking(name, grades, minGrade, usedSubjects);
+                    requirementMet = result.met;
+                    subjectUsed = result.subject;
                 } else {
-                    requirementMet = checkAlternativeSubjects(name, grades, minGrade);
+                    // Check alternative subjects (e.g., "MAT/PHY/CHE/BIO")
+                    const result = checkAlternativeSubjectsWithTracking(name, grades, minGrade, usedSubjects);
+                    requirementMet = result.met;
+                    subjectUsed = result.subject;
                 }
             } else if (name.startsWith('GROUP')) {
-                requirementMet = checkGroupRequirement(name, grades, minGrade);
+                const result = checkGroupRequirementWithTracking(name, grades, minGrade, usedSubjects);
+                requirementMet = result.met;
+                subjectUsed = result.subject;
             } else {
+                // Single subject requirement
                 const htmlId = findSubjectId(name);
-                requirementMet = htmlId && grades[htmlId] &&
-                    (!minGrade || meetsGradeRequirement(grades[htmlId], minGrade));
+                if (htmlId && grades[htmlId] && !usedSubjects.has(htmlId) &&
+                    (!minGrade || meetsGradeRequirement(grades[htmlId], minGrade))) {
+                    requirementMet = true;
+                    subjectUsed = htmlId;
+                }
             }
 
-            console.log(`Requirement ${i} met:`, requirementMet);
+            // Mark subject as used if requirement was met
+            if (subjectUsed) {
+                usedSubjects.add(subjectUsed);
+            }
+
+            console.log(`Requirement ${i} met:`, requirementMet, subjectUsed ? `(used: ${subjectUsed})` : '');
             if (!requirementMet) return false;
         }
         return true;
+    }
+
+    // Check alternative subjects with tracking (e.g., "MAT/PHY/BIO")
+    function checkAlternativeSubjectsWithTracking(subjects, grades, minGrade, usedSubjects) {
+        const alternatives = subjects.split('/');
+        for (const subject of alternatives) {
+            const htmlId = findSubjectId(subject);
+            if (htmlId && grades[htmlId] && !usedSubjects.has(htmlId)) {
+                if (!minGrade || meetsGradeRequirement(grades[htmlId], minGrade)) {
+                    return { met: true, subject: htmlId };
+                }
+            }
+        }
+        return { met: false, subject: null };
+    }
+
+    // Check group requirement with tracking
+    function checkGroupRequirementWithTracking(groupName, grades, minGrade, usedSubjects) {
+        const groups = groupName.split('/');
+        for (const group of groups) {
+            const subjects = SUBJECT_GROUPS[group] || [];
+            for (const subject of subjects) {
+                if (grades[subject] && !usedSubjects.has(subject)) {
+                    if (!minGrade || meetsGradeRequirement(grades[subject], minGrade)) {
+                        return { met: true, subject: subject };
+                    }
+                }
+            }
+        }
+        return { met: false, subject: null };
     }
 
     // Modify the checkKMTCCourseEligibility function
@@ -1268,15 +1319,15 @@
         }
     }
 
-    // Modify generateClusterPointsPDF function
+    // Modify generateClusterPointsPDF function - uses jsPDF with html2canvas
     async function generateClusterPointsPDF() {
         // Check if we have calculated points
         const calculatedPoints = document.getElementById('overallGrade').value;
         if (!calculatedPoints) {
             Swal.fire({
                 icon: 'error',
-                title: 'No cluster points available',
-                text: 'Please calculate your cluster points first'
+                title: 'No results available',
+                text: 'Please calculate your grades first'
             });
             return;
         }
@@ -1294,40 +1345,86 @@
             }
         });
 
-        if (studentName.isConfirmed) {
-            const pdfGenerator = new PDFGenerator();
-            const studentGrade = get_grade_from_points(parseInt(calculatedPoints));
+        if (studentName.isConfirmed && studentName.value) {
+            const { jsPDF } = window.jspdf;
+            const resultsEl = document.getElementById('results');
 
-            // Get all the calculated cluster points from the results
-            const clusterResults = {};
-            document.querySelectorAll('.cluster').forEach(cluster => {
-                const clusterName = cluster.querySelector('h3').textContent;
-                const coursesList = Array.from(cluster.querySelectorAll('li'))
-                    .map(li => li.textContent.trim());
-                clusterResults[clusterName] = coursesList;
+            if (!resultsEl) {
+                Swal.fire('Error', 'No results to export', 'error');
+                return;
+            }
+
+            // Show loading
+            Swal.fire({
+                title: 'Generating PDF...',
+                text: 'Please wait while we prepare your results',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
             });
 
-            // Generate PDF with actual cluster points and courses
-            const doc = await pdfGenerator.generateClusterPointsPDF(
-                {
-                    points: calculatedPoints,
-                    grade: studentGrade,
-                    clusters: clusterResults
-                },
-                studentName.value,
-                studentGrade
-            );
+            try {
+                // Expand all sections for capture
+                document.querySelectorAll('.collapsible-content').forEach(c => c.classList.remove('hidden'));
 
-            // Save the PDF
-            doc.save(`${studentName.value.replace(/\s+/g, '_')}_cluster_points.pdf`);
-        }
-    }
+                // Add temporary student name header to results
+                const nameHeader = document.createElement('div');
+                nameHeader.id = 'pdf-name-header';
+                nameHeader.className = 'text-center mb-4 p-4 bg-gray-100 rounded-lg';
+                nameHeader.innerHTML = `
+                    <h2 class="text-2xl font-bold text-gray-800">Course Corner Results</h2>
+                    <p class="text-lg text-gray-600">Student: <strong>${studentName.value}</strong></p>
+                    <p class="text-sm text-gray-500">Generated on: ${new Date().toLocaleDateString()}</p>
+                `;
+                resultsEl.insertBefore(nameHeader, resultsEl.firstChild);
 
-    // Add this to the existing initializeDownloadButton function
-    function initializeDownloadButton() {
-        const downloadBtn = document.getElementById('downloadBtn');
-        if (downloadBtn) {
-            downloadBtn.addEventListener('click', generateClusterPointsPDF);
+                const canvas = await html2canvas(resultsEl, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff'
+                });
+
+                // Remove the temporary header
+                nameHeader.remove();
+
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgProps = pdf.getImageProperties(imgData);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+                // Handle multi-page if content is too long
+                const pageHeight = pdf.internal.pageSize.getHeight();
+                if (pdfHeight > pageHeight) {
+                    let heightLeft = pdfHeight;
+                    let position = 0;
+
+                    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                    heightLeft -= pageHeight;
+
+                    while (heightLeft > 0) {
+                        position = heightLeft - pdfHeight;
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+                        heightLeft -= pageHeight;
+                    }
+                } else {
+                    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                }
+
+                pdf.save(`${studentName.value.replace(/\s+/g, '_')}_Course_Corner_Results.pdf`);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'PDF Downloaded!',
+                    text: `Saved as ${studentName.value.replace(/\s+/g, '_')}_Course_Corner_Results.pdf`,
+                    timer: 3000,
+                    showConfirmButton: false
+                });
+            } catch (error) {
+                console.error('PDF Generation Error:', error);
+                Swal.fire('Error', 'Failed to generate PDF. Please try again.', 'error');
+            }
         }
     }
 

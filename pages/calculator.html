@@ -1109,15 +1109,16 @@
             return { grade: 'E', message: 'Look into skill-based training programs.' };
         }
 
-        // Simplified inline display function
-        function inlineDisplayResults(grades) {
+        // Simplified inline display function - receives eligibleCourses object from getEligibleCourses
+        function inlineDisplayResults(results) {
             const resultsDiv = document.getElementById('results');
             if (!resultsDiv) return;
 
             const studentPoints = parseInt(document.getElementById('overallGrade').value) || 0;
             const gradeInfo = inlineGetGradeDetails(studentPoints);
+            const grades = inlineGetStudentGrades();
 
-            // Build a simple results display
+            // Build results display
             let html = `
                 <div class="bg-green-50 border-l-4 border-green-500 p-6 mb-8 rounded-lg shadow-lg">
                     <div class="flex items-center">
@@ -1140,25 +1141,83 @@
                 </div>
             `;
 
-            // Show grades
-            html += `<div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 mb-6">
-                <h4 class="text-lg font-bold text-gray-800 mb-4">Your Subject Grades</h4>
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">`;
+            // Show subject grades in a collapsible section
+            html += `
+                <div class="mb-6 overflow-hidden rounded-xl shadow-lg border border-gray-100 bg-white">
+                    <button class="collapsible-header w-full p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-all duration-200 group" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.collapse-icon').classList.toggle('rotate-180');">
+                        <div class="flex items-center">
+                            <div class="w-1.5 h-10 bg-blue-500 rounded-full mr-5"></div>
+                            <div class="text-left">
+                                <h3 class="text-lg font-bold text-gray-800">Your Subject Grades</h3>
+                                <p class="text-xs font-medium text-gray-500">${Object.keys(grades).length} Subjects</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-down collapse-icon text-gray-400 transition-transform duration-300"></i>
+                    </button>
+                    <div class="collapsible-content hidden border-t border-gray-50 bg-gray-50/30 p-6">
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">`;
 
             Object.entries(grades).forEach(([subject, grade]) => {
                 const subjectName = subject.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-                html += `<div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                html += `<div class="bg-white p-3 rounded-lg border-l-4 border-blue-400 shadow-sm">
                     <span class="text-gray-600 text-sm">${subjectName}</span>
-                    <span class="block font-bold text-lg text-green-600">${grade}</span>
+                    <span class="block font-bold text-lg text-blue-600">${grade}</span>
                 </div>`;
             });
 
-            html += `</div></div>`;
+            html += `</div></div></div>`;
 
-            // Note about loading external data
-            html += `<div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
-                <p class="text-blue-800"><strong>Note:</strong> For detailed course eligibility, please refresh the page. If issues persist, contact support.</p>
-            </div>`;
+            // Check if we have course results to display
+            if (results && results.courses && Object.keys(results.courses).length > 0) {
+                // Iterate through course categories
+                Object.entries(results.courses).forEach(([categoryName, courses]) => {
+                    if (!courses || (Array.isArray(courses) && courses.length === 0)) return;
+
+                    const courseCount = Array.isArray(courses) ? courses.length : 0;
+                    const color = categoryName.includes('KMTC') ? 'red' :
+                        categoryName.includes('Diploma') ? 'blue' :
+                            categoryName.includes('Certificate') ? 'purple' :
+                                categoryName.includes('Artisan') ? 'orange' : 'green';
+
+                    html += `
+                        <div class="mb-6 overflow-hidden rounded-xl shadow-lg border border-gray-100 bg-white">
+                            <button class="collapsible-header w-full p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-all duration-200 group" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.collapse-icon').classList.toggle('rotate-180');">
+                                <div class="flex items-center">
+                                    <div class="w-1.5 h-10 bg-${color}-500 rounded-full mr-5"></div>
+                                    <div class="text-left">
+                                        <h3 class="text-lg font-bold text-gray-800">${categoryName}</h3>
+                                        <p class="text-xs font-medium text-gray-500">${courseCount} Course${courseCount !== 1 ? 's' : ''}</p>
+                                    </div>
+                                </div>
+                                <i class="fas fa-chevron-down collapse-icon text-gray-400 transition-transform duration-300"></i>
+                            </button>
+                            <div class="collapsible-content hidden border-t border-gray-50 bg-gray-50/30 p-6">
+                                <div class="grid grid-cols-1 gap-2">`;
+
+                    if (Array.isArray(courses)) {
+                        courses.forEach(course => {
+                            html += `<div class="p-3 bg-white rounded-lg border-l-4 border-${color}-400 shadow-sm text-gray-700 text-sm font-medium">
+                                ${course}
+                            </div>`;
+                        });
+                    }
+
+                    html += `</div></div></div>`;
+                });
+            } else {
+                // No courses found message
+                html += `
+                    <div class="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg mb-6">
+                        <div class="flex items-center">
+                            <i class="fas fa-info-circle text-2xl text-yellow-500 mr-4"></i>
+                            <div>
+                                <h3 class="text-lg font-bold text-yellow-800">Course Data Loading</h3>
+                                <p class="text-yellow-700">Course eligibility data is being loaded. If courses don't appear, please refresh the page.</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
 
             resultsDiv.innerHTML = html;
             resultsDiv.classList.remove('hidden');

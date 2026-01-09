@@ -7,9 +7,9 @@ const { savePaymentTransaction, updatePaymentTransaction, getAllTransactions, ge
 
 // Payment amounts for each category
 const PAYMENT_AMOUNTS = {
-  'calculate-cluster-points': 1,
-  'courses-only': 1,
-  'point-and-courses': 160
+  'calculate-cluster-points': 100,
+  'courses-only': 200,
+  'point-and-courses': 300
 };
 
 // Initiate STK Push Payment
@@ -94,14 +94,14 @@ router.post('/stkpush', async (req, res) => {
 router.get('/status/:sessionId?', async (req, res) => {
   try {
     const sessionId = req.params.sessionId || req.query.sessionId;
-    
+
     if (!sessionId) {
       return res.status(400).json({
         success: false,
         message: 'Session ID is required'
       });
     }
-    
+
     const payment = PaymentStore.getPaymentBySessionId(sessionId);
 
     if (!payment) {
@@ -114,19 +114,19 @@ router.get('/status/:sessionId?', async (req, res) => {
     // If payment is still pending and we have a checkout ID, query M-Pesa directly
     if (payment.status === 'pending' && payment.checkoutRequestId) {
       console.log('🔍 Querying M-Pesa for status of:', payment.checkoutRequestId);
-      
+
       try {
         const queryResult = await querySTKPushStatus(payment.checkoutRequestId);
         console.log('📋 M-Pesa Query Result:', JSON.stringify(queryResult, null, 2));
-        
+
         // Handle "pending" status - transaction still being processed
         // Also check if ResultDesc contains "processing" - M-Pesa sometimes returns this
-        const isStillProcessing = 
-          queryResult.ResultCode === 'pending' || 
+        const isStillProcessing =
+          queryResult.ResultCode === 'pending' ||
           queryResult.status === 'pending' ||
           (queryResult.ResultDesc && queryResult.ResultDesc.toLowerCase().includes('processing')) ||
           (queryResult.errorMessage && queryResult.errorMessage.toLowerCase().includes('processing'));
-        
+
         if (isStillProcessing) {
           console.log('⏳ Transaction still processing, keeping pending status...');
           // Keep status as pending, don't update anything - let polling continue
@@ -140,12 +140,12 @@ router.get('/status/:sessionId?', async (req, res) => {
           console.log('✅ M-Pesa confirms payment successful!');
           console.log('   ResultDesc:', queryResult.ResultDesc);
           console.log('   Existing Receipt (from callback):', existingReceipt || 'NOT YET RECEIVED - waiting for callback');
-          
+
           // Update PaymentStore - mark as completed
           PaymentStore.updatePaymentStatus(sessionId, 'completed', queryResult.ResultDesc || 'The service request is processed successfully.', {
             mpesaReceiptNumber: existingReceipt
           });
-          
+
           // Update Firebase - mark as completed
           await updatePaymentTransaction(payment.checkoutRequestId, {
             status: 'completed',
@@ -153,35 +153,35 @@ router.get('/status/:sessionId?', async (req, res) => {
             // Only update receipt if we have one
             ...(existingReceipt && { mpesaReceiptNumber: existingReceipt, transactionCode: existingReceipt })
           });
-          
+
           payment.status = 'completed';
           payment.resultDesc = queryResult.ResultDesc || 'The service request is processed successfully.';
           if (existingReceipt) payment.mpesaReceiptNumber = existingReceipt;
-        } 
+        }
         // ResultCode 1032 = Cancelled by user
         else if (queryResult.ResultCode === '1032' || queryResult.ResultCode === 1032) {
           // User cancelled
           console.log('❌ User cancelled the payment');
           PaymentStore.updatePaymentStatus(sessionId, 'failed', 'Request cancelled by user');
-          
+
           await updatePaymentTransaction(payment.checkoutRequestId, {
             status: 'failed',
             resultDesc: 'Request cancelled by user'
           });
-          
+
           payment.status = 'failed';
           payment.resultDesc = 'Request cancelled by user';
-        } 
+        }
         // ResultCode 1037 = Timeout (user didn't respond in time)
         else if (queryResult.ResultCode === '1037' || queryResult.ResultCode === 1037) {
           console.log('⏰ Payment request timed out');
           PaymentStore.updatePaymentStatus(sessionId, 'failed', 'Payment request timed out. Please try again.');
-          
+
           await updatePaymentTransaction(payment.checkoutRequestId, {
             status: 'failed',
             resultDesc: 'Payment request timed out'
           });
-          
+
           payment.status = 'failed';
           payment.resultDesc = 'Payment request timed out. Please try again.';
         }
@@ -189,28 +189,28 @@ router.get('/status/:sessionId?', async (req, res) => {
         else if (queryResult.ResultCode === '1' || queryResult.ResultCode === 1) {
           console.log('💰 Insufficient balance');
           PaymentStore.updatePaymentStatus(sessionId, 'failed', 'Insufficient M-Pesa balance');
-          
+
           await updatePaymentTransaction(payment.checkoutRequestId, {
             status: 'failed',
             resultDesc: 'Insufficient balance'
           });
-          
+
           payment.status = 'failed';
           payment.resultDesc = 'Insufficient M-Pesa balance';
         }
         // ResultCode 2001 or 1025 = Wrong PIN
-        else if (queryResult.ResultCode === '2001' || queryResult.ResultCode === 2001 || 
-                 queryResult.ResultCode === '1025' || queryResult.ResultCode === 1025 ||
-                 (queryResult.ResultDesc && queryResult.ResultDesc.toLowerCase().includes('wrong pin'))) {
+        else if (queryResult.ResultCode === '2001' || queryResult.ResultCode === 2001 ||
+          queryResult.ResultCode === '1025' || queryResult.ResultCode === 1025 ||
+          (queryResult.ResultDesc && queryResult.ResultDesc.toLowerCase().includes('wrong pin'))) {
           console.log('🔐 Wrong PIN entered');
           PaymentStore.updatePaymentStatus(sessionId, 'failed', 'WRONG_PIN: You entered the wrong M-Pesa PIN. Please try again.');
-          
+
           await updatePaymentTransaction(payment.checkoutRequestId, {
             status: 'failed',
             resultDesc: 'Wrong PIN entered',
             resultCode: queryResult.ResultCode
           });
-          
+
           payment.status = 'failed';
           payment.resultDesc = 'WRONG_PIN: You entered the wrong M-Pesa PIN. Please try again.';
         }
@@ -223,13 +223,13 @@ router.get('/status/:sessionId?', async (req, res) => {
             // Other failure
             console.log('❌ Payment failed with code:', queryResult.ResultCode);
             PaymentStore.updatePaymentStatus(sessionId, 'failed', queryResult.ResultDesc || 'Payment failed');
-          
-          await updatePaymentTransaction(payment.checkoutRequestId, {
-            status: 'failed',
-            resultDesc: queryResult.ResultDesc,
-            resultCode: queryResult.ResultCode
-          });
-          
+
+            await updatePaymentTransaction(payment.checkoutRequestId, {
+              status: 'failed',
+              resultDesc: queryResult.ResultDesc,
+              resultCode: queryResult.ResultCode
+            });
+
             payment.status = 'failed';
             payment.resultDesc = queryResult.ResultDesc || 'Payment failed';
           }
@@ -281,7 +281,7 @@ router.post('/callback', async (req, res) => {
 
     // Extract callback data
     const stkCallback = callbackData.Body?.stkCallback;
-    
+
     if (!stkCallback) {
       console.error('❌ Invalid callback structure - no stkCallback found');
       return res.json({
@@ -309,10 +309,10 @@ router.post('/callback', async (req, res) => {
       if (resultCode === 0) {
         // Payment successful - Extract metadata including M-Pesa Receipt Number
         console.log('✅ PAYMENT SUCCESSFUL!');
-        
+
         const callbackMetadata = stkCallback.CallbackMetadata?.Item || [];
         const metadata = {};
-        
+
         console.log('📦 Extracting CallbackMetadata:');
         callbackMetadata.forEach(item => {
           metadata[item.Name] = item.Value;
@@ -328,7 +328,7 @@ router.post('/callback', async (req, res) => {
           ...metadata,
           mpesaReceiptNumber: mpesaReceiptNumber
         });
-        
+
         // Update Firebase with success status and transaction details
         await updatePaymentTransaction(checkoutRequestID, {
           status: 'completed',
@@ -341,18 +341,18 @@ router.post('/callback', async (req, res) => {
           metadata,
           callbackReceivedAt: new Date().toISOString()
         });
-        
+
         console.log('💾 Payment data saved successfully with Receipt:', mpesaReceiptNumber);
       } else {
         // Payment failed
         console.log('❌ PAYMENT FAILED!');
         console.log('   Reason:', resultDesc);
         console.log('   ResultCode:', resultCode);
-        
+
         PaymentStore.updatePaymentStatus(payment.sessionId, 'failed', resultDesc, {
           resultCode: resultCode
         });
-        
+
         // Update Firebase with failed status
         await updatePaymentTransaction(checkoutRequestID, {
           status: 'failed',
@@ -415,7 +415,7 @@ router.post('/verify', async (req, res) => {
     if (payment.status === 'pending' && payment.checkoutRequestId) {
       try {
         const queryResult = await querySTKPushStatus(payment.checkoutRequestId);
-        
+
         if (queryResult.ResponseCode === '0') {
           PaymentStore.updatePaymentStatus(payment.sessionId, 'completed');
         }
@@ -449,7 +449,7 @@ router.get('/admin/completed', async (req, res) => {
   try {
     // Get from Firebase
     const firebaseTransactions = await getAllTransactions(100, 'completed');
-    
+
     // Fallback to in-memory store if Firebase is empty
     if (firebaseTransactions.length === 0) {
       const payments = PaymentStore.getCompletedPayments();
@@ -459,7 +459,7 @@ router.get('/admin/completed', async (req, res) => {
         data: payments
       });
     }
-    
+
     res.json({
       success: true,
       source: 'firebase',
@@ -478,7 +478,7 @@ router.get('/admin/transactions', async (req, res) => {
   try {
     const { limit = 100, status } = req.query;
     const transactions = await getAllTransactions(parseInt(limit), status || null);
-    
+
     res.json({
       success: true,
       count: transactions.length,
@@ -497,7 +497,7 @@ router.get('/admin/stats', async (req, res) => {
   try {
     // Get from Firebase
     const firebaseStats = await getTransactionStats();
-    
+
     // Fallback to in-memory store
     if (!firebaseStats) {
       const stats = PaymentStore.getStatistics();
@@ -507,7 +507,7 @@ router.get('/admin/stats', async (req, res) => {
         data: stats
       });
     }
-    
+
     res.json({
       success: true,
       source: 'firebase',
@@ -531,7 +531,7 @@ router.get('/admin/debug-firebase', async (req, res) => {
     FIREBASE_CLIENT_ID: process.env.FIREBASE_CLIENT_ID ? 'SET' : 'NOT SET',
     FIREBASE_CERT_URL: process.env.FIREBASE_CERT_URL ? 'SET' : 'NOT SET'
   };
-  
+
   res.json({
     success: true,
     message: 'Firebase environment check',
@@ -543,21 +543,21 @@ router.get('/admin/debug-firebase', async (req, res) => {
 router.get('/admin/test-firebase', async (req, res) => {
   try {
     const { initializeFirebase, getFirestore } = require('../utils/firebaseAdmin');
-    
+
     console.log('Testing Firebase connection...');
-    
+
     // Initialize Firebase
     const admin = initializeFirebase();
     console.log('Firebase Admin initialized, apps:', admin.apps.length);
-    
+
     const db = getFirestore();
     console.log('Got Firestore instance for project:', db._settings?.projectId || 'unknown');
-    
+
     // First try to just list collections (read operation)
     console.log('Attempting to list collections...');
     const collections = await db.listCollections();
     console.log('Collections found:', collections.map(c => c.id));
-    
+
     // Then try to write
     console.log('Attempting to write test document...');
     const testDoc = await db.collection('test').add({
@@ -565,13 +565,13 @@ router.get('/admin/test-firebase', async (req, res) => {
       timestamp: new Date().toISOString()
     });
     console.log('Test document created:', testDoc.id);
-    
+
     // Test read
     const readDoc = await testDoc.get();
-    
+
     // Clean up
     await testDoc.delete();
-    
+
     res.json({
       success: true,
       message: 'Firebase connection successful!',
@@ -593,21 +593,21 @@ router.get('/admin/test-firebase', async (req, res) => {
 router.delete('/admin/transactions/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     if (!id) {
       return res.status(400).json({
         success: false,
         message: 'Transaction ID is required'
       });
     }
-    
+
     // Delete from Firebase
     const { deleteTransaction } = require('../utils/firebaseAdmin');
     const deleted = await deleteTransaction(id);
-    
+
     // Also delete from in-memory store if exists
     PaymentStore.deletePayment(id);
-    
+
     if (deleted) {
       res.json({
         success: true,
@@ -650,26 +650,26 @@ router.get('/debug/payments', async (req, res) => {
 router.post('/debug/simulate-callback', async (req, res) => {
   try {
     const { checkoutRequestId, mpesaReceiptNumber } = req.body;
-    
+
     if (!checkoutRequestId) {
       return res.status(400).json({
         success: false,
         message: 'checkoutRequestId is required'
       });
     }
-    
+
     const payment = PaymentStore.getPaymentByCheckoutId(checkoutRequestId);
-    
+
     if (!payment) {
       return res.status(404).json({
         success: false,
         message: 'Payment not found for this checkoutRequestId'
       });
     }
-    
+
     // Simulate successful callback
     const simulatedReceipt = mpesaReceiptNumber || `SIM${Date.now().toString().slice(-8)}`;
-    
+
     PaymentStore.updatePaymentStatus(payment.sessionId, 'completed', 'Simulated successful payment', {
       MpesaReceiptNumber: simulatedReceipt,
       mpesaReceiptNumber: simulatedReceipt,
@@ -677,7 +677,7 @@ router.post('/debug/simulate-callback', async (req, res) => {
       PhoneNumber: payment.phoneNumber,
       TransactionDate: new Date().toISOString()
     });
-    
+
     // Update Firebase
     await updatePaymentTransaction(checkoutRequestId, {
       status: 'completed',
@@ -685,7 +685,7 @@ router.post('/debug/simulate-callback', async (req, res) => {
       mpesaReceiptNumber: simulatedReceipt,
       transactionCode: simulatedReceipt
     });
-    
+
     res.json({
       success: true,
       message: 'Callback simulated successfully',
@@ -706,11 +706,11 @@ router.post('/debug/simulate-callback', async (req, res) => {
 router.post('/admin/sync-pending', async (req, res) => {
   try {
     const { getAllTransactions: getAll } = require('../utils/firebaseAdmin');
-    
+
     // Get all pending transactions from Firebase
     const pendingTransactions = await getAll(50, 'pending');
     console.log(`🔄 Found ${pendingTransactions.length} pending transactions to sync`);
-    
+
     const results = {
       total: pendingTransactions.length,
       updated: 0,
@@ -718,18 +718,18 @@ router.post('/admin/sync-pending', async (req, res) => {
       failed: 0,
       errors: []
     };
-    
+
     for (const tx of pendingTransactions) {
       if (!tx.checkoutRequestId) {
         results.errors.push({ id: tx.id, error: 'No checkoutRequestId' });
         continue;
       }
-      
+
       try {
         console.log(`📡 Querying status for: ${tx.checkoutRequestId}`);
         const queryResult = await querySTKPushStatus(tx.checkoutRequestId);
         console.log('   Result:', JSON.stringify(queryResult, null, 2));
-        
+
         if (queryResult.ResultCode === '0' || queryResult.ResultCode === 0) {
           // Success - update to completed
           await updatePaymentTransaction(tx.checkoutRequestId, {
@@ -759,7 +759,7 @@ router.post('/admin/sync-pending', async (req, res) => {
         console.log(`   ⚠️ Error: ${err.message}`);
       }
     }
-    
+
     res.json({
       success: true,
       message: 'Sync completed',
@@ -778,27 +778,27 @@ router.post('/admin/sync-pending', async (req, res) => {
 router.post('/admin/update-transaction', async (req, res) => {
   try {
     const { transactionId, checkoutRequestId, status, mpesaReceiptNumber } = req.body;
-    
+
     if (!transactionId && !checkoutRequestId) {
       return res.status(400).json({
         success: false,
         message: 'Either transactionId or checkoutRequestId is required'
       });
     }
-    
+
     const updateData = {
       updatedAt: new Date().toISOString(),
       manuallyUpdated: true
     };
-    
+
     if (status) updateData.status = status;
     if (mpesaReceiptNumber) {
       updateData.mpesaReceiptNumber = mpesaReceiptNumber;
       updateData.transactionCode = mpesaReceiptNumber;
     }
-    
+
     let success = false;
-    
+
     if (checkoutRequestId) {
       success = await updatePaymentTransaction(checkoutRequestId, updateData);
     } else if (transactionId) {
@@ -809,7 +809,7 @@ router.post('/admin/update-transaction', async (req, res) => {
       await docRef.update(updateData);
       success = true;
     }
-    
+
     if (success) {
       res.json({
         success: true,

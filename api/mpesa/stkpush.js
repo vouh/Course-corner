@@ -16,9 +16,9 @@ const payments = new Map();
 
 // Payment amounts for each category
 const PAYMENT_AMOUNTS = {
-  'calculate-cluster-points': 1,
-  'courses-only': 1,
-  'point-and-courses': 160
+  'calculate-cluster-points': 100,
+  'courses-only': 200,
+  'point-and-courses': 300
 };
 
 // Get M-Pesa Access Token
@@ -26,7 +26,7 @@ async function getMpesaToken() {
   if (!CONSUMER_KEY || !CONSUMER_SECRET) {
     throw new Error('M-Pesa credentials not configured. Please set CONSUMER_KEY and CONSUMER_SECRET environment variables.');
   }
-  
+
   const auth = Buffer.from(`${CONSUMER_KEY}:${CONSUMER_SECRET}`).toString('base64');
   const response = await axios.get(AUTH_URL, {
     headers: {
@@ -95,9 +95,9 @@ module.exports = async (req, res) => {
     }
 
     if (!category || !PAYMENT_AMOUNTS[category]) {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Invalid category. Must be one of: calculate-cluster-points, courses-only, point-and-courses' 
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid category. Must be one of: calculate-cluster-points, courses-only, point-and-courses'
       });
     }
 

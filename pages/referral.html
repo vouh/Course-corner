@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -482,6 +483,7 @@
         }
     </style>
 </head>
+
 <body class="bg-gray-50">
     <!-- Modern Navigation -->
     <header class="modern-header" id="mainHeader">
@@ -549,17 +551,20 @@
                     <div class="step-card">
                         <div class="step-number">1</div>
                         <h3>Get Your Code</h3>
-                        <p>Sign in to your account and generate your unique 5-character referral code. You only need to do this once!</p>
+                        <p>Sign in to your account and generate your unique 5-character referral code. You only need to
+                            do this once!</p>
                     </div>
                     <div class="step-card">
                         <div class="step-number">2</div>
                         <h3>Share Your Link</h3>
-                        <p>Share your personalized referral link with friends, family, or on social media. The more you share, the more you earn!</p>
+                        <p>Share your personalized referral link with friends, family, or on social media. The more you
+                            share, the more you earn!</p>
                     </div>
                     <div class="step-card">
                         <div class="step-number">3</div>
                         <h3>Earn Rewards</h3>
-                        <p>When someone uses your code and pays for any service, you automatically earn 10% of their payment. It's that simple!</p>
+                        <p>When someone uses your code and pays for any service, you automatically earn 10% of their
+                            payment. It's that simple!</p>
                     </div>
                 </div>
             </div>
@@ -637,13 +642,35 @@
             <!-- Info Box -->
             <div class="info-box">
                 <i class="fas fa-info-circle"></i>
-                <p>Your referral code can only be generated once and cannot be changed. When someone signs up or makes a payment using your referral link, you'll earn 10% of their payment automatically. Earnings are tracked and can be withdrawn once they reach a minimum threshold.</p>
+                <p>Your referral code can only be generated once and cannot be changed. When someone signs up or makes a
+                    payment using your referral link, you'll earn 10% of their payment automatically. Earnings are
+                    tracked and can be withdrawn once they reach a minimum threshold.</p>
             </div>
         </div>
     </div>
 
     <!-- Toast Notification -->
     <div class="toast" id="toast"></div>
+
+    <!-- WhatsApp Hub Section -->
+    <section class="wa-hub-section">
+        <div class="wa-hub-content">
+            <h2 class="wa-hub-title">Join Our Academic Community</h2>
+            <p class="wa-hub-description">Get instant updates on campus news, application deadlines, and expert career
+                guidance directly on your phone.</p>
+            <div class="wa-hub-btns">
+                <a href="https://chat.whatsapp.com/IiipHgYt5yHL6n126NAKBX" target="_blank" class="btn-wa btn-wa-group">
+                    <i class="fab fa-whatsapp"></i>
+                    Join WhatsApp Group
+                </a>
+                <a href="https://whatsapp.com/channel/0029VbBSAavDzgT8eGdkEW0a" target="_blank"
+                    class="btn-wa btn-wa-channel">
+                    <i class="fas fa-bell"></i>
+                    Follow WhatsApp Channel
+                </a>
+            </div>
+        </div>
+    </section>
 
     <!-- Modern Footer -->
     <footer class="modern-footer">
@@ -655,7 +682,8 @@
                         <span>Course Corner</span>
                     </div>
                     <p class="footer-description">
-                        Empowering students to make informed decisions about their educational future through personalized course recommendations.
+                        Empowering students to make informed decisions about their educational future through
+                        personalized course recommendations.
                     </p>
                 </div>
 
@@ -683,7 +711,8 @@
                     <h4>Contact Us</h4>
                     <ul>
                         <li><i class="fas fa-envelope"></i> info@coursecorner.com</li>
-                        <li><i class="fas fa-phone"></i> +254 700 000000</li>
+                        <li><i class="fas fa-phone"></i> +254 718 744780</li>
+                        <li><i class="fas fa-phone"></i> 0741 739162</li>
                     </ul>
                     <div class="social-links">
                         <a href="#"><i class="fab fa-tiktok"></i></a>
@@ -725,10 +754,12 @@
                     </div>
                     <div class="form-group">
                         <label for="loginPassword">Password</label>
-                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+                        <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password"
+                            required>
                     </div>
                     <div class="form-group text-right">
-                        <a class="auth-link text-sm" onclick="window.firebaseAuth.switchAuthMode('forgot')">Forgot password?</a>
+                        <a class="auth-link text-sm" onclick="window.firebaseAuth.switchAuthMode('forgot')">Forgot
+                            password?</a>
                     </div>
                     <button type="submit" id="loginBtn" class="btn-primary">
                         <span>Login</span>
@@ -746,7 +777,8 @@
                     </div>
                     <div class="form-group">
                         <label for="signupPassword">Password</label>
-                        <input type="password" id="signupPassword" class="form-input" placeholder="Create a password (min 6 chars)" required minlength="6">
+                        <input type="password" id="signupPassword" class="form-input"
+                            placeholder="Create a password (min 6 chars)" required minlength="6">
                     </div>
                     <button type="submit" id="signupBtn" class="btn-primary">
                         <span>Create Account</span>
@@ -772,7 +804,8 @@
                 </div>
                 <!-- Google Sign In -->
                 <button id="googleSignIn" class="btn-google" onclick="window.firebaseAuth.signInWithGoogle()">
-                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="20">
+                    <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google"
+                        width="20">
                     <span>Continue with Google</span>
                 </button>
             </div>
@@ -842,7 +875,7 @@
         // Generate referral code for user
         async function generateReferralCode() {
             const btn = document.getElementById('generateBtn');
-            
+
             if (!window.firebaseAuth || !window.firebaseAuth.isLoggedIn()) {
                 showToast('Please sign in first', 'error');
                 return;
@@ -860,7 +893,7 @@
 
             try {
                 const newCode = generateCode();
-                
+
                 // Save to user profile
                 const result = await window.firebaseAuth.updateUserProfile({
                     referralCode: newCode,
@@ -968,15 +1001,15 @@
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             const btn = document.getElementById('loginBtn');
-            
+
             btn.classList.add('btn-loading');
             btn.disabled = true;
-            
+
             const result = await window.firebaseAuth.signIn(email, password);
-            
+
             btn.classList.remove('btn-loading');
             btn.disabled = false;
-            
+
             if (result.success) {
                 window.firebaseAuth.closeAuthModal();
             }
@@ -988,15 +1021,15 @@
             const email = document.getElementById('signupEmail').value;
             const password = document.getElementById('signupPassword').value;
             const btn = document.getElementById('signupBtn');
-            
+
             btn.classList.add('btn-loading');
             btn.disabled = true;
-            
+
             const result = await window.firebaseAuth.signUp(email, password, name);
-            
+
             btn.classList.remove('btn-loading');
             btn.disabled = false;
-            
+
             if (result.success) {
                 window.firebaseAuth.closeAuthModal();
             }
@@ -1006,12 +1039,12 @@
             e.preventDefault();
             const email = document.getElementById('forgotEmail').value;
             const btn = document.getElementById('forgotBtn');
-            
+
             btn.classList.add('btn-loading');
             btn.disabled = true;
-            
+
             await window.firebaseAuth.resetPassword(email);
-            
+
             btn.classList.remove('btn-loading');
             btn.disabled = false;
         }
@@ -1019,5 +1052,19 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', initReferralPage);
     </script>
+    <!-- WhatsApp Floating CTAs -->
+    <div class="wa-floating-container">
+        <a href="https://chat.whatsapp.com/IiipHgYt5yHL6n126NAKBX" target="_blank" class="wa-fab wa-fab-group"
+            title="Join WhatsApp Group">
+            <i class="fab fa-whatsapp"></i>
+            <span>WhatsApp Group</span>
+        </a>
+        <a href="https://whatsapp.com/channel/0029VbBSAavDzgT8eGdkEW0a" target="_blank" class="wa-fab wa-fab-channel"
+            title="Follow WhatsApp Channel">
+            <i class="fas fa-bell"></i>
+            <span>WhatsApp Channel</span>
+        </a>
+    </div>
 </body>
+
 </html>

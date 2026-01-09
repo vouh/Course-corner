@@ -1104,15 +1104,17 @@
         btn.onclick = generateClusterPointsPDF;
     }
 
-    // Optimized PDF generation flow with Multi-page support
+    // Fast data-driven PDF generation
     async function generateClusterPointsPDF() {
+        // Fix scroll lock immediately if stuck
+        fixScrollLock();
+
         const studentPoints = document.getElementById('overallGrade').value;
         if (!studentPoints) {
             Swal.fire({ icon: 'error', title: 'Error', text: 'Please calculate results first.' });
             return;
         }
 
-        // Prompt for name INSTANTLY
         const { value: name, isConfirmed } = await Swal.fire({
             title: 'Enter Name for PDF',
             input: 'text',
@@ -1121,85 +1123,91 @@
             inputValidator: (v) => !v && 'Name is required!'
         });
 
-        if (!isConfirmed) return;
+        if (!isConfirmed) {
+            fixScrollLock();
+            return;
+        }
 
-        // Show loading AFTER name prompt
-        Swal.fire({
-            title: 'Generating PDF...',
-            text: 'Preparing your document...',
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading()
-        });
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
+        let y = 15;
 
-        setTimeout(async () => {
-            try {
-                const resultsEl = document.getElementById('results');
+        // Header
+        pdf.setFontSize(22);
+        pdf.setTextColor(26, 86, 219);
+        pdf.text('Course Corner Report', 105, y, { align: 'center' });
+        y += 10;
 
-                // Expand all sections for full content capture
-                document.querySelectorAll('.collapsible-content').forEach(c => c.classList.remove('hidden'));
+        pdf.setFontSize(14);
+        pdf.setTextColor(100);
+        pdf.text(`Student: ${name}`, 105, y, { align: 'center' });
+        y += 7;
+        pdf.text(`Average Points: ${studentPoints} | Date: ${new Date().toLocaleDateString()}`, 105, y, { align: 'center' });
+        y += 15;
 
-                // Temporary header
-                const header = document.createElement('div');
-                header.className = 'text-center p-6 bg-gray-50 mb-6 rounded-lg border';
-                header.innerHTML = `
-                    <h1 style="color: #1a56db; font-size: 24px; margin-bottom: 8px;">Course Corner Report</h1>
-                    <p style="font-size: 18px;">Student: <strong>${name}</strong></p>
-                    <p style="color: #666;">Points: ${studentPoints} | Date: ${new Date().toLocaleDateString()}</p>
-                `;
-                resultsEl.prepend(header);
+        // 1. Cluster Points
+        if (window.lastClusterPoints) {
+            pdf.setFontSize(16);
+            pdf.setTextColor(0);
+            pdf.text('Cluster Points', 15, y);
+            y += 8;
+            pdf.setFontSize(10);
 
-                // Use html2canvas with settings to capture the full element
-                const canvas = await html2canvas(resultsEl, {
-                    scale: 2,
-                    useCORS: true,
-                    backgroundColor: '#ffffff',
-                    windowWidth: document.documentElement.offsetWidth,
-                    windowHeight: document.documentElement.offsetHeight,
-                    onclone: (clonedDoc) => {
-                        // Ensure all elements are visible in the clone
-                        const cloneResults = clonedDoc.getElementById('results');
-                        if (cloneResults) {
-                            cloneResults.style.height = 'auto';
-                            cloneResults.style.maxHeight = 'none';
-                        }
-                    }
-                });
+            const entries = Object.entries(window.lastClusterPoints);
+            for (let i = 0; i < entries.length; i += 2) {
+                if (y > 270) { pdf.addPage(); y = 20; }
+                const [c1, p1] = entries[i];
+                pdf.text(`${c1}: ${p1.toFixed(3)}`, 20, y);
 
-                header.remove();
-
-                const imgData = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                const pageHeight = pdf.internal.pageSize.getHeight();
-
-                let heightLeft = pdfHeight;
-                let position = 0;
-
-                // First page
-                pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                heightLeft -= pageHeight;
-
-                // Add subsequent pages if needed
-                while (heightLeft > 0) {
-                    position = heightLeft - pdfHeight;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
-                    heightLeft -= pageHeight;
+                if (entries[i + 1]) {
+                    const [c2, p2] = entries[i + 1];
+                    pdf.text(`${c2}: ${p2.toFixed(3)}`, 110, y);
                 }
-
-                pdf.save(`${name.replace(/\s+/g, '_')}_Results.pdf`);
-
-                Swal.fire({ icon: 'success', title: 'Downloaded!', timer: 2000, showConfirmButton: false });
-            } catch (err) {
-                console.error('PDF Generation Error:', err);
-                Swal.fire('Error', 'Failed to generate PDF. Please try again.', 'error');
+                y += 6;
             }
-        }, 300); // Slightly longer delay to ensure DOM is settled
+            y += 10;
+        }
+
+        // 2. Eligible Courses
+        const grades = getStudentGrades();
+        const results = getEligibleCourses(grades);
+
+        if (results && results.courses) {
+            pdf.setFontSize(16);
+            if (y > 270) { pdf.addPage(); y = 20; }
+            pdf.text('Eligible Programs', 15, y);
+            y += 8;
+            pdf.setFontSize(9);
+
+            Object.entries(results.courses).forEach(([cat, progs]) => {
+                if (y > 260) { pdf.addPage(); y = 20; }
+                pdf.setFont(undefined, 'bold');
+                pdf.text(cat, 15, y);
+                y += 5;
+                pdf.setFont(undefined, 'normal');
+
+                progs.slice(0, 15).forEach(p => {
+                    if (y > 280) { pdf.addPage(); y = 20; }
+                    pdf.text(`• ${p}`, 20, y);
+                    y += 4;
+                });
+                y += 5;
+            });
+        }
+
+        pdf.save(`${name.replace(/\s+/g, '_')}_Report.pdf`);
+
+        Swal.fire({ icon: 'success', title: 'Downloaded Ready!', timer: 2000, showConfirmButton: false });
+        // Final scroll lock fix
+        setTimeout(fixScrollLock, 2100);
     }
 
+    // Explicit helper to fix scroll block
+    function fixScrollLock() {
+        document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+        document.body.style.overflow = 'auto';
+        document.body.style.paddingRight = '0px';
+    }
 
     console.log('🏁 courses-eligibility.js: Script fully loaded');
 })(); // End of IIFE

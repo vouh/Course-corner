@@ -1131,186 +1131,201 @@
             return;
         }
 
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF();
+        // Show loading state
+        Swal.fire({
+            title: 'Generating Report...',
+            text: 'Please wait a moment',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
 
-        // Theme Colors (Matching Website Green)
-        const THEME = {
-            primary: [22, 163, 74], // Green
-            secondary: [21, 128, 61], // Darker Green
-            blue: [37, 99, 235],
-            gray: [107, 114, 128],
-            dark: [31, 41, 55]
-        };
+        try {
 
-        const addFooter = (p) => {
-            const pageCount = p.internal.getNumberOfPages();
-            p.setFontSize(8);
-            p.setTextColor(...THEME.gray);
-            const footerText = `© Course Corner 2026 | Page ${pageCount}`;
-            p.text(footerText, 105, 287, { align: 'center' });
-        };
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF();
 
-        const checkPage = (p, currentY, margin = 30) => {
-            if (currentY > (297 - margin)) {
-                addFooter(p);
-                p.addPage();
-                return 20;
-            }
-            return currentY;
-        };
+            // Theme Colors (Matching Website Green)
+            const THEME = {
+                primary: [22, 163, 74], // Green
+                secondary: [21, 128, 61], // Darker Green
+                blue: [37, 99, 235],
+                gray: [107, 114, 128],
+                dark: [31, 41, 55]
+            };
 
-        let y = 20;
+            const addFooter = (p) => {
+                const pageCount = p.internal.getNumberOfPages();
+                p.setFontSize(8);
+                p.setTextColor(...THEME.gray);
+                const footerText = `© Course Corner 2026 | Page ${pageCount}`;
+                p.text(footerText, 105, 287, { align: 'center' });
+            };
 
-        // Header Section
-        pdf.setFontSize(24);
-        pdf.setTextColor(...THEME.primary);
-        pdf.setFont(undefined, 'bold');
-        pdf.text('Course Corner Report', 105, y, { align: 'center' });
+            const checkPage = (p, currentY, margin = 30) => {
+                if (currentY > (297 - margin)) {
+                    addFooter(p);
+                    p.addPage();
+                    return 20;
+                }
+                return currentY;
+            };
 
-        // Decorative Line
-        y += 4;
-        pdf.setDrawColor(...THEME.primary);
-        pdf.setLineWidth(0.5);
-        pdf.line(40, y, 170, y);
+            let y = 20;
 
-        y += 12;
-        pdf.setFontSize(14);
-        pdf.setTextColor(...THEME.dark);
-        pdf.text(`Student: ${name}`, 105, y, { align: 'center' });
-        y += 7;
-        pdf.setFontSize(11);
-        pdf.setTextColor(...THEME.gray);
-        pdf.text(`Grade Points: ${studentPoints} | Date: ${new Date().toLocaleDateString()}`, 105, y, { align: 'center' });
-        y += 15;
+            // Header Section
+            pdf.setFontSize(24);
+            pdf.setTextColor(...THEME.primary);
+            pdf.setFont(undefined, 'bold');
+            pdf.text('Course Corner Report', 105, y, { align: 'center' });
 
-        const gradesSnapshot = getStudentGrades();
+            // Decorative Line
+            y += 4;
+            pdf.setDrawColor(...THEME.primary);
+            pdf.setLineWidth(0.5);
+            pdf.line(40, y, 170, y);
 
-        // 1. Subject Grades
-        pdf.setFontSize(16);
-        pdf.setTextColor(...THEME.secondary);
-        pdf.setFont(undefined, 'bold');
-        pdf.text('Your Subject Grades', 15, y);
-        y += 8;
+            y += 12;
+            pdf.setFontSize(14);
+            pdf.setTextColor(...THEME.dark);
+            pdf.text(`Student: ${name}`, 105, y, { align: 'center' });
+            y += 7;
+            pdf.setFontSize(11);
+            pdf.setTextColor(...THEME.gray);
+            pdf.text(`Grade Points: ${studentPoints} | Date: ${new Date().toLocaleDateString()}`, 105, y, { align: 'center' });
+            y += 15;
 
-        pdf.setFontSize(10);
-        pdf.setTextColor(...THEME.dark);
-        pdf.setFont(undefined, 'normal');
+            const gradesSnapshot = getStudentGrades();
 
-        const gradeEntries = Object.entries(gradesSnapshot);
-        for (let i = 0; i < gradeEntries.length; i += 2) {
-            y = checkPage(pdf, y);
-            const [s1, g1] = gradeEntries[i];
-            const sName1 = s1.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-            pdf.text(`${sName1}: ${g1}`, 20, y);
-
-            if (gradeEntries[i + 1]) {
-                const [s2, g2] = gradeEntries[i + 1];
-                const sName2 = s2.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
-                pdf.text(`${sName2}: ${g2}`, 110, y);
-            }
-            y += 6;
-        }
-        y += 10;
-
-        // 2. Cluster Points
-        if ((window.lastPackageType === 'points-only' || window.lastPackageType === 'combined') && window.lastClusterPoints) {
-            y = checkPage(pdf, y);
+            // 1. Subject Grades
             pdf.setFontSize(16);
             pdf.setTextColor(...THEME.secondary);
             pdf.setFont(undefined, 'bold');
-            pdf.text('Cluster Points Analysis', 15, y);
+            pdf.text('Your Subject Grades', 15, y);
             y += 8;
 
             pdf.setFontSize(10);
             pdf.setTextColor(...THEME.dark);
             pdf.setFont(undefined, 'normal');
 
-            const entries = Object.entries(window.lastClusterPoints);
-            for (let i = 0; i < entries.length; i += 2) {
+            const gradeEntries = Object.entries(gradesSnapshot);
+            for (let i = 0; i < gradeEntries.length; i += 2) {
                 y = checkPage(pdf, y);
-                const [c1, p1] = entries[i];
-                pdf.text(`${c1}: ${p1.toFixed(3)}`, 20, y);
+                const [s1, g1] = gradeEntries[i];
+                const sName1 = s1.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                pdf.text(`${sName1}: ${g1}`, 20, y);
 
-                if (entries[i + 1]) {
-                    const [c2, p2] = entries[i + 1];
-                    pdf.text(`${c2}: ${p2.toFixed(3)}`, 110, y);
+                if (gradeEntries[i + 1]) {
+                    const [s2, g2] = gradeEntries[i + 1];
+                    const sName2 = s2.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                    pdf.text(`${sName2}: ${g2}`, 110, y);
                 }
                 y += 6;
             }
             y += 10;
-        }
 
-        // 3. Eligible Programs
-        if (window.lastPackageType === 'courses-only' || window.lastPackageType === 'combined') {
-            const universityResults = getEligibleCourses(gradesSnapshot);
-            const technicalResults = getTechnicalCourses(gradesSnapshot);
-
-            y = checkPage(pdf, y, 40);
-            pdf.setFontSize(16);
-            pdf.setTextColor(...THEME.secondary);
-            pdf.setFont(undefined, 'bold');
-            pdf.text('Eligible Academic Programs', 15, y);
-            y += 8;
-
-            const allCategories = {
-                ...(universityResults.courses || {}),
-                ...(technicalResults.courses || {})
-            };
-
-            Object.entries(allCategories).forEach(([cat, data]) => {
-                y = checkPage(pdf, y, 35);
-                pdf.setFontSize(11);
-                pdf.setTextColor(...THEME.primary);
+            // 2. Cluster Points
+            if ((window.lastPackageType === 'points-only' || window.lastPackageType === 'combined') && window.lastClusterPoints) {
+                y = checkPage(pdf, y);
+                pdf.setFontSize(16);
+                pdf.setTextColor(...THEME.secondary);
                 pdf.setFont(undefined, 'bold');
-                pdf.text(cat, 15, y);
-                y += 6;
+                pdf.text('Cluster Points Analysis', 15, y);
+                y += 8;
 
-                pdf.setFontSize(9);
+                pdf.setFontSize(10);
                 pdf.setTextColor(...THEME.dark);
                 pdf.setFont(undefined, 'normal');
 
-                if (Array.isArray(data) && typeof data[0] === 'string') {
-                    data.forEach(p => {
-                        y = checkPage(pdf, y);
-                        pdf.setTextColor(...THEME.green);
-                        pdf.text('•', 20, y);
-                        pdf.setTextColor(...THEME.dark);
-                        pdf.text(p, 24, y);
-                        y += 5;
-                    });
-                } else if (data.map) {
-                    data.forEach(sub => {
-                        y = checkPage(pdf, y, 25);
-                        pdf.setFont(undefined, 'italic');
-                        pdf.setTextColor(...THEME.secondary);
-                        pdf.text(sub.category.replace(/\s*-\s*Subcat\s*\d+/g, ''), 20, y);
-                        y += 5;
-                        pdf.setFont(undefined, 'normal');
-                        pdf.setTextColor(...THEME.dark);
+                const entries = Object.entries(window.lastClusterPoints);
+                for (let i = 0; i < entries.length; i += 2) {
+                    y = checkPage(pdf, y);
+                    const [c1, p1] = entries[i];
+                    pdf.text(`${c1}: ${p1.toFixed(3)}`, 20, y);
 
-                        if (sub.programs) {
-                            sub.programs.forEach(p => {
-                                y = checkPage(pdf, y);
-                                pdf.setTextColor(...THEME.green);
-                                pdf.text('•', 25, y);
-                                pdf.setTextColor(...THEME.dark);
-                                pdf.text(p, 29, y);
-                                y += 4.5;
-                            });
-                        }
-                        y += 2;
-                    });
+                    if (entries[i + 1]) {
+                        const [c2, p2] = entries[i + 1];
+                        pdf.text(`${c2}: ${p2.toFixed(3)}`, 110, y);
+                    }
+                    y += 6;
                 }
-                y += 4;
-            });
+                y += 10;
+            }
+
+            // 3. Eligible Programs
+            if (window.lastPackageType === 'courses-only' || window.lastPackageType === 'combined') {
+                const universityResults = getEligibleCourses(gradesSnapshot);
+                const technicalResults = getTechnicalCourses(gradesSnapshot);
+
+                y = checkPage(pdf, y, 40);
+                pdf.setFontSize(16);
+                pdf.setTextColor(...THEME.secondary);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Eligible Academic Programs', 15, y);
+                y += 8;
+
+                const allCategories = {
+                    ...(universityResults.courses || {}),
+                    ...(technicalResults.courses || {})
+                };
+
+                Object.entries(allCategories).forEach(([cat, data]) => {
+                    y = checkPage(pdf, y, 35);
+                    pdf.setFontSize(11);
+                    pdf.setTextColor(...THEME.primary);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text(cat, 15, y);
+                    y += 6;
+
+                    pdf.setFontSize(9);
+                    pdf.setTextColor(...THEME.dark);
+                    pdf.setFont(undefined, 'normal');
+
+                    if (Array.isArray(data) && typeof data[0] === 'string') {
+                        data.forEach(p => {
+                            y = checkPage(pdf, y);
+                            pdf.setTextColor(...THEME.primary);
+                            pdf.text('•', 20, y);
+                            pdf.setTextColor(...THEME.dark);
+                            pdf.text(p, 24, y);
+                            y += 5;
+                        });
+                    } else if (data.map) {
+                        data.forEach(sub => {
+                            y = checkPage(pdf, y, 25);
+                            pdf.setFont(undefined, 'italic');
+                            pdf.setTextColor(...THEME.secondary);
+                            pdf.text(sub.category.replace(/\s*-\s*Subcat\s*\d+/g, ''), 20, y);
+                            y += 5;
+                            pdf.setFont(undefined, 'normal');
+                            pdf.setTextColor(...THEME.dark);
+
+                            if (sub.programs) {
+                                sub.programs.forEach(p => {
+                                    y = checkPage(pdf, y);
+                                    pdf.setTextColor(...THEME.primary);
+                                    pdf.text('•', 25, y);
+                                    pdf.setTextColor(...THEME.dark);
+                                    pdf.text(p, 29, y);
+                                    y += 4.5;
+                                });
+                            }
+                            y += 2;
+                        });
+                    }
+                    y += 4;
+                });
+            }
+
+            addFooter(pdf);
+            pdf.save(`${name.replace(/\s+/g, '_')}_Course_Corner_Report.pdf`);
+
+            Swal.fire({ icon: 'success', title: 'Report Generated!', timer: 2000, showConfirmButton: false });
+        } catch (error) {
+            console.error('PDF Error:', error);
+            Swal.fire({ icon: 'error', title: 'Generation Failed', text: 'An error occurred while creating your PDF.' });
+        } finally {
+            setTimeout(fixScrollLock, 2100);
         }
-
-        addFooter(pdf);
-        pdf.save(`${name.replace(/\s+/g, '_')}_Course_Corner_Report.pdf`);
-
-        Swal.fire({ icon: 'success', title: 'Report Generated!', timer: 2000, showConfirmButton: false });
-        setTimeout(fixScrollLock, 2100);
     }
 
     // Explicit helper to fix scroll block

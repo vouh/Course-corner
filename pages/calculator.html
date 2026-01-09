@@ -1312,58 +1312,107 @@
             console.log('--- showResultsAfterPayment ---');
             console.log('Category selected:', category);
 
-            // Ensure points are fresh
-            if (typeof calculateTotalPoints === 'function') {
-                console.log('Recalculating total points...');
-                calculateTotalPoints();
-            }
+            try {
+                // Ensure points are fresh
+                if (typeof calculateTotalPoints === 'function') {
+                    console.log('Recalculating total points...');
+                    calculateTotalPoints();
+                }
 
-            const resultsDiv = document.getElementById('results');
-            if (resultsDiv) {
-                console.log('Making results div visible');
-                resultsDiv.classList.remove('hidden');
-                resultsDiv.style.display = 'block';
-                // Clear any old content to prevent flickering/conflicts
-                resultsDiv.innerHTML = '<div class="text-center p-8"><i class="fas fa-spinner fa-spin text-4xl text-green-500"></i><p class="mt-4">Loading your results...</p></div>';
-            }
+                const resultsDiv = document.getElementById('results');
+                if (resultsDiv) {
+                    console.log('Making results div visible');
+                    resultsDiv.classList.remove('hidden');
+                    resultsDiv.style.display = 'block';
+                    // Clear any old content to prevent flickering/conflicts
+                    resultsDiv.innerHTML = '<div class="text-center p-8"><i class="fas fa-spinner fa-spin text-4xl text-green-500"></i><p class="mt-4">Loading your results...</p></div>';
+                } else {
+                    console.error('CRITICAL: Results div not found!');
+                    return;
+                }
 
-            if (category === 'calculate-cluster-points') {
-                console.log('Branch: calculate-cluster-points');
-                if (typeof window.calculateClusterPoints === 'function') {
-                    const points = window.calculateClusterPoints();
-                    if (typeof window.displayResults === 'function') {
-                        window.displayResults(points);
+                if (category === 'calculate-cluster-points') {
+                    console.log('Branch: calculate-cluster-points');
+                    if (typeof window.calculateClusterPoints === 'function') {
+                        const points = window.calculateClusterPoints();
+                        console.log('Cluster points calculated:', points);
+                        if (typeof window.displayResults === 'function') {
+                            window.displayResults(points);
+                        } else {
+                            console.error('window.displayResults is not a function');
+                        }
+                    } else {
+                        console.error('window.calculateClusterPoints is not a function');
+                    }
+                } else if (category === 'courses-only') {
+                    console.log('Branch: courses-only');
+
+                    // Check function availability
+                    console.log('window.getStudentGrades available:', typeof window.getStudentGrades);
+                    console.log('window.getEligibleCourses available:', typeof window.getEligibleCourses);
+                    console.log('window.displayAllResults available:', typeof window.displayAllResults);
+
+                    if (typeof window.getStudentGrades === 'function') {
+                        const grades = window.getStudentGrades();
+                        console.log('Student grades retrieved:', grades);
+
+                        if (typeof window.getEligibleCourses === 'function') {
+                            const eligibleCourses = window.getEligibleCourses(grades);
+                            console.log('Eligible courses retrieved:', eligibleCourses);
+
+                            if (typeof window.displayAllResults === 'function') {
+                                console.log('Calling displayAllResults...');
+                                window.displayAllResults(eligibleCourses);
+                                console.log('displayAllResults completed');
+                            } else {
+                                console.error('window.displayAllResults is not a function');
+                            }
+                        } else {
+                            console.error('window.getEligibleCourses is not a function');
+                        }
+                    } else {
+                        console.error('window.getStudentGrades is not a function');
+                    }
+                } else if (category === 'point-and-courses') {
+                    console.log('Branch: point-and-courses');
+                    if (typeof window.calculateClusterPoints === 'function') {
+                        window.calculateClusterPoints();
+                    }
+                    if (typeof window.getStudentGrades === 'function') {
+                        const grades = window.getStudentGrades();
+                        if (typeof window.getEligibleCourses === 'function' && typeof window.displayCombinedResults === 'function') {
+                            const eligibleCourses = window.getEligibleCourses(grades);
+                            console.log('Displaying points and courses...');
+                            window.displayCombinedResults(eligibleCourses);
+                        }
                     }
                 }
-            } else if (category === 'courses-only') {
-                console.log('Branch: courses-only');
-                if (typeof window.getStudentGrades === 'function') {
-                    const grades = window.getStudentGrades();
-                    if (typeof window.getEligibleCourses === 'function' && typeof window.displayAllResults === 'function') {
-                        const eligibleCourses = window.getEligibleCourses(grades);
-                        console.log('Displaying courses only...');
-                        window.displayAllResults(eligibleCourses);
-                    }
-                }
-            } else if (category === 'point-and-courses') {
-                console.log('Branch: point-and-courses');
-                if (typeof window.calculateClusterPoints === 'function') {
-                    window.calculateClusterPoints();
-                }
-                if (typeof window.getStudentGrades === 'function') {
-                    const grades = window.getStudentGrades();
-                    if (typeof window.getEligibleCourses === 'function' && typeof window.displayCombinedResults === 'function') {
-                        const eligibleCourses = window.getEligibleCourses(grades);
-                        console.log('Displaying points and courses...');
-                        window.displayCombinedResults(eligibleCourses);
-                    }
-                }
-            }
 
-            if (resultsDiv) {
-                setTimeout(() => {
-                    resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                }, 300); // Slightly longer delay for rendering
+                if (resultsDiv) {
+                    setTimeout(() => {
+                        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 300); // Slightly longer delay for rendering
+                }
+            } catch (error) {
+                console.error('ERROR in showResultsAfterPayment:', error);
+                console.error('Error stack:', error.stack);
+                const resultsDiv = document.getElementById('results');
+                if (resultsDiv) {
+                    resultsDiv.innerHTML = `
+                        <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-xl shadow-md">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-exclamation-circle text-2xl text-red-500"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <h3 class="text-xl font-bold text-red-800">Error Displaying Results</h3>
+                                    <p class="text-red-700 mt-1">${error.message}</p>
+                                    <p class="text-red-600 mt-2 text-sm">Please refresh the page and try again. If the problem persists, contact support.</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
             }
         }
 

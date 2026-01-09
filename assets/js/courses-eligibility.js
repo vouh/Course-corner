@@ -34,28 +34,43 @@ const GRADE_POINTS = {
     'C+': 7, 'C': 6, 'C-': 5, 'D+': 4, 'D': 3, 'D-': 2, 'E': 1
 };
 
-// Subject mapping from HTML IDs to JSON codes
+// Subject mapping from HTML IDs to JSON codes and aliases
 const SUBJECT_MAPPING = {
-    'mathematics': 'MAT',
-    'english': 'ENG',
-    'kiswahili': 'KIS',
-    'biology': 'BIO',
-    'physics': 'PHY',
-    'chemistry': 'CHE',
-    'geography': 'GEO',
-    'history': 'HIS',
-    'cre': 'CRE',
-    'ire': 'IRE',
-    'hre': 'HRE',
-    'homeScience': 'HSC',
-    'artDesign': 'ARD',
-    'computerStudies': 'CMP',
-    'business': 'BST',
-    'french': 'FRE',
-    'german': 'GER',
-    'arabic': 'ARB',
-    'agriculture': 'AGR'
+    'mathematics': { code: 'MAT', aliases: ['MATHEMATICS', 'MAT', 'Math'] },
+    'english': { code: 'ENG', aliases: ['ENGLISH', 'ENG', 'English'] },
+    'kiswahili': { code: 'KIS', aliases: ['KISWAHILI', 'KIS', 'Kiswahili'] },
+    'biology': { code: 'BIO', aliases: ['BIOLOGY', 'BIO', 'Biology'] },
+    'physics': { code: 'PHY', aliases: ['PHYSICS', 'PHY', 'Physics'] },
+    'chemistry': { code: 'CHE', aliases: ['CHEMISTRY', 'CHE', 'Chemistry'] },
+    'geography': { code: 'GEO', aliases: ['GEOGRAPHY', 'GEO', 'Geography'] },
+    'history': { code: 'HIS', aliases: ['HISTORY', 'HIS', 'History', 'HAG', 'History & Govt'] },
+    'cre': { code: 'CRE', aliases: ['CRE', 'C.R.E', 'Religious Education'] },
+    'ire': { code: 'IRE', aliases: ['IRE', 'I.R.E'] },
+    'hre': { code: 'HRE', aliases: ['HRE', 'H.R.E'] },
+    'homeScience': { code: 'HSC', aliases: ['HSC', 'Home Science', 'HOM'] },
+    'artDesign': { code: 'ARD', aliases: ['ARD', 'Art and Design', 'ART'] },
+    'computerStudies': { code: 'CMP', aliases: ['CMP', 'Computer Studies', 'CSC', 'COM'] },
+    'business': { code: 'BST', aliases: ['BST', 'Business Studies', 'BUS', 'BST'] },
+    'french': { code: 'FRE', aliases: ['FRE', 'French'] },
+    'german': { code: 'GER', aliases: ['GER', 'German'] },
+    'arabic': { code: 'ARB', aliases: ['ARB', 'Arabic'] },
+    'music': { code: 'MUS', aliases: ['MUS', 'Music'] },
+    'agriculture': { code: 'AGR', aliases: ['AGR', 'Agriculture'] }
 };
+
+// Helper function to find HTML ID for a subject name/code from JSON
+function findSubjectId(name) {
+    if (!name) return null;
+    const normalizedName = name.trim().toUpperCase();
+    
+    // Check codes and aliases
+    for (const [id, data] of Object.entries(SUBJECT_MAPPING)) {
+        if (data.code === normalizedName || data.aliases.some(alias => alias.toUpperCase() === normalizedName)) {
+            return id;
+        }
+    }
+    return null;
+}
 
 // Group definitions
 const SUBJECT_GROUPS = {
@@ -145,9 +160,7 @@ function meetsGradeRequirement(studentGrade, requiredGrade) {
 function checkAlternativeSubjects(subjects, grades, minGrade) {
     const alternatives = subjects.split('/');
     return alternatives.some(subject => {
-        const htmlId = Object.keys(SUBJECT_MAPPING).find(key =>
-            SUBJECT_MAPPING[key] === subject
-        );
+        const htmlId = findSubjectId(subject);
         return htmlId && grades[htmlId] &&
             (!minGrade || meetsGradeRequirement(grades[htmlId], minGrade));
     });
@@ -187,9 +200,7 @@ function checkClusterRequirements(grades, requirements) {
         } else if (name.startsWith('GROUP')) {
             requirementMet = checkGroupRequirement(name, grades, minGrade);
         } else {
-            const htmlId = Object.keys(SUBJECT_MAPPING).find(key =>
-                SUBJECT_MAPPING[key] === name
-            );
+            const htmlId = findSubjectId(name);
             requirementMet = htmlId && grades[htmlId] &&
                 (!minGrade || meetsGradeRequirement(grades[htmlId], minGrade));
         }
@@ -250,9 +261,7 @@ function checkKMTCCourseEligibility(grades, course) {
                     }
                 }
             } else {
-                const htmlId = Object.keys(SUBJECT_MAPPING).find(key =>
-                    SUBJECT_MAPPING[key] === subjectCode
-                );
+                const htmlId = findSubjectId(subjectCode);
                 if (htmlId && grades[htmlId] && meetsGradeRequirement(grades[htmlId], requiredGrade)) {
                     requirementMet = true;
                     break;
@@ -422,14 +431,39 @@ document.addEventListener('DOMContentLoaded', function () {
 // Modify displayCombinedResults function
 function displayCombinedResults(results) {
     const resultsDiv = document.getElementById('results');
+    
+    if (!resultsDiv) {
+        console.error('Results container not found');
+        return;
+    }
+
+    // Check for data load errors
+    if (results.error) {
+        resultsDiv.innerHTML = `
+            <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-xl shadow-md">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-exclamation-circle text-2xl text-red-500"></i>
+                    </div>
+                    <div class="ml-4">
+                        <h3 class="text-xl font-bold text-red-800">Error Loading Results</h3>
+                        <p class="text-red-700 mt-1">${results.error}</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        resultsDiv.classList.remove('hidden');
+        return;
+    }
+
     resultsDiv.innerHTML = '';
     resultsDiv.classList.remove('hidden');
 
-    const studentPoints = parseInt(document.getElementById('overallGrade').value);
+    const studentPoints = parseInt(document.getElementById('overallGrade').value) || 0;
 
     // Show appropriate success message or notice
     let html = '';
-    if (!studentPoints || studentPoints < 46) {
+    if (studentPoints < 46) {
         html = `
             <div class="bg-indigo-50 border-l-4 border-indigo-500 p-6 mb-8 rounded-xl shadow-md">
                 <div class="flex items-center">
@@ -452,13 +486,13 @@ function displayCombinedResults(results) {
     const technicalResults = getTechnicalCourses(grades);
 
     // Add cluster points section (will always be shown for C+ and above)
-    if (window.lastClusterPoints) {
+    if (window.lastClusterPoints && typeof window.generateClusterPointsHTML === 'function') {
         html += generateCollapsibleSection(
             'cluster-points',
             'Cluster Points',
             '20 clusters',
             'yellow',
-            generateClusterPointsHTML(window.lastClusterPoints)
+            window.generateClusterPointsHTML(window.lastClusterPoints)
         );
     }
 
@@ -466,8 +500,8 @@ function displayCombinedResults(results) {
     if (results.courses) {
         // Add degree programs
         const degreeCourses = Object.entries(results.courses)
-            .filter(([name]) => !name.includes('KMTC'))
-            .reduce((acc, [_, courses]) => acc + courses.length, 0);
+            .filter(([name]) => !['KMTC PROGRAMS', 'DIPLOMA PROGRAMS', 'CERTIFICATE PROGRAMS', 'ARTISAN PROGRAMS'].includes(name.toUpperCase()))
+            .reduce((acc, [_, courses]) => acc + (Array.isArray(courses) ? courses.length : 0), 0);
 
         if (degreeCourses > 0) {
             html += generateCollapsibleSection(
@@ -476,7 +510,7 @@ function displayCombinedResults(results) {
                 degreeCourses,
                 'green',
                 Object.entries(results.courses)
-                    .filter(([name]) => !name.includes('KMTC'))
+                    .filter(([name]) => !['KMTC PROGRAMS', 'DIPLOMA PROGRAMS', 'CERTIFICATE PROGRAMS', 'ARTISAN PROGRAMS'].includes(name.toUpperCase()))
                     .map(([clusterName, courses]) => generateClusterHTML(clusterName, courses))
                     .join('')
             );
@@ -958,17 +992,13 @@ function checkTechnicalRequirements(grades, requirements) {
             // Handle alternative subjects
             const alternatives = subject.split('/');
             const meetsAny = alternatives.some(alt => {
-                const subjectId = Object.keys(SUBJECT_MAPPING).find(key =>
-                    SUBJECT_MAPPING[key] === alt
-                );
+                const subjectId = findSubjectId(alt);
                 return subjectId && grades[subjectId] &&
                     meetsGradeRequirement(grades[subjectId], normalizedRequiredGrade);
             });
             if (!meetsAny) return false;
         } else {
-            const subjectId = Object.keys(SUBJECT_MAPPING).find(key =>
-                SUBJECT_MAPPING[key] === subject
-            );
+            const subjectId = findSubjectId(subject);
             if (!subjectId || !grades[subjectId] ||
                 !meetsGradeRequirement(grades[subjectId], normalizedRequiredGrade)) {
                 return false;
@@ -1058,10 +1088,29 @@ function displayAllResults(results) {
             return;
         }
 
+        // Check for data load errors
+        if (results.error) {
+            resultsDiv.innerHTML = `
+                <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-xl shadow-md">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-exclamation-circle text-2xl text-red-500"></i>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-xl font-bold text-red-800">Error Loading Results</h3>
+                            <p class="text-red-700 mt-1">${results.error}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            resultsDiv.classList.remove('hidden');
+            return;
+        }
+
         resultsDiv.innerHTML = '';
         resultsDiv.classList.remove('hidden');
 
-        const studentPoints = parseInt(document.getElementById('overallGrade').value);
+        const studentPoints = parseInt(document.getElementById('overallGrade').value) || 0;
         const gradeInfo = getGradeDetails(studentPoints);
 
         let technicalResults;

@@ -89,7 +89,7 @@ function calculateClusterPoints() {
         // Formula: C = sqrt((r/48) * (t/84)) * 48
         // Formula: C = sqrt((r / 48) * (t / 84)) * 48
         // User requested 1c, 1b etc not included, just 1-20
-        const points = (Math.sqrt((r / 48) * (t / 84)) * 48);
+        const points = ((Math.sqrt((r / 48) * (t / 84)) * 48)-2);
 
         if (isNaN(points)) {
             console.error(`Cluster ${i} produced NaN. r=${r}, t=${t}`);
@@ -155,7 +155,7 @@ function getAllSubjectScores() {
         'history', 'geography', 'business',
         'agriculture', 'french', 'german', 'arabic',
         'cre', 'ire', 'hre', 'homeScience', 'signLanguage',
-        'computerStudies', 'aviation', 'woodwork', 'metalWork',
+        'music', 'computerStudies', 'aviation', 'woodwork', 'metalWork',
         'buildingConstruction', 'artDesign'
     ];
 

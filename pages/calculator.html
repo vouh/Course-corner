@@ -1064,6 +1064,127 @@
             return names[category] || category;
         }
 
+        // ========================================
+        // INLINE FALLBACK FUNCTIONS
+        // These are used if courses-eligibility.js fails to load
+        // ========================================
+
+        // Grade conversion helper
+        function inlineConvertGrade(numericValue) {
+            const gradeMap = {
+                '12': 'A', '11': 'A-', '10': 'B+', '9': 'B', '8': 'B-',
+                '7': 'C+', '6': 'C', '5': 'C-', '4': 'D+', '3': 'D',
+                '2': 'D-', '1': 'E'
+            };
+            return gradeMap[numericValue] || null;
+        }
+
+        // Get student grades from form
+        function inlineGetStudentGrades() {
+            const grades = {};
+            document.querySelectorAll('.grade-select').forEach(select => {
+                if (select.value) {
+                    const letterGrade = inlineConvertGrade(select.value);
+                    if (letterGrade) {
+                        grades[select.id] = letterGrade;
+                    }
+                }
+            });
+            return grades;
+        }
+
+        // Get grade details
+        function inlineGetGradeDetails(points) {
+            if (points >= 81) return { grade: 'A', message: 'Excellent! You have a strong foundation for university courses.' };
+            if (points >= 74) return { grade: 'A-', message: 'Outstanding performance!' };
+            if (points >= 67) return { grade: 'B+', message: 'Very good performance!' };
+            if (points >= 60) return { grade: 'B', message: 'Good performance!' };
+            if (points >= 53) return { grade: 'B-', message: 'Above average performance.' };
+            if (points >= 46) return { grade: 'C+', message: 'You meet minimum university entry requirements.' };
+            if (points >= 39) return { grade: 'C', message: 'Consider diploma programs or bridging courses.' };
+            if (points >= 32) return { grade: 'C-', message: 'Look into diploma and certificate options.' };
+            if (points >= 25) return { grade: 'D+', message: 'Consider vocational training programs.' };
+            if (points >= 18) return { grade: 'D', message: 'Explore technical training opportunities.' };
+            if (points >= 11) return { grade: 'D-', message: 'Consider certificate programs.' };
+            return { grade: 'E', message: 'Look into skill-based training programs.' };
+        }
+
+        // Simplified inline display function
+        function inlineDisplayResults(grades) {
+            const resultsDiv = document.getElementById('results');
+            if (!resultsDiv) return;
+
+            const studentPoints = parseInt(document.getElementById('overallGrade').value) || 0;
+            const gradeInfo = inlineGetGradeDetails(studentPoints);
+
+            // Build a simple results display
+            let html = `
+                <div class="bg-green-50 border-l-4 border-green-500 p-6 mb-8 rounded-lg shadow-lg">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <svg class="h-8 w-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <div class="ml-4">
+                            <h3 class="text-2xl font-bold text-green-800">Your Results</h3>
+                            <div class="mt-2">
+                                <p class="text-lg text-green-700">
+                                    You scored <span class="font-bold">${studentPoints} points</span> 
+                                    (Grade ${gradeInfo.grade})
+                                </p>
+                                <p class="text-green-600 mt-1">${gradeInfo.message}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Show grades
+            html += `<div class="bg-white p-6 rounded-xl shadow-lg border border-gray-100 mb-6">
+                <h4 class="text-lg font-bold text-gray-800 mb-4">Your Subject Grades</h4>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3">`;
+
+            Object.entries(grades).forEach(([subject, grade]) => {
+                const subjectName = subject.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                html += `<div class="bg-gray-50 p-3 rounded-lg border border-gray-200">
+                    <span class="text-gray-600 text-sm">${subjectName}</span>
+                    <span class="block font-bold text-lg text-green-600">${grade}</span>
+                </div>`;
+            });
+
+            html += `</div></div>`;
+
+            // Note about loading external data
+            html += `<div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
+                <p class="text-blue-800"><strong>Note:</strong> For detailed course eligibility, please refresh the page. If issues persist, contact support.</p>
+            </div>`;
+
+            resultsDiv.innerHTML = html;
+            resultsDiv.classList.remove('hidden');
+        }
+
+        // Assign to window as fallbacks
+        if (typeof window.getStudentGrades !== 'function') {
+            window.getStudentGrades = inlineGetStudentGrades;
+            console.log('✅ Fallback: window.getStudentGrades assigned');
+        }
+        if (typeof window.displayAllResults !== 'function') {
+            window.displayAllResults = inlineDisplayResults;
+            console.log('✅ Fallback: window.displayAllResults assigned');
+        }
+        if (typeof window.getEligibleCourses !== 'function') {
+            window.getEligibleCourses = function (grades) {
+                console.log('Using inline getEligibleCourses fallback');
+                return { courses: {}, error: null };
+            };
+            console.log('✅ Fallback: window.getEligibleCourses assigned');
+        }
+        // ========================================
+        // END INLINE FALLBACK FUNCTIONS
+        // ========================================
+
+
         // Main payment processing function
         async function processPayment(category, amount) {
             const validation = validateSubjects();

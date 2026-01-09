@@ -1,40 +1,12 @@
-let coursesData = null;
-let diplomaData = null;
-let technicalCoursesData = null;
+console.log('🚀 courses-eligibility.js: Starting script execution');
 
-// Determine base path based on current location
-const getBasePath = () => {
-    const path = window.location.pathname;
-    if (path.includes('/pages/')) {
-        return '../';
-    }
-    return './';
-};
-
-const basePath = getBasePath();
-
-Promise.all([
-    fetch(`${basePath}data/courses.json`).then(response => response.json()),
-    fetch(`${basePath}data/diploma.json`).then(response => response.json()),
-    fetch(`${basePath}data/dip.json`).then(response => response.json())
-])
-    .then(([courses, diploma, technical]) => {
-        coursesData = courses;
-        diplomaData = diploma;
-        technicalCoursesData = technical;
-        console.log('📚 Course data loaded successfully');
-    })
-    .catch(error => {
-        console.error('Error loading data:', error);
-    });
-
-// Grade mapping for comparisons
+// 1. Grade mapping for comparisons
 const GRADE_POINTS = {
     'A': 12, 'A-': 11, 'B+': 10, 'B': 9, 'B-': 8,
     'C+': 7, 'C': 6, 'C-': 5, 'D+': 4, 'D': 3, 'D-': 2, 'E': 1
 };
 
-// Subject mapping from HTML IDs to JSON codes and aliases
+// 2. Subject mapping from HTML IDs to JSON codes and aliases
 const SUBJECT_MAPPING = {
     'mathematics': { code: 'MAT', aliases: ['MATHEMATICS', 'MAT', 'Math'] },
     'english': { code: 'ENG', aliases: ['ENGLISH', 'ENG', 'English'] },
@@ -58,21 +30,7 @@ const SUBJECT_MAPPING = {
     'agriculture': { code: 'AGR', aliases: ['AGR', 'Agriculture'] }
 };
 
-// Helper function to find HTML ID for a subject name/code from JSON
-function findSubjectId(name) {
-    if (!name) return null;
-    const normalizedName = name.trim().toUpperCase();
-    
-    // Check codes and aliases
-    for (const [id, data] of Object.entries(SUBJECT_MAPPING)) {
-        if (data.code === normalizedName || data.aliases.some(alias => alias.toUpperCase() === normalizedName)) {
-            return id;
-        }
-    }
-    return null;
-}
-
-// Group definitions
+// 3. Group definitions
 const SUBJECT_GROUPS = {
     GROUP2: ['biology', 'physics', 'chemistry'],
     GROUP3: ['geography', 'history', 'cre', 'ire', 'hre'],
@@ -80,7 +38,6 @@ const SUBJECT_GROUPS = {
     GROUP5: ['french', 'german', 'arabic', 'music']
 };
 
-// Enhanced subject mapping system
 const GROUP_DEFINITIONS = {
     GROUP1: ['MATHEMATICS', 'ENGLISH', 'KISWAHILI'],
     GROUP2: ['BIOLOGY', 'PHYSICS', 'CHEMISTRY'],
@@ -89,42 +46,67 @@ const GROUP_DEFINITIONS = {
     GROUP5: ['FRENCH', 'GERMAN', 'ARABIC']
 };
 
-// Helper functions for subject mapping
-const SubjectMapper = {
-    // Convert JSON key to internal subject key
-    getSubjectFromJsonKey(jsonKey) {
-        return Object.entries(SUBJECT_MAPPING).find(([_, data]) =>
-            data.jsonKeys.includes(jsonKey)
-        )?.[0];
-    },
+// 4. Global Variables
+let coursesData = null;
+let diplomaData = null;
+let technicalCoursesData = null;
 
-    // Convert HTML ID to internal subject key
-    getSubjectFromHtmlId(htmlId) {
-        return Object.entries(SUBJECT_MAPPING).find(([_, data]) =>
-            data.htmlIds.includes(htmlId)
-        )?.[0];
-    },
+// 5. Make functions available globally IMMEDIATELY
+try {
+    console.log('🚀 courses-eligibility.js: Initializing global functions...');
+    window.getStudentGrades = getStudentGrades;
+    window.getEligibleCourses = getEligibleCourses;
+    window.getTechnicalCourses = getTechnicalCourses;
+    window.displayAllResults = displayAllResults;
+    window.displayCombinedResults = displayCombinedResults;
+    window.convertGrade = convertGrade;
+    window.findSubjectId = findSubjectId;
+    console.log('✅ courses-eligibility.js: Global functions attached to window');
+} catch (e) {
+    console.error('❌ Error attaching functions to window:', e);
+}
 
-    // Get all subjects in a group
-    getSubjectsInGroup(groupName) {
-        return GROUP_DEFINITIONS[groupName] || [];
-    },
-
-    // Check if a subject belongs to a group
-    isSubjectInGroup(subject, groupName) {
-        return SUBJECT_MAPPING[subject]?.group === groupName;
-    },
-
-    // Get subject code
-    getSubjectCode(subject) {
-        return SUBJECT_MAPPING[subject]?.code;
-    },
-
-    // Get subject aliases
-    getSubjectAliases(subject) {
-        return SUBJECT_MAPPING[subject]?.aliases || [];
+// 6. Data Fetching
+const getBasePath = () => {
+    const path = window.location.pathname;
+    if (path.includes('/pages/')) {
+        return '../';
     }
+    return './';
 };
+
+const basePath = getBasePath();
+
+Promise.all([
+    fetch(`${basePath}data/courses.json`).then(response => response.json()),
+    fetch(`${basePath}data/diploma.json`).then(response => response.json()),
+    fetch(`${basePath}data/dip.json`).then(response => response.json())
+])
+    .then(([courses, diploma, technical]) => {
+        coursesData = courses;
+        diplomaData = diploma;
+        technicalCoursesData = technical;
+        console.log('📚 Course data loaded successfully');
+        window.dataLoaded = true;
+    })
+    .catch(error => {
+        console.error('Error loading data:', error);
+        window.dataLoadError = error.message;
+    });
+
+// Helper function to find HTML ID for a subject name/code from JSON
+function findSubjectId(name) {
+    if (!name) return null;
+    const normalizedName = name.trim().toUpperCase();
+
+    // Check codes and aliases
+    for (const [id, data] of Object.entries(SUBJECT_MAPPING)) {
+        if (data.code === normalizedName || data.aliases.some(alias => alias.toUpperCase() === normalizedName)) {
+            return id;
+        }
+    }
+    return null;
+}
 
 // Add these helper functions for grade conversion
 function convertGrade(numericValue) {
@@ -431,7 +413,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // Modify displayCombinedResults function
 function displayCombinedResults(results) {
     const resultsDiv = document.getElementById('results');
-    
+
     if (!resultsDiv) {
         console.error('Results container not found');
         return;
@@ -1346,9 +1328,4 @@ function initializeDownloadButton() {
     }
 }
 
-// Make functions available globally
-window.getStudentGrades = getStudentGrades;
-window.getEligibleCourses = getEligibleCourses;
-window.getTechnicalCourses = getTechnicalCourses;
-window.displayAllResults = displayAllResults;
-window.displayCombinedResults = displayCombinedResults;
+console.log('🏁 courses-eligibility.js: Script fully loaded');

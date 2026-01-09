@@ -1,347 +1,350 @@
-console.log('🚀 courses-eligibility.js: Starting script execution');
+// Wrap in IIFE to prevent global scope conflicts with calculator.js
+(function () {
+    'use strict';
+    console.log('🚀 courses-eligibility.js: Starting script execution');
 
-// 1. Grade mapping for comparisons
-const GRADE_POINTS = {
-    'A': 12, 'A-': 11, 'B+': 10, 'B': 9, 'B-': 8,
-    'C+': 7, 'C': 6, 'C-': 5, 'D+': 4, 'D': 3, 'D-': 2, 'E': 1
-};
-
-// 2. Subject mapping from HTML IDs to JSON codes and aliases
-const SUBJECT_MAPPING = {
-    'mathematics': { code: 'MAT', aliases: ['MATHEMATICS', 'MAT', 'Math'] },
-    'english': { code: 'ENG', aliases: ['ENGLISH', 'ENG', 'English'] },
-    'kiswahili': { code: 'KIS', aliases: ['KISWAHILI', 'KIS', 'Kiswahili'] },
-    'biology': { code: 'BIO', aliases: ['BIOLOGY', 'BIO', 'Biology'] },
-    'physics': { code: 'PHY', aliases: ['PHYSICS', 'PHY', 'Physics'] },
-    'chemistry': { code: 'CHE', aliases: ['CHEMISTRY', 'CHE', 'Chemistry'] },
-    'geography': { code: 'GEO', aliases: ['GEOGRAPHY', 'GEO', 'Geography'] },
-    'history': { code: 'HIS', aliases: ['HISTORY', 'HIS', 'History', 'HAG', 'History & Govt'] },
-    'cre': { code: 'CRE', aliases: ['CRE', 'C.R.E', 'Religious Education'] },
-    'ire': { code: 'IRE', aliases: ['IRE', 'I.R.E'] },
-    'hre': { code: 'HRE', aliases: ['HRE', 'H.R.E'] },
-    'homeScience': { code: 'HSC', aliases: ['HSC', 'Home Science', 'HOM'] },
-    'artDesign': { code: 'ARD', aliases: ['ARD', 'Art and Design', 'ART'] },
-    'computerStudies': { code: 'CMP', aliases: ['CMP', 'Computer Studies', 'CSC', 'COM'] },
-    'business': { code: 'BST', aliases: ['BST', 'Business Studies', 'BUS', 'BST'] },
-    'french': { code: 'FRE', aliases: ['FRE', 'French'] },
-    'german': { code: 'GER', aliases: ['GER', 'German'] },
-    'arabic': { code: 'ARB', aliases: ['ARB', 'Arabic'] },
-    'music': { code: 'MUS', aliases: ['MUS', 'Music'] },
-    'agriculture': { code: 'AGR', aliases: ['AGR', 'Agriculture'] }
-};
-
-// 3. Group definitions
-const SUBJECT_GROUPS = {
-    GROUP2: ['biology', 'physics', 'chemistry'],
-    GROUP3: ['geography', 'history', 'cre', 'ire', 'hre'],
-    GROUP4: ['homeScience', 'artDesign', 'agriculture', 'computerStudies', 'business'],
-    GROUP5: ['french', 'german', 'arabic', 'music']
-};
-
-const GROUP_DEFINITIONS = {
-    GROUP1: ['MATHEMATICS', 'ENGLISH', 'KISWAHILI'],
-    GROUP2: ['BIOLOGY', 'PHYSICS', 'CHEMISTRY'],
-    GROUP3: ['GEOGRAPHY', 'HISTORY', 'CRE', 'IRE', 'HRE'],
-    GROUP4: ['HOME_SCIENCE', 'ART_DESIGN', 'COMPUTER_STUDIES', 'BUSINESS_STUDIES'],
-    GROUP5: ['FRENCH', 'GERMAN', 'ARABIC']
-};
-
-// 4. Global Variables
-let coursesData = null;
-let diplomaData = null;
-let technicalCoursesData = null;
-
-// 5. Make functions available globally IMMEDIATELY
-try {
-    console.log('🚀 courses-eligibility.js: Initializing global functions...');
-    window.getStudentGrades = getStudentGrades;
-    window.getEligibleCourses = getEligibleCourses;
-    window.getTechnicalCourses = getTechnicalCourses;
-    window.displayAllResults = displayAllResults;
-    window.displayCombinedResults = displayCombinedResults;
-    window.convertGrade = convertGrade;
-    window.findSubjectId = findSubjectId;
-    console.log('✅ courses-eligibility.js: Global functions attached to window');
-} catch (e) {
-    console.error('❌ Error attaching functions to window:', e);
-}
-
-// 6. Data Fetching
-const getBasePath = () => {
-    const path = window.location.pathname;
-    if (path.includes('/pages/')) {
-        return '../';
-    }
-    return './';
-};
-
-const basePath = getBasePath();
-
-Promise.all([
-    fetch(`${basePath}data/courses.json`).then(response => response.json()),
-    fetch(`${basePath}data/diploma.json`).then(response => response.json()),
-    fetch(`${basePath}data/dip.json`).then(response => response.json())
-])
-    .then(([courses, diploma, technical]) => {
-        coursesData = courses;
-        diplomaData = diploma;
-        technicalCoursesData = technical;
-        console.log('📚 Course data loaded successfully');
-        window.dataLoaded = true;
-    })
-    .catch(error => {
-        console.error('Error loading data:', error);
-        window.dataLoadError = error.message;
-    });
-
-// Helper function to find HTML ID for a subject name/code from JSON
-function findSubjectId(name) {
-    if (!name) return null;
-    const normalizedName = name.trim().toUpperCase();
-
-    // Check codes and aliases
-    for (const [id, data] of Object.entries(SUBJECT_MAPPING)) {
-        if (data.code === normalizedName || data.aliases.some(alias => alias.toUpperCase() === normalizedName)) {
-            return id;
-        }
-    }
-    return null;
-}
-
-// Add these helper functions for grade conversion
-function convertGrade(numericValue) {
-    const gradeMap = {
-        '12': 'A', '11': 'A-', '10': 'B+', '9': 'B', '8': 'B-',
-        '7': 'C+', '6': 'C', '5': 'C-', '4': 'D+', '3': 'D',
-        '2': 'D-', '1': 'E'
+    // 1. Grade mapping for comparisons (scoped to this IIFE)
+    const GRADE_POINTS = {
+        'A': 12, 'A-': 11, 'B+': 10, 'B': 9, 'B-': 8,
+        'C+': 7, 'C': 6, 'C-': 5, 'D+': 4, 'D': 3, 'D-': 2, 'E': 1
     };
-    return gradeMap[numericValue] || null;
-}
 
-// Get student grades from form
-function getStudentGrades() {
-    const grades = {};
-    document.querySelectorAll('.grade-select').forEach(select => {
-        if (select.value) {
-            const letterGrade = convertGrade(select.value);
-            if (letterGrade) {
-                grades[select.id] = letterGrade;
+    // 2. Subject mapping from HTML IDs to JSON codes and aliases
+    const SUBJECT_MAPPING = {
+        'mathematics': { code: 'MAT', aliases: ['MATHEMATICS', 'MAT', 'Math'] },
+        'english': { code: 'ENG', aliases: ['ENGLISH', 'ENG', 'English'] },
+        'kiswahili': { code: 'KIS', aliases: ['KISWAHILI', 'KIS', 'Kiswahili'] },
+        'biology': { code: 'BIO', aliases: ['BIOLOGY', 'BIO', 'Biology'] },
+        'physics': { code: 'PHY', aliases: ['PHYSICS', 'PHY', 'Physics'] },
+        'chemistry': { code: 'CHE', aliases: ['CHEMISTRY', 'CHE', 'Chemistry'] },
+        'geography': { code: 'GEO', aliases: ['GEOGRAPHY', 'GEO', 'Geography'] },
+        'history': { code: 'HIS', aliases: ['HISTORY', 'HIS', 'History', 'HAG', 'History & Govt'] },
+        'cre': { code: 'CRE', aliases: ['CRE', 'C.R.E', 'Religious Education'] },
+        'ire': { code: 'IRE', aliases: ['IRE', 'I.R.E'] },
+        'hre': { code: 'HRE', aliases: ['HRE', 'H.R.E'] },
+        'homeScience': { code: 'HSC', aliases: ['HSC', 'Home Science', 'HOM'] },
+        'artDesign': { code: 'ARD', aliases: ['ARD', 'Art and Design', 'ART'] },
+        'computerStudies': { code: 'CMP', aliases: ['CMP', 'Computer Studies', 'CSC', 'COM'] },
+        'business': { code: 'BST', aliases: ['BST', 'Business Studies', 'BUS', 'BST'] },
+        'french': { code: 'FRE', aliases: ['FRE', 'French'] },
+        'german': { code: 'GER', aliases: ['GER', 'German'] },
+        'arabic': { code: 'ARB', aliases: ['ARB', 'Arabic'] },
+        'music': { code: 'MUS', aliases: ['MUS', 'Music'] },
+        'agriculture': { code: 'AGR', aliases: ['AGR', 'Agriculture'] }
+    };
+
+    // 3. Group definitions
+    const SUBJECT_GROUPS = {
+        GROUP2: ['biology', 'physics', 'chemistry'],
+        GROUP3: ['geography', 'history', 'cre', 'ire', 'hre'],
+        GROUP4: ['homeScience', 'artDesign', 'agriculture', 'computerStudies', 'business'],
+        GROUP5: ['french', 'german', 'arabic', 'music']
+    };
+
+    const GROUP_DEFINITIONS = {
+        GROUP1: ['MATHEMATICS', 'ENGLISH', 'KISWAHILI'],
+        GROUP2: ['BIOLOGY', 'PHYSICS', 'CHEMISTRY'],
+        GROUP3: ['GEOGRAPHY', 'HISTORY', 'CRE', 'IRE', 'HRE'],
+        GROUP4: ['HOME_SCIENCE', 'ART_DESIGN', 'COMPUTER_STUDIES', 'BUSINESS_STUDIES'],
+        GROUP5: ['FRENCH', 'GERMAN', 'ARABIC']
+    };
+
+    // 4. Global Variables
+    let coursesData = null;
+    let diplomaData = null;
+    let technicalCoursesData = null;
+
+    // 5. Make functions available globally IMMEDIATELY
+    try {
+        console.log('🚀 courses-eligibility.js: Initializing global functions...');
+        window.getStudentGrades = getStudentGrades;
+        window.getEligibleCourses = getEligibleCourses;
+        window.getTechnicalCourses = getTechnicalCourses;
+        window.displayAllResults = displayAllResults;
+        window.displayCombinedResults = displayCombinedResults;
+        window.convertGrade = convertGrade;
+        window.findSubjectId = findSubjectId;
+        console.log('✅ courses-eligibility.js: Global functions attached to window');
+    } catch (e) {
+        console.error('❌ Error attaching functions to window:', e);
+    }
+
+    // 6. Data Fetching
+    const getBasePath = () => {
+        const path = window.location.pathname;
+        if (path.includes('/pages/')) {
+            return '../';
+        }
+        return './';
+    };
+
+    const basePath = getBasePath();
+
+    Promise.all([
+        fetch(`${basePath}data/courses.json`).then(response => response.json()),
+        fetch(`${basePath}data/diploma.json`).then(response => response.json()),
+        fetch(`${basePath}data/dip.json`).then(response => response.json())
+    ])
+        .then(([courses, diploma, technical]) => {
+            coursesData = courses;
+            diplomaData = diploma;
+            technicalCoursesData = technical;
+            console.log('📚 Course data loaded successfully');
+            window.dataLoaded = true;
+        })
+        .catch(error => {
+            console.error('Error loading data:', error);
+            window.dataLoadError = error.message;
+        });
+
+    // Helper function to find HTML ID for a subject name/code from JSON
+    function findSubjectId(name) {
+        if (!name) return null;
+        const normalizedName = name.trim().toUpperCase();
+
+        // Check codes and aliases
+        for (const [id, data] of Object.entries(SUBJECT_MAPPING)) {
+            if (data.code === normalizedName || data.aliases.some(alias => alias.toUpperCase() === normalizedName)) {
+                return id;
             }
         }
-    });
-    return grades;
-}
+        return null;
+    }
 
-// Check if grade meets minimum requirement
-function meetsGradeRequirement(studentGrade, requiredGrade) {
-    if (!studentGrade || !requiredGrade) return true; // No minimum grade requirement
-    return GRADE_POINTS[studentGrade] >= GRADE_POINTS[requiredGrade];
-}
+    // Add these helper functions for grade conversion
+    function convertGrade(numericValue) {
+        const gradeMap = {
+            '12': 'A', '11': 'A-', '10': 'B+', '9': 'B', '8': 'B-',
+            '7': 'C+', '6': 'C', '5': 'C-', '4': 'D+', '3': 'D',
+            '2': 'D-', '1': 'E'
+        };
+        return gradeMap[numericValue] || null;
+    }
 
-// Check alternative subjects (e.g., "ENG/KIS")
-function checkAlternativeSubjects(subjects, grades, minGrade) {
-    const alternatives = subjects.split('/');
-    return alternatives.some(subject => {
-        const htmlId = findSubjectId(subject);
-        return htmlId && grades[htmlId] &&
-            (!minGrade || meetsGradeRequirement(grades[htmlId], minGrade));
-    });
-}
+    // Get student grades from form
+    function getStudentGrades() {
+        const grades = {};
+        document.querySelectorAll('.grade-select').forEach(select => {
+            if (select.value) {
+                const letterGrade = convertGrade(select.value);
+                if (letterGrade) {
+                    grades[select.id] = letterGrade;
+                }
+            }
+        });
+        return grades;
+    }
 
-// Check group requirements
-function checkGroupRequirement(groupName, grades, minGrade) {
-    const groups = groupName.split('/');
-    return groups.some(group => {
-        const subjects = SUBJECT_GROUPS[group] || [];
-        return subjects.some(subject =>
-            grades[subject] && (!minGrade || meetsGradeRequirement(grades[subject], minGrade))
-        );
-    });
-}
+    // Check if grade meets minimum requirement
+    function meetsGradeRequirement(studentGrade, requiredGrade) {
+        if (!studentGrade || !requiredGrade) return true; // No minimum grade requirement
+        return GRADE_POINTS[studentGrade] >= GRADE_POINTS[requiredGrade];
+    }
 
-// Check cluster requirements
-function checkClusterRequirements(grades, requirements) {
-    console.log('Checking requirements:', requirements);
-    console.log('With grades:', grades);
+    // Check alternative subjects (e.g., "ENG/KIS")
+    function checkAlternativeSubjects(subjects, grades, minGrade) {
+        const alternatives = subjects.split('/');
+        return alternatives.some(subject => {
+            const htmlId = findSubjectId(subject);
+            return htmlId && grades[htmlId] &&
+                (!minGrade || meetsGradeRequirement(grades[htmlId], minGrade));
+        });
+    }
 
-    for (let i = 1; i <= 4; i++) {
-        const requirement = requirements[`subject${i}`];
-        if (!requirement) continue;
+    // Check group requirements
+    function checkGroupRequirement(groupName, grades, minGrade) {
+        const groups = groupName.split('/');
+        return groups.some(group => {
+            const subjects = SUBJECT_GROUPS[group] || [];
+            return subjects.some(subject =>
+                grades[subject] && (!minGrade || meetsGradeRequirement(grades[subject], minGrade))
+            );
+        });
+    }
 
-        const { name, minGrade } = requirement;
-        console.log(`Checking requirement ${i}:`, requirement);
+    // Check cluster requirements
+    function checkClusterRequirements(grades, requirements) {
+        console.log('Checking requirements:', requirements);
+        console.log('With grades:', grades);
 
-        let requirementMet = false;
+        for (let i = 1; i <= 4; i++) {
+            const requirement = requirements[`subject${i}`];
+            if (!requirement) continue;
 
-        if (name.includes('/')) {
-            if (name.startsWith('GROUP')) {
+            const { name, minGrade } = requirement;
+            console.log(`Checking requirement ${i}:`, requirement);
+
+            let requirementMet = false;
+
+            if (name.includes('/')) {
+                if (name.startsWith('GROUP')) {
+                    requirementMet = checkGroupRequirement(name, grades, minGrade);
+                } else {
+                    requirementMet = checkAlternativeSubjects(name, grades, minGrade);
+                }
+            } else if (name.startsWith('GROUP')) {
                 requirementMet = checkGroupRequirement(name, grades, minGrade);
             } else {
-                requirementMet = checkAlternativeSubjects(name, grades, minGrade);
+                const htmlId = findSubjectId(name);
+                requirementMet = htmlId && grades[htmlId] &&
+                    (!minGrade || meetsGradeRequirement(grades[htmlId], minGrade));
             }
-        } else if (name.startsWith('GROUP')) {
-            requirementMet = checkGroupRequirement(name, grades, minGrade);
-        } else {
-            const htmlId = findSubjectId(name);
-            requirementMet = htmlId && grades[htmlId] &&
-                (!minGrade || meetsGradeRequirement(grades[htmlId], minGrade));
+
+            console.log(`Requirement ${i} met:`, requirementMet);
+            if (!requirementMet) return false;
         }
-
-        console.log(`Requirement ${i} met:`, requirementMet);
-        if (!requirementMet) return false;
-    }
-    return true;
-}
-
-// Modify the checkKMTCCourseEligibility function
-function checkKMTCCourseEligibility(grades, course) {
-    // Check mean grade requirement
-    const studentPoints = parseInt(document.getElementById('overallGrade').value);
-    const studentMeanGrade = get_grade_from_points(studentPoints);
-
-    // Map required grade to minimum points
-    const gradeToMinPoints = {
-        'C': 39,  // C is 39-45 points
-        'C-': 32, // C- is 32-38 points
-        'D+': 25  // D+ is 25-31 points
-    };
-
-    const requiredGrade = course.mean_grade;
-    const minPointsRequired = gradeToMinPoints[requiredGrade] || 0;
-
-    // Check if student meets mean grade requirement
-    if (studentPoints < minPointsRequired) {
-        return false;
-    }
-
-    // For courses that only have mean grade requirement
-    if (!course.requirements || course.requirements.length === 0 ||
-        (course.requirements.length === 1 && course.requirements[0].mean_grade)) {
         return true;
     }
 
-    // Check each subject requirement
-    for (const requirement of course.requirements) {
-        let requirementMet = false;
+    // Modify the checkKMTCCourseEligibility function
+    function checkKMTCCourseEligibility(grades, course) {
+        // Check mean grade requirement
+        const studentPoints = parseInt(document.getElementById('overallGrade').value);
+        const studentMeanGrade = get_grade_from_points(studentPoints);
 
-        // Get subject codes and required grade
-        const subjectKey = Object.keys(requirement).find(key => key.startsWith('subject_'));
-        if (!subjectKey) continue;
+        // Map required grade to minimum points
+        const gradeToMinPoints = {
+            'C': 39,  // C is 39-45 points
+            'C-': 32, // C- is 32-38 points
+            'D+': 25  // D+ is 25-31 points
+        };
 
-        const subjectCodes = requirement[subjectKey].split('/');
-        const requiredGrade = requirement.grade;
+        const requiredGrade = course.mean_grade;
+        const minPointsRequired = gradeToMinPoints[requiredGrade] || 0;
 
-        // Check if student meets grade requirement in any of the subjects
-        for (const subjectCode of subjectCodes) {
-            if (subjectCode === 'GRP2') {
-                // Check any science subject
-                const scienceSubjects = ['biology', 'physics', 'chemistry'];
-                for (const subject of scienceSubjects) {
-                    if (grades[subject] && meetsGradeRequirement(grades[subject], requiredGrade)) {
+        // Check if student meets mean grade requirement
+        if (studentPoints < minPointsRequired) {
+            return false;
+        }
+
+        // For courses that only have mean grade requirement
+        if (!course.requirements || course.requirements.length === 0 ||
+            (course.requirements.length === 1 && course.requirements[0].mean_grade)) {
+            return true;
+        }
+
+        // Check each subject requirement
+        for (const requirement of course.requirements) {
+            let requirementMet = false;
+
+            // Get subject codes and required grade
+            const subjectKey = Object.keys(requirement).find(key => key.startsWith('subject_'));
+            if (!subjectKey) continue;
+
+            const subjectCodes = requirement[subjectKey].split('/');
+            const requiredGrade = requirement.grade;
+
+            // Check if student meets grade requirement in any of the subjects
+            for (const subjectCode of subjectCodes) {
+                if (subjectCode === 'GRP2') {
+                    // Check any science subject
+                    const scienceSubjects = ['biology', 'physics', 'chemistry'];
+                    for (const subject of scienceSubjects) {
+                        if (grades[subject] && meetsGradeRequirement(grades[subject], requiredGrade)) {
+                            requirementMet = true;
+                            break;
+                        }
+                    }
+                } else {
+                    const htmlId = findSubjectId(subjectCode);
+                    if (htmlId && grades[htmlId] && meetsGradeRequirement(grades[htmlId], requiredGrade)) {
                         requirementMet = true;
                         break;
                     }
                 }
-            } else {
-                const htmlId = findSubjectId(subjectCode);
-                if (htmlId && grades[htmlId] && meetsGradeRequirement(grades[htmlId], requiredGrade)) {
-                    requirementMet = true;
-                    break;
-                }
+            }
+
+            if (!requirementMet) {
+                return false;
             }
         }
 
-        if (!requirementMet) {
-            return false;
-        }
+        return true;
     }
 
-    return true;
-}
-
-// Modify getEligibleCourses to handle both degree and KMTC courses
-function getEligibleCourses(grades) {
-    if (!checkAllDataLoaded()) {
-        return { error: "Course data not loaded. Please try again." };
-    }
-
-    const overallPoints = parseInt(document.getElementById('overallGrade').value);
-    const gradeInfo = getGradeDetails(overallPoints);
-    const results = { courses: {} };
-
-    // Get eligible KMTC courses
-    const kmtcCourses = [];
-    for (const course of diplomaData.courses) {
-        if (checkKMTCCourseEligibility(grades, course)) {
-            kmtcCourses.push(course.course_name);
-        }
-    }
-
-    // If below C+ (46 points), only show Diploma and KMTC courses
-    if (overallPoints < 46) {
-        // Clear degree possibilities if any by chance
-        results.courses = {};
-
-        // Add technical (Diploma/KMTC) results
-        const technicalResults = getTechnicalCourses(grades);
-        if (technicalResults.courses) {
-            Object.assign(results.courses, technicalResults.courses);
+    // Modify getEligibleCourses to handle both degree and KMTC courses
+    function getEligibleCourses(grades) {
+        if (!checkAllDataLoaded()) {
+            return { error: "Course data not loaded. Please try again." };
         }
 
+        const overallPoints = parseInt(document.getElementById('overallGrade').value);
+        const gradeInfo = getGradeDetails(overallPoints);
+        const results = { courses: {} };
+
+        // Get eligible KMTC courses
+        const kmtcCourses = [];
+        for (const course of diplomaData.courses) {
+            if (checkKMTCCourseEligibility(grades, course)) {
+                kmtcCourses.push(course.course_name);
+            }
+        }
+
+        // If below C+ (46 points), only show Diploma and KMTC courses
+        if (overallPoints < 46) {
+            // Clear degree possibilities if any by chance
+            results.courses = {};
+
+            // Add technical (Diploma/KMTC) results
+            const technicalResults = getTechnicalCourses(grades);
+            if (technicalResults.courses) {
+                Object.assign(results.courses, technicalResults.courses);
+            }
+
+            if (kmtcCourses.length > 0) {
+                results.courses['KMTC PROGRAMS'] = kmtcCourses;
+            }
+            return results;
+        }
+
+        // For C+ and above, show both degree and KMTC programs
+        // Process degree programs
+        if (coursesData && coursesData.clusters) {
+            Object.entries(coursesData.clusters).forEach(([clusterId, cluster]) => {
+                if (cluster.subClusters) {
+                    Object.entries(cluster.subClusters).forEach(([subClusterId, subCluster]) => {
+                        if (checkClusterRequirements(grades, subCluster.requirements)) {
+                            const clusterName = `${cluster.name} (${subClusterId})`;
+                            results.courses[clusterName] = subCluster.courses;
+                        }
+                    });
+                }
+            });
+        }
+
+        // Add KMTC programs if any are eligible
         if (kmtcCourses.length > 0) {
             results.courses['KMTC PROGRAMS'] = kmtcCourses;
         }
+
         return results;
     }
 
-    // For C+ and above, show both degree and KMTC programs
-    // Process degree programs
-    if (coursesData && coursesData.clusters) {
-        Object.entries(coursesData.clusters).forEach(([clusterId, cluster]) => {
-            if (cluster.subClusters) {
-                Object.entries(cluster.subClusters).forEach(([subClusterId, subCluster]) => {
-                    if (checkClusterRequirements(grades, subCluster.requirements)) {
-                        const clusterName = `${cluster.name} (${subClusterId})`;
-                        results.courses[clusterName] = subCluster.courses;
-                    }
-                });
-            }
-        });
+    // Add this function back
+    function getGradeDetails(points) {
+        if (points >= 81 && points <= 84) return { grade: 'A', message: 'Excellent! You have a strong foundation for university courses.' };
+        if (points >= 74 && points <= 80) return { grade: 'A-', message: 'Outstanding performance! Many opportunities await.' };
+        if (points >= 67 && points <= 73) return { grade: 'B+', message: 'Very good performance! You qualify for many courses.' };
+        if (points >= 60 && points <= 66) return { grade: 'B', message: 'Good performance! You have solid options.' };
+        if (points >= 53 && points <= 59) return { grade: 'B-', message: 'Above average performance.' };
+        if (points >= 46 && points <= 52) return { grade: 'C+', message: 'You meet minimum university entry requirements.' };
+        if (points >= 39 && points <= 45) return { grade: 'C', message: 'Consider diploma programs or bridging courses.' };
+        if (points >= 32 && points <= 38) return { grade: 'C-', message: 'Look into diploma and certificate options.' };
+        if (points >= 25 && points <= 31) return { grade: 'D+', message: 'Consider vocational training programs.' };
+        if (points >= 18 && points <= 24) return { grade: 'D', message: 'Explore technical training opportunities.' };
+        if (points >= 11 && points <= 17) return { grade: 'D-', message: 'Consider certificate programs.' };
+        return { grade: 'E', message: 'Look into skill-based training programs.' };
     }
 
-    // Add KMTC programs if any are eligible
-    if (kmtcCourses.length > 0) {
-        results.courses['KMTC PROGRAMS'] = kmtcCourses;
-    }
+    // Modify checkMinimumSubjects function to be simpler
+    function checkMinimumSubjects(grades) {
+        // First check if 7 subjects are selected
+        const filledSubjects = Object.values(grades).filter(grade => grade !== null && grade !== undefined && grade !== "").length;
 
-    return results;
-}
-
-// Add this function back
-function getGradeDetails(points) {
-    if (points >= 81 && points <= 84) return { grade: 'A', message: 'Excellent! You have a strong foundation for university courses.' };
-    if (points >= 74 && points <= 80) return { grade: 'A-', message: 'Outstanding performance! Many opportunities await.' };
-    if (points >= 67 && points <= 73) return { grade: 'B+', message: 'Very good performance! You qualify for many courses.' };
-    if (points >= 60 && points <= 66) return { grade: 'B', message: 'Good performance! You have solid options.' };
-    if (points >= 53 && points <= 59) return { grade: 'B-', message: 'Above average performance.' };
-    if (points >= 46 && points <= 52) return { grade: 'C+', message: 'You meet minimum university entry requirements.' };
-    if (points >= 39 && points <= 45) return { grade: 'C', message: 'Consider diploma programs or bridging courses.' };
-    if (points >= 32 && points <= 38) return { grade: 'C-', message: 'Look into diploma and certificate options.' };
-    if (points >= 25 && points <= 31) return { grade: 'D+', message: 'Consider vocational training programs.' };
-    if (points >= 18 && points <= 24) return { grade: 'D', message: 'Explore technical training opportunities.' };
-    if (points >= 11 && points <= 17) return { grade: 'D-', message: 'Consider certificate programs.' };
-    return { grade: 'E', message: 'Look into skill-based training programs.' };
-}
-
-// Modify checkMinimumSubjects function to be simpler
-function checkMinimumSubjects(grades) {
-    // First check if 7 subjects are selected
-    const filledSubjects = Object.values(grades).filter(grade => grade !== null && grade !== undefined && grade !== "").length;
-
-    if (filledSubjects < 7) {
-        return {
-            isValid: false,
-            message: `
+        if (filledSubjects < 7) {
+            return {
+                isValid: false,
+                message: `
                 <div class="bg-red-50 border-l-4 border-red-500 p-6 mb-8 rounded-lg shadow-lg">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
@@ -360,15 +363,15 @@ function checkMinimumSubjects(grades) {
                     </div>
                 </div>
             `
-        };
-    }
+            };
+        }
 
-    // Then check if overall grade is calculated
-    const overallGrade = document.getElementById('overallGrade').value;
-    if (!overallGrade) {
-        return {
-            isValid: false,
-            message: `
+        // Then check if overall grade is calculated
+        const overallGrade = document.getElementById('overallGrade').value;
+        if (!overallGrade) {
+            return {
+                isValid: false,
+                message: `
                 <div class="bg-red-50 border-l-4 border-red-500 p-6 mb-8 rounded-lg shadow-lg">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
@@ -387,41 +390,41 @@ function checkMinimumSubjects(grades) {
                     </div>
                 </div>
             `
-        };
+            };
+        }
+
+        return { isValid: true };
     }
 
-    return { isValid: true };
-}
+    // Add event listeners for both second and third buttons
+    // NOTE: Payment handlers are now managed by index.html's unified payment system
+    // These handlers are called AFTER payment is confirmed via showResultsAfterPayment()
+    document.addEventListener('DOMContentLoaded', function () {
+        // Load confetti script once at start
+        const confettiScript = document.createElement('script');
+        confettiScript.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
+        document.head.appendChild(confettiScript);
 
-// Add event listeners for both second and third buttons
-// NOTE: Payment handlers are now managed by index.html's unified payment system
-// These handlers are called AFTER payment is confirmed via showResultsAfterPayment()
-document.addEventListener('DOMContentLoaded', function () {
-    // Load confetti script once at start
-    const confettiScript = document.createElement('script');
-    confettiScript.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js';
-    document.head.appendChild(confettiScript);
+        // IMPORTANT: Do NOT add click handlers to payment buttons here!
+        // All payment button click handlers are managed in index.html's unified payment system
+        // The functions below (displayAllResults, displayCombinedResults) are called 
+        // ONLY after successful payment confirmation
 
-    // IMPORTANT: Do NOT add click handlers to payment buttons here!
-    // All payment button click handlers are managed in index.html's unified payment system
-    // The functions below (displayAllResults, displayCombinedResults) are called 
-    // ONLY after successful payment confirmation
+        console.log('courses-eligibility.js loaded - payment handlers deferred to unified system');
+    });
 
-    console.log('courses-eligibility.js loaded - payment handlers deferred to unified system');
-});
+    // Modify displayCombinedResults function
+    function displayCombinedResults(results) {
+        const resultsDiv = document.getElementById('results');
 
-// Modify displayCombinedResults function
-function displayCombinedResults(results) {
-    const resultsDiv = document.getElementById('results');
+        if (!resultsDiv) {
+            console.error('Results container not found');
+            return;
+        }
 
-    if (!resultsDiv) {
-        console.error('Results container not found');
-        return;
-    }
-
-    // Check for data load errors
-    if (results.error) {
-        resultsDiv.innerHTML = `
+        // Check for data load errors
+        if (results.error) {
+            resultsDiv.innerHTML = `
             <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-xl shadow-md">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -434,19 +437,19 @@ function displayCombinedResults(results) {
                 </div>
             </div>
         `;
+            resultsDiv.classList.remove('hidden');
+            return;
+        }
+
+        resultsDiv.innerHTML = '';
         resultsDiv.classList.remove('hidden');
-        return;
-    }
 
-    resultsDiv.innerHTML = '';
-    resultsDiv.classList.remove('hidden');
+        const studentPoints = parseInt(document.getElementById('overallGrade').value) || 0;
 
-    const studentPoints = parseInt(document.getElementById('overallGrade').value) || 0;
-
-    // Show appropriate success message or notice
-    let html = '';
-    if (studentPoints < 46) {
-        html = `
+        // Show appropriate success message or notice
+        let html = '';
+        if (studentPoints < 46) {
+            html = `
             <div class="bg-indigo-50 border-l-4 border-indigo-500 p-6 mb-8 rounded-xl shadow-md">
                 <div class="flex items-center">
                     <div class="flex-shrink-0">
@@ -459,101 +462,101 @@ function displayCombinedResults(results) {
                 </div>
             </div>
         `;
-    } else {
-        html = generateSuccessMessage(studentPoints, getGradeDetails(studentPoints));
+        } else {
+            html = generateSuccessMessage(studentPoints, getGradeDetails(studentPoints));
+        }
+
+        // Get grades and technical results for display
+        const grades = getStudentGrades();
+        const technicalResults = getTechnicalCourses(grades);
+
+        // Add cluster points section (will always be shown for C+ and above)
+        if (window.lastClusterPoints && typeof window.generateClusterPointsHTML === 'function') {
+            html += generateCollapsibleSection(
+                'cluster-points',
+                'Cluster Points',
+                '20 clusters',
+                'yellow',
+                window.generateClusterPointsHTML(window.lastClusterPoints)
+            );
+        }
+
+        // Add ALL eligible courses sections
+        if (results.courses) {
+            // Add degree programs
+            const degreeCourses = Object.entries(results.courses)
+                .filter(([name]) => !['KMTC PROGRAMS', 'DIPLOMA PROGRAMS', 'CERTIFICATE PROGRAMS', 'ARTISAN PROGRAMS'].includes(name.toUpperCase()))
+                .reduce((acc, [_, courses]) => acc + (Array.isArray(courses) ? courses.length : 0), 0);
+
+            if (degreeCourses > 0) {
+                html += generateCollapsibleSection(
+                    'degree-programs',
+                    'Degree Programs',
+                    degreeCourses,
+                    'green',
+                    Object.entries(results.courses)
+                        .filter(([name]) => !['KMTC PROGRAMS', 'DIPLOMA PROGRAMS', 'CERTIFICATE PROGRAMS', 'ARTISAN PROGRAMS'].includes(name.toUpperCase()))
+                        .map(([clusterName, courses]) => generateClusterHTML(clusterName, courses))
+                        .join('')
+                );
+            }
+
+            // Add KMTC programs
+            if (results.courses['KMTC PROGRAMS']) {
+                html += generateCollapsibleSection(
+                    'kmtc-programs',
+                    'KMTC Programs',
+                    results.courses['KMTC PROGRAMS'].length,
+                    'red',
+                    generateClusterHTML('KMTC PROGRAMS', results.courses['KMTC PROGRAMS'], 'red')
+                );
+            }
+        }
+
+        // Add technical courses sections
+        if (technicalResults?.courses) {
+            // Add diploma programs
+            if (technicalResults.courses['DIPLOMA PROGRAMS']?.length > 0) {
+                html += generateCollapsibleSection(
+                    'diploma-programs',
+                    'Diploma Programs',
+                    technicalResults.courses['DIPLOMA PROGRAMS'].reduce((acc, cat) => acc + cat.programs.length, 0),
+                    'blue',
+                    generateTechnicalCategoryHTML('DIPLOMA PROGRAMS', technicalResults, 'blue')
+                );
+            }
+
+            // Add certificate programs
+            if (technicalResults.courses['CERTIFICATE PROGRAMS']?.length > 0) {
+                html += generateCollapsibleSection(
+                    'certificate-programs',
+                    'Certificate Programs',
+                    technicalResults.courses['CERTIFICATE PROGRAMS'].reduce((acc, cat) => acc + cat.programs.length, 0),
+                    'purple',
+                    generateTechnicalCategoryHTML('CERTIFICATE PROGRAMS', technicalResults, 'purple')
+                );
+            }
+
+            // Add artisan programs
+            if (technicalResults.courses['ARTISAN PROGRAMS']?.length > 0) {
+                html += generateCollapsibleSection(
+                    'artisan-programs',
+                    'Artisan Programs',
+                    technicalResults.courses['ARTISAN PROGRAMS'].reduce((acc, cat) => acc + cat.programs.length, 0),
+                    'orange',
+                    generateTechnicalCategoryHTML('ARTISAN PROGRAMS', technicalResults, 'orange')
+                );
+            }
+        }
+
+        resultsDiv.innerHTML = html;
+        initializeCollapsibleSections();
+        initializeDownloadButton();
     }
 
-    // Get grades and technical results for display
-    const grades = getStudentGrades();
-    const technicalResults = getTechnicalCourses(grades);
-
-    // Add cluster points section (will always be shown for C+ and above)
-    if (window.lastClusterPoints && typeof window.generateClusterPointsHTML === 'function') {
-        html += generateCollapsibleSection(
-            'cluster-points',
-            'Cluster Points',
-            '20 clusters',
-            'yellow',
-            window.generateClusterPointsHTML(window.lastClusterPoints)
-        );
-    }
-
-    // Add ALL eligible courses sections
-    if (results.courses) {
-        // Add degree programs
-        const degreeCourses = Object.entries(results.courses)
-            .filter(([name]) => !['KMTC PROGRAMS', 'DIPLOMA PROGRAMS', 'CERTIFICATE PROGRAMS', 'ARTISAN PROGRAMS'].includes(name.toUpperCase()))
-            .reduce((acc, [_, courses]) => acc + (Array.isArray(courses) ? courses.length : 0), 0);
-
-        if (degreeCourses > 0) {
-            html += generateCollapsibleSection(
-                'degree-programs',
-                'Degree Programs',
-                degreeCourses,
-                'green',
-                Object.entries(results.courses)
-                    .filter(([name]) => !['KMTC PROGRAMS', 'DIPLOMA PROGRAMS', 'CERTIFICATE PROGRAMS', 'ARTISAN PROGRAMS'].includes(name.toUpperCase()))
-                    .map(([clusterName, courses]) => generateClusterHTML(clusterName, courses))
-                    .join('')
-            );
-        }
-
-        // Add KMTC programs
-        if (results.courses['KMTC PROGRAMS']) {
-            html += generateCollapsibleSection(
-                'kmtc-programs',
-                'KMTC Programs',
-                results.courses['KMTC PROGRAMS'].length,
-                'red',
-                generateClusterHTML('KMTC PROGRAMS', results.courses['KMTC PROGRAMS'], 'red')
-            );
-        }
-    }
-
-    // Add technical courses sections
-    if (technicalResults?.courses) {
-        // Add diploma programs
-        if (technicalResults.courses['DIPLOMA PROGRAMS']?.length > 0) {
-            html += generateCollapsibleSection(
-                'diploma-programs',
-                'Diploma Programs',
-                technicalResults.courses['DIPLOMA PROGRAMS'].reduce((acc, cat) => acc + cat.programs.length, 0),
-                'blue',
-                generateTechnicalCategoryHTML('DIPLOMA PROGRAMS', technicalResults, 'blue')
-            );
-        }
-
-        // Add certificate programs
-        if (technicalResults.courses['CERTIFICATE PROGRAMS']?.length > 0) {
-            html += generateCollapsibleSection(
-                'certificate-programs',
-                'Certificate Programs',
-                technicalResults.courses['CERTIFICATE PROGRAMS'].reduce((acc, cat) => acc + cat.programs.length, 0),
-                'purple',
-                generateTechnicalCategoryHTML('CERTIFICATE PROGRAMS', technicalResults, 'purple')
-            );
-        }
-
-        // Add artisan programs
-        if (technicalResults.courses['ARTISAN PROGRAMS']?.length > 0) {
-            html += generateCollapsibleSection(
-                'artisan-programs',
-                'Artisan Programs',
-                technicalResults.courses['ARTISAN PROGRAMS'].reduce((acc, cat) => acc + cat.programs.length, 0),
-                'orange',
-                generateTechnicalCategoryHTML('ARTISAN PROGRAMS', technicalResults, 'orange')
-            );
-        }
-    }
-
-    resultsDiv.innerHTML = html;
-    initializeCollapsibleSections();
-    initializeDownloadButton();
-}
-
-// Helper function to generate success message
-function generateSuccessMessage(points, gradeInfo) {
-    return `
+    // Helper function to generate success message
+    function generateSuccessMessage(points, gradeInfo) {
+        return `
         <div class="bg-green-50 border-l-4 border-green-500 p-6 mb-8 rounded-lg shadow-lg">
             <div class="flex items-center justify-between">
                 <div class="flex items-center">
@@ -582,32 +585,32 @@ function generateSuccessMessage(points, gradeInfo) {
             </div>
         </div>
     `;
-}
+    }
 
-// Helper function to initialize collapsible sections
-function initializeCollapsibleSections() {
-    document.querySelectorAll('.collapsible-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const content = header.nextElementSibling;
-            const icon = header.querySelector('.collapse-icon');
-            content.classList.toggle('hidden');
-            icon.classList.toggle('rotate-180');
+    // Helper function to initialize collapsible sections
+    function initializeCollapsibleSections() {
+        document.querySelectorAll('.collapsible-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                const icon = header.querySelector('.collapse-icon');
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            });
         });
-    });
-}
+    }
 
-// Add helper function for collapsible sections
-function generateCollapsibleSection(id, title, count, color, content) {
-    const colorClasses = {
-        'yellow': 'bg-yellow-500 border-yellow-500',
-        'green': 'bg-green-500 border-green-500',
-        'red': 'bg-red-500 border-red-500',
-        'blue': 'bg-blue-500 border-blue-500',
-        'purple': 'bg-purple-500 border-purple-500',
-        'orange': 'bg-orange-500 border-orange-500'
-    };
+    // Add helper function for collapsible sections
+    function generateCollapsibleSection(id, title, count, color, content) {
+        const colorClasses = {
+            'yellow': 'bg-yellow-500 border-yellow-500',
+            'green': 'bg-green-500 border-green-500',
+            'red': 'bg-red-500 border-red-500',
+            'blue': 'bg-blue-500 border-blue-500',
+            'purple': 'bg-purple-500 border-purple-500',
+            'orange': 'bg-orange-500 border-orange-500'
+        };
 
-    return `
+        return `
         <div class="mb-6 overflow-hidden rounded-xl shadow-lg border border-gray-100 bg-white">
             <button class="collapsible-header w-full p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-all duration-200 group">
                 <div class="flex items-center">
@@ -629,16 +632,16 @@ function generateCollapsibleSection(id, title, count, color, content) {
             </div>
         </div>
     `;
-}
+    }
 
-// Function to generate cluster points HTML with progress bars
-function generateClusterPointsHTML(points) {
-    let html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
-    Object.entries(points).forEach(([name, score]) => {
-        const percentage = Math.min(100, (score / 48) * 100);
-        const barColor = score >= 35 ? 'bg-green-500' : (score >= 25 ? 'bg-yellow-500' : 'bg-red-500');
+    // Function to generate cluster points HTML with progress bars
+    function generateClusterPointsHTML(points) {
+        let html = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4">';
+        Object.entries(points).forEach(([name, score]) => {
+            const percentage = Math.min(100, (score / 48) * 100);
+            const barColor = score >= 35 ? 'bg-green-500' : (score >= 25 ? 'bg-yellow-500' : 'bg-red-500');
 
-        html += `
+            html += `
             <div class="bg-white p-4 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
                 <div class="flex justify-between items-center mb-2">
                     <span class="font-bold text-gray-700">${name}</span>
@@ -649,14 +652,14 @@ function generateClusterPointsHTML(points) {
                 </div>
             </div>
         `;
-    });
-    html += '</div>';
-    return html;
-}
+        });
+        html += '</div>';
+        return html;
+    }
 
-// Function to generate Cluster Group HTML (Degree)
-function generateClusterHTML(title, courses, color = 'green') {
-    return `
+    // Function to generate Cluster Group HTML (Degree)
+    function generateClusterHTML(title, courses, color = 'green') {
+        return `
         <div class="mb-6 last:mb-0">
             <h4 class="text-sm font-bold text-gray-400 mb-3 flex items-center gap-2">
                 <i class="fas fa-layer-group"></i> ${title.toUpperCase()}
@@ -670,64 +673,64 @@ function generateClusterHTML(title, courses, color = 'green') {
             </div>
         </div>
     `;
-}
+    }
 
-// Initialize Download Button
-function initializeDownloadButton() {
-    const btn = document.getElementById('downloadBtn');
-    if (!btn) return;
+    // Initialize Download Button
+    function initializeDownloadButton() {
+        const btn = document.getElementById('downloadBtn');
+        if (!btn) return;
 
-    btn.onclick = async function () {
-        const { jsPDF } = window.jspdf;
-        const resultsEl = document.getElementById('results');
+        btn.onclick = async function () {
+            const { jsPDF } = window.jspdf;
+            const resultsEl = document.getElementById('results');
 
-        // Show loading
-        Swal.fire({
-            title: 'Generating PDF...',
-            text: 'Please wait while we prepare your results',
-            allowOutsideClick: false,
-            didOpen: () => Swal.showLoading()
-        });
-
-        try {
-            // Expand all sections for capture
-            document.querySelectorAll('.collapsible-content').forEach(c => c.classList.remove('hidden'));
-
-            const canvas = await html2canvas(resultsEl, {
-                scale: 2,
-                useCORS: true,
-                logging: false,
-                backgroundColor: '#ffffff'
-            });
-
-            // Re-hide sections if they were hidden (optional, but keep expanded for now)
-
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'mm', 'a4');
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`Course-Corner-Results-${new Date().getTime()}.pdf`);
-
+            // Show loading
             Swal.fire({
-                icon: 'success',
-                title: 'PDF Downloaded!',
-                timer: 2000,
-                showConfirmButton: false
+                title: 'Generating PDF...',
+                text: 'Please wait while we prepare your results',
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
             });
-        } catch (error) {
-            console.error('PDF Generation Error:', error);
-            Swal.fire('Error', 'Failed to generate PDF. Please try again.', 'error');
-        }
-    };
-}
 
-// Add helper function for PDF content generation
-function generatePDFContent(results, technicalResults, points, gradeInfo) {
-    // Create a styled HTML document for download
-    return `
+            try {
+                // Expand all sections for capture
+                document.querySelectorAll('.collapsible-content').forEach(c => c.classList.remove('hidden'));
+
+                const canvas = await html2canvas(resultsEl, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    backgroundColor: '#ffffff'
+                });
+
+                // Re-hide sections if they were hidden (optional, but keep expanded for now)
+
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgProps = pdf.getImageProperties(imgData);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(`Course-Corner-Results-${new Date().getTime()}.pdf`);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'PDF Downloaded!',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } catch (error) {
+                console.error('PDF Generation Error:', error);
+                Swal.fire('Error', 'Failed to generate PDF. Please try again.', 'error');
+            }
+        };
+    }
+
+    // Add helper function for PDF content generation
+    function generatePDFContent(results, technicalResults, points, gradeInfo) {
+        // Create a styled HTML document for download
+        return `
         <!DOCTYPE html>
         <html>
         <head>
@@ -755,245 +758,245 @@ function generatePDFContent(results, technicalResults, points, gradeInfo) {
         </body>
         </html>
     `;
-}
-
-// Helper function to generate PDF sections
-function generatePDFSections(results, technicalResults) {
-    let sections = '';
-
-    // Add each category of courses...
-    // (Similar structure to displayAllResults but formatted for PDF)
-
-    return sections;
-}
-
-// Add new function to check diploma eligibility
-function getDiplomaCourses(grades) {
-    if (!diplomaData || !diplomaData.courses) {
-        console.error('Diploma data not loaded');
-        return {};
     }
 
-    const eligibleCourses = {
-        'KMTC Diploma Programs': []
-    };
+    // Helper function to generate PDF sections
+    function generatePDFSections(results, technicalResults) {
+        let sections = '';
 
-    for (const course of diplomaData.courses) {
-        if (checkDiplomaEligibility(grades, course)) {
-            eligibleCourses['KMTC Diploma Programs'].push(course.course_name);
-        }
+        // Add each category of courses...
+        // (Similar structure to displayAllResults but formatted for PDF)
+
+        return sections;
     }
 
-    return eligibleCourses;
-}
-
-// Add function to check diploma course eligibility
-function checkDiplomaEligibility(grades, course) {
-    // Check mean grade requirement
-    const studentMeanGrade = get_grade_from_points(parseInt(document.getElementById('overallGrade').value));
-    if (!meetsGradeRequirement(studentMeanGrade, course.mean_grade)) {
-        return false;
-    }
-
-    // Check subject requirements
-    for (const requirement of course.requirements) {
-        // Handle special case where only mean grade is specified
-        if (requirement.mean_grade) {
-            continue;
+    // Add new function to check diploma eligibility
+    function getDiplomaCourses(grades) {
+        if (!diplomaData || !diplomaData.courses) {
+            console.error('Diploma data not loaded');
+            return {};
         }
 
-        // Check each subject requirement
-        let requirementMet = false;
-        const subjects = Object.keys(requirement)[0].split('/');
-        const requiredGrade = requirement[Object.keys(requirement)[1]];
+        const eligibleCourses = {
+            'KMTC Diploma Programs': []
+        };
 
-        for (const subject of subjects) {
-            const studentGrade = getStudentGradeForSubject(grades, subject);
-            if (studentGrade && meetsGradeRequirement(studentGrade, requiredGrade)) {
-                requirementMet = true;
-                break;
+        for (const course of diplomaData.courses) {
+            if (checkDiplomaEligibility(grades, course)) {
+                eligibleCourses['KMTC Diploma Programs'].push(course.course_name);
             }
         }
 
-        if (!requirementMet) {
+        return eligibleCourses;
+    }
+
+    // Add function to check diploma course eligibility
+    function checkDiplomaEligibility(grades, course) {
+        // Check mean grade requirement
+        const studentMeanGrade = get_grade_from_points(parseInt(document.getElementById('overallGrade').value));
+        if (!meetsGradeRequirement(studentMeanGrade, course.mean_grade)) {
             return false;
         }
+
+        // Check subject requirements
+        for (const requirement of course.requirements) {
+            // Handle special case where only mean grade is specified
+            if (requirement.mean_grade) {
+                continue;
+            }
+
+            // Check each subject requirement
+            let requirementMet = false;
+            const subjects = Object.keys(requirement)[0].split('/');
+            const requiredGrade = requirement[Object.keys(requirement)[1]];
+
+            for (const subject of subjects) {
+                const studentGrade = getStudentGradeForSubject(grades, subject);
+                if (studentGrade && meetsGradeRequirement(studentGrade, requiredGrade)) {
+                    requirementMet = true;
+                    break;
+                }
+            }
+
+            if (!requirementMet) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
-    return true;
-}
+    // Helper function to get student grade for a subject code
+    function getStudentGradeForSubject(grades, subjectCode) {
+        // Map subject codes to form field IDs
+        const subjectMap = {
+            'ENG': 'english',
+            'KIS': 'kiswahili',
+            'MAT': 'mathematics',
+            'BIO': 'biology',
+            'PHY': 'physics',
+            'CHE': 'chemistry',
+            'GEO': 'geography',
+            'HIS': 'history',
+            'CRE': 'cre',
+            'IRE': 'ire',
+            'HSC': 'homeScience',
+            'AGR': 'agriculture',
+            'CSC': 'computerStudies',
+            'BUS': 'business',
+            'COM': 'business'  // Assuming Commerce maps to Business Studies
+        };
 
-// Helper function to get student grade for a subject code
-function getStudentGradeForSubject(grades, subjectCode) {
-    // Map subject codes to form field IDs
-    const subjectMap = {
-        'ENG': 'english',
-        'KIS': 'kiswahili',
-        'MAT': 'mathematics',
-        'BIO': 'biology',
-        'PHY': 'physics',
-        'CHE': 'chemistry',
-        'GEO': 'geography',
-        'HIS': 'history',
-        'CRE': 'cre',
-        'IRE': 'ire',
-        'HSC': 'homeScience',
-        'AGR': 'agriculture',
-        'CSC': 'computerStudies',
-        'BUS': 'business',
-        'COM': 'business'  // Assuming Commerce maps to Business Studies
-    };
-
-    const fieldId = subjectMap[subjectCode];
-    return fieldId ? grades[fieldId] : null;
-}
-
-// Add error handling for data loading
-function checkAllDataLoaded() {
-    if (!coursesData || !diplomaData || !technicalCoursesData) {
-        console.error('Some course data not loaded');
-        return false;
+        const fieldId = subjectMap[subjectCode];
+        return fieldId ? grades[fieldId] : null;
     }
-    return true;
-}
 
-// Modify getTechnicalCourses to handle education programs
-function getTechnicalCourses(grades) {
-    if (!technicalCoursesData) return {};
+    // Add error handling for data loading
+    function checkAllDataLoaded() {
+        if (!coursesData || !diplomaData || !technicalCoursesData) {
+            console.error('Some course data not loaded');
+            return false;
+        }
+        return true;
+    }
 
-    const eligibleCourses = {
-        'DIPLOMA PROGRAMS': [],
-        'CERTIFICATE PROGRAMS': [],
-        'ARTISAN PROGRAMS': []
-    };
+    // Modify getTechnicalCourses to handle education programs
+    function getTechnicalCourses(grades) {
+        if (!technicalCoursesData) return {};
 
-    const categoryStyles = {
-        'DIPLOMA PROGRAMS': 'border-blue-500',
-        'CERTIFICATE PROGRAMS': 'border-purple-500',
-        'ARTISAN PROGRAMS': 'border-orange-500'
-    };
+        const eligibleCourses = {
+            'DIPLOMA PROGRAMS': [],
+            'CERTIFICATE PROGRAMS': [],
+            'ARTISAN PROGRAMS': []
+        };
 
-    // Handle diploma courses
-    if (technicalCoursesData.courses.diploma) {
-        technicalCoursesData.courses.diploma.programs.forEach(category => {
-            // Handle categories with subcategories
-            if (category.subCategories) {
-                category.subCategories.forEach(subCat => {
-                    if (checkTechnicalRequirements(grades, subCat.requirements)) {
-                        // If programs is an array of strings
-                        if (typeof subCat.programs[0] === 'string') {
-                            eligibleCourses['DIPLOMA PROGRAMS'].push({
-                                category: `${category.category}`,
-                                programs: subCat.programs,
-                                note: subCat.note || category.note,
-                                onlyMeanGrade: Object.keys(subCat.requirements).length === 1
-                            });
-                        } else {
-                            // If programs is an array of objects with program-specific requirements
-                            const eligiblePrograms = subCat.programs.filter(program =>
-                                checkTechnicalRequirements(grades, program.requirements)
-                            ).map(program => program.program);
+        const categoryStyles = {
+            'DIPLOMA PROGRAMS': 'border-blue-500',
+            'CERTIFICATE PROGRAMS': 'border-purple-500',
+            'ARTISAN PROGRAMS': 'border-orange-500'
+        };
 
-                            if (eligiblePrograms.length > 0) {
+        // Handle diploma courses
+        if (technicalCoursesData.courses.diploma) {
+            technicalCoursesData.courses.diploma.programs.forEach(category => {
+                // Handle categories with subcategories
+                if (category.subCategories) {
+                    category.subCategories.forEach(subCat => {
+                        if (checkTechnicalRequirements(grades, subCat.requirements)) {
+                            // If programs is an array of strings
+                            if (typeof subCat.programs[0] === 'string') {
                                 eligibleCourses['DIPLOMA PROGRAMS'].push({
                                     category: `${category.category}`,
-                                    programs: eligiblePrograms,
+                                    programs: subCat.programs,
                                     note: subCat.note || category.note,
-                                    onlyMeanGrade: false
+                                    onlyMeanGrade: Object.keys(subCat.requirements).length === 1
                                 });
+                            } else {
+                                // If programs is an array of objects with program-specific requirements
+                                const eligiblePrograms = subCat.programs.filter(program =>
+                                    checkTechnicalRequirements(grades, program.requirements)
+                                ).map(program => program.program);
+
+                                if (eligiblePrograms.length > 0) {
+                                    eligibleCourses['DIPLOMA PROGRAMS'].push({
+                                        category: `${category.category}`,
+                                        programs: eligiblePrograms,
+                                        note: subCat.note || category.note,
+                                        onlyMeanGrade: false
+                                    });
+                                }
                             }
                         }
+                    });
+                }
+                // Handle categories without subcategories
+                else if (checkTechnicalRequirements(grades, category.requirements)) {
+                    if (typeof category.programs[0] === 'string') {
+                        eligibleCourses['DIPLOMA PROGRAMS'].push({
+                            category: category.category,
+                            programs: category.programs,
+                            note: category.note,
+                            onlyMeanGrade: Object.keys(category.requirements).length === 1
+                        });
                     }
-                });
-            }
-            // Handle categories without subcategories
-            else if (checkTechnicalRequirements(grades, category.requirements)) {
-                if (typeof category.programs[0] === 'string') {
-                    eligibleCourses['DIPLOMA PROGRAMS'].push({
+                }
+            });
+        }
+
+        // Handle certificate courses
+        if (technicalCoursesData.courses.certificate) {
+            technicalCoursesData.courses.certificate.programs.forEach(category => {
+                if (checkTechnicalRequirements(grades, category.requirements)) {
+                    eligibleCourses['CERTIFICATE PROGRAMS'].push({
                         category: category.category,
                         programs: category.programs,
                         note: category.note,
                         onlyMeanGrade: Object.keys(category.requirements).length === 1
                     });
                 }
-            }
-        });
-    }
-
-    // Handle certificate courses
-    if (technicalCoursesData.courses.certificate) {
-        technicalCoursesData.courses.certificate.programs.forEach(category => {
-            if (checkTechnicalRequirements(grades, category.requirements)) {
-                eligibleCourses['CERTIFICATE PROGRAMS'].push({
-                    category: category.category,
-                    programs: category.programs,
-                    note: category.note,
-                    onlyMeanGrade: Object.keys(category.requirements).length === 1
-                });
-            }
-        });
-    }
-
-    // Handle artisan courses
-    if (technicalCoursesData.courses.artisan) {
-        technicalCoursesData.courses.artisan.programs.forEach(category => {
-            if (checkTechnicalRequirements(grades, category.requirements)) {
-                eligibleCourses['ARTISAN PROGRAMS'].push({
-                    category: category.category,
-                    programs: category.programs,
-                    note: category.note,
-                    onlyMeanGrade: Object.keys(category.requirements).length === 1
-                });
-            }
-        });
-    }
-
-    return { courses: eligibleCourses, styles: categoryStyles };
-}
-
-// Modify checkTechnicalRequirements to normalize grade case
-function checkTechnicalRequirements(grades, requirements) {
-    if (!requirements) return false;
-
-    const studentPoints = parseInt(document.getElementById('overallGrade').value);
-    const studentMeanGrade = get_grade_from_points(studentPoints);
-
-    // Check mean grade requirement
-    if (requirements.meanGrade && !meetsGradeRequirement(studentMeanGrade, requirements.meanGrade)) {
-        return false;
-    }
-
-    // Check other subject requirements
-    for (const [subject, requiredGrade] of Object.entries(requirements)) {
-        if (subject === 'meanGrade') continue;
-
-        // Normalize grade case (convert to uppercase)
-        const normalizedRequiredGrade = requiredGrade.toUpperCase();
-
-        if (subject.includes('/')) {
-            // Handle alternative subjects
-            const alternatives = subject.split('/');
-            const meetsAny = alternatives.some(alt => {
-                const subjectId = findSubjectId(alt);
-                return subjectId && grades[subjectId] &&
-                    meetsGradeRequirement(grades[subjectId], normalizedRequiredGrade);
             });
-            if (!meetsAny) return false;
-        } else {
-            const subjectId = findSubjectId(subject);
-            if (!subjectId || !grades[subjectId] ||
-                !meetsGradeRequirement(grades[subjectId], normalizedRequiredGrade)) {
-                return false;
+        }
+
+        // Handle artisan courses
+        if (technicalCoursesData.courses.artisan) {
+            technicalCoursesData.courses.artisan.programs.forEach(category => {
+                if (checkTechnicalRequirements(grades, category.requirements)) {
+                    eligibleCourses['ARTISAN PROGRAMS'].push({
+                        category: category.category,
+                        programs: category.programs,
+                        note: category.note,
+                        onlyMeanGrade: Object.keys(category.requirements).length === 1
+                    });
+                }
+            });
+        }
+
+        return { courses: eligibleCourses, styles: categoryStyles };
+    }
+
+    // Modify checkTechnicalRequirements to normalize grade case
+    function checkTechnicalRequirements(grades, requirements) {
+        if (!requirements) return false;
+
+        const studentPoints = parseInt(document.getElementById('overallGrade').value);
+        const studentMeanGrade = get_grade_from_points(studentPoints);
+
+        // Check mean grade requirement
+        if (requirements.meanGrade && !meetsGradeRequirement(studentMeanGrade, requirements.meanGrade)) {
+            return false;
+        }
+
+        // Check other subject requirements
+        for (const [subject, requiredGrade] of Object.entries(requirements)) {
+            if (subject === 'meanGrade') continue;
+
+            // Normalize grade case (convert to uppercase)
+            const normalizedRequiredGrade = requiredGrade.toUpperCase();
+
+            if (subject.includes('/')) {
+                // Handle alternative subjects
+                const alternatives = subject.split('/');
+                const meetsAny = alternatives.some(alt => {
+                    const subjectId = findSubjectId(alt);
+                    return subjectId && grades[subjectId] &&
+                        meetsGradeRequirement(grades[subjectId], normalizedRequiredGrade);
+                });
+                if (!meetsAny) return false;
+            } else {
+                const subjectId = findSubjectId(subject);
+                if (!subjectId || !grades[subjectId] ||
+                    !meetsGradeRequirement(grades[subjectId], normalizedRequiredGrade)) {
+                    return false;
+                }
             }
         }
+
+        return true;
     }
 
-    return true;
-}
-
-// Update generateTechnicalCategoryHTML to handle the new structure and remove "Subcat" text
-function generateTechnicalCategoryHTML(categoryKey, results, color) {
-    return `
+    // Update generateTechnicalCategoryHTML to handle the new structure and remove "Subcat" text
+    function generateTechnicalCategoryHTML(categoryKey, results, color) {
+        return `
         <div class="cluster mb-6 bg-white p-6 rounded-lg shadow-lg print:shadow-none print:border 
                   border-2 ${results.styles[categoryKey]}">
             <h3 class="text-xl font-semibold text-${color}-600 mb-4">${categoryKey}</h3>
@@ -1022,10 +1025,10 @@ function generateTechnicalCategoryHTML(categoryKey, results, color) {
             `).join('')}
         </div>
     `;
-}
+    }
 
-function generateClusterHTML(clusterName, courses, color = 'green') {
-    return `
+    function generateClusterHTML(clusterName, courses, color = 'green') {
+        return `
         <div class="cluster mb-6 bg-white p-6 rounded-lg shadow-lg print:shadow-none print:border 
                   border-2 ${color === 'red' ? 'border-red-500' : 'border-green-500'}">
             <h3 class="text-xl font-semibold text-${color}-600 mb-4">${clusterName}</h3>
@@ -1042,37 +1045,37 @@ function generateClusterHTML(clusterName, courses, color = 'green') {
             </ul>
         </div>
     `;
-}
+    }
 
-function get_grade_from_points(points) {
-    if (points >= 81) return "A"
-    else if (points >= 74) return "A-"
-    else if (points >= 67) return "B+"
-    else if (points >= 60) return "B"
-    else if (points >= 53) return "B-"
-    else if (points >= 46) return "C+"
-    else if (points >= 39) return "C"
-    else if (points >= 32) return "C-"
-    else if (points >= 25) return "D+"
-    else if (points >= 18) return "D"
-    else if (points >= 11) return "D-"
-    else return "E"
-}
+    function get_grade_from_points(points) {
+        if (points >= 81) return "A"
+        else if (points >= 74) return "A-"
+        else if (points >= 67) return "B+"
+        else if (points >= 60) return "B"
+        else if (points >= 53) return "B-"
+        else if (points >= 46) return "C+"
+        else if (points >= 39) return "C"
+        else if (points >= 32) return "C-"
+        else if (points >= 25) return "D+"
+        else if (points >= 18) return "D"
+        else if (points >= 11) return "D-"
+        else return "E"
+    }
 
-// Add back displayAllResults function
-function displayAllResults(results) {
-    try {
-        console.log('displayAllResults called with:', results);
-        const resultsDiv = document.getElementById('results');
+    // Add back displayAllResults function
+    function displayAllResults(results) {
+        try {
+            console.log('displayAllResults called with:', results);
+            const resultsDiv = document.getElementById('results');
 
-        if (!resultsDiv) {
-            console.error('Results div not found!');
-            return;
-        }
+            if (!resultsDiv) {
+                console.error('Results div not found!');
+                return;
+            }
 
-        // Check for data load errors
-        if (results.error) {
-            resultsDiv.innerHTML = `
+            // Check for data load errors
+            if (results.error) {
+                resultsDiv.innerHTML = `
                 <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-xl shadow-md">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
@@ -1085,26 +1088,26 @@ function displayAllResults(results) {
                     </div>
                 </div>
             `;
+                resultsDiv.classList.remove('hidden');
+                return;
+            }
+
+            resultsDiv.innerHTML = '';
             resultsDiv.classList.remove('hidden');
-            return;
-        }
 
-        resultsDiv.innerHTML = '';
-        resultsDiv.classList.remove('hidden');
+            const studentPoints = parseInt(document.getElementById('overallGrade').value) || 0;
+            const gradeInfo = getGradeDetails(studentPoints);
 
-        const studentPoints = parseInt(document.getElementById('overallGrade').value) || 0;
-        const gradeInfo = getGradeDetails(studentPoints);
+            let technicalResults;
+            try {
+                technicalResults = getTechnicalCourses(getStudentGrades());
+            } catch (techError) {
+                console.error('Error getting technical courses:', techError);
+                technicalResults = { courses: {} };
+            }
 
-        let technicalResults;
-        try {
-            technicalResults = getTechnicalCourses(getStudentGrades());
-        } catch (techError) {
-            console.error('Error getting technical courses:', techError);
-            technicalResults = { courses: {} };
-        }
-
-        // Success message with download button
-        let html = `
+            // Success message with download button
+            let html = `
             <div class="bg-green-50 border-l-4 border-green-500 p-6 mb-8 rounded-lg shadow-lg">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center">
@@ -1134,82 +1137,82 @@ function displayAllResults(results) {
             </div>
         `;
 
-        // Count eligible courses in each category
-        const degreeCourses = studentPoints >= 46 && results.courses ?
-            Object.entries(results.courses).filter(([name]) => !name.includes('KMTC')).reduce((acc, [_, courses]) => acc + courses.length, 0) : 0;
+            // Count eligible courses in each category
+            const degreeCourses = studentPoints >= 46 && results.courses ?
+                Object.entries(results.courses).filter(([name]) => !name.includes('KMTC')).reduce((acc, [_, courses]) => acc + courses.length, 0) : 0;
 
-        const kmtcCourses = results.courses?.['KMTC PROGRAMS']?.length || 0;
+            const kmtcCourses = results.courses?.['KMTC PROGRAMS']?.length || 0;
 
-        const diplomaCourses = technicalResults?.courses?.['DIPLOMA PROGRAMS']?.reduce((acc, category) =>
-            acc + category.programs.length, 0) || 0;
+            const diplomaCourses = technicalResults?.courses?.['DIPLOMA PROGRAMS']?.reduce((acc, category) =>
+                acc + category.programs.length, 0) || 0;
 
-        const certificateCourses = technicalResults?.courses?.['CERTIFICATE PROGRAMS']?.reduce((acc, category) =>
-            acc + category.programs.length, 0) || 0;
+            const certificateCourses = technicalResults?.courses?.['CERTIFICATE PROGRAMS']?.reduce((acc, category) =>
+                acc + category.programs.length, 0) || 0;
 
-        const artisanCourses = technicalResults?.courses?.['ARTISAN PROGRAMS']?.reduce((acc, category) =>
-            acc + category.programs.length, 0) || 0;
+            const artisanCourses = technicalResults?.courses?.['ARTISAN PROGRAMS']?.reduce((acc, category) =>
+                acc + category.programs.length, 0) || 0;
 
-        // Add degree programs section
-        if (studentPoints >= 46 && results.courses) {
-            html += generateCollapsibleSection(
-                'degree-programs',
-                'Degree Programs',
-                degreeCourses,
-                'green',
-                Object.entries(results.courses)
-                    .filter(([name]) => !name.includes('KMTC'))
-                    .map(([clusterName, courses]) => generateClusterHTML(clusterName, courses))
-                    .join('')
-            );
-        }
+            // Add degree programs section
+            if (studentPoints >= 46 && results.courses) {
+                html += generateCollapsibleSection(
+                    'degree-programs',
+                    'Degree Programs',
+                    degreeCourses,
+                    'green',
+                    Object.entries(results.courses)
+                        .filter(([name]) => !name.includes('KMTC'))
+                        .map(([clusterName, courses]) => generateClusterHTML(clusterName, courses))
+                        .join('')
+                );
+            }
 
-        // Add diploma programs section
-        if (technicalResults?.courses?.['DIPLOMA PROGRAMS']?.length > 0) {
-            html += generateCollapsibleSection(
-                'diploma-programs',
-                'Diploma Programs',
-                diplomaCourses,
-                'blue',
-                generateTechnicalCategoryHTML('DIPLOMA PROGRAMS', technicalResults, 'blue')
-            );
-        }
+            // Add diploma programs section
+            if (technicalResults?.courses?.['DIPLOMA PROGRAMS']?.length > 0) {
+                html += generateCollapsibleSection(
+                    'diploma-programs',
+                    'Diploma Programs',
+                    diplomaCourses,
+                    'blue',
+                    generateTechnicalCategoryHTML('DIPLOMA PROGRAMS', technicalResults, 'blue')
+                );
+            }
 
-        // Add KMTC programs section
-        if (results.courses?.['KMTC PROGRAMS']) {
-            html += generateCollapsibleSection(
-                'kmtc-programs',
-                'KMTC Programs',
-                kmtcCourses,
-                'red',
-                generateClusterHTML('KMTC PROGRAMS', results.courses['KMTC PROGRAMS'], 'red')
-            );
-        }
+            // Add KMTC programs section
+            if (results.courses?.['KMTC PROGRAMS']) {
+                html += generateCollapsibleSection(
+                    'kmtc-programs',
+                    'KMTC Programs',
+                    kmtcCourses,
+                    'red',
+                    generateClusterHTML('KMTC PROGRAMS', results.courses['KMTC PROGRAMS'], 'red')
+                );
+            }
 
-        // Add certificate programs section
-        if (technicalResults?.courses?.['CERTIFICATE PROGRAMS']?.length > 0) {
-            html += generateCollapsibleSection(
-                'certificate-programs',
-                'Certificate Programs',
-                certificateCourses,
-                'purple',
-                generateTechnicalCategoryHTML('CERTIFICATE PROGRAMS', technicalResults, 'purple')
-            );
-        }
+            // Add certificate programs section
+            if (technicalResults?.courses?.['CERTIFICATE PROGRAMS']?.length > 0) {
+                html += generateCollapsibleSection(
+                    'certificate-programs',
+                    'Certificate Programs',
+                    certificateCourses,
+                    'purple',
+                    generateTechnicalCategoryHTML('CERTIFICATE PROGRAMS', technicalResults, 'purple')
+                );
+            }
 
-        // Add artisan programs section
-        if (technicalResults?.courses?.['ARTISAN PROGRAMS']?.length > 0) {
-            html += generateCollapsibleSection(
-                'artisan-programs',
-                'Artisan Programs',
-                artisanCourses,
-                'orange',
-                generateTechnicalCategoryHTML('ARTISAN PROGRAMS', technicalResults, 'orange')
-            );
-        }
+            // Add artisan programs section
+            if (technicalResults?.courses?.['ARTISAN PROGRAMS']?.length > 0) {
+                html += generateCollapsibleSection(
+                    'artisan-programs',
+                    'Artisan Programs',
+                    artisanCourses,
+                    'orange',
+                    generateTechnicalCategoryHTML('ARTISAN PROGRAMS', technicalResults, 'orange')
+                );
+            }
 
-        // Check if we have any content to show
-        if (degreeCourses === 0 && kmtcCourses === 0 && diplomaCourses === 0 && certificateCourses === 0 && artisanCourses === 0) {
-            html += `
+            // Check if we have any content to show
+            if (degreeCourses === 0 && kmtcCourses === 0 && diplomaCourses === 0 && certificateCourses === 0 && artisanCourses === 0) {
+                html += `
                 <div class="bg-yellow-50 border-l-4 border-yellow-500 p-6 rounded-lg">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
@@ -1222,32 +1225,32 @@ function displayAllResults(results) {
                     </div>
                 </div>
             `;
-        }
-
-        resultsDiv.innerHTML = html;
-
-        // Initialize collapsible sections and download button
-        initializeCollapsibleSections();
-        initializeDownloadButton();
-
-        // Trigger confetti if any courses are available
-        if ((results.courses && Object.keys(results.courses).length > 0) ||
-            (technicalResults?.courses && Object.values(technicalResults.courses).some(arr => arr.length > 0))) {
-            if (window.confetti) {
-                confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: { y: 0.6 }
-                });
             }
-        }
 
-        console.log('displayAllResults completed successfully');
-    } catch (error) {
-        console.error('Critical error in displayAllResults:', error);
-        const resultsDiv = document.getElementById('results');
-        if (resultsDiv) {
-            resultsDiv.innerHTML = `
+            resultsDiv.innerHTML = html;
+
+            // Initialize collapsible sections and download button
+            initializeCollapsibleSections();
+            initializeDownloadButton();
+
+            // Trigger confetti if any courses are available
+            if ((results.courses && Object.keys(results.courses).length > 0) ||
+                (technicalResults?.courses && Object.values(technicalResults.courses).some(arr => arr.length > 0))) {
+                if (window.confetti) {
+                    confetti({
+                        particleCount: 100,
+                        spread: 70,
+                        origin: { y: 0.6 }
+                    });
+                }
+            }
+
+            console.log('displayAllResults completed successfully');
+        } catch (error) {
+            console.error('Critical error in displayAllResults:', error);
+            const resultsDiv = document.getElementById('results');
+            if (resultsDiv) {
+                resultsDiv.innerHTML = `
                 <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-lg">
                     <div class="flex items-center">
                         <div class="flex-shrink-0">
@@ -1261,71 +1264,72 @@ function displayAllResults(results) {
                     </div>
                 </div>
             `;
-        }
-    }
-}
-
-// Modify generateClusterPointsPDF function
-async function generateClusterPointsPDF() {
-    // Check if we have calculated points
-    const calculatedPoints = document.getElementById('overallGrade').value;
-    if (!calculatedPoints) {
-        Swal.fire({
-            icon: 'error',
-            title: 'No cluster points available',
-            text: 'Please calculate your cluster points first'
-        });
-        return;
-    }
-
-    const studentName = await Swal.fire({
-        title: 'Enter your name',
-        input: 'text',
-        inputLabel: 'Your name will appear on the PDF report',
-        inputPlaceholder: 'Enter your full name',
-        showCancelButton: true,
-        inputValidator: (value) => {
-            if (!value) {
-                return 'Please enter your name!';
             }
         }
-    });
+    }
 
-    if (studentName.isConfirmed) {
-        const pdfGenerator = new PDFGenerator();
-        const studentGrade = get_grade_from_points(parseInt(calculatedPoints));
+    // Modify generateClusterPointsPDF function
+    async function generateClusterPointsPDF() {
+        // Check if we have calculated points
+        const calculatedPoints = document.getElementById('overallGrade').value;
+        if (!calculatedPoints) {
+            Swal.fire({
+                icon: 'error',
+                title: 'No cluster points available',
+                text: 'Please calculate your cluster points first'
+            });
+            return;
+        }
 
-        // Get all the calculated cluster points from the results
-        const clusterResults = {};
-        document.querySelectorAll('.cluster').forEach(cluster => {
-            const clusterName = cluster.querySelector('h3').textContent;
-            const coursesList = Array.from(cluster.querySelectorAll('li'))
-                .map(li => li.textContent.trim());
-            clusterResults[clusterName] = coursesList;
+        const studentName = await Swal.fire({
+            title: 'Enter your name',
+            input: 'text',
+            inputLabel: 'Your name will appear on the PDF report',
+            inputPlaceholder: 'Enter your full name',
+            showCancelButton: true,
+            inputValidator: (value) => {
+                if (!value) {
+                    return 'Please enter your name!';
+                }
+            }
         });
 
-        // Generate PDF with actual cluster points and courses
-        const doc = await pdfGenerator.generateClusterPointsPDF(
-            {
-                points: calculatedPoints,
-                grade: studentGrade,
-                clusters: clusterResults
-            },
-            studentName.value,
-            studentGrade
-        );
+        if (studentName.isConfirmed) {
+            const pdfGenerator = new PDFGenerator();
+            const studentGrade = get_grade_from_points(parseInt(calculatedPoints));
 
-        // Save the PDF
-        doc.save(`${studentName.value.replace(/\s+/g, '_')}_cluster_points.pdf`);
+            // Get all the calculated cluster points from the results
+            const clusterResults = {};
+            document.querySelectorAll('.cluster').forEach(cluster => {
+                const clusterName = cluster.querySelector('h3').textContent;
+                const coursesList = Array.from(cluster.querySelectorAll('li'))
+                    .map(li => li.textContent.trim());
+                clusterResults[clusterName] = coursesList;
+            });
+
+            // Generate PDF with actual cluster points and courses
+            const doc = await pdfGenerator.generateClusterPointsPDF(
+                {
+                    points: calculatedPoints,
+                    grade: studentGrade,
+                    clusters: clusterResults
+                },
+                studentName.value,
+                studentGrade
+            );
+
+            // Save the PDF
+            doc.save(`${studentName.value.replace(/\s+/g, '_')}_cluster_points.pdf`);
+        }
     }
-}
 
-// Add this to the existing initializeDownloadButton function
-function initializeDownloadButton() {
-    const downloadBtn = document.getElementById('downloadBtn');
-    if (downloadBtn) {
-        downloadBtn.addEventListener('click', generateClusterPointsPDF);
+    // Add this to the existing initializeDownloadButton function
+    function initializeDownloadButton() {
+        const downloadBtn = document.getElementById('downloadBtn');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', generateClusterPointsPDF);
+        }
     }
-}
 
-console.log('🏁 courses-eligibility.js: Script fully loaded');
+    console.log('🏁 courses-eligibility.js: Script fully loaded');
+})(); // End of IIFE

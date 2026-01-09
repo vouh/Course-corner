@@ -89,7 +89,7 @@ function calculateClusterPoints() {
         // Formula: C = sqrt((r/48) * (t/84)) * 48
         // Formula: C = sqrt((r / 48) * (t / 84)) * 48
         // User requested 1c, 1b etc not included, just 1-20
-        const points = ((Math.sqrt((r / 48) * (t / 84)) * 48)-2);
+        const points = ((Math.sqrt((r / 48) * (t / 84)) * 48) - 2);
 
         if (isNaN(points)) {
             console.error(`Cluster ${i} produced NaN. r=${r}, t=${t}`);
@@ -382,19 +382,21 @@ function getBestRemainingScore(scores, excludeSubjects) {
 }
 
 function displayResults(allClusterPoints) {
-    // Extract the HTML generation into a separate function
-    const clusterPointsHTML = generateClusterPointsHTML(allClusterPoints);
-
-    // If called directly (from first button), display in results div
-    const resultsDiv = document.getElementById('results');
-    if (resultsDiv) {
-        resultsDiv.classList.remove('hidden');
-        resultsDiv.innerHTML = clusterPointsHTML;
-    }
-
-    // Store the results for reuse
+    // Store for reuse
     window.lastClusterPoints = allClusterPoints;
-    return clusterPointsHTML;
+
+    // Use unified display if available
+    if (typeof window.displayResultsUnified === 'function') {
+        window.displayResultsUnified('points-only', {});
+    } else {
+        // Fallback to old behavior if script not loaded
+        const clusterPointsHTML = generateClusterPointsHTML(allClusterPoints);
+        const resultsDiv = document.getElementById('results');
+        if (resultsDiv) {
+            resultsDiv.classList.remove('hidden');
+            resultsDiv.innerHTML = clusterPointsHTML;
+        }
+    }
 }
 
 // New function to generate cluster points HTML

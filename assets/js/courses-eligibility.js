@@ -1148,7 +1148,31 @@
         pdf.text(`Average Points: ${studentPoints} | Date: ${new Date().toLocaleDateString()}`, 105, y, { align: 'center' });
         y += 15;
 
-        // 1. Cluster Points
+        // 1. Subject Grades
+        pdf.setFontSize(16);
+        pdf.setTextColor(0);
+        pdf.text('Your Subject Grades', 15, y);
+        y += 8;
+        pdf.setFontSize(10);
+
+        const gradesSnapshot = getStudentGrades();
+        const gradeEntries = Object.entries(gradesSnapshot);
+        for (let i = 0; i < gradeEntries.length; i += 2) {
+            if (y > 275) { pdf.addPage(); y = 20; }
+            const [s1, g1] = gradeEntries[i];
+            const sName1 = s1.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+            pdf.text(`${sName1}: ${g1}`, 20, y);
+
+            if (gradeEntries[i + 1]) {
+                const [s2, g2] = gradeEntries[i + 1];
+                const sName2 = s2.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                pdf.text(`${sName2}: ${g2}`, 110, y);
+            }
+            y += 6;
+        }
+        y += 10;
+
+        // 2. Cluster Points
         if ((window.lastPackageType === 'points-only' || window.lastPackageType === 'combined') && window.lastClusterPoints) {
             pdf.setFontSize(16);
             pdf.setTextColor(0);
@@ -1158,7 +1182,7 @@
 
             const entries = Object.entries(window.lastClusterPoints);
             for (let i = 0; i < entries.length; i += 2) {
-                if (y > 270) { pdf.addPage(); y = 20; }
+                if (y > 275) { pdf.addPage(); y = 20; }
                 const [c1, p1] = entries[i];
                 pdf.text(`${c1}: ${p1.toFixed(3)}`, 20, y);
 
@@ -1171,33 +1195,58 @@
             y += 10;
         }
 
-        // 2. Eligible Courses
+        // 3. Eligible Programs
         if (window.lastPackageType === 'courses-only' || window.lastPackageType === 'combined') {
-            const grades = getStudentGrades();
-            const results = getEligibleCourses(grades);
+            const universityResults = getEligibleCourses(gradesSnapshot);
+            const technicalResults = getTechnicalCourses(gradesSnapshot);
 
-            if (results && results.courses) {
-                pdf.setFontSize(16);
+            pdf.setFontSize(16);
+            if (y > 270) { pdf.addPage(); y = 20; }
+            pdf.text('Eligible Programs', 15, y);
+            y += 8;
+            pdf.setFontSize(9);
+
+            // Combine University and Technical courses
+            const allCategories = {
+                ...(universityResults.courses || {}),
+                ...(technicalResults.courses || {})
+            };
+
+            Object.entries(allCategories).forEach(([cat, data]) => {
                 if (y > 270) { pdf.addPage(); y = 20; }
-                pdf.text('Eligible Programs', 15, y);
-                y += 8;
-                pdf.setFontSize(9);
+                pdf.setFont(undefined, 'bold');
+                pdf.text(cat, 15, y);
+                y += 5;
+                pdf.setFont(undefined, 'normal');
 
-                Object.entries(results.courses).forEach(([cat, progs]) => {
-                    if (y > 260) { pdf.addPage(); y = 20; }
-                    pdf.setFont(undefined, 'bold');
-                    pdf.text(cat, 15, y);
-                    y += 5;
-                    pdf.setFont(undefined, 'normal');
+                // data can be an array of strings or an array of objects for technical courses
+                const progs = Array.isArray(data) ? data : (data.map ? data.map(d => d.category || d) : []);
 
-                    progs.slice(0, 15).forEach(p => {
+                // For nested technical courses (like KMTC/Diploma categories)
+                if (data.map && typeof data[0] === 'object' && data[0].programs) {
+                    data.forEach(sub => {
+                        if (y > 275) { pdf.addPage(); y = 20; }
+                        pdf.setFont(undefined, 'italic');
+                        pdf.text(sub.category.replace(/\s*-\s*Subcat\s*\d+/g, ''), 20, y);
+                        y += 4;
+                        pdf.setFont(undefined, 'normal');
+                        sub.programs.forEach(p => {
+                            if (y > 280) { pdf.addPage(); y = 20; }
+                            pdf.text(`• ${p}`, 25, y);
+                            y += 4;
+                        });
+                        y += 2;
+                    });
+                } else {
+                    progs.forEach(p => {
                         if (y > 280) { pdf.addPage(); y = 20; }
                         pdf.text(`• ${p}`, 20, y);
                         y += 4;
                     });
-                    y += 5;
-                });
-            }
+                    y += 2;
+                }
+                y += 3;
+            });
         }
 
         pdf.save(`${name.replace(/\s+/g, '_')}_Report.pdf`);

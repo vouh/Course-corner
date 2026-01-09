@@ -470,6 +470,9 @@
         const resultsDiv = document.getElementById('results');
         if (!resultsDiv) return;
 
+        // Store current package type for PDF generation
+        window.lastPackageType = type;
+
         resultsDiv.innerHTML = '';
         resultsDiv.classList.remove('hidden');
 
@@ -1146,7 +1149,7 @@
         y += 15;
 
         // 1. Cluster Points
-        if (window.lastClusterPoints) {
+        if ((window.lastPackageType === 'points-only' || window.lastPackageType === 'combined') && window.lastClusterPoints) {
             pdf.setFontSize(16);
             pdf.setTextColor(0);
             pdf.text('Cluster Points', 15, y);
@@ -1169,30 +1172,32 @@
         }
 
         // 2. Eligible Courses
-        const grades = getStudentGrades();
-        const results = getEligibleCourses(grades);
+        if (window.lastPackageType === 'courses-only' || window.lastPackageType === 'combined') {
+            const grades = getStudentGrades();
+            const results = getEligibleCourses(grades);
 
-        if (results && results.courses) {
-            pdf.setFontSize(16);
-            if (y > 270) { pdf.addPage(); y = 20; }
-            pdf.text('Eligible Programs', 15, y);
-            y += 8;
-            pdf.setFontSize(9);
+            if (results && results.courses) {
+                pdf.setFontSize(16);
+                if (y > 270) { pdf.addPage(); y = 20; }
+                pdf.text('Eligible Programs', 15, y);
+                y += 8;
+                pdf.setFontSize(9);
 
-            Object.entries(results.courses).forEach(([cat, progs]) => {
-                if (y > 260) { pdf.addPage(); y = 20; }
-                pdf.setFont(undefined, 'bold');
-                pdf.text(cat, 15, y);
-                y += 5;
-                pdf.setFont(undefined, 'normal');
+                Object.entries(results.courses).forEach(([cat, progs]) => {
+                    if (y > 260) { pdf.addPage(); y = 20; }
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text(cat, 15, y);
+                    y += 5;
+                    pdf.setFont(undefined, 'normal');
 
-                progs.slice(0, 15).forEach(p => {
-                    if (y > 280) { pdf.addPage(); y = 20; }
-                    pdf.text(`• ${p}`, 20, y);
-                    y += 4;
+                    progs.slice(0, 15).forEach(p => {
+                        if (y > 280) { pdf.addPage(); y = 20; }
+                        pdf.text(`• ${p}`, 20, y);
+                        y += 4;
+                    });
+                    y += 5;
                 });
-                y += 5;
-            });
+            }
         }
 
         pdf.save(`${name.replace(/\s+/g, '_')}_Report.pdf`);

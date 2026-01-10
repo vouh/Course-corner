@@ -592,30 +592,30 @@
     // Helper function to generate success message
     function generateSuccessMessage(points, gradeInfo) {
         return `
-        <div class="bg-green-50 border-l-4 border-green-500 p-6 mb-8 rounded-lg shadow-lg">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center">
+        <div class="bg-green-50 border-l-4 border-green-500 p-4 md:p-6 mb-8 rounded-lg shadow-lg">
+            <div class="flex flex-col md:flex-row items-center md:justify-between gap-6">
+                <div class="flex flex-col md:flex-row items-center text-center md:text-left">
                     <div class="flex-shrink-0">
                         <svg class="h-8 w-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
-                    <div class="ml-4">
-                        <h3 class="text-2xl font-bold text-green-800">Your Results</h3>
+                    <div class="md:ml-4 mt-2 md:mt-0">
+                        <h3 class="text-xl md:text-2xl font-bold text-green-800">Your Results</h3>
                         <div class="mt-2">
-                            <p class="text-lg text-green-700">
+                            <p class="text-base md:text-lg text-green-700">
                                 You have scored <span class="font-bold">${points} points</span> 
                                 (Grade ${gradeInfo.grade})
                             </p>
-                            <p class="text-green-600 mt-1">${gradeInfo.message}</p>
+                            <p class="text-green-600 mt-1 text-sm md:text-base">${gradeInfo.message}</p>
                         </div>
                     </div>
                 </div>
-                <button id="downloadBtn" class="flex items-center px-6 py-3 bg-green-600 text-white rounded-lg shadow-lg hover:bg-green-700 transition-all duration-200 gap-2 hover:shadow-green-200 hover:shadow-xl">
+                <button id="downloadBtn" class="flex items-center justify-center w-full md:w-auto px-6 py-3 bg-green-600 text-white rounded-lg shadow-lg hover:bg-green-700 transition-all duration-200 gap-2 hover:shadow-green-200 hover:shadow-xl">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
                     </svg>
-                    <span>Download PDF</span>
+                    <span class="whitespace-nowrap">Download PDF</span>
                 </button>
             </div>
         </div>

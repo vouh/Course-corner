@@ -108,14 +108,16 @@ module.exports = async (req, res) => {
     const timestamp = getTimestamp();
     const password = generatePassword(timestamp);
 
+    const TILL_NUMBER = process.env.TILL_NUMBER || '7287530';
+
     const stkPushRequest = {
       BusinessShortCode: BUSINESS_SHORT_CODE,
       Password: password,
       Timestamp: timestamp,
-      TransactionType: 'CustomerPayBillOnline',
+      TransactionType: 'CustomerBuyGoodsOnline',
       Amount: amount,
       PartyA: formattedPhone,
-      PartyB: BUSINESS_SHORT_CODE,
+      PartyB: TILL_NUMBER,
       PhoneNumber: formattedPhone,
       CallBackURL: CALLBACK_URL || `https://course-corner-server.vercel.app/api/mpesa/callback`,
       AccountReference: `CC-${category}-${sessionId}`,

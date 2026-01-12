@@ -49,13 +49,13 @@ function generatePassword(timestamp) {
 // Format phone number to 254XXXXXXXXX format
 function formatPhoneNumber(phoneNumber) {
   let formattedPhone = phoneNumber.replace(/[^\d]/g, '');
-  
+
   if (formattedPhone.startsWith('0')) {
     formattedPhone = '254' + formattedPhone.substring(1);
   } else if (!formattedPhone.startsWith('254')) {
     formattedPhone = '254' + formattedPhone;
   }
-  
+
   return formattedPhone;
 }
 
@@ -68,7 +68,7 @@ async function initiateSTKPush(phoneNumber, amount, accountReference, transactio
     const password = generatePassword(timestamp);
 
     // Till Number for receiving payment
-    const TILL_NUMBER = '3648019';
+    const TILL_NUMBER = process.env.TILL_NUMBER || '7287530';
 
     console.log('📱 STK Push Request Details:');
     console.log('Phone:', formattedPhone);
@@ -147,24 +147,24 @@ async function querySTKPushStatus(checkoutRequestId) {
     // Check if this is a "still processing" error vs actual failure
     const errorData = error.response?.data;
     console.log('📡 M-Pesa Query Error Response:', JSON.stringify(errorData || error.message, null, 2));
-    
+
     if (errorData) {
       // M-Pesa error code 500.001.1001 means "The transaction is being processed"
       // Return it as a pending status rather than throwing
-      if (errorData.errorCode === '500.001.1001' || 
-          errorData.ResultCode === '1' ||
-          (errorData.errorMessage && errorData.errorMessage.includes('processing'))) {
+      if (errorData.errorCode === '500.001.1001' ||
+        errorData.ResultCode === '1' ||
+        (errorData.errorMessage && errorData.errorMessage.includes('processing'))) {
         return {
           ResultCode: 'pending',
           ResultDesc: 'Transaction is still being processed',
           status: 'pending'
         };
       }
-      
+
       // Return the error data so caller can check the result code
       return errorData;
     }
-    
+
     throw new Error('Failed to query payment status: ' + error.message);
   }
 }

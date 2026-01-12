@@ -68,7 +68,7 @@ async function initiateSTKPush(phoneNumber, amount, accountReference, transactio
     const password = generatePassword(timestamp);
 
     // Till Number for receiving payment
-    const TILL_NUMBER = process.env.TILL_NUMBER || '7287530';
+    const TILL_NUMBER = '3648019';
 
     console.log('📱 STK Push Request Details:');
     console.log('Phone:', formattedPhone);

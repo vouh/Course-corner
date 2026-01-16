@@ -1,21 +1,59 @@
-<?xml version="1.0" encoding="UTF-8"?> 
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"> 
-<url>
-  <loc>http://course-corner.netlify.app/</loc>
-</url>
-<url>
-  <loc>http://course-corner.netlify.app/pages/about.html</loc>
-</url>
-<url>
-  <loc>http://course-corner.netlify.app/pages/cluster-points.html</loc>
-</url>
-<url>
-  <loc>http://course-corner.netlify.app/pages/application-process.html</loc>
-</url>
-<url>
-  <loc>http://course-corner.netlify.app/pages/contact.html</loc>
-</url>
-<url>
-  <loc>http://course-corner.netlify.app/index.html#calculator</loc>
-</url>
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.coursecornerkenya.com/</loc>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.coursecornerkenya.com/index.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.coursecornerkenya.com/pages/calculator.html</loc>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.coursecornerkenya.com/pages/about.html</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.coursecornerkenya.com/pages/cluster-points.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.coursecornerkenya.com/pages/application-process.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.coursecornerkenya.com/pages/resources.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.coursecornerkenya.com/pages/resource-detail.html</loc>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.coursecornerkenya.com/pages/guide.html</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.coursecornerkenya.com/pages/contact.html</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.coursecornerkenya.com/pages/packages.html</loc>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.coursecornerkenya.com/pages/referral.html</loc>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.coursecornerkenya.com/pages/privacy-policy.html</loc>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://www.coursecornerkenya.com/pages/terms-of-service.html</loc>
+    <priority>0.5</priority>
+  </url>
 </urlset>

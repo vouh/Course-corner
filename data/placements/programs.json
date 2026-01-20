@@ -1,0 +1,8 @@
+{
+  "101": { "n": "Bachelor of Laws (LLB)", "cl": 1 },
+  "201": { "n": "Bachelor of Commerce", "cl": 2 },
+  "202": { "n": "Bachelor of Entrepreneurship", "cl": 2 },
+  "701": { "n": "Bachelor of Science (Computer Science)", "cl": 7 },
+  "702": { "n": "Bachelor of Science in Software Engineering", "cl": 7 },
+  "1301": { "n": "Bachelor of Science (Nursing)", "cl": 13 }
+}

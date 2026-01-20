@@ -84,7 +84,8 @@
     Promise.all([
         fetch(`${basePath}data/courses.json`).then(response => response.json()),
         fetch(`${basePath}data/diploma.json`).then(response => response.json()),
-        fetch(`${basePath}data/dip.json`).then(response => response.json())
+        fetch(`${basePath}data/dip.json`).then(response => response.json()),
+        window.PlacementEngine ? window.PlacementEngine.init() : Promise.resolve()
     ])
         .then(([courses, diploma, technical]) => {
             coursesData = courses;
@@ -356,8 +357,9 @@
                 if (cluster.subClusters) {
                     Object.entries(cluster.subClusters).forEach(([subClusterId, subCluster]) => {
                         if (checkClusterRequirements(grades, subCluster.requirements)) {
-                            const clusterName = `${cluster.name} (${subClusterId})`;
-                            results.courses[clusterName] = subCluster.courses;
+                            // Store clusterId in the key using a separator
+                            const clusterKey = `${clusterId}|${cluster.name} (${subClusterId})`;
+                            results.courses[clusterKey] = subCluster.courses;
                         }
                     });
                 }
@@ -529,7 +531,12 @@
                         'green',
                         Object.entries(results.courses)
                             .filter(([name]) => !['KMTC PROGRAMS', 'DIPLOMA PROGRAMS', 'CERTIFICATE PROGRAMS', 'ARTISAN PROGRAMS'].includes(name.toUpperCase()))
-                            .map(([clusterName, courses]) => generateClusterHTML(clusterName, courses))
+                            .map(([clusterKey, courses]) => {
+                                // Extract clusterId if present
+                                const [clusterId, clusterName] = clusterKey.includes('|') ? clusterKey.split('|') : [null, clusterKey];
+                                const points = window.lastClusterPoints && clusterId ? window.lastClusterPoints[clusterId] : null;
+                                return generateClusterHTML(clusterName, courses, 'green', clusterId, points);
+                            })
                             .join('')
                     );
                 }
@@ -693,18 +700,42 @@
     }
 
     // Function to generate Cluster Group HTML (Degree)
-    function generateClusterHTML(title, courses, color = 'green') {
+    function generateClusterHTML(title, courses, color = 'green', clusterId = null, points = null) {
         return `
         <div class="mb-6 last:mb-0">
             <h4 class="text-sm font-bold text-gray-400 mb-3 flex items-center gap-2">
                 <i class="fas fa-layer-group"></i> ${title.toUpperCase()}
+                ${points ? `<span class="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs ml-auto">Points: ${points}</span>` : ''}
             </h4>
             <div class="grid grid-cols-1 gap-2">
-                ${courses.map(course => `
-                    <div class="p-3 bg-white rounded-lg border-l-4 border-${color}-400 shadow-sm text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors">
-                        ${course}
-                    </div>
-                `).join('')}
+                ${courses.map(course => {
+                    let campusInfo = '';
+                    if (window.PlacementEngine && clusterId && points) {
+                        const qualified = window.PlacementEngine.getQualifiedCampuses(course, clusterId, points);
+                        if (qualified.length > 0) {
+                            campusInfo = `
+                            <div class="mt-2 pt-2 border-t border-gray-100">
+                                <p class="text-[10px] text-gray-500 font-bold uppercase mb-1">Available at:</p>
+                                <div class="flex flex-wrap gap-1">
+                                    ${qualified.map(c => `
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium ${c.type === 'Public' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">
+                                            ${c.campusName} (${c.cutoff})
+                                        </span>
+                                    `).join('')}
+                                </div>
+                            </div>`;
+                        }
+                    }
+                    
+                    return `
+                        <div class="p-3 bg-white rounded-lg border-l-4 border-${color}-400 shadow-sm text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors">
+                            <div class="flex justify-between items-start">
+                                <span>${course}</span>
+                            </div>
+                            ${campusInfo}
+                        </div>
+                    `;
+                }).join('')}
             </div>
         </div>
     `;

@@ -30,6 +30,7 @@
         'german': { code: 'GER', aliases: ['GER', 'German'] },
         'arabic': { code: 'ARB', aliases: ['ARB', 'Arabic'] },
         'music': { code: 'MUS', aliases: ['MUS', 'Music'] },
+        'electricity': { code: 'ELC', aliases: ['ELC', 'Electricity'] },
         'agriculture': { code: 'AGR', aliases: ['AGR', 'Agriculture'] }
     };
 
@@ -37,7 +38,7 @@
     const SUBJECT_GROUPS = {
         GROUP2: ['biology', 'physics', 'chemistry'],
         GROUP3: ['geography', 'history', 'cre', 'ire', 'hre'],
-        GROUP4: ['homeScience', 'artDesign', 'agriculture', 'computerStudies', 'business'],
+        GROUP4: ['homeScience', 'artDesign', 'agriculture', 'computerStudies', 'business', 'electricity'],
         GROUP5: ['french', 'german', 'arabic', 'music']
     };
 
@@ -45,7 +46,7 @@
         GROUP1: ['MATHEMATICS', 'ENGLISH', 'KISWAHILI'],
         GROUP2: ['BIOLOGY', 'PHYSICS', 'CHEMISTRY'],
         GROUP3: ['GEOGRAPHY', 'HISTORY', 'CRE', 'IRE', 'HRE'],
-        GROUP4: ['HOME_SCIENCE', 'ART_DESIGN', 'COMPUTER_STUDIES', 'BUSINESS_STUDIES'],
+        GROUP4: ['HOME_SCIENCE', 'ART_DESIGN', 'COMPUTER_STUDIES', 'BUSINESS_STUDIES', 'ELECTRICITY'],
         GROUP5: ['FRENCH', 'GERMAN', 'ARABIC']
     };
 

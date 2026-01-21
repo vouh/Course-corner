@@ -155,7 +155,7 @@ function getAllSubjectScores() {
         'history', 'geography', 'business',
         'agriculture', 'french', 'german', 'arabic',
         'cre', 'ire', 'hre', 'homeScience', 'signLanguage',
-        'music', 'computerStudies', 'aviation', 'woodwork', 'metalWork',
+        'music', 'computerStudies', 'aviation', 'electricity', 'woodwork', 'metalWork',
         'buildingConstruction', 'artDesign'
     ];
 
@@ -183,6 +183,7 @@ const SUBJECT_GROUPS = {
         'music',
         'computerStudies',
         'aviation',
+        'electricity',
         'woodwork',
         'metalWork',
         'buildingConstruction',

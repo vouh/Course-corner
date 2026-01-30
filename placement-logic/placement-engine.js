@@ -18,6 +18,9 @@ const CampusPlacementEngine = {
         placements: null  // Cluster ID -> { "campusIdprogramId": { c: cutoff, y: year } }
     },
     
+    // Store raw programs-lookup for Phase 1 subcluster matching
+    _programsLookup: null,
+    
     // Cache for cluster placements to avoid repeated lookups
     _placementCache: {},
     
@@ -44,6 +47,9 @@ const CampusPlacementEngine = {
                 fetch('/data/placements/placements.json', { signal: controller.signal }).then(res => res.json())
             ]);
             clearTimeout(timeout);
+
+            // Store raw programs-lookup for Phase 1 subcluster matching
+            this._programsLookup = programsLookup;
 
             // Transform programs-lookup.json to flat programs structure (optimized)
             const programs = {};
@@ -95,6 +101,10 @@ const CampusPlacementEngine = {
     /**
      * Main function to get all qualified universities and courses (optimized)
      * 
+     * CORRECT LOGIC:
+     * Phase 1: Collect ALL courses from ALL subClusters that student qualifies for
+     * Phase 2: Filter by cluster points cutoff
+     * 
      * @param {Object} clusterPoints - From calculator: { "Cluster 1": 42.5, "Cluster 2": 38.2, ... }
      * @param {Object} studentGrades - From calculator: { mathematics: 'A', english: 'B+', ... }
      * @returns {Array} - Array of university objects with their qualified courses
@@ -110,32 +120,68 @@ const CampusPlacementEngine = {
         const universityMap = new Map();
 
         // ============================================================
-        // PHASE 1: Subject Requirement Check (optimized with for loop)
+        // PHASE 1: Collect courses from qualifying subClusters
+        // For each subCluster, check if student qualifies
+        // Collect ALL courses from qualifying subClusters by cluster
         // ============================================================
-        const eligiblePrograms = {};
-        const programIds = Object.keys(this.data.programs);
+        const coursesByCluster = {};  // { clusterId: { programCode: courseInfo, ... }, ... }
         
-        for (let i = 0; i < programIds.length; i++) {
-            const programId = programIds[i];
-            const details = this.data.programs[programId];
+        // Get cluster data from programs-lookup
+        const clusterNodes = this._programsLookup?.clusters || {};
+        const clusterIds = Object.keys(clusterNodes);
+        
+        for (let i = 0; i < clusterIds.length; i++) {
+            const clusterId = clusterIds[i];
+            const cluster = clusterNodes[clusterId];
+            const subClusters = cluster.subClusters || {};
+            const subClusterIds = Object.keys(subClusters);
             
-            if (PlacementRules.isEligibleForProgram(studentGrades, details.req)) {
-                eligiblePrograms[programId] = details;
+            coursesByCluster[clusterId] = {};
+            
+            // Check each subCluster
+            for (let j = 0; j < subClusterIds.length; j++) {
+                const subClusterId = subClusterIds[j];
+                const subCluster = subClusters[subClusterId];
+                const requirements = subCluster.requirements || {};
+                
+                // Check if student qualifies for this subCluster
+                const qualifies = PlacementRules.isEligibleForProgram(studentGrades, requirements);
+                
+                if (qualifies) {
+                    // Add all courses from this qualifying subCluster to the cluster pool
+                    const courses = subCluster.courses || [];
+                    for (let k = 0; k < courses.length; k++) {
+                        const course = courses[k];
+                        if (course.c) {  // Has program code
+                            coursesByCluster[clusterId][course.c] = {
+                                n: course.n,
+                                cl: parseInt(clusterId)
+                            };
+                        }
+                    }
+                }
             }
         }
 
-        console.log(`✓ Phase 1: ${Object.keys(eligiblePrograms).length} eligible programs`);
+        // Count total qualifying courses
+        let totalQualifyingCourses = 0;
+        Object.values(coursesByCluster).forEach(courses => {
+            totalQualifyingCourses += Object.keys(courses).length;
+        });
+        console.log(`✓ Phase 1: ${totalQualifyingCourses} courses from qualifying subClusters`);
 
         // ============================================================
-        // PHASE 2 & 3: Cutoff Comparison + Campus Mapping (optimized)
+        // PHASE 2 & 3: Cutoff Comparison + Campus Mapping
+        // Now use cluster points (not subcluster) to match against cutoffs
         // ============================================================
         let totalMatches = 0;
-        const eligibleIds = Object.keys(eligiblePrograms);
         
-        for (let i = 0; i < eligibleIds.length; i++) {
-            const programId = eligibleIds[i];
-            const programDetails = eligiblePrograms[programId];
-            const clusterId = programDetails.cl;
+        const clusterIdsToProcess = Object.keys(coursesByCluster);
+        for (let i = 0; i < clusterIdsToProcess.length; i++) {
+            const clusterId = clusterIdsToProcess[i];
+            const coursesInCluster = coursesByCluster[clusterId];
+            const programIds = Object.keys(coursesInCluster);
+            
             const clusterKey = `Cluster ${clusterId}`;
             const studentPoints = clusterPoints[clusterKey];
 
@@ -146,47 +192,53 @@ const CampusPlacementEngine = {
             const clusterPlacements = this._placementCache[clusterId.toString()] || this.data.placements[clusterId.toString()];
             if (!clusterPlacements) continue;
 
-            // Scan placements (optimized)
-            const placementCodes = Object.keys(clusterPlacements);
-            const suffix = programId;
-            
-            for (let j = 0; j < placementCodes.length; j++) {
-                const fullCode = placementCodes[j];
+            // For each program in this cluster, check placements
+            for (let k = 0; k < programIds.length; k++) {
+                const programId = programIds[k];
+                const courseInfo = coursesInCluster[programId];
                 
-                // Suffix matching
-                if (!fullCode.endsWith(suffix)) continue;
+                // Scan placements (optimized)
+                const placementCodes = Object.keys(clusterPlacements);
+                const suffix = programId;
+                
+                for (let j = 0; j < placementCodes.length; j++) {
+                    const fullCode = placementCodes[j];
+                    
+                    // Suffix matching
+                    if (!fullCode.endsWith(suffix)) continue;
 
-                const data = clusterPlacements[fullCode];
-                const cutoff = typeof data === 'object' ? data.c : data;
-                const year = typeof data === 'object' ? (data.y || 2024) : 2024;
+                    const data = clusterPlacements[fullCode];
+                    const cutoff = typeof data === 'object' ? data.c : data;
+                    const year = typeof data === 'object' ? (data.y || 2024) : 2024;
 
-                // PHASE 2: Compare points
-                if (studentPoints < cutoff) continue;
+                    // PHASE 2: Compare cluster points against cutoff
+                    if (studentPoints < cutoff) continue;
 
-                totalMatches++;
+                    totalMatches++;
 
-                // PHASE 3: Campus Mapping
-                const campusId = fullCode.substring(0, 4);
-                const campus = this.data.campuses[campusId];
+                    // PHASE 3: Campus Mapping
+                    const campusId = fullCode.substring(0, 4);
+                    const campus = this.data.campuses[campusId];
 
-                if (!campus) continue;
+                    if (!campus) continue;
 
-                // Add to results (optimized)
-                if (!universityMap.has(campusId)) {
-                    universityMap.set(campusId, {
-                        name: campus.n,
-                        type: campus.t,
-                        courses: []
+                    // Add to results
+                    if (!universityMap.has(campusId)) {
+                        universityMap.set(campusId, {
+                            name: campus.n,
+                            type: campus.t,
+                            courses: []
+                        });
+                    }
+
+                    universityMap.get(campusId).courses.push({
+                        name: courseInfo.n,
+                        code: fullCode,
+                        cutoff: cutoff,
+                        year: year,
+                        studentPoints: studentPoints.toFixed(2)
                     });
                 }
-
-                universityMap.get(campusId).courses.push({
-                    name: programDetails.n,
-                    code: fullCode,
-                    cutoff: cutoff,
-                    year: year,
-                    studentPoints: studentPoints.toFixed(2)
-                });
             }
         }
 

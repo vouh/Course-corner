@@ -72,16 +72,16 @@ const PlacementRules = {
     },
 
     /**
-     * Check a single requirement like { "name": "ENG/KIS", "min": "B" }
+     * Check a single requirement like { "name": "ENG/KIS", "minGrade": "B" }
      * @param {Object} grades - Student grades
-     * @param {Object} req - Requirement object with 'name' and optional 'min'
+     * @param {Object} req - Requirement object with 'name' and optional 'minGrade'
      * @returns {boolean}
      */
     checkSingleRequirement: function(grades, req) {
         if (!req || !req.name) return true;
 
         const alternatives = req.name.split('/');
-        const minGrade = req.min || 'E'; // Default to E (lowest) if no minimum specified
+        const minGrade = req.minGrade || 'E'; // Default to E (lowest) if no minimum specified
         const minPoints = this.GRADE_POINTS[minGrade] || 1;
 
         // Student must meet AT LEAST ONE of the alternatives

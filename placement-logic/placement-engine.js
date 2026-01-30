@@ -17,43 +17,73 @@ const CampusPlacementEngine = {
         programs: null,   // Program ID -> { n: name, cl: cluster, req: requirements }
         placements: null  // Cluster ID -> { "campusIdprogramId": { c: cutoff, y: year } }
     },
+    
+    // Cache for cluster placements to avoid repeated lookups
+    _placementCache: {},
+    
+    // Track initialization state
+    _initialized: false,
 
     /**
-     * Initialize by loading all JSON data files
+     * Initialize by loading all JSON data files with caching
      */
     init: async function() {
-        try {
-            const [campuses, programsLookup, placements] = await Promise.all([
-                fetch('/data/placements/campuses.json').then(res => res.json()),
-                fetch('/data/placements/programs-lookup.json').then(res => res.json()),
-                fetch('/data/placements/placements.json').then(res => res.json())
-            ]);
+        // Return cached data if already initialized
+        if (this._initialized) {
+            return true;
+        }
 
-            // Transform programs-lookup.json to flat programs structure
+        try {
+            // Parallel fetch with timeout
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+            const [campuses, programsLookup, placements] = await Promise.all([
+                fetch('/data/placements/campuses.json', { signal: controller.signal }).then(res => res.json()),
+                fetch('/data/placements/programs-lookup.json', { signal: controller.signal }).then(res => res.json()),
+                fetch('/data/placements/placements.json', { signal: controller.signal }).then(res => res.json())
+            ]);
+            clearTimeout(timeout);
+
+            // Transform programs-lookup.json to flat programs structure (optimized)
             const programs = {};
-            Object.entries(programsLookup.clusters || {}).forEach(([clusterId, cluster]) => {
-                Object.entries(cluster.subClusters || {}).forEach(([subClusterId, subCluster]) => {
-                    (subCluster.courses || []).forEach(course => {
-                        if (course.c) {  // Only if program code exists
+            const clusterEntries = Object.entries(programsLookup.clusters || {});
+            
+            for (let i = 0; i < clusterEntries.length; i++) {
+                const [clusterId, cluster] = clusterEntries[i];
+                const subClusterEntries = Object.entries(cluster.subClusters || {});
+                
+                for (let j = 0; j < subClusterEntries.length; j++) {
+                    const [subClusterId, subCluster] = subClusterEntries[j];
+                    const courses = subCluster.courses || [];
+                    
+                    for (let k = 0; k < courses.length; k++) {
+                        const course = courses[k];
+                        if (course.c) {
                             programs[course.c] = {
-                                n: course.n,      // name
-                                cl: parseInt(clusterId),  // cluster
-                                req: subCluster.requirements  // requirements
+                                n: course.n,
+                                cl: parseInt(clusterId),
+                                req: subCluster.requirements
                             };
                         }
-                    });
-                });
-            });
+                    }
+                }
+            }
+
+            // Pre-cache cluster placements for faster lookup
+            const placements_entries = Object.entries(placements);
+            for (let i = 0; i < placements_entries.length; i++) {
+                const [clusterId, clusterPlacements] = placements_entries[i];
+                this._placementCache[clusterId] = clusterPlacements;
+            }
 
             this.data.campuses = campuses;
             this.data.programs = programs;
             this.data.placements = placements;
+            this._initialized = true;
 
-            console.log('CampusPlacementEngine: Data loaded successfully');
-            console.log(`  - Campuses: ${Object.keys(campuses).length}`);
-            console.log(`  - Programs: ${Object.keys(programs).length}`);
-            console.log(`  - Sample programs:`, Object.keys(programs).slice(0, 5).map(k => `${k}: ${programs[k].n}`));
-            console.log(`  - Clusters with placements: ${Object.keys(placements).length}`);
+            console.log('✓ CampusPlacementEngine: Data loaded (cached)');
+            console.log(`  - Campuses: ${Object.keys(campuses).length} | Programs: ${Object.keys(programs).length}`);
 
             return true;
         } catch (error) {
@@ -63,99 +93,85 @@ const CampusPlacementEngine = {
     },
 
     /**
-     * Main function to get all qualified universities and courses
+     * Main function to get all qualified universities and courses (optimized)
      * 
      * @param {Object} clusterPoints - From calculator: { "Cluster 1": 42.5, "Cluster 2": 38.2, ... }
      * @param {Object} studentGrades - From calculator: { mathematics: 'A', english: 'B+', ... }
      * @returns {Array} - Array of university objects with their qualified courses
      */
     getQualifiedUniversities: function(clusterPoints, studentGrades) {
+        const startTime = performance.now();
+        
         if (!this.data.campuses || !this.data.programs || !this.data.placements) {
             console.error('CampusPlacementEngine: Data not loaded. Call init() first.');
             return [];
         }
 
-        console.log('--- Starting Placement Engine ---');
-        console.log('Student Grades:', studentGrades);
-        console.log('Cluster Points:', clusterPoints);
-
         const universityMap = new Map();
 
         // ============================================================
-        // PHASE 1: Subject Requirement Check
-        // Find all programs the student is eligible for based on grades
+        // PHASE 1: Subject Requirement Check (optimized with for loop)
         // ============================================================
-        const eligiblePrograms = {};  // { programId: programDetails }
+        const eligiblePrograms = {};
+        const programIds = Object.keys(this.data.programs);
         
-        Object.entries(this.data.programs).forEach(([programId, details]) => {
-            const isEligible = PlacementRules.isEligibleForProgram(studentGrades, details.req);
-            if (isEligible) {
+        for (let i = 0; i < programIds.length; i++) {
+            const programId = programIds[i];
+            const details = this.data.programs[programId];
+            
+            if (PlacementRules.isEligibleForProgram(studentGrades, details.req)) {
                 eligiblePrograms[programId] = details;
             }
-        });
-
-        console.log(`Phase 1: ${Object.keys(eligiblePrograms).length} programs passed subject requirements`);
-        if (Object.keys(eligiblePrograms).length > 0) {
-            console.log(`  - Sample eligible programs:`, Object.keys(eligiblePrograms).slice(0, 5).map(k => `${k}: ${eligiblePrograms[k].n}`));
-        } else {
-            console.warn('  ⚠ No eligible programs found! Check student grades vs requirements.');
         }
 
+        console.log(`✓ Phase 1: ${Object.keys(eligiblePrograms).length} eligible programs`);
+
         // ============================================================
-        // PHASE 2 & 3: Cutoff Comparison + Campus Mapping
-        // For each eligible program, check if student meets the cutoff
+        // PHASE 2 & 3: Cutoff Comparison + Campus Mapping (optimized)
         // ============================================================
         let totalMatches = 0;
-        Object.entries(eligiblePrograms).forEach(([programId, programDetails]) => {
+        const eligibleIds = Object.keys(eligiblePrograms);
+        
+        for (let i = 0; i < eligibleIds.length; i++) {
+            const programId = eligibleIds[i];
+            const programDetails = eligiblePrograms[programId];
             const clusterId = programDetails.cl;
             const clusterKey = `Cluster ${clusterId}`;
             const studentPoints = clusterPoints[clusterKey];
 
-            // Skip if student has no points for this cluster
-            if (!studentPoints || studentPoints <= 0) {
-                console.log(`  Program ${programId} (${programDetails.n}): No cluster ${clusterId} points`);
-                return;
-            }
+            // Skip if no points for this cluster
+            if (!studentPoints || studentPoints <= 0) continue;
 
-            // Get all placements for this cluster
-            const clusterPlacements = this.data.placements[clusterId.toString()];
-            if (!clusterPlacements) {
-                console.log(`  Program ${programId}: No placements found for cluster ${clusterId}`);
-                return;
-            }
+            // Get cached cluster placements
+            const clusterPlacements = this._placementCache[clusterId.toString()] || this.data.placements[clusterId.toString()];
+            if (!clusterPlacements) continue;
 
-            let programMatches = 0;
-            // Scan placement codes for this program
-            // Code format: 4-digit campus + 3-digit program = 7 digits total
-            Object.entries(clusterPlacements).forEach(([fullCode, data]) => {
-                // Check if this code ends with the program ID (suffix matching)
-                if (!fullCode.endsWith(programId)) {
-                    return;
-                }
+            // Scan placements (optimized)
+            const placementCodes = Object.keys(clusterPlacements);
+            const suffix = programId;
+            
+            for (let j = 0; j < placementCodes.length; j++) {
+                const fullCode = placementCodes[j];
+                
+                // Suffix matching
+                if (!fullCode.endsWith(suffix)) continue;
 
-                // Extract cutoff and year
+                const data = clusterPlacements[fullCode];
                 const cutoff = typeof data === 'object' ? data.c : data;
                 const year = typeof data === 'object' ? (data.y || 2024) : 2024;
 
                 // PHASE 2: Compare points
-                if (studentPoints < cutoff) {
-                    return; // Student doesn't meet cutoff
-                }
+                if (studentPoints < cutoff) continue;
 
-                programMatches++;
                 totalMatches++;
 
                 // PHASE 3: Campus Mapping
-                // Extract campus ID (first 4 digits of 7-digit code)
                 const campusId = fullCode.substring(0, 4);
                 const campus = this.data.campuses[campusId];
 
-                if (!campus) {
-                    console.warn(`Campus ID ${campusId} not found in campuses.json`);
-                    return;
-                }
+                if (!campus) continue;
 
-                // Add to results
+                // Add to results (optimized)
                 if (!universityMap.has(campusId)) {
                     universityMap.set(campusId, {
                         name: campus.n,
@@ -171,11 +187,8 @@ const CampusPlacementEngine = {
                     year: year,
                     studentPoints: studentPoints.toFixed(2)
                 });
-            });
-            if (programMatches > 0) {
-                console.log(`  Program ${programId}: ${programMatches} universities qualified`);
             }
-        });
+        }
 
         // Convert map to array and sort
         const results = Array.from(universityMap.values()).sort((a, b) => {
@@ -187,8 +200,8 @@ const CampusPlacementEngine = {
             return a.name.localeCompare(b.name);
         });
 
-        console.log(`Phase 2 & 3: ${totalMatches} total matches across ${results.length} universities qualified`);
-        console.log('--- Placement Engine Complete ---');
+        const endTime = performance.now();
+        console.log(`✓ Phase 2&3: ${totalMatches} matches | ${results.length} universities | ${(endTime - startTime).toFixed(0)}ms`);
 
         return results;
     }

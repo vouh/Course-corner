@@ -1350,6 +1350,16 @@
                     element.classList.remove('bg-green-100', 'text-green-700', 'border-green-300');
                     element.classList.add('bg-gray-100', 'text-gray-400', 'border-gray-200', 'hover:bg-gray-200');
                 }, 2000);
+            }).catch(err => console.error('Failed to copy:', err));
+        }
+
+        // Attach copy handlers to all code buttons after rendering
+        function attachCopyHandlers() {
+            document.querySelectorAll('.copy-code-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const code = this.getAttribute('data-code');
+                    copyCode(code, this);
+                });
             });
         }
 
@@ -1428,17 +1438,41 @@
                     console.log('Branch: bronze/silver/gold (Placement Engine)');
                     
                     if (typeof window.CampusPlacementEngine !== 'undefined' && typeof window.PlacementRules !== 'undefined') {
-                        // 1. Initialize engine (loads JSON files)
-                        console.log('Initializing Placement Engine...');
+                        // Show quick loading progress
+                        if (resultsDiv) {
+                            resultsDiv.innerHTML = `
+                                <div class="text-center p-12">
+                                    <div class="inline-flex flex-col items-center gap-4">
+                                        <div class="relative w-16 h-16">
+                                            <div class="absolute inset-0 bg-gradient-to-r from-green-400 to-green-600 rounded-full animate-spin" style="clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 50%, 100% 100%, 50% 100%, 50% 50%, 0% 100%, 0% 50%, 0% 0%);"></div>
+                                            <div class="absolute inset-2 bg-white rounded-full flex items-center justify-center">
+                                                <i class="fas fa-database text-2xl text-green-600"></i>
+                                            </div>
+                                        </div>
+                                        <div class="mt-2">
+                                            <p class="text-gray-800 font-bold">Loading your options...</p>
+                                            <p class="text-gray-500 text-sm mt-1">Checking 497+ programs</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                        
+                        // 1. Initialize engine (loads JSON files) - uses cache if already loaded
+                        const startTime = performance.now();
                         await window.CampusPlacementEngine.init();
+                        const initTime = performance.now() - startTime;
 
                         // 2. Get Grades and calculate cluster points (1-20)
                         const grades = window.getStudentGrades();
                         const points = window.calculateClusterPoints();
 
-                        // 3. Get qualified universities (optimized)
-                        console.log('Finding qualified universities...');
+                        // 3. Get qualified universities (now fast due to optimizations)
+                        const matchStartTime = performance.now();
                         const universities = window.CampusPlacementEngine.getQualifiedUniversities(points, grades);
+                        const matchTime = performance.now() - matchStartTime;
+                        
+                        console.log(`⚡ Performance: Init ${initTime.toFixed(0)}ms | Match ${matchTime.toFixed(0)}ms`);
                         console.log('Found universities:', universities.length);
 
                         // 4. Display main results (Banner Only for Bronze/Silver/Gold)
@@ -1469,7 +1503,7 @@
                                         <div class="mb-3 md:mb-0">
                                             <p class="font-extrabold text-gray-800 text-base mb-1 group-hover/course:text-green-700 transition-colors">${course.name}</p>
                                             <div class="flex flex-wrap items-center gap-2">
-                                                <span class="text-[10px] font-black tracking-widest text-gray-400 bg-gray-100 px-2 py-0.5 rounded shadow-sm border border-gray-200 cursor-pointer hover:bg-gray-200 hover:text-gray-600 transition-all duration-200 group/code relative" onclick="copyCode('${course.code}', this)" title="Click to copy">
+                                                <span class="copy-code-btn text-[10px] font-black tracking-widest text-gray-400 bg-gray-100 px-2 py-0.5 rounded shadow-sm border border-gray-200 cursor-pointer hover:bg-gray-200 hover:text-gray-600 transition-all duration-200 group/code relative" data-code="${course.code}" title="Click to copy">
                                                     <i class="fas fa-copy text-[8px] mr-1"></i>CODE: ${course.code}
                                                 </span>
                                                 <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 shadow-sm">LAST OFFERED: ${course.year}</span>
@@ -1525,6 +1559,9 @@
 
                             placementHtml += `</div></div>`;
                             resultsContent.innerHTML += placementHtml;
+                            
+                            // Attach copy handlers to code buttons
+                            attachCopyHandlers();
                         } else if (resultsContent && universities.length === 0) {
                             resultsContent.innerHTML += `
                                 <div class="mt-8 p-12 bg-gray-50 border-2 border-dashed border-gray-200 rounded-3xl text-center">

@@ -1335,6 +1335,24 @@
             return true;
         }
 
+        // Copy course code to clipboard
+        function copyCode(code, element) {
+            navigator.clipboard.writeText(code).then(() => {
+                // Show feedback
+                const originalHTML = element.innerHTML;
+                element.innerHTML = '<i class="fas fa-check text-[8px] mr-1"></i>COPIED!';
+                element.classList.add('bg-green-100', 'text-green-700', 'border-green-300');
+                element.classList.remove('bg-gray-100', 'text-gray-400', 'border-gray-200', 'hover:bg-gray-200');
+                
+                // Restore after 2 seconds
+                setTimeout(() => {
+                    element.innerHTML = originalHTML;
+                    element.classList.remove('bg-green-100', 'text-green-700', 'border-green-300');
+                    element.classList.add('bg-gray-100', 'text-gray-400', 'border-gray-200', 'hover:bg-gray-200');
+                }, 2000);
+            });
+        }
+
         // Show results after successful payment
         async function showResultsAfterPayment(category) {
             console.log('--- showResultsAfterPayment ---');
@@ -1451,7 +1469,9 @@
                                         <div class="mb-3 md:mb-0">
                                             <p class="font-extrabold text-gray-800 text-base mb-1 group-hover/course:text-green-700 transition-colors">${course.name}</p>
                                             <div class="flex flex-wrap items-center gap-2">
-                                                <span class="text-[10px] font-black tracking-widest text-gray-400 bg-gray-100 px-2 py-0.5 rounded shadow-sm border border-gray-200">CODE: ${course.code}</span>
+                                                <span class="text-[10px] font-black tracking-widest text-gray-400 bg-gray-100 px-2 py-0.5 rounded shadow-sm border border-gray-200 cursor-pointer hover:bg-gray-200 hover:text-gray-600 transition-all duration-200 group/code relative" onclick="copyCode('${course.code}', this)" title="Click to copy">
+                                                    <i class="fas fa-copy text-[8px] mr-1"></i>CODE: ${course.code}
+                                                </span>
                                                 <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 shadow-sm">LAST OFFERED: ${course.year}</span>
                                             </div>
                                         </div>

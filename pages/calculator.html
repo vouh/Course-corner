@@ -13,8 +13,8 @@
     <script src="../assets/js/firebase-config.js" type="module"></script>
     <script src="../assets/js/calculator.js" defer></script>
     <script src="../assets/js/courses-eligibility.js" defer></script>
-    <script src="../assets/js/placements/logic/placement-rules.js" defer></script>
-    <script src="../assets/js/placements/logic/placement-engine.js" defer></script>
+    <script src="../placement-logic/placement-rules.js" defer></script>
+    <script src="../placement-logic/placement-engine.js" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -725,16 +725,6 @@
                                 <h4><i class="fas fa-graduation-cap"></i> Eligible Courses</h4>
                                 <ul id="coursesList"></ul>
                             </div>
-
-                            <!-- Placement Results (Bronze Package Only) -->
-                            <div id="placementResults" class="cc-placement-results mt-6 hidden">
-                                <h4 class="text-xl font-bold text-indigo-800 mb-4 flex items-center">
-                                    <i class="fas fa-university mr-2"></i> Qualified Universities & Programs
-                                </h4>
-                                <div id="universitiesList" class="space-y-4">
-                                    <!-- Universities will be injected here -->
-                                </div>
-                            </div>
                         </div>
                         <div class="cc-results-disclaimer">
                             <i class="fas fa-info-circle"></i>
@@ -1433,53 +1423,98 @@
                         const universities = window.CampusPlacementEngine.getQualifiedUniversities(points, grades);
                         console.log('Found universities:', universities.length);
 
-                        // 4. Display main results (Courses)
-                        // This populates the #results div
-                        const eligibleCourses = window.getEligibleCourses(grades);
-                        window.displayAllResults(eligibleCourses);
+                        // 4. Display main results (Banner Only for Bronze/Silver/Gold)
+                        // This removes KMTC, Degree, etc. sections for these packages
+                        window.displayResultsUnified('placement-only', null);
 
-                        // 5. Display University Results (Custom UI)
-                        const placementDiv = document.getElementById('placementResults');
-                        const listDiv = document.getElementById('universitiesList');
-                        
-                        if (placementDiv && listDiv) {
-                            if (universities.length > 0) {
-                                placementDiv.classList.remove('hidden');
-                                listDiv.innerHTML = '';
-                                
-                                // Limit to first 60 results for performance, though usually it's less
-                                universities.forEach(uni => {
-                                    const uniCard = document.createElement('div');
-                                    uniCard.className = 'bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200';
-                                    
-                                    let coursesHtml = uni.courses.map(course => `
-                                        <div class="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
-                                            <div>
-                                                <p class="font-medium text-gray-800 text-sm">${course.name}</p>
-                                                <p class="text-[10px] text-gray-400">Code: ${course.code} | Year: ${course.year}</p>
-                                            </div>
-                                            <div class="text-right">
-                                                <p class="text-sm font-bold text-green-600">${course.studentPoints}</p>
-                                                <p class="text-[10px] text-gray-400">Cutoff: ${course.cutoff}</p>
+                        // 5. Display University Results (Injected into #results for 'modal' feel)
+                        const resultsContent = document.getElementById('results');
+                        if (resultsContent && universities.length > 0) {
+                            // Add a header for the placement section
+                            let placementHtml = `
+                                <div class="mt-12 mb-8">
+                                    <div class="flex items-center gap-4 mb-6">
+                                        <div class="h-10 w-10 bg-green-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-green-200">
+                                            <i class="fas fa-university"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-2xl font-black text-gray-900 uppercase tracking-tight">Qualified Campuses</h3>
+                                            <p class="text-gray-500 text-sm">Programs where your cluster points meet or exceed the 2024 cutoff</p>
+                                        </div>
+                                    </div>
+                                    <div class="grid grid-cols-1 gap-8">
+                            `;
+
+                            universities.forEach(uni => {
+                                let coursesHtml = uni.courses.map(course => `
+                                    <div class="flex flex-col md:flex-row md:justify-between md:items-center p-5 border-b border-gray-100 last:border-0 hover:bg-green-50/40 transition-all duration-200 group/course">
+                                        <div class="mb-3 md:mb-0">
+                                            <p class="font-extrabold text-gray-800 text-base mb-1 group-hover/course:text-green-700 transition-colors">${course.name}</p>
+                                            <div class="flex flex-wrap items-center gap-2">
+                                                <span class="text-[10px] font-black tracking-widest text-gray-400 bg-gray-100 px-2 py-0.5 rounded shadow-sm border border-gray-200">CODE: ${course.code}</span>
+                                                <span class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-100 shadow-sm">YEAR: ${course.year}</span>
                                             </div>
                                         </div>
-                                    `).join('');
-
-                                    uniCard.innerHTML = `
-                                        <div class="flex items-center justify-between mb-3">
-                                            <h5 class="font-bold text-gray-900 line-clamp-1">${uni.name}</h5>
-                                            <span class="flex-shrink-0 px-2 py-0.5 rounded text-[10px] font-bold uppercase ${uni.type === 'Public' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}">${uni.type}</span>
+                                        <div class="flex items-center gap-4 sm:gap-8">
+                                            <div class="text-center min-w-[70px]">
+                                                <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest mb-1">2024 Cutoff</p>
+                                                <div class="bg-white border-2 border-gray-100 rounded-lg py-1 shadow-sm">
+                                                    <span class="text-sm font-bold text-gray-700">${course.cutoff}</span>
+                                                </div>
+                                            </div>
+                                            <div class="text-center min-w-[90px]">
+                                                <p class="text-[9px] font-black text-green-500 uppercase tracking-widest mb-1">Your Points</p>
+                                                <div class="bg-green-600 rounded-lg py-1 shadow-md shadow-green-100">
+                                                    <span class="text-base font-black text-white">${course.studentPoints}</span>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="space-y-1">
+                                    </div>
+                                `).join('');
+
+                                placementHtml += `
+                                    <div class="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden mb-2 transform transition-all duration-300 hover:scale-[1.01] hover:shadow-2xl">
+                                        <div class="bg-gradient-to-r ${uni.type === 'Public' ? 'from-green-600 via-green-700 to-green-800' : 'from-indigo-600 via-indigo-700 to-indigo-800'} p-6">
+                                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                                <div class="flex items-center gap-5">
+                                                    <div class="h-14 w-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-md border border-white/30 shadow-inner">
+                                                        <i class="fas fa-university text-white text-2xl"></i>
+                                                    </div>
+                                                    <div>
+                                                        <h4 class="text-white text-2xl font-black tracking-tight leading-none mb-2">${uni.name}</h4>
+                                                        <div class="flex items-center gap-2">
+                                                            <span class="bg-white/20 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border border-white/20 backdrop-blur-sm shadow-sm">${uni.type} UNIVERSITY</span>
+                                                            <span class="text-white/60 text-[10px] font-bold italic">MAIN CAMPUS</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="bg-black/10 px-4 py-2 rounded-2xl backdrop-blur-sm border border-white/10 hidden sm:block">
+                                                    <span class="text-white text-[10px] font-black block uppercase tracking-widest mb-1 opacity-60">Status</span>
+                                                    <span class="text-green-300 text-xs font-black flex items-center gap-1">
+                                                        <i class="fas fa-check-circle"></i> QUALIFIED
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="divide-y divide-gray-100">
                                             ${coursesHtml}
                                         </div>
-                                    `;
-                                    listDiv.appendChild(uniCard);
-                                });
-                            } else {
-                                // No universities found, but might show a small notice
-                                placementDiv.classList.add('hidden');
-                            }
+                                    </div>
+                                `;
+                            });
+
+                            placementHtml += `</div></div>`;
+                            resultsContent.innerHTML += placementHtml;
+                        } else if (resultsContent && universities.length === 0) {
+                            resultsContent.innerHTML += `
+                                <div class="mt-8 p-12 bg-gray-50 border-2 border-dashed border-gray-200 rounded-3xl text-center">
+                                    <div class="h-20 w-20 bg-yellow-100 text-yellow-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                                        <i class="fas fa-search text-3xl"></i>
+                                    </div>
+                                    <h4 class="text-2xl font-black text-gray-800 mb-3">No direct matches found</h4>
+                                    <p class="text-gray-500 max-w-md mx-auto">Based on your calculated points and requirements, we couldn't find a direct match in our database for the 2024 cutoffs. Try refining your grades or selecting a wider range of courses.</p>
+                                </div>
+                            `;
                         }
                     } else {
                         throw new Error('Placement engine logic files failed to load. Please refresh and try again.');

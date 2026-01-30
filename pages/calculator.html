@@ -1350,6 +1350,11 @@
             console.log('--- showResultsAfterPayment ---');
             console.log('Category selected:', category);
 
+            // Force close any remaining SweetAlerts to prevent scroll lock
+            Swal.close();
+            document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+            document.body.style.overflow = 'auto';
+
             try {
                 // Ensure points are fresh
                 if (typeof calculateTotalPoints === 'function') {
@@ -1415,29 +1420,34 @@
                     console.log('Branch: bronze/silver/gold (Placement Engine)');
                     
                     if (typeof window.CampusPlacementEngine !== 'undefined' && typeof window.PlacementRules !== 'undefined') {
-                        // 1. Initialize engine
+                        // 1. Initialize engine (loads JSON files)
+                        console.log('Initializing Placement Engine...');
                         await window.CampusPlacementEngine.init();
 
                         // 2. Get Grades and calculate cluster points (1-20)
                         const grades = window.getStudentGrades();
                         const points = window.calculateClusterPoints();
 
-                        // 3. Get qualified universities
+                        // 3. Get qualified universities (optimized)
+                        console.log('Finding qualified universities...');
                         const universities = window.CampusPlacementEngine.getQualifiedUniversities(points, grades);
+                        console.log('Found universities:', universities.length);
 
                         // 4. Display main results (Courses)
+                        // This populates the #results div
                         const eligibleCourses = window.getEligibleCourses(grades);
                         window.displayAllResults(eligibleCourses);
 
                         // 5. Display University Results (Custom UI)
-                        if (universities.length > 0) {
-                            const placementDiv = document.getElementById('placementResults');
-                            const listDiv = document.getElementById('universitiesList');
-                            
-                            if (placementDiv && listDiv) {
+                        const placementDiv = document.getElementById('placementResults');
+                        const listDiv = document.getElementById('universitiesList');
+                        
+                        if (placementDiv && listDiv) {
+                            if (universities.length > 0) {
                                 placementDiv.classList.remove('hidden');
                                 listDiv.innerHTML = '';
                                 
+                                // Limit to first 60 results for performance, though usually it's less
                                 universities.forEach(uni => {
                                     const uniCard = document.createElement('div');
                                     uniCard.className = 'bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200';
@@ -1446,7 +1456,7 @@
                                         <div class="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
                                             <div>
                                                 <p class="font-medium text-gray-800 text-sm">${course.name}</p>
-                                                <p class="text-xs text-gray-400">Code: ${course.code} | Year: ${course.year}</p>
+                                                <p class="text-[10px] text-gray-400">Code: ${course.code} | Year: ${course.year}</p>
                                             </div>
                                             <div class="text-right">
                                                 <p class="text-sm font-bold text-green-600">${course.studentPoints}</p>
@@ -1466,6 +1476,9 @@
                                     `;
                                     listDiv.appendChild(uniCard);
                                 });
+                            } else {
+                                // No universities found, but might show a small notice
+                                placementDiv.classList.add('hidden');
                             }
                         }
                     } else {
@@ -1511,6 +1524,10 @@
                         </div>
                     `;
                 }
+            } finally {
+                // Ensure scroll is restored no matter what
+                document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                document.body.style.overflow = 'auto';
             }
         }
 

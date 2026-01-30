@@ -40,54 +40,66 @@ const CampusPlacementEngine = {
      */
     getQualifiedUniversities: function(clusterPoints, studentGrades) {
         if (!this.data.campuses || !this.data.programs || !this.data.placements) {
+            console.error('CampusPlacementEngine: Data not loaded. Call init() first.');
             return [];
         }
 
         const universityMap = new Map();
 
-        // 1. Identify all programs/courses the student is eligible for based on subject requirements
-        const eligibleProgramIds = Object.entries(this.data.programs)
-            .filter(([id, details]) => PlacementRules.isEligibleForProgram(studentGrades, details.req))
-            .map(([id]) => id);
+        // 1. Create a lookup of eligible program IDs for O(1) checking
+        // eligibleMap[clusterId] = [programId1, programId2, ...]
+        const eligibleByCluster = {};
+        Object.entries(this.data.programs).forEach(([id, details]) => {
+            if (PlacementRules.isEligibleForProgram(studentGrades, details.req)) {
+                if (!eligibleByCluster[details.cl]) eligibleByCluster[details.cl] = [];
+                eligibleByCluster[details.cl].push(id);
+            }
+        });
 
-        // 2. Map these programs to campuses using cutoffs and points
-        eligibleProgramIds.forEach(programId => {
-            const programDetails = this.data.programs[programId];
-            const clusterId = programDetails.cl;
+        // 2. Iterate through each cluster that has eligible programs
+        Object.entries(eligibleByCluster).forEach(([clusterId, eligibleIds]) => {
             const studentPoints = clusterPoints[`Cluster ${clusterId}`];
-
             if (!studentPoints || studentPoints <= 0) return;
 
-            const clusterPlacements = this.data.placements[clusterId.toString()] || {};
+            const clusterPlacements = this.data.placements[clusterId.toString()];
+            if (!clusterPlacements) return;
 
-            // Find all campus codes that offer this program (code ends with programId)
+            // Use a Set for faster suffix matching check if needed, 
+            // but we still need to iterate placements
+            const eligibleSet = new Set(eligibleIds);
+
             Object.entries(clusterPlacements).forEach(([fullCode, data]) => {
-                if (fullCode.endsWith(programId)) {
-                    // Support both old structure (number) and new structure (object {cutoff, year})
-                    const cutoff = typeof data === 'object' ? data.cutoff : data;
-                    const year = typeof data === 'object' ? data.year : '2024';
+                // Suffix check: find which eligible program ID this code ends with
+                // Most codes are 7 or 8 digits. 
+                // We check if any of our eligible IDs for this cluster match the suffix
+                for (const programId of eligibleSet) {
+                    if (fullCode.endsWith(programId)) {
+                        const cutoff = typeof data === 'object' ? data.c : data;
+                        const year = typeof data === 'object' ? (data.y || '2024') : '2024';
 
-                    if (studentPoints >= cutoff) {
-                        const campusId = fullCode.substring(0, 4);
-                        const campus = this.data.campuses[campusId];
+                        if (studentPoints >= cutoff) {
+                            const campusId = fullCode.substring(0, 4);
+                            const campus = this.data.campuses[campusId];
 
-                        if (campus) {
-                            if (!universityMap.has(campusId)) {
-                                universityMap.set(campusId, {
-                                    name: campus.n,
-                                    type: campus.t,
-                                    courses: []
+                            if (campus) {
+                                if (!universityMap.has(campusId)) {
+                                    universityMap.set(campusId, {
+                                        name: campus.n,
+                                        type: campus.t,
+                                        courses: []
+                                    });
+                                }
+
+                                universityMap.get(campusId).courses.push({
+                                    name: this.data.programs[programId].n,
+                                    code: fullCode,
+                                    cutoff: cutoff,
+                                    year: year,
+                                    studentPoints: studentPoints.toFixed(2)
                                 });
                             }
-
-                            universityMap.get(campusId).courses.push({
-                                name: programDetails.n,
-                                code: fullCode,
-                                cutoff: cutoff,
-                                year: year,
-                                studentPoints: studentPoints.toFixed(2)
-                            });
                         }
+                        break; // Found the program match for this code
                     }
                 }
             });

@@ -13,6 +13,8 @@
     <script src="../assets/js/firebase-config.js" type="module"></script>
     <script src="../assets/js/calculator.js" defer></script>
     <script src="../assets/js/courses-eligibility.js" defer></script>
+    <script src="../assets/js/placements/logic/placement-rules.js" defer></script>
+    <script src="../assets/js/placements/logic/placement-engine.js" defer></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -723,6 +725,16 @@
                                 <h4><i class="fas fa-graduation-cap"></i> Eligible Courses</h4>
                                 <ul id="coursesList"></ul>
                             </div>
+
+                            <!-- Placement Results (Bronze Package Only) -->
+                            <div id="placementResults" class="cc-placement-results mt-6 hidden">
+                                <h4 class="text-xl font-bold text-indigo-800 mb-4 flex items-center">
+                                    <i class="fas fa-university mr-2"></i> Qualified Universities & Programs
+                                </h4>
+                                <div id="universitiesList" class="space-y-4">
+                                    <!-- Universities will be injected here -->
+                                </div>
+                            </div>
                         </div>
                         <div class="cc-results-disclaimer">
                             <i class="fas fa-info-circle"></i>
@@ -1090,7 +1102,10 @@
             const names = {
                 'calculate-cluster-points': 'Calculate Cluster Points',
                 'courses-only': 'View Eligible Courses',
-                'point-and-courses': 'Points & Courses Bundle'
+                'point-and-courses': 'Points & Courses Bundle',
+                'bronze': 'Bronze Package (Universities & Courses)',
+                'silver': 'Silver Package',
+                'gold': 'Gold Package'
             };
             return names[category] || category;
         }
@@ -1287,11 +1302,8 @@
         // Main payment processing function
         async function processPayment(category, amount) {
             const validation = validateSubjects();
-            const overallPoints = parseInt(document.getElementById('overallGrade').value) || 0;
 
-            // 1. ALL ERROR HANDLING BEFORE TERMS/PAYMENT
-
-            // Check Compulsory Subjects
+            // 1. Check Compulsory Subjects
             if (!validation.valid) {
                 let errorHtml = '<div class="text-left py-2">';
                 if (validation.missingCompulsory.length > 0) {
@@ -1318,217 +1330,23 @@
                 return false;
             }
 
-            // The Grade Threshold check (points < 46) is now handled automatically
-            // in the results display logic (displayCombinedResults), which will
-            // show Diploma/KMTC fallback instead of an error message.
-            // This allows users to pay for any package they want.
-
-            // 2. T&C Acceptance Modal (Only if validation passed)
-            const { value: acceptTerms } = await Swal.fire({
-                title: 'Terms and Privacy Policy',
-                html: `
-                    <div class="text-left text-sm space-y-4">
-                        <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
-                            <p class="text-yellow-800 font-bold mb-1">⚠️ IMPORTANT AWARENESS</p>
-                            <p class="text-yellow-700">This tool is for <strong>preliminary decision-making only</strong>. While we strive for accuracy, results should not be followed blindly. We are not responsible for decisions made based solely on this site.</p>
-                        </div>
-                        <p class="text-gray-600">By proceeding, you agree to our <a href="terms-of-service.html" target="_blank" class="text-green-600 font-bold hover:underline">Terms of Service</a> and <a href="privacy-policy.html" target="_blank" class="text-green-600 font-bold hover:underline">Privacy Policy</a>.</p>
-                        <div class="flex items-center gap-3 mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
-                            <input type="checkbox" id="termsCheckbox" class="w-5 h-5 accent-green-600 cursor-pointer">
-                            <label for="termsCheckbox" class="text-gray-700 font-medium cursor-pointer">I agree to the terms and privacy policy</label>
-                        </div>
-                    </div>
-                `,
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonText: 'Proceed to Payment',
-                confirmButtonColor: '#16a34a',
-                cancelButtonColor: '#6b7280',
-                customClass: { popup: 'premium-modal' },
-                preConfirm: () => {
-                    if (!document.getElementById('termsCheckbox').checked) {
-                        Swal.showValidationMessage('Please check the box to confirm you agree');
-                    }
-                    return true;
-                }
+            // TEST MODE: Bypass actual payment flow
+            console.log('--- TEST MODE: Bypassing Payment ---');
+            
+            await Swal.fire({
+                icon: 'success',
+                title: 'Access Granted! (Test Mode)',
+                html: `<p class="text-green-600 mb-2 font-bold">${getCategoryName(category)}</p><p class="text-sm text-gray-500">Bypassing M-Pesa for testing purposes...</p>`,
+                showConfirmButton: false,
+                timer: 1500,
+                timerProgressBar: true
             });
 
-            if (!acceptTerms) return false;
-
-            // 2. M-Pesa Payment Modal with Referral
-            const { value: formValues } = await Swal.fire({
-                title: 'M-Pesa Payment',
-                html: `
-                    <div class="text-left mb-6">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-gray-500">Service:</span>
-                            <span class="font-bold text-gray-800">${getCategoryName(category)}</span>
-                        </div>
-                        <div class="flex justify-between items-center">
-                            <span class="text-gray-500">Amount:</span>
-                            <span class="font-bold text-green-600">KES ${amount}</span>
-                        </div>
-                    </div>
-                    <div class="space-y-4">
-                        <div class="text-left">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">M-Pesa Phone Number</label>
-                            <input id="swalPhone" class="swal2-input !m-0 !w-full" placeholder="e.g. 0712345678" type="tel">
-                        </div>
-                        <div class="text-left">
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Referral Code (Optional)</label>
-                            <input id="swalReferral" class="swal2-input !m-0 !w-full" placeholder="Enter referral code">
-                        </div>
-                        <div class="pt-2">
-                            <button id="alreadyPaidBtn" class="text-sm text-green-600 hover:text-green-700 font-medium flex items-center justify-center gap-1 mx-auto transition-all">
-                                <i class="fas fa-check-circle"></i> I have already paid
-                            </button>
-                        </div>
-                    </div>
-                `,
-                focusConfirm: false,
-                showCancelButton: true,
-                confirmButtonText: 'Pay Now',
-                confirmButtonColor: '#16a34a',
-                cancelButtonText: 'Cancel',
-                customClass: { popup: 'premium-modal' },
-                didOpen: () => {
-                    document.getElementById('alreadyPaidBtn').addEventListener('click', () => {
-                        Swal.close();
-                        // Placeholder for "already paid" functionality
-                        Swal.fire({
-                            title: 'Payment Verification',
-                            text: 'We are working on this feature. For now, please use the Pay Now button to receive a prompt.',
-                            icon: 'info',
-                            confirmButtonColor: '#16a34a'
-                        });
-                    });
-                },
-                preConfirm: () => {
-                    const phone = document.getElementById('swalPhone').value;
-                    const referral = document.getElementById('swalReferral').value;
-                    if (!phone) {
-                        Swal.showValidationMessage('Phone number is required');
-                        return false;
-                    }
-                    if (!/\d{9,}/.test(phone.replace(/[^\d]/g, ''))) {
-                        Swal.showValidationMessage('Invalid phone number');
-                        return false;
-                    }
-                    return { phoneNumber: phone, referralCode: referral };
-                }
-            });
-
-            if (!formValues) return false;
-            const { phoneNumber, referralCode } = formValues;
-
-            try {
-                // Show access check result for referral if any (optional future step)
-
-                Swal.fire({
-                    title: '<div class="premium-loader"></div>Initiating Secure Payment',
-                    html: `
-                        <div class="text-center p-4">
-                            <p class="text-gray-500 mb-2">Connecting to M-Pesa API...</p>
-                            <p class="text-sm font-bold text-gray-800">Amount: KES ${amount}</p>
-                        </div>
-                    `,
-                    allowOutsideClick: false,
-                    showConfirmButton: false,
-                    customClass: { popup: 'premium-modal' },
-                    didOpen: () => Swal.showLoading()
-                });
-
-                // Update: Include referral code if needed by backend
-                await window.paymentHandler.initiatePayment(phoneNumber, category, amount, referralCode);
-
-                // Show waiting dialog with cancel option
-                let cancelled = false;
-                Swal.fire({
-                    title: '<span class="text-green-600 font-black tracking-tighter">M-PESA PUSH SENT</span>',
-                    html: `
-                        <div class="text-center py-4">
-                            <div class="stk-push-visual mb-6">
-                                <i class="fas fa-mobile-alt text-4xl text-gray-300"></i>
-                                <i class="fas fa-arrow-right text-green-500 mx-4 animate-pulse"></i>
-                                <i class="fas fa-lock text-4xl text-green-600"></i>
-                            </div>
-                            <p class="text-gray-600 mb-1">Prompt sent to:</p>
-                            <p class="text-2xl font-black text-gray-800 mb-6 font-mono">${phoneNumber}</p>
-                            <div class="bg-gray-900 text-white p-4 rounded-xl shadow-2xl text-left border-l-4 border-green-500">
-                                <p class="text-xs uppercase font-bold text-green-400">Action Required</p>
-                                <p class="text-sm mt-1">Check your phone and <strong>Enter M-Pesa PIN</strong> to pay KES ${amount}.</p>
-                            </div>
-                        </div>
-                    `,
-                    allowOutsideClick: true,
-                    allowEscapeKey: true,
-                    showConfirmButton: false,
-                    showCancelButton: true,
-                    cancelButtonText: 'Cancel',
-                    cancelButtonColor: '#6b7280',
-                    customClass: { popup: 'premium-modal' },
-                    didOpen: () => Swal.showLoading()
-                }).then((result) => {
-                    if (result.dismiss === Swal.DismissReason.cancel) {
-                        cancelled = true;
-                    }
-                });
-
-                // Poll with timeout
-                const pollPromise = window.paymentHandler.pollPaymentStatus(40, 3000);
-                const timeoutPromise = new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error('Payment verification timed out. Please check your M-Pesa messages.')), 130000)
-                );
-
-                await Promise.race([pollPromise, timeoutPromise]);
-
-                if (cancelled) {
-                    return false;
-                }
-
-                await window.paymentHandler.approveAccess();
-
-                // Auto-close and show results
-                await Swal.fire({
-                    icon: 'success',
-                    title: 'Payment Successful! ✅',
-                    html: `<p class="text-green-600 mb-2">Your payment has been confirmed!</p>`,
-                    showConfirmButton: false,
-                    timer: 1500,
-                    timerProgressBar: true,
-                    willClose: () => {
-                        // Ensure backdrop is removed
-                        document.body.classList.remove('swal2-shown');
-                    }
-                });
-
-                // Show results after dialog closes
-                showResultsAfterPayment(category);
-
-                return true;
-
-            } catch (error) {
-                // Close any existing dialogs first
-                Swal.close();
-
-                await Swal.fire({
-                    icon: 'error',
-                    title: 'Payment Failed',
-                    text: error.message || 'Something went wrong. Please try again.',
-                    confirmButtonColor: '#16a34a',
-                    confirmButtonText: 'OK',
-                    allowOutsideClick: true,
-                    allowEscapeKey: true,
-                    willClose: () => {
-                        document.body.classList.remove('swal2-shown');
-                    }
-                });
-                return false;
-            }
+            return true;
         }
 
         // Show results after successful payment
-        function showResultsAfterPayment(category) {
+        async function showResultsAfterPayment(category) {
             console.log('--- showResultsAfterPayment ---');
             console.log('Category selected:', category);
 
@@ -1592,6 +1410,66 @@
                         }
                     } else {
                         console.error('window.getStudentGrades is not a function');
+                    }
+                } else if (category === 'bronze' || category === 'silver' || category === 'gold') {
+                    console.log('Branch: bronze/silver/gold (Placement Engine)');
+                    
+                    if (typeof window.CampusPlacementEngine !== 'undefined' && typeof window.PlacementRules !== 'undefined') {
+                        // 1. Initialize engine
+                        await window.CampusPlacementEngine.init();
+
+                        // 2. Get Grades and calculate cluster points (1-20)
+                        const grades = window.getStudentGrades();
+                        const points = window.calculateClusterPoints();
+
+                        // 3. Get qualified universities
+                        const universities = window.CampusPlacementEngine.getQualifiedUniversities(points, grades);
+
+                        // 4. Display main results (Courses)
+                        const eligibleCourses = window.getEligibleCourses(grades);
+                        window.displayAllResults(eligibleCourses);
+
+                        // 5. Display University Results (Custom UI)
+                        if (universities.length > 0) {
+                            const placementDiv = document.getElementById('placementResults');
+                            const listDiv = document.getElementById('universitiesList');
+                            
+                            if (placementDiv && listDiv) {
+                                placementDiv.classList.remove('hidden');
+                                listDiv.innerHTML = '';
+                                
+                                universities.forEach(uni => {
+                                    const uniCard = document.createElement('div');
+                                    uniCard.className = 'bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200';
+                                    
+                                    let coursesHtml = uni.courses.map(course => `
+                                        <div class="flex justify-between items-center py-2 border-b border-gray-50 last:border-0">
+                                            <div>
+                                                <p class="font-medium text-gray-800 text-sm">${course.name}</p>
+                                                <p class="text-xs text-gray-400">Code: ${course.code} | Year: ${course.year}</p>
+                                            </div>
+                                            <div class="text-right">
+                                                <p class="text-sm font-bold text-green-600">${course.studentPoints}</p>
+                                                <p class="text-[10px] text-gray-400">Cutoff: ${course.cutoff}</p>
+                                            </div>
+                                        </div>
+                                    `).join('');
+
+                                    uniCard.innerHTML = `
+                                        <div class="flex items-center justify-between mb-3">
+                                            <h5 class="font-bold text-gray-900 line-clamp-1">${uni.name}</h5>
+                                            <span class="flex-shrink-0 px-2 py-0.5 rounded text-[10px] font-bold uppercase ${uni.type === 'Public' ? 'bg-blue-100 text-blue-700' : 'bg-purple-100 text-purple-700'}">${uni.type}</span>
+                                        </div>
+                                        <div class="space-y-1">
+                                            ${coursesHtml}
+                                        </div>
+                                    `;
+                                    listDiv.appendChild(uniCard);
+                                });
+                            }
+                        }
+                    } else {
+                        throw new Error('Placement engine logic files failed to load. Please refresh and try again.');
                     }
                 } else if (category === 'point-and-courses') {
                     console.log('Branch: point-and-courses');
@@ -1697,7 +1575,7 @@
 
                     const paymentSuccess = await processPayment(category, amount);
                     if (paymentSuccess) {
-                        showResultsAfterPayment(category);
+                        await showResultsAfterPayment(category);
                     }
                 });
             });

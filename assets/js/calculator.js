@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', function () {
     window.calculateClusterPoints = calculateClusterPoints;
     window.displayResults = displayResults;
     window.generateClusterPointsHTML = generateClusterPointsHTML;
+    window.getAllSubjectScores = getAllSubjectScores;
+    window.validateInputs = validateInputs;
 
     // Get all grade select dropdowns
     const gradeSelects = document.querySelectorAll('.grade-select');

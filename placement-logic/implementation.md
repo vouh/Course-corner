@@ -51,7 +51,7 @@ Stores the actual cutoffs and historical context, indexed by Cluster to prevent 
 The `placement-logic/` folder contains the engine. It replicates the main calculator's rules but operates on its own data.
 
 1. **Calculate Cluster Points:** The system calculates points for Clusters 1–20 using the standard formula.
-2. **Filter Eligible Programs:** `placement-rules.js` checks every program in `programs.json` against the student's grades.
+2. **Filter Eligible Programs:** `placement-rules.js` checks every program in `programslookup.json` against the student's grades.
 3. **Map to Campuses:** For every eligible program ID (e.g., `101`), `placement-engine.js` finds all keys in `placements.json` that end with those digits.
 4. **Final Cutoff Check:** If `Student Cluster Points >= Cutoff`, the university and course are added to the "Qualified" list.
 5. **Display:** Shows the University Name, Course, Cutoff, and the Year it was last offered.

@@ -23,11 +23,27 @@ const CampusPlacementEngine = {
      */
     init: async function() {
         try {
-            const [campuses, programs, placements] = await Promise.all([
+            const [campuses, programsLookup, placements] = await Promise.all([
                 fetch('/data/placements/campuses.json').then(res => res.json()),
-                fetch('/data/placements/programs.json').then(res => res.json()),
+                fetch('/data/placements/programs-lookup.json').then(res => res.json()),
                 fetch('/data/placements/placements.json').then(res => res.json())
             ]);
+
+            // Transform programs-lookup.json to flat programs structure
+            const programs = {};
+            Object.entries(programsLookup.clusters || {}).forEach(([clusterId, cluster]) => {
+                Object.entries(cluster.subClusters || {}).forEach(([subClusterId, subCluster]) => {
+                    (subCluster.courses || []).forEach(course => {
+                        if (course.c) {  // Only if program code exists
+                            programs[course.c] = {
+                                n: course.n,      // name
+                                cl: parseInt(clusterId),  // cluster
+                                req: subCluster.requirements  // requirements
+                            };
+                        }
+                    });
+                });
+            });
 
             this.data.campuses = campuses;
             this.data.programs = programs;
@@ -36,6 +52,7 @@ const CampusPlacementEngine = {
             console.log('CampusPlacementEngine: Data loaded successfully');
             console.log(`  - Campuses: ${Object.keys(campuses).length}`);
             console.log(`  - Programs: ${Object.keys(programs).length}`);
+            console.log(`  - Sample programs:`, Object.keys(programs).slice(0, 5).map(k => `${k}: ${programs[k].n}`));
             console.log(`  - Clusters with placements: ${Object.keys(placements).length}`);
 
             return true;
@@ -78,11 +95,17 @@ const CampusPlacementEngine = {
         });
 
         console.log(`Phase 1: ${Object.keys(eligiblePrograms).length} programs passed subject requirements`);
+        if (Object.keys(eligiblePrograms).length > 0) {
+            console.log(`  - Sample eligible programs:`, Object.keys(eligiblePrograms).slice(0, 5).map(k => `${k}: ${eligiblePrograms[k].n}`));
+        } else {
+            console.warn('  ⚠ No eligible programs found! Check student grades vs requirements.');
+        }
 
         // ============================================================
         // PHASE 2 & 3: Cutoff Comparison + Campus Mapping
         // For each eligible program, check if student meets the cutoff
         // ============================================================
+        let totalMatches = 0;
         Object.entries(eligiblePrograms).forEach(([programId, programDetails]) => {
             const clusterId = programDetails.cl;
             const clusterKey = `Cluster ${clusterId}`;
@@ -90,15 +113,18 @@ const CampusPlacementEngine = {
 
             // Skip if student has no points for this cluster
             if (!studentPoints || studentPoints <= 0) {
+                console.log(`  Program ${programId} (${programDetails.n}): No cluster ${clusterId} points`);
                 return;
             }
 
             // Get all placements for this cluster
             const clusterPlacements = this.data.placements[clusterId.toString()];
             if (!clusterPlacements) {
+                console.log(`  Program ${programId}: No placements found for cluster ${clusterId}`);
                 return;
             }
 
+            let programMatches = 0;
             // Scan placement codes for this program
             // Code format: 4-digit campus + 3-digit program = 7 digits total
             Object.entries(clusterPlacements).forEach(([fullCode, data]) => {
@@ -115,6 +141,9 @@ const CampusPlacementEngine = {
                 if (studentPoints < cutoff) {
                     return; // Student doesn't meet cutoff
                 }
+
+                programMatches++;
+                totalMatches++;
 
                 // PHASE 3: Campus Mapping
                 // Extract campus ID (first 4 digits of 7-digit code)
@@ -143,6 +172,9 @@ const CampusPlacementEngine = {
                     studentPoints: studentPoints.toFixed(2)
                 });
             });
+            if (programMatches > 0) {
+                console.log(`  Program ${programId}: ${programMatches} universities qualified`);
+            }
         });
 
         // Convert map to array and sort
@@ -155,7 +187,7 @@ const CampusPlacementEngine = {
             return a.name.localeCompare(b.name);
         });
 
-        console.log(`Phase 2 & 3: ${results.length} universities qualified`);
+        console.log(`Phase 2 & 3: ${totalMatches} total matches across ${results.length} universities qualified`);
         console.log('--- Placement Engine Complete ---');
 
         return results;

@@ -398,11 +398,12 @@
                                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Package</th>
                                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</th>
                                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">M-Pesa Code</th>
+                                        <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Referral</th>
                                         <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="transactions-body" class="divide-y divide-gray-100 dark:divide-gray-700">
-                                    <tr><td colspan="7" class="px-6 py-12 text-center"><div class="loader mx-auto mb-4"></div><p class="text-gray-500 dark:text-gray-400">Loading...</p></td></tr>
+                                    <tr><td colspan="8" class="px-6 py-12 text-center"><div class="loader mx-auto mb-4"></div><p class="text-gray-500 dark:text-gray-400">Loading...</p></td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -583,7 +584,7 @@
             c.innerHTML = r.map(tx => `
                 <div class="flex items-center gap-4 p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer" onclick="showDetail('${tx.id}')">
                     <div class="w-12 h-12 rounded-xl flex items-center justify-center ${getStatusBg(tx.status)}"><i class="fas ${getStatusIcon(tx.status)} text-lg"></i></div>
-                    <div class="flex-1 min-w-0"><p class="font-semibold text-gray-900 dark:text-white">${formatPhone(tx.phoneNumber)}</p><p class="text-sm text-gray-500 dark:text-gray-400">${tx.mpesaReceiptNumber || 'Pending...'}</p></div>
+                    <div class="flex-1 min-w-0"><p class="font-semibold text-gray-900 dark:text-white">${formatPhone(tx.phoneNumber)}</p><p class="text-sm text-gray-500 dark:text-gray-400">${tx.mpesaReceiptNumber || 'Pending...'} ${tx.referralCode ? '<span class="text-purple-500">• ' + tx.referralCode + '</span>' : ''}</p></div>
                     <div class="text-right"><p class="font-bold text-gray-900 dark:text-white">KSH ${tx.amount || 0}</p><p class="text-xs text-gray-500 dark:text-gray-400">${formatDate(tx.createdAt)}</p></div>
                 </div>`).join('');
         }
@@ -601,12 +602,13 @@
                     <td class="px-6 py-4 whitespace-nowrap"><span class="px-3 py-1 rounded-full text-xs font-medium ${getPackageBadge(tx.category)}">${formatCategory(tx.category)}</span></td>
                     <td class="px-6 py-4 whitespace-nowrap">${getStatusBadge(tx.status)}</td>
                     <td class="px-6 py-4 whitespace-nowrap font-mono text-sm font-bold ${tx.mpesaReceiptNumber ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400'}">${tx.mpesaReceiptNumber || '-'}</td>
+                    <td class="px-6 py-4 whitespace-nowrap font-mono text-sm ${tx.referralCode ? 'text-purple-600 dark:text-purple-400 font-bold' : 'text-gray-400'}">${tx.referralCode || '-'}</td>
                     <td class="px-6 py-4 whitespace-nowrap"><button onclick="showDetail('${tx.id}')" class="p-2 text-gray-400 hover:text-primary-600 dark:hover:text-primary-400"><i class="fas fa-eye"></i></button></td>
                 </tr>`).join('');
         }
 
         function formatDate(d) { return d ? new Date(d).toLocaleDateString('en-KE', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'; }
-        function formatPhone(p) { return p ? p.replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4') : '-'; }
+        function formatPhone(p) { if (!p) return '-'; const str = String(p); return str.replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '$1 $2 $3 $4'); }
         function formatCategory(c) { return { 'bronze': 'Bronze', 'silver': 'Silver', 'gold': 'Gold', 'calculate-cluster-points': 'Bronze', 'courses-only': 'Silver', 'point-and-courses': 'Gold' }[c] || c || 'Standard'; }
         function getPackageBadge(c) { return { 'bronze': 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400', 'silver': 'bg-gray-200 text-gray-800 dark:bg-gray-600 dark:text-gray-200', 'gold': 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' }[c] || 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'; }
         function getStatusBadge(s) { return { 'completed': '<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"><i class="fas fa-check-circle"></i>Completed</span>', 'pending': '<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400"><i class="fas fa-clock"></i>Pending</span>', 'failed': '<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"><i class="fas fa-times-circle"></i>Failed</span>' }[s] || `<span class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100">${s}</span>`; }
@@ -622,7 +624,8 @@
             const dateFrom = document.getElementById('date-from').value;
             const dateTo = document.getElementById('date-to').value;
             filteredTransactions = allTransactions.filter(tx => {
-                if (search && !((tx.phoneNumber && tx.phoneNumber.includes(search)) || (tx.mpesaReceiptNumber && tx.mpesaReceiptNumber.toLowerCase().includes(search)))) return false;
+                const phoneStr = tx.phoneNumber ? String(tx.phoneNumber) : '';
+                if (search && !(phoneStr.includes(search) || (tx.mpesaReceiptNumber && tx.mpesaReceiptNumber.toLowerCase().includes(search)) || (tx.referralCode && tx.referralCode.toLowerCase().includes(search)))) return false;
                 if (status && tx.status !== status) return false;
                 if (category && tx.category !== category) return false;
                 if (dateFrom && new Date(tx.createdAt) < new Date(dateFrom)) return false;

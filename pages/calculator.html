@@ -2535,11 +2535,18 @@
                         // 2. Get Grades and calculate cluster points (1-20)
                         const grades = window.getStudentGrades();
                         const points = window.calculateClusterPoints();
+                        
+                        // Store for PDF generation
+                        window.lastClusterPoints = points;
+                        window.lastPackageType = category;
 
                         // 3. Get qualified universities (now fast due to optimizations)
                         const matchStartTime = performance.now();
                         const universities = window.CampusPlacementEngine.getQualifiedUniversities(points, grades);
                         const matchTime = performance.now() - matchStartTime;
+                        
+                        // Store for PDF generation
+                        window.lastUniversities = universities;
                         
                         console.log(`⚡ Performance: Init ${initTime.toFixed(0)}ms | Match ${matchTime.toFixed(0)}ms`);
                         console.log('Found universities:', universities.length);
@@ -2762,6 +2769,28 @@
 
                             placementHtml += `</div></div>`;
                             
+                            // Add Download PDF Button for Bronze/Silver/Gold
+                            placementHtml += `
+                                <div class="mt-8 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 shadow-lg">
+                                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                                        <div class="flex items-center gap-4">
+                                            <div class="h-14 w-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center shadow-lg">
+                                                <i class="fas fa-file-pdf text-white text-2xl"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-green-800 font-bold text-lg">Download Your Results</h4>
+                                                <p class="text-green-600 text-sm">Get a PDF copy of all your qualified programs</p>
+                                            </div>
+                                        </div>
+                                        <button onclick="generatePlacementPDF('${category}')" 
+                                            class="inline-flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-green-200 transition-all hover:scale-105">
+                                            <i class="fas fa-download"></i>
+                                            Download PDF Report
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                            
                             // Add KUCCPS disclaimer
                             placementHtml += `
                                 <div class="mt-8 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6 shadow-sm">
@@ -2867,6 +2896,269 @@
                 document.body.style.overflow = 'auto';
             }
         }
+
+        // ============================================
+        // PDF GENERATION FOR BRONZE/SILVER/GOLD PACKAGES
+        // ============================================
+        async function generatePlacementPDF(packageType) {
+            try {
+                // Get student name
+                const { value: studentName, isConfirmed } = await Swal.fire({
+                    title: '📄 Enter Your Name',
+                    input: 'text',
+                    inputLabel: 'Your name will appear on the PDF report',
+                    inputPlaceholder: 'Enter your full name',
+                    showCancelButton: true,
+                    confirmButtonText: 'Generate PDF',
+                    confirmButtonColor: '#10b981',
+                    inputValidator: (value) => {
+                        if (!value) return 'Please enter your name';
+                    }
+                });
+
+                if (!isConfirmed || !studentName) return;
+
+                // Show loading
+                Swal.fire({
+                    title: 'Generating PDF...',
+                    html: '<p>Please wait while we create your report</p>',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF();
+
+                // Theme Colors
+                const COLORS = {
+                    green: [16, 185, 129],
+                    darkGreen: [5, 150, 105],
+                    gold: [217, 119, 6],
+                    gray: [107, 114, 128],
+                    dark: [31, 41, 55],
+                    blue: [59, 130, 246]
+                };
+
+                let y = 15;
+
+                // Helper functions
+                const addFooter = () => {
+                    const pageCount = pdf.internal.getNumberOfPages();
+                    pdf.setFontSize(8);
+                    pdf.setTextColor(...COLORS.gray);
+                    pdf.text(`Course Corner © 2026 | Page ${pageCount}`, 105, 287, { align: 'center' });
+                    pdf.text('Contact: 0718 744780 | 0741 739262', 105, 291, { align: 'center' });
+                };
+
+                const checkNewPage = (currentY, needed = 30) => {
+                    if (currentY > 270 - needed) {
+                        addFooter();
+                        pdf.addPage();
+                        return 20;
+                    }
+                    return currentY;
+                };
+
+                // ===== HEADER =====
+                pdf.setFontSize(22);
+                pdf.setTextColor(...COLORS.green);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Course Corner', 105, y, { align: 'center' });
+                y += 6;
+                
+                pdf.setFontSize(12);
+                pdf.setTextColor(...COLORS.dark);
+                pdf.setFont(undefined, 'normal');
+                const packageLabel = packageType === 'gold' ? '⭐ Gold Package' : (packageType === 'silver' ? '🥈 Silver Package' : '🥉 Bronze Package');
+                pdf.text(`University Placement Report - ${packageLabel}`, 105, y, { align: 'center' });
+                
+                // Line
+                y += 4;
+                pdf.setDrawColor(...COLORS.green);
+                pdf.setLineWidth(0.5);
+                pdf.line(30, y, 180, y);
+                y += 10;
+
+                // Student Info
+                pdf.setFontSize(11);
+                pdf.setTextColor(...COLORS.dark);
+                pdf.text(`Student: ${studentName}`, 15, y);
+                pdf.text(`Date: ${new Date().toLocaleDateString()}`, 140, y);
+                y += 6;
+                
+                const overallGrade = document.getElementById('overallGrade')?.value || 'N/A';
+                pdf.text(`Overall Grade: ${overallGrade}`, 15, y);
+                y += 12;
+
+                // ===== CLUSTER POINTS (Silver & Gold) =====
+                if ((packageType === 'silver' || packageType === 'gold') && window.lastClusterPoints) {
+                    pdf.setFontSize(14);
+                    pdf.setTextColor(...COLORS.darkGreen);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('Cluster Points Analysis', 15, y);
+                    y += 8;
+
+                    pdf.setFontSize(9);
+                    pdf.setTextColor(...COLORS.dark);
+                    pdf.setFont(undefined, 'normal');
+
+                    const entries = Object.entries(window.lastClusterPoints).sort((a, b) => b[1] - a[1]);
+                    for (let i = 0; i < entries.length; i += 3) {
+                        y = checkNewPage(y);
+                        const [c1, p1] = entries[i];
+                        pdf.text(`${c1}: ${p1.toFixed(2)}`, 15, y);
+                        
+                        if (entries[i + 1]) {
+                            const [c2, p2] = entries[i + 1];
+                            pdf.text(`${c2}: ${p2.toFixed(2)}`, 75, y);
+                        }
+                        if (entries[i + 2]) {
+                            const [c3, p3] = entries[i + 2];
+                            pdf.text(`${c3}: ${p3.toFixed(2)}`, 135, y);
+                        }
+                        y += 5;
+                    }
+                    y += 8;
+                }
+
+                // ===== QUALIFIED UNIVERSITIES =====
+                // Get data from cached results or recalculate
+                const grades = window.getStudentGrades ? window.getStudentGrades() : {};
+                const points = window.lastClusterPoints || (window.calculateClusterPoints ? window.calculateClusterPoints() : {});
+                
+                // Use cached universities if available, otherwise recalculate
+                let universities = window.lastUniversities || [];
+                if (universities.length === 0 && window.CampusPlacementEngine && window.CampusPlacementEngine._initialized) {
+                    universities = window.CampusPlacementEngine.getQualifiedUniversities(points, grades);
+                }
+
+                if (universities.length > 0) {
+                    y = checkNewPage(y, 20);
+                    pdf.setFontSize(14);
+                    pdf.setTextColor(...COLORS.darkGreen);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text(`Qualified Universities & Programs (${universities.length} institutions)`, 15, y);
+                    y += 8;
+
+                    universities.forEach((uni, uniIndex) => {
+                        y = checkNewPage(y, 25);
+                        
+                        // University name
+                        pdf.setFontSize(11);
+                        pdf.setTextColor(...COLORS.blue);
+                        pdf.setFont(undefined, 'bold');
+                        pdf.text(`${uniIndex + 1}. ${uni.name} (${uni.type})`, 15, y);
+                        y += 5;
+                        
+                        pdf.setFontSize(8);
+                        pdf.setTextColor(...COLORS.gray);
+                        pdf.setFont(undefined, 'normal');
+                        pdf.text(`${uni.courses.length} program(s) available`, 20, y);
+                        y += 5;
+
+                        // Courses
+                        pdf.setFontSize(9);
+                        pdf.setTextColor(...COLORS.dark);
+                        
+                        uni.courses.forEach((course, idx) => {
+                            y = checkNewPage(y, 10);
+                            const courseText = `• ${course.name}`;
+                            const cutoffText = `Cutoff: ${course.cutoff} | Your Points: ${course.studentPoints}`;
+                            
+                            // Truncate long course names
+                            const maxWidth = 120;
+                            const truncatedName = pdf.getStringUnitWidth(courseText) * 9 / pdf.internal.scaleFactor > maxWidth 
+                                ? courseText.substring(0, 50) + '...' 
+                                : courseText;
+                            
+                            pdf.text(truncatedName, 20, y);
+                            pdf.setFontSize(8);
+                            pdf.setTextColor(...COLORS.gray);
+                            pdf.text(cutoffText, 130, y);
+                            pdf.setFontSize(9);
+                            pdf.setTextColor(...COLORS.dark);
+                            y += 4.5;
+                        });
+                        y += 4;
+                    });
+                } else {
+                    y = checkNewPage(y);
+                    pdf.setFontSize(11);
+                    pdf.setTextColor(...COLORS.gray);
+                    pdf.text('No matching universities found for your grades.', 15, y);
+                    y += 10;
+                }
+
+                // ===== CONTACT INFORMATION =====
+                y = checkNewPage(y, 40);
+                pdf.setDrawColor(...COLORS.green);
+                pdf.setLineWidth(0.3);
+                pdf.line(15, y, 195, y);
+                y += 8;
+
+                pdf.setFontSize(12);
+                pdf.setTextColor(...COLORS.gold);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Need Help? Contact Us!', 105, y, { align: 'center' });
+                y += 7;
+
+                pdf.setFontSize(10);
+                pdf.setTextColor(...COLORS.dark);
+                pdf.setFont(undefined, 'normal');
+                pdf.text('For assistance with your results or M-Pesa payment confirmation:', 105, y, { align: 'center' });
+                y += 6;
+                
+                pdf.setFontSize(12);
+                pdf.setTextColor(...COLORS.green);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('📞 0718 744780  |  📞 0741 739262', 105, y, { align: 'center' });
+                y += 6;
+                
+                pdf.setFontSize(9);
+                pdf.setTextColor(...COLORS.gray);
+                pdf.setFont(undefined, 'normal');
+                pdf.text('Please have your M-Pesa transaction code ready when calling.', 105, y, { align: 'center' });
+
+                // ===== DISCLAIMER =====
+                y += 12;
+                y = checkNewPage(y, 25);
+                pdf.setFontSize(8);
+                pdf.setTextColor(...COLORS.gray);
+                pdf.text('DISCLAIMER: This data is sourced from KUCCPS. Use as a guide only.', 105, y, { align: 'center' });
+                pdf.text('Verify cutoff points directly with KUCCPS or respective institutions.', 105, y + 4, { align: 'center' });
+
+                addFooter();
+
+                // Save PDF
+                const fileName = `${studentName.replace(/\s+/g, '_')}_Course_Corner_${packageType.charAt(0).toUpperCase() + packageType.slice(1)}_Report.pdf`;
+                pdf.save(fileName);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: '✅ PDF Generated!',
+                    html: `<p>Your report has been downloaded.</p>
+                           <p class="text-sm text-gray-500 mt-2">If you have any issues, contact us:</p>
+                           <p class="font-bold text-green-600">0718 744780 | 0741 739262</p>`,
+                    confirmButtonColor: '#10b981'
+                });
+
+            } catch (error) {
+                console.error('PDF Generation Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'PDF Generation Failed',
+                    html: `<p>Unable to generate PDF. Please try again.</p>
+                           <p class="text-sm text-gray-500 mt-3">If the problem persists, contact us with your M-Pesa payment code:</p>
+                           <p class="font-bold text-green-600 text-lg mt-2">📞 0718 744780</p>
+                           <p class="font-bold text-green-600 text-lg">📞 0741 739262</p>`,
+                    confirmButtonColor: '#10b981'
+                });
+            }
+        }
+
+        // Make function globally available
+        window.generatePlacementPDF = generatePlacementPDF;
 
         // Initialize payment button handlers
         document.addEventListener('DOMContentLoaded', function () {

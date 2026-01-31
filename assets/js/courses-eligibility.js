@@ -588,6 +588,9 @@
             }
         }
 
+        // Add KUCCPS source disclaimer at the end of all results
+        html += generateKUCCPSDisclaimer();
+
         resultsDiv.innerHTML = html;
         initializeCollapsibleSections();
         initializeDownloadButton();
@@ -716,6 +719,63 @@
         return html;
     }
 
+    // Function to generate KUCCPS source disclaimer
+    function generateKUCCPSDisclaimer() {
+        return `
+        <div class="mt-8 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-5 shadow-sm">
+            <div class="flex items-start gap-3">
+                <div class="flex-shrink-0 mt-0.5">
+                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-sm font-semibold text-amber-800 mb-2">Data Source & Disclaimer</h4>
+                    <p class="text-xs text-amber-700 mb-3 leading-relaxed">
+                        The cutoff data displayed was sourced from the official KUCCPS website 
+                        (<a href="https://students.kuccps.net" target="_blank" class="underline hover:text-amber-900">students.kuccps.net</a>) 
+                        as of <strong>July 14, 2025</strong>. Course Corner provides this information as a guide only. 
+                        <strong>Please verify all information with official KUCCPS sources before making decisions.</strong>
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        <a href="https://statics.kuccps.net/uploads/globalFiles/DEGREE_CUTOFFS_14-07-2025.pdf" target="_blank" 
+                           class="flex items-center gap-2 px-3 py-2 bg-white/70 rounded-lg border border-amber-200 text-amber-800 hover:bg-white hover:border-amber-300 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+                            </svg>
+                            <span>Degree Cutoffs (PDF)</span>
+                        </a>
+                        <a href="https://students.kuccps.net/programmes/" target="_blank" 
+                           class="flex items-center gap-2 px-3 py-2 bg-white/70 rounded-lg border border-amber-200 text-amber-800 hover:bg-white hover:border-amber-300 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                            <span>All Programs & Clusters</span>
+                        </a>
+                        <a href="https://students.kuccps.net/institutions/" target="_blank" 
+                           class="flex items-center gap-2 px-3 py-2 bg-white/70 rounded-lg border border-amber-200 text-amber-800 hover:bg-white hover:border-amber-300 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                            <span>All Institutions</span>
+                        </a>
+                        <a href="https://kuccps.net/" target="_blank" 
+                           class="flex items-center gap-2 px-3 py-2 bg-white/70 rounded-lg border border-amber-200 text-amber-800 hover:bg-white hover:border-amber-300 transition-colors">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                            </svg>
+                            <span>KUCCPS Official Site</span>
+                        </a>
+                    </div>
+                    <p class="text-[10px] text-amber-600 mt-3 italic">
+                        ⚠️ Use this tool as a guide only. Always confirm with official KUCCPS data before making university or course selections.
+                    </p>
+                </div>
+            </div>
+        </div>
+        `;
+    }
+
     // Function to generate Cluster Group HTML (Degree)
     function generateClusterHTML(title, courses, color = 'green', clusterId = null, points = null) {
         return `
@@ -730,15 +790,25 @@
                     if (window.PlacementEngine && clusterId && points) {
                         const qualified = window.PlacementEngine.getQualifiedCampuses(course, clusterId, points);
                         if (qualified.length > 0) {
+                            const campusId = `campus-${clusterId}-${course.replace(/[^a-zA-Z0-9]/g, '')}`;
                             campusInfo = `
                             <div class="mt-2 pt-2 border-t border-gray-100">
-                                <p class="text-[10px] text-gray-500 font-bold uppercase mb-1">Available at:</p>
-                                <div class="flex flex-wrap gap-1">
-                                    ${qualified.map(c => `
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium ${c.type === 'Public' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}">
-                                            ${c.campusName} (${c.cutoff})
-                                        </span>
-                                    `).join('')}
+                                <button onclick="document.getElementById('${campusId}').classList.toggle('hidden'); this.querySelector('.campus-arrow').classList.toggle('rotate-180')" 
+                                    class="flex items-center gap-2 text-[11px] text-gray-500 font-medium hover:text-gray-700 transition-colors cursor-pointer w-full">
+                                    <svg class="w-3 h-3 campus-arrow transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                    </svg>
+                                    <span>Available at <strong class="text-gray-600">${qualified.length}</strong> ${qualified.length === 1 ? 'campus' : 'campuses'}</span>
+                                    <span class="text-[9px] text-gray-400 ml-auto">click to ${qualified.length > 3 ? 'expand' : 'view'}</span>
+                                </button>
+                                <div id="${campusId}" class="hidden mt-2">
+                                    <div class="flex flex-wrap gap-1">
+                                        ${qualified.map(c => `
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-normal ${c.type === 'Public' ? 'bg-green-50 text-green-600 border border-green-200' : 'bg-blue-50 text-blue-600 border border-blue-200'}">
+                                                ${c.campusName} <span class="text-gray-400 ml-1">(${c.cutoff})</span>
+                                            </span>
+                                        `).join('')}
+                                    </div>
                                 </div>
                             </div>`;
                         }

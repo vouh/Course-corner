@@ -1437,6 +1437,27 @@
                 } else if (category === 'bronze' || category === 'silver' || category === 'gold') {
                     console.log('Branch: bronze/silver/gold (Placement Engine)');
                     
+                    // Helper function to initialize collapsible sections
+                    function initializeNewCollapsibles() {
+                        document.querySelectorAll('.collapsible-header').forEach(button => {
+                            // Remove existing listeners to prevent duplicates
+                            const newButton = button.cloneNode(true);
+                            button.parentNode.replaceChild(newButton, button);
+                            
+                            newButton.addEventListener('click', function() {
+                                const content = this.nextElementSibling;
+                                const icon = this.querySelector('.collapse-icon');
+                                
+                                if (content && content.classList.contains('collapsible-content')) {
+                                    content.classList.toggle('hidden');
+                                    if (icon) {
+                                        icon.classList.toggle('rotate-180');
+                                    }
+                                }
+                            });
+                        });
+                    }
+                    
                     if (typeof window.CampusPlacementEngine !== 'undefined' && typeof window.PlacementRules !== 'undefined') {
                         // Show quick loading progress
                         if (resultsDiv) {
@@ -1483,22 +1504,12 @@
                         const resultsContent = document.getElementById('results');
                         
                         // ============================================
-                        // SILVER & GOLD: Show Cluster Points Section
+                        // SILVER & GOLD: Show Cluster Points Section (COLLAPSIBLE)
                         // ============================================
                         if ((category === 'silver' || category === 'gold') && resultsContent) {
-                            let clusterPointsHtml = `
-                                <div class="mt-8 mb-8">
-                                    <div class="flex items-center gap-4 mb-6">
-                                        <div class="h-10 w-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-indigo-200">
-                                            <i class="fas fa-calculator"></i>
-                                        </div>
-                                        <div>
-                                            <h3 class="text-2xl font-black text-gray-900 uppercase tracking-tight">Your Cluster Points</h3>
-                                            <p class="text-gray-500 text-sm">Points calculated across all 20 KUCCPS clusters</p>
-                                        </div>
-                                    </div>
-                                    <div class="bg-white rounded-2xl border border-gray-200 shadow-lg overflow-hidden">
-                                        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-1 p-4">
+                            // Build the inner content for cluster points
+                            let clusterInnerContent = `
+                                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                             `;
                             
                             // Get sorted cluster points
@@ -1508,7 +1519,7 @@
                             sortedClusters.forEach(([clusterName, clusterPoints]) => {
                                 const clusterNum = clusterName.replace('Cluster ', '');
                                 const pointsValue = typeof clusterPoints === 'number' ? clusterPoints.toFixed(2) : clusterPoints;
-                                clusterPointsHtml += `
+                                clusterInnerContent += `
                                     <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl p-3 text-center border border-gray-200 hover:border-indigo-300 hover:shadow-md transition-all">
                                         <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">Cluster ${clusterNum}</p>
                                         <p class="text-lg font-black text-indigo-600">${pointsValue}</p>
@@ -1516,12 +1527,34 @@
                                 `;
                             });
                             
-                            clusterPointsHtml += `
+                            clusterInnerContent += `
+                                </div>
+                                <div class="mt-4 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-4 text-center">
+                                    <p class="text-white/80 text-xs font-medium uppercase tracking-wider mb-1">Highest Cluster Points</p>
+                                    <p class="text-white text-3xl font-black">${sortedClusters[0] ? sortedClusters[0][1].toFixed(2) : '0'}</p>
+                                    <p class="text-white/60 text-xs mt-1">${sortedClusters[0] ? sortedClusters[0][0] : ''}</p>
+                                </div>
+                            `;
+                            
+                            // Wrap in collapsible section
+                            let clusterPointsHtml = `
+                                <div class="mb-6 overflow-hidden rounded-xl shadow-lg border border-gray-100 bg-white">
+                                    <button class="collapsible-header w-full p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-all duration-200 group">
+                                        <div class="flex items-center">
+                                            <div class="w-1.5 h-10 bg-indigo-500 rounded-full mr-5 group-hover:scale-y-110 transition-transform"></div>
+                                            <div class="text-left">
+                                                <h3 class="text-lg font-bold text-gray-800">Your Cluster Points</h3>
+                                                <p class="text-xs font-medium text-gray-500 uppercase tracking-widest">20 Clusters Calculated</p>
+                                            </div>
                                         </div>
-                                        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 text-center">
-                                            <p class="text-white/80 text-xs font-medium uppercase tracking-wider mb-1">Highest Cluster Points</p>
-                                            <p class="text-white text-3xl font-black">${sortedClusters[0] ? sortedClusters[0][1].toFixed(2) : '0'}</p>
-                                            <p class="text-white/60 text-xs mt-1">${sortedClusters[0] ? sortedClusters[0][0] : ''}</p>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-xs font-bold text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">Click to expand</span>
+                                            <i class="fas fa-chevron-down collapse-icon text-gray-400 group-hover:text-gray-600 transition-transform duration-300"></i>
+                                        </div>
+                                    </button>
+                                    <div class="collapsible-content hidden border-t border-gray-50 bg-gray-50/30">
+                                        <div class="p-6">
+                                            ${clusterInnerContent}
                                         </div>
                                     </div>
                                 </div>
@@ -1531,43 +1564,63 @@
                         }
                         
                         // ============================================
-                        // GOLD ONLY: Expert Access Section
+                        // GOLD ONLY: Expert Access Section (COLLAPSIBLE)
                         // ============================================
                         if (category === 'gold' && resultsContent) {
+                            let expertInnerContent = `
+                                <div class="flex items-start gap-4">
+                                    <div class="flex-shrink-0">
+                                        <div class="h-14 w-14 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-2xl flex items-center justify-center shadow-lg">
+                                            <i class="fas fa-headset text-white text-2xl"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <span class="bg-amber-100 text-amber-700 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">Gold Exclusive</span>
+                                            <span class="bg-green-100 text-green-700 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">Free Consultation</span>
+                                        </div>
+                                        <h4 class="text-xl font-black text-gray-900 mb-2">🎉 Expert Guidance Included!</h4>
+                                        <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                                            As a <strong>Gold Package</strong> member, you get <strong>FREE access to our education experts</strong> who will contact you within <strong>24 hours</strong> to provide personalized guidance on your course and university choices.
+                                        </p>
+                                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+                                            <p class="text-amber-800 text-sm font-medium mb-2">
+                                                <i class="fas fa-clipboard-list mr-2"></i>To receive your expert consultation, please fill out the form below:
+                                            </p>
+                                            <a href="https://docs.google.com/forms/u/0/create?usp=forms_home&ths=true" target="_blank" rel="noopener noreferrer" 
+                                               class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-amber-200 transition-all hover:scale-105">
+                                                <i class="fas fa-external-link-alt"></i>
+                                                Fill Expert Consultation Form
+                                            </a>
+                                        </div>
+                                        <div class="flex flex-wrap gap-3 text-xs text-gray-500">
+                                            <span class="flex items-center gap-1"><i class="fas fa-check-circle text-green-500"></i> Response within 24 hours</span>
+                                            <span class="flex items-center gap-1"><i class="fas fa-check-circle text-green-500"></i> Personalized advice</span>
+                                            <span class="flex items-center gap-1"><i class="fas fa-check-circle text-green-500"></i> No extra cost</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            
+                            // Wrap in collapsible section with gold gradient border
                             let expertHtml = `
-                                <div class="mt-8 mb-8 bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 rounded-2xl p-1 shadow-xl shadow-amber-200">
-                                    <div class="bg-white rounded-xl p-6">
-                                        <div class="flex items-start gap-4">
-                                            <div class="flex-shrink-0">
-                                                <div class="h-14 w-14 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-2xl flex items-center justify-center shadow-lg">
-                                                    <i class="fas fa-headset text-white text-2xl"></i>
-                                                </div>
+                                <div class="mb-6 overflow-hidden rounded-xl shadow-lg border-2 border-amber-300 bg-white">
+                                    <button class="collapsible-header w-full p-4 flex items-center justify-between cursor-pointer hover:bg-amber-50 transition-all duration-200 group">
+                                        <div class="flex items-center">
+                                            <div class="w-1.5 h-10 bg-amber-500 rounded-full mr-5 group-hover:scale-y-110 transition-transform"></div>
+                                            <div class="text-left">
+                                                <h3 class="text-lg font-bold text-gray-800">🌟 Expert Consultation Access</h3>
+                                                <p class="text-xs font-medium text-amber-600 uppercase tracking-widest">Gold Package Exclusive</p>
                                             </div>
-                                            <div class="flex-1">
-                                                <div class="flex items-center gap-2 mb-2">
-                                                    <span class="bg-amber-100 text-amber-700 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">Gold Exclusive</span>
-                                                    <span class="bg-green-100 text-green-700 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">Free Consultation</span>
-                                                </div>
-                                                <h4 class="text-xl font-black text-gray-900 mb-2">🎉 Expert Guidance Included!</h4>
-                                                <p class="text-gray-600 text-sm leading-relaxed mb-4">
-                                                    As a <strong>Gold Package</strong> member, you get <strong>FREE access to our education experts</strong> who will contact you within <strong>24 hours</strong> to provide personalized guidance on your course and university choices.
-                                                </p>
-                                                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
-                                                    <p class="text-amber-800 text-sm font-medium mb-2">
-                                                        <i class="fas fa-clipboard-list mr-2"></i>To receive your expert consultation, please fill out the form below:
-                                                    </p>
-                                                    <a href="https://docs.google.com/forms/u/0/create?usp=forms_home&ths=true" target="_blank" rel="noopener noreferrer" 
-                                                       class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-amber-200 transition-all hover:scale-105">
-                                                        <i class="fas fa-external-link-alt"></i>
-                                                        Fill Expert Consultation Form
-                                                    </a>
-                                                </div>
-                                                <div class="flex flex-wrap gap-3 text-xs text-gray-500">
-                                                    <span class="flex items-center gap-1"><i class="fas fa-check-circle text-green-500"></i> Response within 24 hours</span>
-                                                    <span class="flex items-center gap-1"><i class="fas fa-check-circle text-green-500"></i> Personalized advice</span>
-                                                    <span class="flex items-center gap-1"><i class="fas fa-check-circle text-green-500"></i> No extra cost</span>
-                                                </div>
-                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-xs font-bold text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">Click to expand</span>
+                                            <i class="fas fa-chevron-down collapse-icon text-gray-400 group-hover:text-gray-600 transition-transform duration-300"></i>
+                                        </div>
+                                    </button>
+                                    <div class="collapsible-content hidden border-t border-amber-100 bg-amber-50/30">
+                                        <div class="p-6">
+                                            ${expertInnerContent}
                                         </div>
                                     </div>
                                 </div>
@@ -1703,6 +1756,9 @@
                             
                             // Attach copy handlers to code buttons
                             attachCopyHandlers();
+                            
+                            // Initialize collapsible sections for cluster points and expert access
+                            initializeNewCollapsibles();
                         } else if (resultsContent && universities.length === 0) {
                             resultsContent.innerHTML += `
                                 <div class="mt-8 p-12 bg-gray-50 border-2 border-dashed border-gray-200 rounded-3xl text-center">

@@ -276,14 +276,24 @@
                     </div>
 
                     <!-- Quick Actions -->
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
                         <button onclick="syncPendingTransactions()" class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-all group">
                             <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <i class="fas fa-cloud-download-alt text-yellow-600 dark:text-yellow-400 text-xl"></i>
                             </div>
                             <div class="text-left">
+                                <p class="font-semibold text-gray-900 dark:text-white">Refresh</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Load Latest</p>
+                            </div>
+                        </button>
+
+                        <button onclick="syncMissingReceipts()" class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-500 transition-all group">
+                            <div class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-sync-alt text-green-600 dark:text-green-400 text-xl"></i>
+                            </div>
+                            <div class="text-left">
                                 <p class="font-semibold text-gray-900 dark:text-white">Sync</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Update Pending</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">M-Pesa Receipts</p>
                             </div>
                         </button>
 
@@ -652,19 +662,22 @@
             const tx = allTransactions.find(t => t.id === id);
             if (!tx) return;
             currentTransactionId = id;
+            const showRequeryBtn = (tx.status === 'completed' && !tx.mpesaReceiptNumber) || tx.status === 'pending';
             document.getElementById('modal-content').innerHTML = `
                 <div class="space-y-6">
                     <div class="flex items-center gap-4 p-4 rounded-2xl ${getStatusBg(tx.status)}">
                         <div class="w-14 h-14 rounded-xl bg-white/50 dark:bg-black/20 flex items-center justify-center"><i class="fas ${getStatusIcon(tx.status)} text-2xl"></i></div>
                         <div><p class="text-sm opacity-75">Status</p><p class="text-xl font-bold capitalize">${tx.status}</p></div>
+                        ${showRequeryBtn ? `<button onclick="requeryTransaction('${tx.id}')" class="ml-auto px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-medium"><i class="fas fa-sync-alt mr-1"></i>Re-query</button>` : ''}
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl"><p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Phone</p><p class="font-semibold text-gray-900 dark:text-white">${formatPhone(tx.phoneNumber)}</p></div>
                         <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl"><p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Amount</p><p class="font-bold text-2xl text-primary-600 dark:text-primary-400">KSH ${tx.amount || 0}</p></div>
                         <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl"><p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Package</p><p class="font-semibold text-gray-900 dark:text-white">${formatCategory(tx.category)}</p></div>
-                        <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl"><p class="text-xs text-gray-500 dark:text-gray-400 mb-1">M-Pesa Code</p><p class="font-mono font-bold text-primary-600 dark:text-primary-400">${tx.mpesaReceiptNumber || '-'}</p></div>
+                        <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl"><p class="text-xs text-gray-500 dark:text-gray-400 mb-1">M-Pesa Code</p><p class="font-mono font-bold ${tx.mpesaReceiptNumber ? 'text-primary-600 dark:text-primary-400' : 'text-gray-400'}">${tx.mpesaReceiptNumber || 'Not captured'}</p></div>
                     </div>
                     ${tx.referralCode ? `<div class="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl border border-purple-200 dark:border-purple-800"><p class="text-xs text-purple-600 dark:text-purple-400 mb-1">Referral Code</p><p class="font-mono font-bold text-purple-700 dark:text-purple-300">${tx.referralCode}</p></div>` : ''}
+                    ${tx.resultDesc ? `<div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl"><p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Result</p><p class="text-sm text-gray-700 dark:text-gray-300">${tx.resultDesc}</p></div>` : ''}
                     <div class="text-sm text-gray-500 dark:text-gray-400"><i class="fas fa-calendar mr-2"></i>${formatDate(tx.createdAt)}</div>
                 </div>`;
             document.getElementById('detail-modal').classList.remove('hidden');
@@ -672,21 +685,44 @@
         }
         function closeModal() { document.getElementById('detail-modal').classList.add('hidden'); document.getElementById('detail-modal').classList.remove('flex'); }
 
-        // Code Generator
+        // Code Generator - Admin can generate UNLIMITED codes, all stored permanently
         let generatedCodes = JSON.parse(localStorage.getItem('adminCodes') || '[]');
-        function openCodeGenerator() { document.getElementById('code-modal').classList.remove('hidden'); document.getElementById('code-modal').classList.add('flex'); updateCodesHistory(); }
+        
+        function openCodeGenerator() { 
+            document.getElementById('code-modal').classList.remove('hidden'); 
+            document.getElementById('code-modal').classList.add('flex'); 
+            updateCodesHistory(); 
+        }
         function closeCodeGenerator() { document.getElementById('code-modal').classList.add('hidden'); document.getElementById('code-modal').classList.remove('flex'); }
+        
         function generateAdminReferralCode() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let code = '';
-            for (let i = 0; i < 5; i++) code += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.charAt(Math.floor(Math.random() * 36));
+            // Generate 5-char code
+            for (let i = 0; i < 5; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+            
+            // Check for duplicates, regenerate if needed
+            let attempts = 0;
+            while (generatedCodes.includes(code) && attempts < 10) {
+                code = '';
+                for (let i = 0; i < 5; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+                attempts++;
+            }
+            
             document.getElementById('generated-code').value = code;
-            if (!generatedCodes.includes(code)) { generatedCodes.unshift(code); if (generatedCodes.length > 10) generatedCodes.pop(); localStorage.setItem('adminCodes', JSON.stringify(generatedCodes)); updateCodesHistory(); }
-            showToast('Code: ' + code, 'success');
+            
+            // Add to all codes list (no limit)
+            if (!generatedCodes.includes(code)) { 
+                generatedCodes.unshift(code); 
+                localStorage.setItem('adminCodes', JSON.stringify(generatedCodes)); 
+                updateCodesHistory(); 
+            }
+            showToast('Code generated: ' + code, 'success');
         }
         function copyGeneratedCode() {
             const code = document.getElementById('generated-code').value;
             if (!code || code === 'XXXXX') { showToast('Generate first', 'warning'); return; }
-            navigator.clipboard.writeText('https://coursecorner.netlify.app?ref=' + code).then(() => showToast('Link copied!', 'success'));
+            navigator.clipboard.writeText('https://coursecornerkenya.com?ref=' + code).then(() => showToast('Link copied!', 'success'));
         }
         function updateCodesHistory() {
             const c = document.getElementById('codes-history'), l = document.getElementById('codes-list');
@@ -697,7 +733,47 @@
         function selectCode(code) { document.getElementById('generated-code').value = code; copyGeneratedCode(); }
 
         // Actions
-        async function syncPendingTransactions() { showToast('Syncing...', 'info'); await loadTransactions(); showToast('Synced!', 'success'); }
+        async function syncPendingTransactions() { showToast('Refreshing...', 'info'); await loadTransactions(); showToast('Refreshed!', 'success'); }
+        
+        async function syncMissingReceipts() {
+            showToast('Syncing M-Pesa receipts...', 'info');
+            try {
+                const res = await fetch(`${API_BASE}/api/mpesa/admin/sync-receipts`, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(`Synced ${data.data.synced} receipts`, 'success');
+                    await loadTransactions(); // Reload to show updated data
+                } else {
+                    showToast('Sync failed: ' + data.message, 'error');
+                }
+            } catch (e) {
+                console.error('Sync error:', e);
+                showToast('Sync error: ' + e.message, 'error');
+            }
+        }
+        
+        async function requeryTransaction(transactionId) {
+            showToast('Re-querying M-Pesa...', 'info');
+            try {
+                const res = await fetch(`${API_BASE}/api/mpesa/admin/requery/${transactionId}`, { method: 'POST' });
+                const data = await res.json();
+                if (data.success) {
+                    if (data.updated) {
+                        showToast('Transaction updated!', 'success');
+                        await loadTransactions();
+                    } else {
+                        showToast('No updates available', 'warning');
+                    }
+                    console.log('Requery result:', data);
+                } else {
+                    showToast('Requery failed: ' + data.message, 'error');
+                }
+            } catch (e) {
+                console.error('Requery error:', e);
+                showToast('Requery error: ' + e.message, 'error');
+            }
+        }
+        
         function refreshData() { loadData(); showToast('Refreshed', 'success'); }
         function exportToCSV() {
             if (!filteredTransactions.length) { showToast('No data', 'warning'); return; }

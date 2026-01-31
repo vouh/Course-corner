@@ -45,7 +45,7 @@
             }
           },
           "courses": [
-            { "n": "Bachelor of Co-operative and Community Development", "c": "" },
+            { "n": "Bachelor of Co-operative and Community Development", "c": "510" },
             { "n": "Bachelor of Secretarial Management and Administration", "c": "152" },
             { "n": "Bachelor of Technology (Office Administration and Technology)", "c": "468" },
             { "n": "Bachelor of Commerce", "c": "133" },
@@ -68,7 +68,35 @@
             { "n": "Bachelor of Science (Strategic Management)", "c": "493" },
             { "n": "Bachelor of Science In International Business Management", "c": "647" },
             { "n": "Bachelor of Science in Marketing With IT", "c": "120" },
-            { "n": "Bachelor of Science In Co-operative and Entreprenuership Management", "c": "120" }
+            { "n": "Bachelor of Science In Co-operative and Entreprenuership Management", "c": "120" },
+            { "n": "Bachelor of Science (Information Science)", "c": "150" },
+            { "n": "Bachelor of Business and Management", "c": "151" },
+            { "n": "Bachelor in Business Administration", "c": "153" },
+            { "n": "Bachelor of Business and Office Management", "c": "154" },
+            { "n": "Bachelor of Science in Tourism Management", "c": "157" },
+            { "n": "Bachelor of Business Administration and Management", "c": "168" },
+            { "n": "Bachelor of Human Resource Management", "c": "189" },
+            { "n": "Bachelor of Science in Business Administration", "c": "205" },
+            { "n": "Bachelor of Business and Information Technology", "c": "206" },
+            { "n": "Bachelor of Science in Marketing, Innovation and Technology", "c": "214" },
+            { "n": "Bachelor of Hospitality and Tourism Management", "c": "221" },
+            { "n": "Bachelor of Tourism Management", "c": "222" },
+            { "n": "Bachelor of Science (Ecotourism & Hospitality Management)", "c": "223" },
+            { "n": "Bachelor of Science (Hospitality & Tourism Management)", "c": "224" },
+            { "n": "Bachelor of Technology in Hospitality Management", "c": "225" },
+            { "n": "Bachelor of Science in Information Science", "c": "233" },
+            { "n": "Bachelor of Travel and Tours Operations Management", "c": "234" },
+            { "n": "Bachelor of International Tourism Management", "c": "235" },
+            { "n": "Bachelor of Procurement and Logistics Management", "c": "243" },
+            { "n": "Bachelor of Business Information Technology", "c": "244" },
+            { "n": "Bachelor of Purchasing and Supply Chain Management", "c": "255" },
+            { "n": "Bachelor of Project Planning and Management", "c": "327" },
+            { "n": "Bachelor of Hotel and Hospitality Management", "c": "387" },
+            { "n": "Bachelor of Commerce in Management Information Systems", "c": "433" },
+            { "n": "Bachelor of Science (Hospitality Management)", "c": "821" },
+            { "n": "Bachelor of Science in Travel and Tourism Management", "c": "684" },
+            { "n": "Bachelor of Information Science", "c": "869" },
+            { "n": "Bachelor of Science (Records Management and Information Technology)", "c": "148" }
           ]
         },
         "2B": {
@@ -98,10 +126,10 @@
             { "n": "Bachelor of Science (Entrepreneurship)", "c": "108" },
             { "n": "Bachelor of Science (Entrepreneurship Studies)", "c": "108" },
             { "n": "Bachelor of Science in Entrepreneurship", "c": "297" },
-            { "n": "Bachelor of Procurement and Contract Management", "c": "" },
-            { "n": "Bachelor of Procurement and Supply Chain Management", "c": "" },
+            { "n": "Bachelor of Procurement and Contract Management", "c": "250" },
+            { "n": "Bachelor of Procurement and Supply Chain Management", "c": "250" },
             { "n": "Bachelor of Purchasing & Supplies Management", "c": "249" },
-            { "n": "Bachelor of Supply Chain Management", "c": "" },
+            { "n": "Bachelor of Supply Chain Management", "c": "248" },
             { "n": "Bachelor of Logistics and Supply Chain Management", "c": "248" },
             { "n": "Bachelor of Procurement and Logistics Management", "c": "250" },
             { "n": "Bachelor of Purchasing and Supplies Management", "c": "247" },
@@ -212,7 +240,7 @@
             { "n": "Bachelor of Arts (Political Science, With IT)", "c": "551" },
             { "n": "Bachelor of Arts (Criminology & Security Studies)", "c": "136" },
             { "n": "Bachelor of Science in Public Administration and Leadership", "c": "120" },
-            { "n": "Bachelor of Conflict Resolution and Humanitarian Assistance", "c": "" },
+            { "n": "Bachelor of Conflict Resolution and Humanitarian Assistance", "c": "595" },
             { "n": "Bachelor of Arts (Development Studies)", "c": "101" },
             { "n": "Bachelor of Science in Medical Social Work", "c": "120" },
             { "n": "Bachelor of Arts (Psychology)", "c": "237" },
@@ -333,13 +361,28 @@
             }
           },
           "courses": [
+            { "n": "Bachelor of Science (Civil Engineering)", "c": "116" },
+            { "n": "Bachelor of Science in Electrical & Electronic Engineering", "c": "117" },
+            { "n": "Bachelor of Science in Mechanical Engineering", "c": "118" },
+            { "n": "Bachelor of Science (Agricultural Engineering)", "c": "121" },
+            { "n": "Bachelor of Science (Marine Engineering)", "c": "140" },
             { "n": "Bachelor of Engineering (Electrical and Electronics Engineering)", "c": "613" },
-            { "n": "Bachelor of Engineering (Mechanical Engineering)", "c": "119" },
-            { "n": "Bachelor of Engineering (Civil Engineering)", "c": "119" },
-            { "n": "Bachelor of Engineering (Chemical Engineering)", "c": "119" },
-            { "n": "Bachelor of Science (Mechanical and Manufacturing Engineering)", "c": "108" },
+            { "n": "Bachelor of Science (Mechanical and Manufacturing Engineering)", "c": "212" },
+            { "n": "Bachelor of Science in Mechanical and Manufacturing Engineering", "c": "212" },
             { "n": "Bachelor of Science (Aerospace Engineering)", "c": "573" },
-            { "n": "Bachelor of Engineering (Aeronautical Engineering)", "c": "503" }
+            { "n": "Bachelor of Engineering (Aeronautical Engineering)", "c": "503" },
+            { "n": "Bachelor of Science in Mechatronic Engineering", "c": "240" },
+            { "n": "Bachelor of Science (Civil and Structural Engineering)", "c": "616" },
+            { "n": "Bachelor of Engineering (Mechanical & Production Engineering)", "c": "718" },
+            { "n": "Bachelor of Engineering (Chemical and Process Engineering)", "c": "599" },
+            { "n": "Bachelor of Engineering (Manufacturing, Industrial and Textile Engineering)", "c": "600" },
+            { "n": "Bachelor of Engineering (Electrical and Telecommunication Engineering)", "c": "697" },
+            { "n": "Bachelor of Science (Medical Engineering)", "c": "696" },
+            { "n": "Bachelor of Science (Mining and Mineral Processing Engineering)", "c": "349" },
+            { "n": "Bachelor of Science in Computer Systems Engineering", "c": "350" },
+            { "n": "Bachelor of Science (Petroleum Engineering)", "c": "572" },
+            { "n": "Bachelor of Engineering Physics", "c": "629" },
+            { "n": "Bachelor of Science (Energy Engineering)", "c": "885" }
           ]
         },
         "5B": {
@@ -387,13 +430,30 @@
             }
           },
           "courses": [
-            { "n": "Bachelor of Science in Control and Instrumentation", "c": "120" },
+            { "n": "Bachelor of Science (Instrumentation & Control)", "c": "230" },
+            { "n": "Bachelor of Science (Control and Instrumentation)", "c": "231" },
             { "n": "Bachelor of Science (Telecommunication and Information Engineering)", "c": "197" },
             { "n": "Bachelor of Science (Manufacturing Engineering & Technology)", "c": "211" },
             { "n": "Bachelor of Science (Electronics)", "c": "502" },
-            { "n": "Bachelor of Science in Renewable Energy and Environmental Physics", "c": "120" },
+            { "n": "Bachelor of Science in Electronics", "c": "506" },
+            { "n": "Bachelor of Science (Electrical and Communication Engineering)", "c": "245" },
+            { "n": "Bachelor of Science in Renewable Energy and Environmental Physics", "c": "512" },
             { "n": "Bachelor of Science (Renewable Energy)", "c": "525" },
-            { "n": "Bachelor of Science (Biomedical Engineering)", "c": "108" }
+            { "n": "Bachelor of Science (Renewable Energy and Biofuels Technology)", "c": "526" },
+            { "n": "Bachelor of Science (Renewable Energy Technology and Management)", "c": "626" },
+            { "n": "Bachelor of Science in Energy and Environmental Technology", "c": "514" },
+            { "n": "Bachelor of Science in Telecommunication", "c": "707" },
+            { "n": "Bachelor of Technology (Telecommunication and Information Engineering)", "c": "289" },
+            { "n": "Bachelor of Technology in Instrumentation & Control Engineering", "c": "627" },
+            { "n": "Bachelor of Science (Applied Bioengineering)", "c": "563" },
+            { "n": "Bachelor of Science in Applied Optics and Lasers", "c": "567" },
+            { "n": "Bachelor of Science (Petroleum Chemistry)", "c": "576" },
+            { "n": "Bachelor of Science (Mining Physics)", "c": "628" },
+            { "n": "Bachelor of Technology in Electrical and Computer Engineering", "c": "878" },
+            { "n": "Bachelor of Technology in Applied Physics (Electronics & Instrumentation)", "c": "876" },
+            { "n": "Bachelor of Science (Microprocessor Technology and Instrumentation)", "c": "126" },
+            { "n": "Bachelor of Technology in Mechanical Ventilation and Air Conditioning", "c": "139" },
+            { "n": "Bachelor of Science in Automotive Technology", "c": "283" }
           ]
         },
         "5D": {
@@ -445,10 +505,15 @@
             { "n": "Bachelor of Technology in Electrical and Electronic Engineering", "c": "527" },
             { "n": "Bachelor of Technology in Medical Engineering", "c": "534" },
             { "n": "Bachelor of Industrial Technology", "c": "853" },
-            { "n": "Bachelor of Science (Renewable Energy and Technology)", "c": "108" },
-            { "n": "Bachelor of Science in Renewable Energy and Technology", "c": "120" },
+            { "n": "Bachelor of Technology (Mechanical Engineering Technology)", "c": "535" },
+            { "n": "Bachelor of Technology in Marine Engineering", "c": "537" },
+            { "n": "Bachelor of Technology in Water, Irrigation and Environmental Engineering", "c": "173" },
+            { "n": "Bachelor of Technology Education", "c": "192" },
+            { "n": "Bachelor of Technology in Applied Chemistry (Analytical and Industrial Options)", "c": "425" },
+            { "n": "Bachelor of Science (Industrial Chemistry with Management)", "c": "508" },
             { "n": "Bachelor of Technology in Renewable Energy & Environmental Physics", "c": "881" },
-            { "n": "Bachelor of Technology (Chemical Engineering)", "c": "699" }
+            { "n": "Bachelor of Technology (Chemical Engineering)", "c": "699" },
+            { "n": "Bachelor of Science in Gaming and Animation Technology", "c": "855" }
           ]
         },
         "5F": {
@@ -473,7 +538,9 @@
             { "n": "Bachelor of Education in Technology (Civil Engineering)", "c": "318" },
             { "n": "Bachelor of Education in Technology (Mechanical Engineering)", "c": "318" },
             { "n": "Bachelor of Education in Technology (Electrical & Electronics Engineering)", "c": "318" },
-            { "n": "Bachelor of Education Technical and Vocational Education", "c": "" },
+            { "n": "Bachelor of Education in Technology (Electrical & Electronic Technology)", "c": "319" },
+            { "n": "Bachelor of Education in Technology (Building & Civil Technology)", "c": "320" },
+            { "n": "Bachelor of Education Technical and Vocational Education", "c": "331" },
             { "n": "Bachelor of Education (ICT)", "c": "440" },
             { "n": "Bachelor of Education (Technology)", "c": "135" },
             { "n": "Bachelor of Education (Technology Education)", "c": "135" }
@@ -596,7 +663,16 @@
             { "n": "Bachelor of Science (Computer Technology)", "c": "108" },
             { "n": "Bachelor of Science in Computer Technology", "c": "208" },
             { "n": "Bachelor of Technology (Computer Technology)", "c": "227" },
-            { "n": "Bachelor of Science in Computer Information Systems", "c": "868" }
+            { "n": "Bachelor of Science in Computer Information Systems", "c": "868" },
+            { "n": "Bachelor of Information Communication Technology", "c": "158" },
+            { "n": "Bachelor of Information Technology", "c": "236" },
+            { "n": "Bachelor of Science (Applied Computer Science)", "c": "388" },
+            { "n": "Bachelor of Science (Computer Security and Forensics)", "c": "511" },
+            { "n": "Bachelor of Science in Networks and Communication Systems", "c": "471" },
+            { "n": "Bachelor of Technology (Communication and Computer Networks)", "c": "476" },
+            { "n": "Bachelor of Science in Computing and Information Systems", "c": "614" },
+            { "n": "Bachelor of Science in Information Systems and Knowledge Management", "c": "636" },
+            { "n": "Bachelor of Technology in Computer and Electronic Systems", "c": "220" }
           ]
         },
         "7B": {
@@ -620,9 +696,14 @@
           "courses": [
             { "n": "Bachelor of Science (Applied Statistics with Computing)", "c": "164" },
             { "n": "Bachelor of Science (Mathematics and Computing)", "c": "108" },
+            { "n": "Bachelor of Science (Mathematics with Computing)", "c": "308" },
             { "n": "Bachelor of Science (Statistics and Programming)", "c": "108" },
+            { "n": "Bachelor of Science in Statistics and Programming", "c": "664" },
+            { "n": "Bachelor of Science in Statistics & Computer Science", "c": "856" },
             { "n": "Bachelor of Science (Informatics)", "c": "428" },
-            { "n": "Bachelor of Science (Biometry and Informatics)", "c": "108" }
+            { "n": "Bachelor of Science (Biometry and Informatics)", "c": "108" },
+            { "n": "Bachelor of Science (Statistics)", "c": "163" },
+            { "n": "Bachelor of Science in Applied Physics", "c": "498" }
           ]
         },
         "7C": {
@@ -648,7 +729,9 @@
             { "n": "Bachelor of Science (Information and Communication Technology)", "c": "108" },
             { "n": "Bachelor of Technology (Information and Communication Technology)", "c": "227" },
             { "n": "Bachelor of Science (Business Computing)", "c": "536" },
-            { "n": "Bachelor of Science (Informatics)", "c": "428" }
+            { "n": "Bachelor of Science (Informatics)", "c": "428" },
+            { "n": "Bachelor of Organizational Management and Technology", "c": "612" },
+            { "n": "Bachelor of Science in Mathematics (Pure Mathematics, Applied Mathematics and Statistics)", "c": "709" }
           ]
         }
       }
@@ -710,7 +793,25 @@
           "courses": [
             { "n": "Bachelor of Science", "c": "120" },
             { "n": "Bachelor of Science (Basic Science with IT)", "c": "108" },
-            { "n": "Bachelor of Science (BSc)", "c": "108" }
+            { "n": "Bachelor of Science (BSc)", "c": "108" },
+            { "n": "Bachelor of Science (Biochemistry)", "c": "112" },
+            { "n": "Bachelor of Science (Microbiology)", "c": "123" },
+            { "n": "Bachelor of Science Genomic Science", "c": "147" },
+            { "n": "Bachelor of Science in Physics", "c": "170" },
+            { "n": "Bachelor of Science in Microbiology", "c": "279" },
+            { "n": "Bachelor of Science (Microbiology)", "c": "281" },
+            { "n": "Bachelor of Science (Physics with Appropriate Technology)", "c": "366" },
+            { "n": "Bachelor of Science (Biochemistry and Molecular Biology)", "c": "437" },
+            { "n": "Bachelor of Science (Molecular & Cellular Biology)", "c": "438" },
+            { "n": "Bachelor of Science in Molecular Biology and Forensic Technology", "c": "439" },
+            { "n": "Bachelor of Science (Botany)", "c": "462" },
+            { "n": "Bachelor of Science (Zoology)", "c": "464" },
+            { "n": "Bachelor of Science in Applied Physics", "c": "498" },
+            { "n": "Bachelor of Science (Conservation Biology)", "c": "611" },
+            { "n": "Bachelor of Science in Biosafety and Biosecurity", "c": "666" },
+            { "n": "Bachelor of Science Industrial Biotechnology", "c": "728" },
+            { "n": "Bachelor of Science (Forensic Biology)", "c": "811" },
+            { "n": "Bachelor of Science in Chemistry", "c": "879" }
           ]
         },
         "9B": {
@@ -738,8 +839,15 @@
             { "n": "Bachelor of Science (Applied Biology)", "c": "477" },
             { "n": "Bachelor of Technology (Applied Biology)", "c": "474" },
             { "n": "Bachelor of Science (Biotechnology)", "c": "226" },
+            { "n": "Bachelor of Technology (Biotechnology)", "c": "227" },
+            { "n": "Bachelor of Science in Biotechnology and Biosafety", "c": "359" },
+            { "n": "Bachelor of Science in Entomology and Parasitology", "c": "360" },
+            { "n": "Bachelor of Technology in Industrial Microbiology & Biotechnology", "c": "380" },
+            { "n": "Bachelor of Science (Medical Microbiology)", "c": "381" },
             { "n": "Bachelor of Science (Industrial Biotechnology)", "c": "108" },
-            { "n": "Bachelor of Science (Forensic Science)", "c": "568" }
+            { "n": "Bachelor of Science (Forensic Science)", "c": "568" },
+            { "n": "Bachelor of Science in Clinical Medicine and Community Health", "c": "591" },
+            { "n": "Bachelor of Science (Paramedic Science)", "c": "463" }
           ]
         },
         "9C": {
@@ -810,10 +918,35 @@
             }
           },
           "courses": [
+            { "n": "Bachelor of Actuarial Science", "c": "107" },
+            { "n": "Bachelor of Science (Mathematics)", "c": "109" },
+            { "n": "Bachelor of Science (Statistics)", "c": "163" },
+            { "n": "Bachelor of Science (Applied Statistics with Computing)", "c": "164" },
+            { "n": "Bachelor of Economics & Statistics", "c": "199" },
+            { "n": "Bachelor of Science (Economics & Statistics)", "c": "200" },
             { "n": "Bachelor of Science (Accountancy)", "c": "108" },
             { "n": "Bachelor of Science (Mathematics and Economics)", "c": "108" },
-            { "n": "Bachelor of Science (Mathematics and Economics)", "c": "108" },
-            { "n": "Bachelor of Science (Financial Engineering)", "c": "352" }
+            { "n": "Bachelor of Science (Financial Engineering)", "c": "352" },
+            { "n": "Bachelor of Science (Mathematics with IT)", "c": "409" },
+            { "n": "Bachelor of Science in Mathematics and Statistics with IT", "c": "035" },
+            { "n": "Bachelor of Financial Economics", "c": "334" },
+            { "n": "Bachelor of Economics & Finance", "c": "540" },
+            { "n": "Bachelor of Science (Mathematics & Economics, with IT)", "c": "588" },
+            { "n": "Bachelor of Science (Mathematics & Business Studies, with IT)", "c": "609" },
+            { "n": "Bachelor of Science in Mathematics and Finance", "c": "584" },
+            { "n": "Bachelor of Science in Finance and Statistics", "c": "677" },
+            { "n": "Bachelor of Science in Applied Statistics and Data Science", "c": "682" },
+            { "n": "Bachelor of Science in Applied Statistics", "c": "861" },
+            { "n": "Bachelor of Science in Mathematics (Pure Mathematics, Applied Mathematics and Statistics)", "c": "709" },
+            { "n": "Bachelor of Technology (Applied Statistics)", "c": "475" },
+            { "n": "Bachelor of Science (Operations Research)", "c": "533" },
+            { "n": "Bachelor of Science (Industrial Mathematics)", "c": "311" },
+            { "n": "Bachelor of Accounting", "c": "469" },
+            { "n": "Bachelor of Science in Accounting", "c": "654" },
+            { "n": "Bachelor of Science (Accounting)", "c": "466" },
+            { "n": "Bachelor of Science (Finance)", "c": "539" },
+            { "n": "Bachelor of Arts (History & Economics)", "c": "342" },
+            { "n": "Bachelor of Arts (Economics & Sociology)", "c": "198" }
           ]
         },
         "10B": {
@@ -839,7 +972,8 @@
             { "n": "Bachelor of Science (Economics)", "c": "108" },
             { "n": "Bachelor of Arts (Economics)", "c": "646" },
             { "n": "Bachelor of Arts (Economics and Sociology)", "c": "101" },
-            { "n": "Bachelor of Arts (History and Economics)", "c": "101" }
+            { "n": "Bachelor of Arts (History and Economics)", "c": "101" },
+            { "n": "Bachelor of Science in Environmental Economics and Policy", "c": "312" }
           ]
         },
         "10C": {
@@ -952,8 +1086,8 @@
           },
           "courses": [
             { "n": "Bachelor of Dental Surgery", "c": "128" },
-            { "n": "Bachelor of Medicine and Bachelor of Surgery (MBChB)", "c": "" },
-            { "n": "Bachelor of Medicine and Bachelor of Surgery with IT", "c": "" }
+            { "n": "Bachelor of Medicine and Bachelor of Surgery (MBChB)", "c": "131" },
+            { "n": "Bachelor of Medicine and Bachelor of Surgery with IT", "c": "131" }
           ]
         },
         "13B": {
@@ -1008,19 +1142,36 @@
           },
           "courses": [
             { "n": "Bachelor of Technology (Community and Public Health)", "c": "227" },
-            { "n": "Bachelor of Science (Occupational Health and Safety)", "c": "108" },
+            { "n": "Bachelor of Science (Occupational Health & Safety)", "c": "196" },
             { "n": "Bachelor of Science (Occupational Therapy)", "c": "108" },
             { "n": "Bachelor of Science (Population Health)", "c": "108" },
-            { "n": "Bachelor of Science (Community Health and Development)", "c": "108" },
+            { "n": "Bachelor of Science (Community Health & Development)", "c": "423" },
             { "n": "Bachelor of Science (Medical Laboratory Sciences)", "c": "194" },
             { "n": "Bachelor of Technology (Medical Laboratory Science)", "c": "383" },
             { "n": "Bachelor of Science (Environmental Health)", "c": "188" },
             { "n": "Bachelor of Science (Environmental Health Sciences Public Health)", "c": "108" },
+            { "n": "Bachelor of Science in Environmental Health Sciences (Public Health)", "c": "530" },
             { "n": "Bachelor of Science (Optometry and Vision Sciences)", "c": "597" },
             { "n": "Bachelor of Science (Physical Therapy)", "c": "561" },
             { "n": "Bachelor of Science (Physiotherapy)", "c": "465" },
             { "n": "Bachelor of Science (Public Health with IT)", "c": "108" },
-            { "n": "Bachelor of Science (Public Health)", "c": "732" }
+            { "n": "Bachelor of Science (Public Health)", "c": "566" },
+            { "n": "Bachelor of Science in Biomedical Science", "c": "172" },
+            { "n": "Bachelor of Science in Nutrition and Dietetics", "c": "202" },
+            { "n": "Bachelor of Science in Laboratory Technology", "c": "209" },
+            { "n": "Bachelor of Science in Oral Health", "c": "218" },
+            { "n": "Bachelor of Science in Community Health Education", "c": "260" },
+            { "n": "Bachelor of Science in Dental Technology", "c": "455" },
+            { "n": "Bachelor of Science (Health Records and Informatics)", "c": "543" },
+            { "n": "Bachelor of Science in Health Records and Information Management", "c": "681" },
+            { "n": "Bachelor of Radiography", "c": "562" },
+            { "n": "Bachelor of Science in Epidemiology and Medical Statistics", "c": "617" },
+            { "n": "Bachelor of Science in Midwifery with Reproductive Health", "c": "631" },
+            { "n": "Bachelor of Science in Biostatistics", "c": "638" },
+            { "n": "Bachelor of Health Services Management", "c": "643" },
+            { "n": "Bachelor of Science in Health Systems Management", "c": "657" },
+            { "n": "Bachelor of Counseling Psychology", "c": "674" },
+            { "n": "Bachelor of Science (Laboratory Science and Technology)", "c": "694" }
           ]
         },
         "13D": {
@@ -1392,7 +1543,7 @@
             { "n": "Bachelor of Arts (Music)", "c": "161" },
             { "n": "Bachelor of Arts (Music, With IT)", "c": "101" },
             { "n": "Bachelor of Music", "c": "160" },
-            { "n": "Bachelor of Music (Technology)", "c": "" }
+            { "n": "Bachelor of Music (Technology)", "c": "661" }
           ]
         }
       }
@@ -1419,8 +1570,11 @@
           },
           "courses": [
             { "n": "Bachelor of Education (Science)", "c": "135" },
+            { "n": "Bachelor of Education Science", "c": "138" },
             { "n": "Bachelor of Education (Science with IT)", "c": "135" },
-            { "n": "Bachelor of Education (Science with IT)", "c": "135" }
+            { "n": "Bachelor of Science with Education", "c": "418" },
+            { "n": "Bachelor of Education (Science) with Special Needs Education", "c": "332" },
+            { "n": "Bachelor of Education (Science) with Guidance and Counseling", "c": "333" }
           ]
         },
         "19B": {
@@ -1442,10 +1596,17 @@
           },
           "courses": [
             { "n": "Bachelor of Education (Arts)", "c": "135" },
+            { "n": "Bachelor of Education Arts", "c": "494" },
             { "n": "Bachelor of Education (Arts) Fine Art", "c": "569" },
+            { "n": "Bachelor of Education (Arts) with Special Needs Education", "c": "156" },
+            { "n": "Bachelor of Education (Arts) Music", "c": "162" },
             { "n": "Bachelor of Education (Arts with Guidance and Counselling)", "c": "135" },
             { "n": "Bachelor of Education (Arts with IT)", "c": "135" },
-            { "n": "Bachelor of Education (Guidance and Counselling)", "c": "135" }
+            { "n": "Bachelor of Education (Guidance and Counselling)", "c": "135" },
+            { "n": "Bachelor of Education with Guidance and Counselling", "c": "326" },
+            { "n": "Bachelor of Arts (Counselling Psychology)", "c": "337" },
+            { "n": "Bachelor of Arts (with Education)", "c": "201" },
+            { "n": "Bachelor of Arts (Fine Art, with IT)", "c": "509" }
           ]
         },
         "19C": {
@@ -1466,7 +1627,9 @@
             }
           },
           "courses": [
-            { "n": "Bachelor of Education arts(Busness Studies)", "c": "310" }
+            { "n": "Bachelor of Education arts(Busness Studies)", "c": "310" },
+            { "n": "B. Ed (Major Accounting and Business Admin)", "c": "137" },
+            { "n": "Bachelor of Education Technology (Computer Studies)", "c": "442" }
           ]
         },
         "19D": {
@@ -1488,7 +1651,8 @@
           },
           "courses": [
             { "n": "Bachelor of Education (Physical Education and Sports)", "c": "316" },
-            { "n": "Bachelor of Education (Physical Education)", "c": "315" }
+            { "n": "Bachelor of Education (Physical Education)", "c": "315" },
+            { "n": "Bachelor of Education (Home Science, with IT)", "c": "362" }
           ]
         },
         "19E": {
@@ -1511,7 +1675,13 @@
           "courses": [
             { "n": "Bachelor of Education (Special Needs Education - Secondary Option)", "c": "656" },
             { "n": "Bachelor of Education (Special Needs Education)", "c": "135" },
-            { "n": "Bachelor of Education (Visual and Performing Arts)", "c": "135" }
+            { "n": "Bachelor of Education (Special Needs Education, with IT)", "c": "155" },
+            { "n": "Bachelor of Education (Visual and Performing Arts)", "c": "135" },
+            { "n": "Bachelor of Education (Early Childhood Development)", "c": "180" },
+            { "n": "Bachelor of Education (Early Childhood and Primary Education)", "c": "680" },
+            { "n": "Bachelor of Education (Early Childhood Education)", "c": "880" },
+            { "n": "Bachelor of Education (ICT)", "c": "440" },
+            { "n": "Bachelor of Technology (Information Studies)", "c": "633" }
           ]
         },
         "19F": {
@@ -1598,7 +1768,7 @@
             }
           },
           "courses": [
-            { "n": "Bachelor of Agricultural Education & Extension", "c": "" },
+            { "n": "Bachelor of Agricultural Education & Extension", "c": "415" },
             { "n": "Bachelor of Agricultural Education and Extension", "c": "417" },
             { "n": "Bachelor of Science in Agricultural Extension", "c": "120" },
             { "n": "Bachelor of Science (Agricultural Education and Extension)", "c": "416" },

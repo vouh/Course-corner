@@ -41,15 +41,19 @@ const CampusPlacementEngine = {
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-            const [campuses, programsLookup, placements] = await Promise.all([
+            const [campuses, programsLookup, placements, programsRef] = await Promise.all([
                 fetch('/data/placements/campuses.json', { signal: controller.signal }).then(res => res.json()),
                 fetch('/data/placements/programs-lookup.json', { signal: controller.signal }).then(res => res.json()),
-                fetch('/data/placements/placements.json', { signal: controller.signal }).then(res => res.json())
+                fetch('/data/placements/placements.json', { signal: controller.signal }).then(res => res.json()),
+                fetch('/data/placements/programs.json', { signal: controller.signal }).then(res => res.json())
             ]);
             clearTimeout(timeout);
 
             // Store raw programs-lookup for Phase 1 subcluster matching
             this._programsLookup = programsLookup;
+            
+            // Store programs.json as reference for program names (fallback lookup)
+            this._programsRef = programsRef;
 
             // Transform programs-lookup.json to flat programs structure (optimized)
             const programs = {};
@@ -89,13 +93,37 @@ const CampusPlacementEngine = {
             this._initialized = true;
 
             console.log('✓ CampusPlacementEngine: Data loaded (cached)');
-            console.log(`  - Campuses: ${Object.keys(campuses).length} | Programs: ${Object.keys(programs).length}`);
+            console.log(`  - Campuses: ${Object.keys(campuses).length} | Programs: ${Object.keys(programs).length} | ProgramsRef: ${Object.keys(programsRef).length}`);
 
             return true;
         } catch (error) {
             console.error('CampusPlacementEngine: Initialization failed', error);
             return false;
         }
+    },
+
+    /**
+     * Get program name from programs.json reference (fallback lookup)
+     * @param {string} programCode - The 3-digit program code
+     * @returns {string|null} - Program name or null if not found
+     */
+    getProgramName: function(programCode) {
+        if (this._programsRef && this._programsRef[programCode]) {
+            return this._programsRef[programCode].n;
+        }
+        return null;
+    },
+
+    /**
+     * Get program cluster from programs.json reference
+     * @param {string} programCode - The 3-digit program code
+     * @returns {number|null} - Cluster number or null if not found
+     */
+    getProgramCluster: function(programCode) {
+        if (this._programsRef && this._programsRef[programCode]) {
+            return this._programsRef[programCode].c;
+        }
+        return null;
     },
 
     /**
@@ -192,10 +220,14 @@ const CampusPlacementEngine = {
             const clusterPlacements = this._placementCache[clusterId.toString()] || this.data.placements[clusterId.toString()];
             if (!clusterPlacements) continue;
 
+            // Track which program codes we've already matched from programs-lookup
+            const matchedProgramCodes = new Set();
+
             // For each program in this cluster, check placements
             for (let k = 0; k < programIds.length; k++) {
                 const programId = programIds[k];
                 const courseInfo = coursesInCluster[programId];
+                matchedProgramCodes.add(programId);
                 
                 // Scan placements (optimized)
                 const placementCodes = Object.keys(clusterPlacements);
@@ -239,6 +271,55 @@ const CampusPlacementEngine = {
                         studentPoints: studentPoints.toFixed(2)
                     });
                 }
+            }
+            
+            // FALLBACK PASS: Use programs.json for courses in placements but not in programs-lookup
+            // This catches courses that exist in placements but weren't defined in programs-lookup
+            const placementCodes = Object.keys(clusterPlacements);
+            for (let j = 0; j < placementCodes.length; j++) {
+                const fullCode = placementCodes[j];
+                const programCode = fullCode.slice(-3); // Last 3 digits
+                
+                // Skip if already matched from programs-lookup
+                if (matchedProgramCodes.has(programCode)) continue;
+                
+                // Check if this program belongs to this cluster using programs.json
+                const refCluster = this.getProgramCluster(programCode);
+                if (refCluster !== parseInt(clusterId)) continue;
+                
+                const data = clusterPlacements[fullCode];
+                const cutoff = typeof data === 'object' ? data.c : data;
+                const year = typeof data === 'object' ? (data.y || 2024) : 2024;
+                
+                // Compare points
+                if (studentPoints < cutoff) continue;
+                
+                // Get program name from reference
+                const programName = this.getProgramName(programCode);
+                if (!programName) continue;
+                
+                totalMatches++;
+                
+                // Campus mapping
+                const campusId = fullCode.substring(0, 4);
+                const campus = this.data.campuses[campusId];
+                if (!campus) continue;
+                
+                if (!universityMap.has(campusId)) {
+                    universityMap.set(campusId, {
+                        name: campus.n,
+                        type: campus.t,
+                        courses: []
+                    });
+                }
+                
+                universityMap.get(campusId).courses.push({
+                    name: programName,
+                    code: fullCode,
+                    cutoff: cutoff,
+                    year: year,
+                    studentPoints: studentPoints.toFixed(2)
+                });
             }
         }
 

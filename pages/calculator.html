@@ -201,23 +201,26 @@
         }
         
         .cc-results-message {
-            margin-top: 0.75rem;
-            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
             color: #6b7280;
         }
         
-        /* Teaser Results Styles */
+        /* Teaser Results Styles - COMPACT */
         .cc-teaser-section {
-            margin-top: 2rem;
+            margin-top: 1rem;
         }
         
         .cc-teaser-score-card {
             background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
             border: 2px solid #86efac;
-            border-radius: 1.5rem;
-            padding: 2rem;
+            border-radius: 1rem;
+            padding: 1rem;
             text-align: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
         
         .cc-teaser-score-card.below-cplus {
@@ -226,20 +229,26 @@
         }
         
         .cc-teaser-grade {
-            font-size: 4rem;
+            font-size: 2.5rem;
             font-weight: 900;
             color: #059669;
             line-height: 1;
+            min-width: 70px;
         }
         
         .cc-teaser-score-card.below-cplus .cc-teaser-grade {
             color: #d97706;
         }
         
+        .cc-teaser-info {
+            flex: 1;
+            text-align: left;
+        }
+        
         .cc-teaser-points {
-            font-size: 1.25rem;
+            font-size: 0.9rem;
             color: #065f46;
-            margin-top: 0.5rem;
+            font-weight: 600;
         }
         
         .cc-teaser-score-card.below-cplus .cc-teaser-points {
@@ -247,10 +256,9 @@
         }
         
         .cc-teaser-message {
-            font-size: 1rem;
+            font-size: 0.75rem;
             color: #047857;
-            margin-top: 1rem;
-            font-weight: 600;
+            margin-top: 0.25rem;
         }
         
         .cc-teaser-score-card.below-cplus .cc-teaser-message {
@@ -260,52 +268,46 @@
         .cc-eligibility-badge {
             display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.35rem;
             background: linear-gradient(135deg, #10b981, #059669);
             color: white;
-            padding: 0.75rem 1.5rem;
+            padding: 0.4rem 0.75rem;
             border-radius: 9999px;
-            font-weight: 700;
-            font-size: 1rem;
-            margin-top: 1.5rem;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            font-weight: 600;
+            font-size: 0.7rem;
+            margin-top: 0.5rem;
         }
         
         .cc-eligibility-badge.diploma {
             background: linear-gradient(135deg, #f59e0b, #d97706);
-            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
         }
         
-        /* University Teaser Cards */
+        /* University Teaser Cards - COMPACT */
         .cc-teaser-unis {
             display: grid;
-            gap: 1rem;
-            margin: 2rem 0;
+            gap: 0.5rem;
+            margin: 0.75rem 0;
         }
         
         .cc-teaser-uni-card {
             background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 1rem;
-            padding: 1.5rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
             display: flex;
             align-items: center;
-            gap: 1rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            gap: 0.75rem;
         }
         
         .cc-teaser-uni-card:hover {
             border-color: #10b981;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
         }
         
         .cc-teaser-uni-icon {
-            width: 60px;
-            height: 60px;
+            width: 36px;
+            height: 36px;
             background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-            border-radius: 12px;
+            border-radius: 8px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -313,130 +315,221 @@
         }
         
         .cc-teaser-uni-icon i {
-            font-size: 1.75rem;
+            font-size: 1rem;
             color: #6b7280;
         }
         
         .cc-teaser-uni-info {
             flex: 1;
+            min-width: 0;
         }
         
         .cc-teaser-uni-name {
-            font-size: 1.1rem;
-            font-weight: 700;
+            font-size: 0.85rem;
+            font-weight: 600;
             color: #111827;
-            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         
         .cc-teaser-uni-count {
-            font-size: 0.9rem;
+            font-size: 0.7rem;
             color: #10b981;
             font-weight: 600;
         }
         
         .cc-teaser-uni-count span {
-            font-weight: 800;
-            font-size: 1.1rem;
+            font-weight: 700;
         }
         
         .cc-teaser-lock {
-            width: 40px;
-            height: 40px;
+            width: 28px;
+            height: 28px;
             background: linear-gradient(135deg, #fef3c7, #fde68a);
-            border-radius: 10px;
+            border-radius: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
         
         .cc-teaser-lock i {
             color: #d97706;
-            font-size: 1rem;
+            font-size: 0.7rem;
         }
         
-        /* Stats Summary */
+        /* Stats Summary - COMPACT INLINE */
         .cc-teaser-stats {
             display: flex;
-            justify-content: center;
-            gap: 2rem;
-            flex-wrap: wrap;
-            margin: 2rem 0;
-            padding: 1.5rem;
+            justify-content: space-around;
+            gap: 0.5rem;
+            margin: 0.75rem 0;
+            padding: 0.75rem;
             background: linear-gradient(135deg, #f9fafb, #f3f4f6);
-            border-radius: 1rem;
+            border-radius: 0.75rem;
         }
         
         .cc-teaser-stat {
             text-align: center;
+            flex: 1;
         }
         
         .cc-teaser-stat-value {
-            font-size: 2rem;
-            font-weight: 900;
+            font-size: 1.25rem;
+            font-weight: 800;
             color: #111827;
         }
         
         .cc-teaser-stat-label {
-            font-size: 0.8rem;
+            font-size: 0.6rem;
             color: #6b7280;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.02em;
         }
         
-        /* Unlock Section */
+        /* Top Courses Teaser - COMPACT */
+        .cc-teaser-courses {
+            display: grid;
+            gap: 0.4rem;
+            margin: 0.75rem 0;
+        }
+        
+        .cc-teaser-course-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 0.6rem 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+        
+        .cc-teaser-course-card:hover {
+            border-color: #fbbf24;
+        }
+        
+        .cc-course-info {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .cc-course-name {
+            font-weight: 600;
+            color: #111827;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .cc-course-uni {
+            font-size: 0.65rem;
+            color: #6b7280;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .cc-course-cutoff {
+            text-align: center;
+            padding: 0.3rem 0.6rem;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 0.4rem;
+            margin-left: 0.5rem;
+            flex-shrink: 0;
+        }
+        
+        .cc-cutoff-label {
+            display: block;
+            font-size: 0.5rem;
+            color: #92400e;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+        
+        .cc-cutoff-value {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #d97706;
+        }
+        
+        /* Unlock Section - COMPACT */
         .cc-unlock-section {
             background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
             border: 2px solid #93c5fd;
-            border-radius: 1.5rem;
-            padding: 2rem;
+            border-radius: 1rem;
+            padding: 1rem;
             text-align: center;
-            margin-top: 2rem;
+            margin-top: 1rem;
         }
         
         .cc-unlock-header {
-            margin-bottom: 1.5rem;
+            margin-bottom: 0.75rem;
         }
         
         .cc-unlock-icon {
-            width: 70px;
-            height: 70px;
+            width: 45px;
+            height: 45px;
             background: linear-gradient(135deg, #3b82f6, #2563eb);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1rem;
-            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+            margin: 0 auto 0.5rem;
         }
         
         .cc-unlock-icon i {
-            font-size: 2rem;
+            font-size: 1.25rem;
             color: white;
         }
         
         .cc-unlock-title {
-            font-size: 1.5rem;
+            font-size: 1rem;
             font-weight: 800;
             color: #1e40af;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.25rem;
         }
         
         .cc-unlock-subtitle {
             color: #3b82f6;
-            font-size: 0.95rem;
+            font-size: 0.75rem;
+        }
+        
+        /* View All Results Button - COMPACT */
+        .cc-view-all-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 0.75rem;
+            padding: 0.85rem 1.5rem;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 0.75rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .cc-view-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
         }
         
         /* Package selector inside unlock */
         .cc-unlock-packages {
-            margin-top: 1.5rem;
+            margin-top: 1rem;
         }
         
         .cc-package-option {
             background: white;
             border: 2px solid #e5e7eb;
-            border-radius: 1rem;
-            padding: 1rem 1.5rem;
-            margin-bottom: 0.75rem;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
@@ -1866,39 +1959,57 @@
                 let totalPrograms = 0;
                 
                 if (!isBelowCPlus && typeof window.CampusPlacementEngine !== 'undefined') {
-                    const engine = new window.CampusPlacementEngine();
-                    await engine.loadData();
-                    universities = engine.getQualifiedUniversities(points);
+                    // Initialize the placement engine (it's an object, not a class)
+                    await window.CampusPlacementEngine.init();
+                    
+                    // Get student grades for subject requirement checks
+                    const grades = typeof window.getStudentGrades === 'function' 
+                        ? window.getStudentGrades() 
+                        : {};
+                    
+                    universities = window.CampusPlacementEngine.getQualifiedUniversities(points, grades);
                     totalPrograms = universities.reduce((sum, u) => sum + u.courses.length, 0);
                 }
                 
-                // Priority universities: UoN, KU, JKUAT
-                const priorityKeywords = [
-                    { keywords: ['nairobi'], name: 'University of Nairobi' },
-                    { keywords: ['kenyatta'], name: 'Kenyatta University' },
-                    { keywords: ['jomo', 'jkuat'], name: 'Jomo Kenyatta University of Agriculture and Technology' }
+                // Priority universities by exact name matching
+                const priorityNames = [
+                    'University of Nairobi',
+                    'Kenyatta University', 
+                    'Jomo Kenyatta University of Agriculture and Technology'
                 ];
                 
-                // Find priority universities in results
+                // Find priority universities in results (exact name match)
                 let topUnis = [];
-                for (const priority of priorityKeywords) {
-                    const found = universities.find(u => {
-                        const nameLower = u.name.toLowerCase();
-                        return priority.keywords.some(kw => nameLower.includes(kw));
-                    });
-                    if (found) {
+                for (const priorityName of priorityNames) {
+                    const found = universities.find(u => u.name === priorityName);
+                    if (found && !topUnis.includes(found)) {
                         topUnis.push(found);
                     }
                 }
                 
-                // If we don't have 3, fill with top universities by program count
+                // If we don't have 3, fill with top universities by program count (excluding already added)
                 if (topUnis.length < 3) {
                     const remaining = universities
-                        .filter(u => !topUnis.includes(u))
+                        .filter(u => !topUnis.some(t => t.name === u.name))
                         .sort((a, b) => b.courses.length - a.courses.length)
                         .slice(0, 3 - topUnis.length);
                     topUnis = [...topUnis, ...remaining];
                 }
+                
+                // Get top courses with highest cutoffs from all universities
+                let topCourses = [];
+                universities.forEach(uni => {
+                    uni.courses.forEach(course => {
+                        topCourses.push({
+                            ...course,
+                            university: uni.name
+                        });
+                    });
+                });
+                // Sort by cutoff (highest first) and take top 3
+                topCourses = topCourses
+                    .sort((a, b) => b.cutoff - a.cutoff)
+                    .slice(0, 3);
                 
                 // Store teaser data for later use
                 window.teaserData = {
@@ -1930,8 +2041,8 @@
                 if (!isBelowCPlus && topUnis.length > 0) {
                     // University teaser cards
                     html += `
-                        <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">
-                            <i class="fas fa-university text-green-600 mr-2"></i>Top Universities You Qualify For
+                        <h3 style="font-size: 0.9rem; font-weight: 700; color: #1f2937; margin-bottom: 0.5rem; display: flex; align-items: center;">
+                            <i class="fas fa-university text-green-600" style="margin-right: 0.5rem;"></i>Top Universities You Qualify For
                         </h3>
                         <div class="cc-teaser-unis">
                     `;
@@ -1944,7 +2055,7 @@
                                 </div>
                                 <div class="cc-teaser-uni-info">
                                     <div class="cc-teaser-uni-name">${uni.name}</div>
-                                    <div class="cc-teaser-uni-count"><span>${uni.courses.length}</span> programs you qualify for</div>
+                                    <div class="cc-teaser-uni-count"><span>${uni.courses.length}</span> programs</div>
                                 </div>
                                 <div class="cc-teaser-lock">
                                     <i class="fas fa-lock"></i>
@@ -1955,16 +2066,46 @@
                     
                     html += `</div>`;
                     
-                    // Stats summary
+                    // Top Courses with Highest Cutoffs
+                    if (topCourses.length > 0) {
+                        html += `
+                            <h3 style="font-size: 0.9rem; font-weight: 700; color: #1f2937; margin: 0.75rem 0 0.5rem; display: flex; align-items: center;">
+                                <i class="fas fa-star text-amber-500" style="margin-right: 0.5rem;"></i>Most Competitive Courses
+                            </h3>
+                            <div class="cc-teaser-courses">
+                        `;
+                        
+                        topCourses.forEach(course => {
+                            html += `
+                                <div class="cc-teaser-course-card">
+                                    <div class="cc-course-info">
+                                        <div class="cc-course-name">${course.name}</div>
+                                        <div class="cc-course-uni">${course.university}</div>
+                                    </div>
+                                    <div class="cc-course-cutoff">
+                                        <span class="cc-cutoff-label">Cutoff</span>
+                                        <span class="cc-cutoff-value">${course.cutoff}</span>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        
+                        html += `</div>`;
+                    }
+                    
+                    // Stats summary - show approximate numbers
+                    const uniDisplay = universities.length > 50 ? '50+' : (universities.length > 20 ? '20+' : universities.length);
+                    const programDisplay = totalPrograms > 500 ? '500+' : (totalPrograms > 200 ? '200+' : (totalPrograms > 100 ? '100+' : totalPrograms));
+                    
                     html += `
                         <div class="cc-teaser-stats">
                             <div class="cc-teaser-stat">
-                                <div class="cc-teaser-stat-value">${universities.length}</div>
-                                <div class="cc-teaser-stat-label">Universities</div>
+                                <div class="cc-teaser-stat-value">${uniDisplay}</div>
+                                <div class="cc-teaser-stat-label">Institutions</div>
                             </div>
                             <div class="cc-teaser-stat">
-                                <div class="cc-teaser-stat-value">${totalPrograms}</div>
-                                <div class="cc-teaser-stat-label">Programs</div>
+                                <div class="cc-teaser-stat-value">${programDisplay}</div>
+                                <div class="cc-teaser-stat-label">Courses</div>
                             </div>
                             <div class="cc-teaser-stat">
                                 <div class="cc-teaser-stat-value">${highestCluster.points.toFixed(1)}</div>
@@ -1993,46 +2134,23 @@
                     `;
                 }
                 
-                // Unlock Section
+                // Unlock Section - View All Results Button
+                const unlockUniDisplay = universities.length > 50 ? '50+' : (universities.length > 20 ? '20+' : universities.length);
+                const unlockProgramDisplay = totalPrograms > 500 ? '500+' : (totalPrograms > 200 ? '200+' : (totalPrograms > 100 ? '100+' : totalPrograms));
+                
                 html += `
                     <div class="cc-unlock-section">
                         <div class="cc-unlock-header">
                             <div class="cc-unlock-icon">
                                 <i class="fas fa-unlock-alt"></i>
                             </div>
-                            <h3 class="cc-unlock-title">🔓 Unlock Your Complete Results</h3>
-                            <p class="cc-unlock-subtitle">See all universities, courses, cutoff points & cluster scores</p>
+                            <h3 class="cc-unlock-title">🔓 View All Results</h3>
+                            <p class="cc-unlock-subtitle">See all ${unlockUniDisplay} institutions, ${unlockProgramDisplay} courses, cutoff points & cluster scores</p>
                         </div>
                         
-                        <div class="cc-unlock-packages">
-                            <div class="cc-package-option" data-package="gold" data-amount="600">
-                                <div class="cc-package-option-info">
-                                    <div class="cc-package-option-name">⭐ Gold Package</div>
-                                    <div class="cc-package-option-desc">All results + 20 Cluster Points + FREE Expert Guidance</div>
-                                </div>
-                                <div class="cc-package-option-price">KES 600</div>
-                            </div>
-                            
-                            <div class="cc-package-option" data-package="silver" data-amount="500">
-                                <div class="cc-package-option-info">
-                                    <div class="cc-package-option-name">🥈 Silver Package</div>
-                                    <div class="cc-package-option-desc">All results + All 20 Cluster Points</div>
-                                </div>
-                                <div class="cc-package-option-price">KES 500</div>
-                            </div>
-                            
-                            <div class="cc-package-option" data-package="bronze" data-amount="400">
-                                <div class="cc-package-option-info">
-                                    <div class="cc-package-option-name">🥉 Bronze Package</div>
-                                    <div class="cc-package-option-desc">Universities & Courses You Qualify For</div>
-                                </div>
-                                <div class="cc-package-option-price">KES 400</div>
-                            </div>
-                        </div>
-                        
-                        <button id="unlockPayBtn" class="cc-unlock-pay-btn" disabled data-category="" data-amount="0">
-                            <i class="fas fa-credit-card mr-2"></i>
-                            Select a Package Above
+                        <button id="viewAllResultsBtn" class="cc-view-all-btn">
+                            <i class="fas fa-eye mr-2"></i>
+                            View All My Results
                         </button>
                         
                         <div class="cc-trust-badge">
@@ -2045,8 +2163,8 @@
                 
                 resultsDiv.innerHTML = html;
                 
-                // Initialize package selection handlers
-                initializePackageSelection();
+                // Initialize View All Results button
+                initializeViewAllButton();
                 
             } catch (error) {
                 console.error('Error in showTeaserResults:', error);
@@ -2059,7 +2177,187 @@
             }
         }
         
-        // Initialize package selection in unlock section
+        // Initialize View All Results button to show package modal
+        function initializeViewAllButton() {
+            const viewAllBtn = document.getElementById('viewAllResultsBtn');
+            
+            if (viewAllBtn) {
+                viewAllBtn.addEventListener('click', function() {
+                    showPackageModal();
+                });
+            }
+        }
+        
+        // Show package selection modal
+        function showPackageModal() {
+            // Ensure scroll is not locked
+            document.body.style.overflow = 'auto';
+            
+            Swal.fire({
+                title: '🎓 Choose Your Package',
+                width: '500px',
+                html: `
+                    <div style="text-align: left; margin-top: 1rem;">
+                        <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                            Select a package to unlock your complete results and make informed decisions about your future.
+                        </p>
+                        
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                                <i class="fas fa-box-open" style="color: #10b981; margin-right: 0.5rem;"></i>
+                                Select Package:
+                            </label>
+                            <select id="modalPackageSelect" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 0.75rem; font-size: 1rem; cursor: pointer;">
+                                <option value="" data-amount="0">-- Choose a package --</option>
+                                <option value="gold" data-amount="1">⭐ Gold Package - KES 1 (Test)</option>
+                                <option value="silver" data-amount="1">🥈 Silver Package - KES 1 (Test)</option>
+                                <option value="bronze" data-amount="1">🥉 Bronze Package - KES 1 (Test)</option>
+                                <option value="point-and-courses" data-amount="1">📊 Premium - Points & Courses - KES 1 (Test)</option>
+                                <option value="courses-only" data-amount="1">📚 Standard - Courses Only - KES 1 (Test)</option>
+                                <option value="calculate-cluster-points" data-amount="1">📈 Starter - Cluster Points - KES 1 (Test)</option>
+                            </select>
+                        </div>
+                        
+                        <div id="packageDetails" style="background: #f9fafb; border-radius: 0.75rem; padding: 1rem; margin-top: 1rem; display: none;">
+                            <h4 id="packageTitle" style="font-weight: 700; color: #111827; margin-bottom: 0.5rem;"></h4>
+                            <p id="packageDesc" style="color: #6b7280; font-size: 0.85rem; margin-bottom: 0.75rem;"></p>
+                            <ul id="packageFeatures" style="list-style: none; padding: 0; margin: 0;"></ul>
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-credit-card"></i> Proceed to Payment',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#6b7280',
+                customClass: {
+                    popup: 'swal-package-modal',
+                    confirmButton: 'swal-confirm-btn',
+                    cancelButton: 'swal-cancel-btn'
+                },
+                didClose: () => {
+                    // Restore scroll when modal closes
+                    document.body.style.overflow = 'auto';
+                    document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                },
+                didOpen: () => {
+                    const select = document.getElementById('modalPackageSelect');
+                    const detailsDiv = document.getElementById('packageDetails');
+                    const titleEl = document.getElementById('packageTitle');
+                    const descEl = document.getElementById('packageDesc');
+                    const featuresEl = document.getElementById('packageFeatures');
+                    
+                    const packageInfo = {
+                        'gold': {
+                            title: '⭐ Gold Package',
+                            desc: 'The complete package for serious students',
+                            features: [
+                                '✅ All Universities & Courses You Qualify For',
+                                '✅ All 20 Cluster Points Calculated',
+                                '✅ FREE Expert Guidance (24hr response)',
+                                '✅ Personalized Course Recommendations',
+                                '✅ Priority Support'
+                            ]
+                        },
+                        'silver': {
+                            title: '🥈 Silver Package',
+                            desc: 'See your complete results with cluster analysis',
+                            features: [
+                                '✅ All Universities & Courses You Qualify For',
+                                '✅ All 20 Cluster Points Calculated',
+                                '✅ Cutoff Point Comparisons',
+                                '❌ No Expert Guidance'
+                            ]
+                        },
+                        'bronze': {
+                            title: '🥉 Bronze Package',
+                            desc: 'Know which universities and courses you qualify for',
+                            features: [
+                                '✅ All Universities You Qualify For',
+                                '✅ All Courses You Qualify For',
+                                '✅ Cutoff Points & Your Points',
+                                '❌ No Cluster Points Display',
+                                '❌ No Expert Guidance'
+                            ]
+                        },
+                        'point-and-courses': {
+                            title: '📊 Premium Package',
+                            desc: 'Cluster points and eligible courses',
+                            features: [
+                                '✅ All 20 Cluster Points',
+                                '✅ Eligible Courses List',
+                                '❌ No University Placements',
+                                '❌ No Expert Guidance'
+                            ]
+                        },
+                        'courses-only': {
+                            title: '📚 Standard Package',
+                            desc: 'See courses you can apply for',
+                            features: [
+                                '✅ Eligible Courses List',
+                                '❌ No Cluster Points',
+                                '❌ No University Placements'
+                            ]
+                        },
+                        'calculate-cluster-points': {
+                            title: '📈 Starter Package',
+                            desc: 'Calculate your cluster points only',
+                            features: [
+                                '✅ All 20 Cluster Points',
+                                '❌ No Courses List',
+                                '❌ No University Placements'
+                            ]
+                        }
+                    };
+                    
+                    select.addEventListener('change', function() {
+                        const pkg = this.value;
+                        if (pkg && packageInfo[pkg]) {
+                            detailsDiv.style.display = 'block';
+                            titleEl.textContent = packageInfo[pkg].title;
+                            descEl.textContent = packageInfo[pkg].desc;
+                            featuresEl.innerHTML = packageInfo[pkg].features.map(f => 
+                                `<li style="padding: 0.25rem 0; font-size: 0.85rem; color: ${f.startsWith('✅') ? '#059669' : '#9ca3af'};">${f}</li>`
+                            ).join('');
+                        } else {
+                            detailsDiv.style.display = 'none';
+                        }
+                    });
+                },
+                preConfirm: () => {
+                    const select = document.getElementById('modalPackageSelect');
+                    const pkg = select.value;
+                    const amount = select.options[select.selectedIndex].getAttribute('data-amount');
+                    
+                    if (!pkg) {
+                        Swal.showValidationMessage('Please select a package');
+                        return false;
+                    }
+                    
+                    return { package: pkg, amount: parseInt(amount) };
+                }
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    const { package: pkg, amount } = result.value;
+                    
+                    // Process payment
+                    window.paymentHandler.processPayment(
+                        pkg,
+                        amount,
+                        () => showResultsAfterPayment(pkg)
+                    ).catch(error => {
+                        console.error('Payment error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Payment Error',
+                            text: error.message || 'Failed to process payment. Please try again.'
+                        });
+                    });
+                }
+            });
+        }
+        
+        // Keep old function for backwards compatibility
         function initializePackageSelection() {
             const packageOptions = document.querySelectorAll('.cc-package-option');
             const unlockBtn = document.getElementById('unlockPayBtn');

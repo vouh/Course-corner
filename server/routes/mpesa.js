@@ -9,13 +9,16 @@ const { savePaymentTransaction, updatePaymentTransaction, getAllTransactions, ge
 const PAYMENT_AMOUNTS = {
   'calculate-cluster-points': 100,
   'courses-only': 200,
-  'point-and-courses': 300
+  'point-and-courses': 300,
+  'bronze': 400,
+  'silver': 500,
+  'gold': 600
 };
 
 // Initiate STK Push Payment
 router.post('/stkpush', async (req, res) => {
   try {
-    const { phoneNumber, category } = req.body;
+    const { phoneNumber, category, amount: requestedAmount } = req.body;
 
     // Validate input
     if (!phoneNumber) {
@@ -28,11 +31,12 @@ router.post('/stkpush', async (req, res) => {
     if (!category || !PAYMENT_AMOUNTS[category]) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid category. Must be one of: calculate-cluster-points, courses-only, point-and-courses'
+        message: 'Invalid category. Must be one of: ' + Object.keys(PAYMENT_AMOUNTS).join(', ')
       });
     }
 
-    const amount = PAYMENT_AMOUNTS[category];
+    // Use requested amount if provided (for testing), otherwise use default
+    const amount = requestedAmount || PAYMENT_AMOUNTS[category];
     const sessionId = generateSessionId();
 
     // Create payment record

@@ -248,6 +248,108 @@ class PaymentHandler {
         localStorage.removeItem('accessExpires');
         console.log('Session cleared');
     }
+
+    // Full payment flow with UI - processPayment wrapper
+    async processPayment(category, amount, onSuccess) {
+        try {
+            // Prompt for phone number
+            const { value: phoneNumber } = await Swal.fire({
+                title: '📱 Enter M-Pesa Number',
+                input: 'text',
+                inputLabel: 'Phone Number (e.g., 0712345678)',
+                inputPlaceholder: '07XXXXXXXX',
+                showCancelButton: true,
+                confirmButtonText: 'Pay KES ' + amount,
+                confirmButtonColor: '#10b981',
+                cancelButtonColor: '#6b7280',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Please enter your phone number';
+                    }
+                    // Basic Kenya phone validation
+                    const cleaned = value.replace(/\s/g, '');
+                    if (!/^(0|254|\+254)?[17]\d{8}$/.test(cleaned)) {
+                        return 'Please enter a valid Kenyan phone number';
+                    }
+                }
+            });
+
+            if (!phoneNumber) {
+                console.log('Payment cancelled - no phone number');
+                return;
+            }
+
+            // Show loading
+            Swal.fire({
+                title: 'Initiating Payment...',
+                html: '<p>Please wait while we connect to M-Pesa...</p>',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            // Initiate payment
+            const initResult = await this.initiatePayment(phoneNumber, category, amount);
+            
+            if (!initResult.success) {
+                throw new Error('Failed to initiate payment');
+            }
+
+            // Show waiting for payment
+            Swal.fire({
+                title: '⏳ Waiting for Payment',
+                html: `
+                    <div style="text-align: center;">
+                        <p style="margin-bottom: 1rem;">Check your phone for the M-Pesa prompt</p>
+                        <p style="font-size: 0.875rem; color: #6b7280;">Enter your M-Pesa PIN to complete payment of <strong>KES ${amount}</strong></p>
+                        <div id="paymentStatus" style="margin-top: 1rem; padding: 0.5rem; background: #f3f4f6; border-radius: 0.5rem;">
+                            <i class="fas fa-spinner fa-spin"></i> Waiting for confirmation...
+                        </div>
+                    </div>
+                `,
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                showCancelButton: true,
+                cancelButtonText: 'Cancel',
+                cancelButtonColor: '#6b7280'
+            });
+
+            // Poll for payment status
+            const result = await this.pollPaymentStatus(40, 3000, (status, attempt, max) => {
+                const statusEl = document.getElementById('paymentStatus');
+                if (statusEl) {
+                    statusEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Checking payment (${attempt}/${max})...`;
+                }
+            });
+
+            if (result.success && result.status === 'completed') {
+                // Payment successful!
+                await Swal.fire({
+                    icon: 'success',
+                    title: '✅ Payment Successful!',
+                    text: 'Your payment has been confirmed. Loading your results...',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    timerProgressBar: true
+                });
+
+                // Call success callback
+                if (onSuccess && typeof onSuccess === 'function') {
+                    onSuccess();
+                }
+            }
+
+        } catch (error) {
+            console.error('Payment process error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Payment Failed',
+                text: error.message || 'Something went wrong. Please try again.',
+                confirmButtonColor: '#10b981'
+            });
+            throw error;
+        }
+    }
 }
 
 // Make PaymentHandler globally available

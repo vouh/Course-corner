@@ -204,6 +204,37 @@ const deleteTransaction = async (transactionId) => {
   }
 };
 
+// Get transactions by phone number
+const getTransactionsByPhone = async (phoneNumber, status = null) => {
+  try {
+    const db = getFirestore();
+    let query = db.collection('transactions')
+      .where('phoneNumber', '==', phoneNumber)
+      .orderBy('createdAt', 'desc')
+      .limit(10);
+
+    const snapshot = await query.get();
+    const transactions = [];
+    
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      if (!status || data.status === status) {
+        transactions.push({
+          id: doc.id,
+          ...data,
+          createdAt: data.createdAt?.toDate?.() || data.createdAt,
+          updatedAt: data.updatedAt?.toDate?.() || data.updatedAt
+        });
+      }
+    });
+
+    return transactions;
+  } catch (error) {
+    console.error('Error getting transactions by phone:', error.message);
+    return [];
+  }
+};
+
 module.exports = {
   initializeFirebase,
   getFirestore,
@@ -211,5 +242,6 @@ module.exports = {
   updatePaymentTransaction,
   getAllTransactions,
   getTransactionStats,
-  deleteTransaction
+  deleteTransaction,
+  getTransactionsByPhone
 };

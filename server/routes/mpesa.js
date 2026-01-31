@@ -496,6 +496,113 @@ router.get('/admin/transactions', async (req, res) => {
   }
 });
 
+// Sync/recover missing M-Pesa receipts for completed transactions
+router.post('/admin/sync-receipts', async (req, res) => {
+  try {
+    console.log('🔄 Starting receipt sync for pending/missing receipts...');
+    
+    // Get all completed transactions without receipt numbers
+    const transactions = await getAllTransactions(200);
+    const toSync = transactions.filter(tx => 
+      tx.status === 'completed' && !tx.mpesaReceiptNumber && tx.checkoutRequestId
+    );
+    
+    console.log(`📋 Found ${toSync.length} completed transactions without receipts`);
+    
+    const results = { synced: 0, failed: 0, errors: [] };
+    
+    for (const tx of toSync) {
+      try {
+        console.log(`🔍 Querying M-Pesa for: ${tx.checkoutRequestId}`);
+        const queryResult = await querySTKPushStatus(tx.checkoutRequestId);
+        
+        if (queryResult.ResultCode === '0' || queryResult.ResultCode === 0) {
+          // Try to get receipt from callback metadata if stored
+          if (queryResult.MpesaReceiptNumber) {
+            await updatePaymentTransaction(tx.checkoutRequestId, {
+              mpesaReceiptNumber: queryResult.MpesaReceiptNumber,
+              transactionCode: queryResult.MpesaReceiptNumber
+            });
+            results.synced++;
+            console.log(`✅ Updated receipt for ${tx.id}: ${queryResult.MpesaReceiptNumber}`);
+          }
+        }
+      } catch (err) {
+        results.failed++;
+        results.errors.push({ id: tx.id, error: err.message });
+        console.log(`⚠️ Failed to sync ${tx.id}: ${err.message}`);
+      }
+    }
+    
+    res.json({
+      success: true,
+      message: `Synced ${results.synced} receipts, ${results.failed} failed`,
+      data: results
+    });
+  } catch (error) {
+    console.error('Sync receipts error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+// Force re-query a specific transaction
+router.post('/admin/requery/:transactionId', async (req, res) => {
+  try {
+    const { transactionId } = req.params;
+    console.log(`🔍 Force re-querying transaction: ${transactionId}`);
+    
+    // Get transaction from Firebase
+    const transactions = await getAllTransactions(500);
+    const tx = transactions.find(t => t.id === transactionId || t.checkoutRequestId === transactionId);
+    
+    if (!tx) {
+      return res.status(404).json({ success: false, message: 'Transaction not found' });
+    }
+    
+    if (!tx.checkoutRequestId) {
+      return res.status(400).json({ success: false, message: 'No checkoutRequestId for this transaction' });
+    }
+    
+    console.log(`📋 Found transaction, querying M-Pesa for: ${tx.checkoutRequestId}`);
+    const queryResult = await querySTKPushStatus(tx.checkoutRequestId);
+    console.log('📱 M-Pesa Query Result:', JSON.stringify(queryResult, null, 2));
+    
+    let updated = false;
+    let newData = {};
+    
+    if (queryResult.ResultCode === '0' || queryResult.ResultCode === 0) {
+      newData.status = 'completed';
+      newData.resultDesc = queryResult.ResultDesc || 'Success';
+      if (queryResult.MpesaReceiptNumber) {
+        newData.mpesaReceiptNumber = queryResult.MpesaReceiptNumber;
+        newData.transactionCode = queryResult.MpesaReceiptNumber;
+      }
+      updated = true;
+    } else if (queryResult.ResultCode && queryResult.ResultCode !== 'pending') {
+      newData.status = 'failed';
+      newData.resultDesc = queryResult.ResultDesc || `Failed with code: ${queryResult.ResultCode}`;
+      newData.resultCode = queryResult.ResultCode;
+      updated = true;
+    }
+    
+    if (updated && Object.keys(newData).length > 0) {
+      await updatePaymentTransaction(tx.checkoutRequestId, newData);
+      console.log('✅ Transaction updated:', newData);
+    }
+    
+    res.json({
+      success: true,
+      transaction: tx,
+      mpesaResult: queryResult,
+      updated,
+      newData
+    });
+  } catch (error) {
+    console.error('Requery error:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 // Get payment statistics (admin)
 router.get('/admin/stats', async (req, res) => {
   try {

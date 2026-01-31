@@ -2554,6 +2554,21 @@
                         // 4. Display main results (Banner Only for Bronze/Silver/Gold)
                         // This removes KMTC, Degree, etc. sections for these packages
                         window.displayResultsUnified('placement-only', null);
+                        
+                        // 4b. Override download button to use placement PDF for bronze/silver/gold
+                        setTimeout(() => {
+                            const downloadBtn = document.getElementById('downloadBtn');
+                            if (downloadBtn) {
+                                downloadBtn.onclick = function() {
+                                    if (typeof window.generatePlacementPDF === 'function') {
+                                        window.generatePlacementPDF(category);
+                                    } else {
+                                        alert('PDF generator not ready. Please refresh and try again.');
+                                    }
+                                };
+                                console.log('✓ Download button updated for placement PDF');
+                            }
+                        }, 100);
 
                         // 5. Display results based on package type
                         const resultsContent = document.getElementById('results');

@@ -2634,7 +2634,7 @@
                         }
                         
                         // ============================================
-                        // GOLD ONLY: Expert Access Section (COLLAPSIBLE)
+                        // GOLD ONLY: Expert Access Section (COLLAPSIBLE - STARTS EXPANDED)
                         // ============================================
                         if (category === 'gold' && resultsContent) {
                             let expertInnerContent = `
@@ -2650,19 +2650,44 @@
                                             <span class="bg-green-100 text-green-700 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">Free Consultation</span>
                                         </div>
                                         <h4 class="text-xl font-black text-gray-900 mb-2">🎉 Expert Guidance Included!</h4>
-                                        <p class="text-gray-600 text-sm leading-relaxed mb-4">
+                                        <p class="text-gray-600 text-sm leading-relaxed mb-3">
                                             As a <strong>Gold Package</strong> member, you get <strong>FREE access to our education experts</strong> who will contact you within <strong>24 hours</strong> to provide personalized guidance on your course and university choices.
                                         </p>
+                                        
+                                        <!-- IMPORTANT ACTION BOX -->
+                                        <div class="bg-red-50 border-2 border-red-300 rounded-xl p-4 mb-4">
+                                            <div class="flex items-center gap-2 mb-2">
+                                                <i class="fas fa-exclamation-triangle text-red-500 text-lg"></i>
+                                                <span class="text-red-700 font-bold text-sm uppercase">Action Required!</span>
+                                            </div>
+                                            <p class="text-red-800 text-sm font-medium mb-3">
+                                                To receive your FREE expert consultation, you <strong>MUST</strong> fill out the form below:
+                                            </p>
+                                            <a href="https://forms.gle/GoldConsultationForm" target="_blank" rel="noopener noreferrer" 
+                                               class="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-all hover:scale-105 mb-3">
+                                                <i class="fas fa-external-link-alt"></i>
+                                                Fill Expert Consultation Form NOW
+                                            </a>
+
+                                        </div>
+                                        
+                                        <!-- Alternative Contact -->
                                         <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
                                             <p class="text-amber-800 text-sm font-medium mb-2">
-                                                <i class="fas fa-clipboard-list mr-2"></i>To receive your expert consultation, please fill out the form below:
+                                                <i class="fas fa-phone-alt mr-2"></i>Prefer to call or WhatsApp? Contact us directly:
                                             </p>
-                                            <a href="https://docs.google.com/forms/u/0/create?usp=forms_home&ths=true" target="_blank" rel="noopener noreferrer" 
-                                               class="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg shadow-amber-200 transition-all hover:scale-105">
-                                                <i class="fas fa-external-link-alt"></i>
-                                                Fill Expert Consultation Form
-                                            </a>
+                                            <div class="flex flex-wrap gap-3">
+                                                <a href="tel:0718744780" class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded-lg transition-all text-sm">
+                                                    <i class="fas fa-phone"></i>
+                                                    0718 744780
+                                                </a>
+                                                <a href="tel:0741739262" class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded-lg transition-all text-sm">
+                                                    <i class="fas fa-phone"></i>
+                                                    0741 739262
+                                                </a>
+                                            </div>
                                         </div>
+                                        
                                         <div class="flex flex-wrap gap-3 text-xs text-gray-500">
                                             <span class="flex items-center gap-1"><i class="fas fa-check-circle text-green-500"></i> Response within 24 hours</span>
                                             <span class="flex items-center gap-1"><i class="fas fa-check-circle text-green-500"></i> Personalized advice</span>
@@ -2672,23 +2697,23 @@
                                 </div>
                             `;
                             
-                            // Wrap in collapsible section with gold gradient border
+                            // Wrap in collapsible section with gold gradient border - STARTS EXPANDED for visibility
                             let expertHtml = `
                                 <div class="mb-6 overflow-hidden rounded-xl shadow-lg border-2 border-amber-300 bg-white">
                                     <button class="collapsible-header w-full p-4 flex items-center justify-between cursor-pointer hover:bg-amber-50 transition-all duration-200 group">
                                         <div class="flex items-center">
                                             <div class="w-1.5 h-10 bg-amber-500 rounded-full mr-5 group-hover:scale-y-110 transition-transform"></div>
                                             <div class="text-left">
-                                                <h3 class="text-lg font-bold text-gray-800">🌟 Expert Consultation Access</h3>
-                                                <p class="text-xs font-medium text-amber-600 uppercase tracking-widest">Gold Package Exclusive</p>
+                                                <h3 class="text-lg font-bold text-gray-800">🌟 Expert Consultation Access <span class="text-red-500 text-sm">(ACTION REQUIRED)</span></h3>
+                                                <p class="text-xs font-medium text-amber-600 uppercase tracking-widest">Gold Package Exclusive - Fill Form to Activate</p>
                                             </div>
                                         </div>
                                         <div class="flex items-center gap-3">
-                                            <span class="text-xs font-bold text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity">Click to expand</span>
-                                            <i class="fas fa-chevron-down collapse-icon text-gray-400 group-hover:text-gray-600 transition-transform duration-300"></i>
+                                            <span class="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-full animate-pulse">Fill Form!</span>
+                                            <i class="fas fa-chevron-down collapse-icon text-gray-400 group-hover:text-gray-600 transition-transform duration-300 rotate-180"></i>
                                         </div>
                                     </button>
-                                    <div class="collapsible-content hidden border-t border-amber-100 bg-amber-50/30">
+                                    <div class="collapsible-content border-t border-amber-100 bg-amber-50/30">
                                         <div class="p-6">
                                             ${expertInnerContent}
                                         </div>
@@ -2919,7 +2944,7 @@
             try {
                 // Get student name
                 const { value: studentName, isConfirmed } = await Swal.fire({
-                    title: '📄 Enter Your Name',
+                    title: 'Enter Your Name',
                     input: 'text',
                     inputLabel: 'Your name will appear on the PDF report',
                     inputPlaceholder: 'Enter your full name',
@@ -2945,29 +2970,30 @@
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF();
 
-                // Theme Colors
-                const COLORS = {
-                    green: [16, 185, 129],
-                    darkGreen: [5, 150, 105],
-                    gold: [217, 119, 6],
+                // Theme Colors (Matching Website Green - same as courses-eligibility.js)
+                const THEME = {
+                    primary: [22, 163, 74],    // Green
+                    secondary: [21, 128, 61],  // Darker Green
+                    blue: [37, 99, 235],
                     gray: [107, 114, 128],
                     dark: [31, 41, 55],
-                    blue: [59, 130, 246]
+                    gold: [217, 119, 6],
+                    amber: [245, 158, 11],
+                    red: [220, 38, 38]
                 };
 
-                let y = 15;
+                let y = 20;
 
                 // Helper functions
                 const addFooter = () => {
                     const pageCount = pdf.internal.getNumberOfPages();
                     pdf.setFontSize(8);
-                    pdf.setTextColor(...COLORS.gray);
-                    pdf.text(`Course Corner © 2026 | Page ${pageCount}`, 105, 287, { align: 'center' });
-                    pdf.text('Contact: 0718 744780 | 0741 739262', 105, 291, { align: 'center' });
+                    pdf.setTextColor(...THEME.gray);
+                    pdf.text('© Course Corner 2026 | Page ' + pageCount, 105, 287, { align: 'center' });
                 };
 
                 const checkNewPage = (currentY, needed = 30) => {
-                    if (currentY > 270 - needed) {
+                    if (currentY > 267 - needed) {
                         addFooter();
                         pdf.addPage();
                         return 20;
@@ -2975,74 +3001,155 @@
                     return currentY;
                 };
 
-                // ===== HEADER =====
-                pdf.setFontSize(22);
-                pdf.setTextColor(...COLORS.green);
+                // ===== HEADER (Same style as courses-eligibility.js) =====
+                pdf.setFontSize(24);
+                pdf.setTextColor(...THEME.primary);
                 pdf.setFont(undefined, 'bold');
-                pdf.text('Course Corner', 105, y, { align: 'center' });
-                y += 6;
-                
-                pdf.setFontSize(12);
-                pdf.setTextColor(...COLORS.dark);
-                pdf.setFont(undefined, 'normal');
-                const packageLabel = packageType === 'gold' ? '⭐ Gold Package' : (packageType === 'silver' ? '🥈 Silver Package' : '🥉 Bronze Package');
-                pdf.text(`University Placement Report - ${packageLabel}`, 105, y, { align: 'center' });
-                
-                // Line
-                y += 4;
-                pdf.setDrawColor(...COLORS.green);
-                pdf.setLineWidth(0.5);
-                pdf.line(30, y, 180, y);
-                y += 10;
+                pdf.text('Course Corner Report', 105, y, { align: 'center' });
 
-                // Student Info
-                pdf.setFontSize(11);
-                pdf.setTextColor(...COLORS.dark);
-                pdf.text(`Student: ${studentName}`, 15, y);
-                pdf.text(`Date: ${new Date().toLocaleDateString()}`, 140, y);
-                y += 6;
+                // Decorative Line
+                y += 4;
+                pdf.setDrawColor(...THEME.primary);
+                pdf.setLineWidth(0.5);
+                pdf.line(40, y, 170, y);
+
+                y += 12;
+                pdf.setFontSize(14);
+                pdf.setTextColor(...THEME.dark);
+                pdf.text('Student: ' + studentName, 105, y, { align: 'center' });
+                y += 7;
                 
                 const overallGrade = document.getElementById('overallGrade')?.value || 'N/A';
-                pdf.text(`Overall Grade: ${overallGrade}`, 15, y);
+                pdf.setFontSize(11);
+                pdf.setTextColor(...THEME.gray);
+                pdf.text('Grade Points: ' + overallGrade + ' | Date: ' + new Date().toLocaleDateString(), 105, y, { align: 'center' });
+                y += 15;
+
+                // ===== GOLD PACKAGE: IMPORTANT FORM NOTICE (FIRST PAGE - TOP PRIORITY!) =====
+                if (packageType === 'gold') {
+                    // Large prominent box for Gold consultation info
+                    pdf.setDrawColor(...THEME.gold);
+                    pdf.setLineWidth(2);
+                    pdf.setFillColor(255, 251, 235); // Light amber background
+                    pdf.roundedRect(12, y, 186, 75, 4, 4, 'FD');
+                    
+                    y += 10;
+                    pdf.setFontSize(16);
+                    pdf.setTextColor(...THEME.gold);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('GOLD PACKAGE - FREE EXPERT CONSULTATION', 105, y, { align: 'center' });
+                    
+                    y += 8;
+                    pdf.setFontSize(11);
+                    pdf.setTextColor(...THEME.dark);
+                    pdf.setFont(undefined, 'normal');
+                    pdf.text('Congratulations! As a Gold member, you get FREE personalized', 105, y, { align: 'center' });
+                    y += 5;
+                    pdf.text('guidance from our education experts within 24 hours!', 105, y, { align: 'center' });
+                    
+                    y += 10;
+                    pdf.setFillColor(220, 38, 38); // Red background for urgency
+                    pdf.roundedRect(25, y - 3, 160, 10, 2, 2, 'F');
+                    pdf.setFontSize(12);
+                    pdf.setTextColor(255, 255, 255);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('ACTION REQUIRED: FILL THE FORM BELOW!', 105, y + 4, { align: 'center' });
+                    
+                    y += 15;
+                    pdf.setFontSize(11);
+                    pdf.setTextColor(...THEME.blue);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('https://forms.gle/GoldConsultationForm', 105, y, { align: 'center' });
+                    
+                    y += 8;
+                    pdf.setFontSize(9);
+                    pdf.setTextColor(...THEME.gray);
+                    pdf.text('Or WhatsApp/Call: 0718 744780 | 0741 739262', 105, y, { align: 'center' });
+                    
+                    y += 18;
+                }
+
+                // ===== CONTACT BOX (For all packages) =====
+                pdf.setDrawColor(...THEME.primary);
+                pdf.setLineWidth(0.5);
+                pdf.setFillColor(240, 253, 244); // Light green background
+                pdf.roundedRect(15, y, 180, 22, 3, 3, 'FD');
+                
+                y += 7;
+                pdf.setFontSize(10);
+                pdf.setTextColor(...THEME.dark);
+                pdf.setFont(undefined, 'bold');
+                pdf.text('Need Help? Contact Us:', 105, y, { align: 'center' });
+                y += 6;
+                pdf.setFontSize(11);
+                pdf.setTextColor(...THEME.primary);
+                pdf.text('0718 744780  |  0741 739262', 105, y, { align: 'center' });
+                
                 y += 12;
+
+                // ===== YOUR SUBJECT GRADES (All packages - matching courses-eligibility.js style) =====
+                const gradesSnapshot = window.getStudentGrades ? window.getStudentGrades() : {};
+                if (Object.keys(gradesSnapshot).length > 0) {
+                    y = checkNewPage(y, 50);
+                    pdf.setFontSize(16);
+                    pdf.setTextColor(...THEME.secondary);
+                    pdf.setFont(undefined, 'bold');
+                    pdf.text('Your Subject Grades', 15, y);
+                    y += 8;
+
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(...THEME.dark);
+                    pdf.setFont(undefined, 'normal');
+
+                    const gradeEntries = Object.entries(gradesSnapshot);
+                    for (let i = 0; i < gradeEntries.length; i += 2) {
+                        y = checkNewPage(y);
+                        const [s1, g1] = gradeEntries[i];
+                        const sName1 = s1.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                        pdf.text(sName1 + ': ' + g1, 20, y);
+
+                        if (gradeEntries[i + 1]) {
+                            const [s2, g2] = gradeEntries[i + 1];
+                            const sName2 = s2.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+                            pdf.text(sName2 + ': ' + g2, 110, y);
+                        }
+                        y += 6;
+                    }
+                    y += 10;
+                }
 
                 // ===== CLUSTER POINTS (Silver & Gold) =====
                 if ((packageType === 'silver' || packageType === 'gold') && window.lastClusterPoints) {
-                    pdf.setFontSize(14);
-                    pdf.setTextColor(...COLORS.darkGreen);
+                    y = checkNewPage(y, 50);
+                    pdf.setFontSize(16);
+                    pdf.setTextColor(...THEME.secondary);
                     pdf.setFont(undefined, 'bold');
                     pdf.text('Cluster Points Analysis', 15, y);
                     y += 8;
 
-                    pdf.setFontSize(9);
-                    pdf.setTextColor(...COLORS.dark);
+                    pdf.setFontSize(10);
+                    pdf.setTextColor(...THEME.dark);
                     pdf.setFont(undefined, 'normal');
 
                     const entries = Object.entries(window.lastClusterPoints).sort((a, b) => b[1] - a[1]);
-                    for (let i = 0; i < entries.length; i += 3) {
+                    for (let i = 0; i < entries.length; i += 2) {
                         y = checkNewPage(y);
                         const [c1, p1] = entries[i];
-                        pdf.text(`${c1}: ${p1.toFixed(2)}`, 15, y);
+                        pdf.text(c1 + ': ' + p1.toFixed(3), 20, y);
                         
                         if (entries[i + 1]) {
                             const [c2, p2] = entries[i + 1];
-                            pdf.text(`${c2}: ${p2.toFixed(2)}`, 75, y);
+                            pdf.text(c2 + ': ' + p2.toFixed(3), 110, y);
                         }
-                        if (entries[i + 2]) {
-                            const [c3, p3] = entries[i + 2];
-                            pdf.text(`${c3}: ${p3.toFixed(2)}`, 135, y);
-                        }
-                        y += 5;
+                        y += 6;
                     }
-                    y += 8;
+                    y += 10;
                 }
 
                 // ===== QUALIFIED UNIVERSITIES =====
-                // Get data from cached results or recalculate
                 const grades = window.getStudentGrades ? window.getStudentGrades() : {};
                 const points = window.lastClusterPoints || (window.calculateClusterPoints ? window.calculateClusterPoints() : {});
                 
-                // Use cached universities if available, otherwise recalculate
                 let universities = window.lastUniversities || [];
                 if (universities.length === 0 && window.CampusPlacementEngine && window.CampusPlacementEngine._initialized) {
                     universities = window.CampusPlacementEngine.getQualifiedUniversities(points, grades);
@@ -3050,111 +3157,86 @@
 
                 if (universities.length > 0) {
                     y = checkNewPage(y, 20);
-                    pdf.setFontSize(14);
-                    pdf.setTextColor(...COLORS.darkGreen);
+                    pdf.setFontSize(16);
+                    pdf.setTextColor(...THEME.secondary);
                     pdf.setFont(undefined, 'bold');
-                    pdf.text(`Qualified Universities & Programs (${universities.length} institutions)`, 15, y);
+                    pdf.text('Qualified Universities & Programs (' + universities.length + ' institutions)', 15, y);
                     y += 8;
 
                     universities.forEach((uni, uniIndex) => {
-                        y = checkNewPage(y, 25);
+                        y = checkNewPage(y, 20);
                         
                         // University name
                         pdf.setFontSize(11);
-                        pdf.setTextColor(...COLORS.blue);
+                        pdf.setTextColor(...THEME.blue);
                         pdf.setFont(undefined, 'bold');
-                        pdf.text(`${uniIndex + 1}. ${uni.name} (${uni.type})`, 15, y);
+                        pdf.text((uniIndex + 1) + '. ' + uni.name + ' (' + uni.type + ')', 15, y);
                         y += 5;
                         
                         pdf.setFontSize(8);
-                        pdf.setTextColor(...COLORS.gray);
+                        pdf.setTextColor(...THEME.gray);
                         pdf.setFont(undefined, 'normal');
-                        pdf.text(`${uni.courses.length} program(s) available`, 20, y);
+                        pdf.text(uni.courses.length + ' program(s) available', 20, y);
                         y += 5;
 
                         // Courses
                         pdf.setFontSize(9);
-                        pdf.setTextColor(...COLORS.dark);
+                        pdf.setTextColor(...THEME.dark);
                         
-                        uni.courses.forEach((course, idx) => {
-                            y = checkNewPage(y, 10);
-                            const courseText = `• ${course.name}`;
-                            const cutoffText = `Cutoff: ${course.cutoff} | Your Points: ${course.studentPoints}`;
+                        uni.courses.forEach((course) => {
+                            y = checkNewPage(y, 8);
                             
-                            // Truncate long course names
-                            const maxWidth = 120;
-                            const truncatedName = pdf.getStringUnitWidth(courseText) * 9 / pdf.internal.scaleFactor > maxWidth 
-                                ? courseText.substring(0, 50) + '...' 
-                                : courseText;
+                            // Course name (truncate if needed)
+                            let courseName = course.name;
+                            if (courseName.length > 45) {
+                                courseName = courseName.substring(0, 42) + '...';
+                            }
                             
-                            pdf.text(truncatedName, 20, y);
+                            pdf.setTextColor(...THEME.primary);
+                            pdf.text('*', 20, y);
+                            pdf.setTextColor(...THEME.dark);
+                            pdf.text(courseName, 24, y);
+                            
+                            // Cutoff info on same line
                             pdf.setFontSize(8);
-                            pdf.setTextColor(...COLORS.gray);
-                            pdf.text(cutoffText, 130, y);
+                            pdf.setTextColor(...THEME.gray);
+                            pdf.text('Cut: ' + course.cutoff + ' | You: ' + course.studentPoints, 150, y);
                             pdf.setFontSize(9);
-                            pdf.setTextColor(...COLORS.dark);
                             y += 4.5;
                         });
-                        y += 4;
+                        y += 3;
                     });
                 } else {
                     y = checkNewPage(y);
                     pdf.setFontSize(11);
-                    pdf.setTextColor(...COLORS.gray);
+                    pdf.setTextColor(...THEME.gray);
                     pdf.text('No matching universities found for your grades.', 15, y);
                     y += 10;
                 }
 
-                // ===== CONTACT INFORMATION =====
-                y = checkNewPage(y, 40);
-                pdf.setDrawColor(...COLORS.green);
-                pdf.setLineWidth(0.3);
-                pdf.line(15, y, 195, y);
-                y += 8;
-
-                pdf.setFontSize(12);
-                pdf.setTextColor(...COLORS.gold);
-                pdf.setFont(undefined, 'bold');
-                pdf.text('Need Help? Contact Us!', 105, y, { align: 'center' });
-                y += 7;
-
-                pdf.setFontSize(10);
-                pdf.setTextColor(...COLORS.dark);
-                pdf.setFont(undefined, 'normal');
-                pdf.text('For assistance with your results or M-Pesa payment confirmation:', 105, y, { align: 'center' });
-                y += 6;
-                
-                pdf.setFontSize(12);
-                pdf.setTextColor(...COLORS.green);
-                pdf.setFont(undefined, 'bold');
-                pdf.text('📞 0718 744780  |  📞 0741 739262', 105, y, { align: 'center' });
-                y += 6;
-                
-                pdf.setFontSize(9);
-                pdf.setTextColor(...COLORS.gray);
-                pdf.setFont(undefined, 'normal');
-                pdf.text('Please have your M-Pesa transaction code ready when calling.', 105, y, { align: 'center' });
-
                 // ===== DISCLAIMER =====
-                y += 12;
-                y = checkNewPage(y, 25);
+                y = checkNewPage(y, 20);
+                y += 5;
+                pdf.setDrawColor(...THEME.gray);
+                pdf.setLineWidth(0.2);
+                pdf.line(15, y, 195, y);
+                y += 6;
+                
                 pdf.setFontSize(8);
-                pdf.setTextColor(...COLORS.gray);
+                pdf.setTextColor(...THEME.gray);
                 pdf.text('DISCLAIMER: This data is sourced from KUCCPS. Use as a guide only.', 105, y, { align: 'center' });
                 pdf.text('Verify cutoff points directly with KUCCPS or respective institutions.', 105, y + 4, { align: 'center' });
 
                 addFooter();
 
                 // Save PDF
-                const fileName = `${studentName.replace(/\s+/g, '_')}_Course_Corner_${packageType.charAt(0).toUpperCase() + packageType.slice(1)}_Report.pdf`;
+                const fileName = studentName.replace(/\s+/g, '_') + '_Course_Corner_' + packageType.charAt(0).toUpperCase() + packageType.slice(1) + '_Report.pdf';
                 pdf.save(fileName);
 
                 Swal.fire({
                     icon: 'success',
-                    title: '✅ PDF Generated!',
-                    html: `<p>Your report has been downloaded.</p>
-                           <p class="text-sm text-gray-500 mt-2">If you have any issues, contact us:</p>
-                           <p class="font-bold text-green-600">0718 744780 | 0741 739262</p>`,
+                    title: 'PDF Generated!',
+                    html: '<p>Your report has been downloaded.</p><p class="text-sm text-gray-500 mt-2">If you have any issues, contact us:</p><p class="font-bold text-green-600">0718 744780 | 0741 739262</p>',
                     confirmButtonColor: '#10b981'
                 });
 
@@ -3163,10 +3245,7 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'PDF Generation Failed',
-                    html: `<p>Unable to generate PDF. Please try again.</p>
-                           <p class="text-sm text-gray-500 mt-3">If the problem persists, contact us with your M-Pesa payment code:</p>
-                           <p class="font-bold text-green-600 text-lg mt-2">📞 0718 744780</p>
-                           <p class="font-bold text-green-600 text-lg">📞 0741 739262</p>`,
+                    html: '<p>Unable to generate PDF. Please try again.</p><p class="text-sm text-gray-500 mt-3">If the problem persists, contact us with your M-Pesa payment code:</p><p class="font-bold text-green-600 text-lg mt-2">0718 744780</p><p class="font-bold text-green-600 text-lg">0741 739262</p>',
                     confirmButtonColor: '#10b981'
                 });
             }

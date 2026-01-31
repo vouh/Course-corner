@@ -249,34 +249,184 @@ class PaymentHandler {
         console.log('Session cleared');
     }
 
+    // Verify existing payment (for "I Already Paid" option)
+    async verifyExistingPayment(phoneNumber, category, onSuccess) {
+        try {
+            Swal.fire({
+                title: 'Verifying Payment...',
+                html: '<p>Checking for your payment...</p>',
+                allowOutsideClick: false,
+                showConfirmButton: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            // Format phone number
+            let formattedPhone = phoneNumber.replace(/\s/g, '');
+            if (formattedPhone.startsWith('0')) {
+                formattedPhone = '254' + formattedPhone.substring(1);
+            } else if (formattedPhone.startsWith('+')) {
+                formattedPhone = formattedPhone.substring(1);
+            }
+
+            // Check for completed payment with this phone
+            const response = await fetch(`${this.serverUrl}/payment/verify-phone`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ phoneNumber: formattedPhone, category })
+            });
+
+            const data = await response.json();
+
+            if (data.success && data.hasAccess) {
+                // Found a completed payment
+                this.sessionId = data.sessionId;
+                localStorage.setItem('paymentSessionId', this.sessionId);
+                this.isPaymentCompleted = true;
+
+                await Swal.fire({
+                    icon: 'success',
+                    title: '✅ Payment Verified!',
+                    text: 'Your previous payment has been found. Loading your results...',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    timerProgressBar: true
+                });
+
+                if (onSuccess && typeof onSuccess === 'function') {
+                    onSuccess();
+                }
+                return { success: true };
+            } else {
+                // No payment found
+                await Swal.fire({
+                    icon: 'warning',
+                    title: 'No Payment Found',
+                    html: `
+                        <p>We couldn't find a completed payment for this phone number.</p>
+                        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #6b7280;">
+                            If you just paid, please wait a moment and try again. M-Pesa confirmations can take up to 2 minutes.
+                        </p>
+                    `,
+                    confirmButtonText: 'Try Again',
+                    confirmButtonColor: '#10b981',
+                    showCancelButton: true,
+                    cancelButtonText: 'New Payment'
+                }).then((result) => {
+                    if (!result.isConfirmed) {
+                        // User wants to make new payment, re-trigger payment flow
+                        this.processPayment(category, data.amount || 100, onSuccess);
+                    }
+                });
+                return { success: false };
+            }
+        } catch (error) {
+            console.error('Payment verification error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Verification Failed',
+                text: 'Could not verify payment. Please try again or contact support.',
+                confirmButtonColor: '#10b981'
+            });
+            return { success: false };
+        }
+    }
+
     // Full payment flow with UI - processPayment wrapper
     async processPayment(category, amount, onSuccess) {
         try {
-            // Prompt for phone number
-            const { value: phoneNumber } = await Swal.fire({
-                title: '📱 Enter M-Pesa Number',
-                input: 'text',
-                inputLabel: 'Phone Number (e.g., 0712345678)',
-                inputPlaceholder: '07XXXXXXXX',
+            // Get referral code from localStorage or URL
+            let storedReferralCode = localStorage.getItem('pendingReferralCode') || '';
+            
+            // Check URL params for referral code
+            const urlParams = new URLSearchParams(window.location.search);
+            const urlRefCode = urlParams.get('ref') || urlParams.get('referral');
+            if (urlRefCode) {
+                storedReferralCode = urlRefCode;
+                localStorage.setItem('pendingReferralCode', urlRefCode);
+            }
+
+            // Prompt for phone number with referral code option
+            const { value: formData, isDenied } = await Swal.fire({
+                title: '📱 M-Pesa Payment',
+                html: `
+                    <div style="text-align: left;">
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                Phone Number <span style="color: #ef4444;">*</span>
+                            </label>
+                            <input type="tel" id="swal-phone" class="swal2-input" placeholder="07XXXXXXXX" 
+                                style="margin: 0; width: 100%; box-sizing: border-box;">
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                <i class="fas fa-gift" style="color: #8b5cf6;"></i> Referral Code <span style="color: #9ca3af; font-weight: 400;">(optional)</span>
+                            </label>
+                            <input type="text" id="swal-referral" class="swal2-input" placeholder="Enter code if you have one" 
+                                value="${storedReferralCode}" style="margin: 0; width: 100%; box-sizing: border-box; text-transform: uppercase;">
+                        </div>
+                        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.5rem; padding: 0.75rem; margin-top: 1rem;">
+                            <p style="color: #166534; font-size: 0.85rem; margin: 0;">
+                                <i class="fas fa-info-circle"></i> You'll receive an M-Pesa prompt on your phone. Enter your PIN to pay <strong>KES ${amount}</strong>.
+                            </p>
+                        </div>
+                    </div>
+                `,
                 showCancelButton: true,
-                confirmButtonText: 'Pay KES ' + amount,
+                showDenyButton: true,
+                confirmButtonText: '<i class="fas fa-mobile-alt"></i> Pay KES ' + amount,
+                denyButtonText: '<i class="fas fa-check-circle"></i> I Already Paid',
+                cancelButtonText: 'Cancel',
                 confirmButtonColor: '#10b981',
+                denyButtonColor: '#3b82f6',
                 cancelButtonColor: '#6b7280',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return 'Please enter your phone number';
+                focusConfirm: false,
+                preConfirm: () => {
+                    const phone = document.getElementById('swal-phone').value;
+                    const referral = document.getElementById('swal-referral').value.trim().toUpperCase();
+                    
+                    if (!phone) {
+                        Swal.showValidationMessage('Please enter your phone number');
+                        return false;
                     }
-                    // Basic Kenya phone validation
-                    const cleaned = value.replace(/\s/g, '');
+                    
+                    const cleaned = phone.replace(/\s/g, '');
                     if (!/^(0|254|\+254)?[17]\d{8}$/.test(cleaned)) {
-                        return 'Please enter a valid Kenyan phone number';
+                        Swal.showValidationMessage('Please enter a valid Kenyan phone number');
+                        return false;
                     }
+                    
+                    return { phone, referral };
+                },
+                preDeny: () => {
+                    const phone = document.getElementById('swal-phone').value;
+                    const referral = document.getElementById('swal-referral').value.trim().toUpperCase();
+                    
+                    if (!phone) {
+                        Swal.showValidationMessage('Please enter your phone number to verify payment');
+                        return false;
+                    }
+                    
+                    return { phone, referral };
                 }
             });
 
-            if (!phoneNumber) {
-                console.log('Payment cancelled - no phone number');
+            // Handle "I Already Paid" option
+            if (isDenied && formData) {
+                return await this.verifyExistingPayment(formData.phone, category, onSuccess);
+            }
+
+            if (!formData) {
+                console.log('Payment cancelled');
                 return;
+            }
+
+            const phoneNumber = formData.phone;
+            const referralCode = formData.referral || null;
+
+            // Store referral code if provided
+            if (referralCode) {
+                localStorage.setItem('pendingReferralCode', referralCode);
+                console.log('📌 Referral code saved:', referralCode);
             }
 
             // Show loading
@@ -288,8 +438,6 @@ class PaymentHandler {
                 didOpen: () => Swal.showLoading()
             });
 
-            // Get referral code if present
-            const referralCode = localStorage.getItem('pendingReferralCode') || null;
             if (referralCode) {
                 console.log('📌 Applying referral code:', referralCode);
             }

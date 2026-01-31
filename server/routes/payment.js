@@ -1,6 +1,87 @@
 const express = require('express');
 const router = express.Router();
 const PaymentStore = require('../models/PaymentStore');
+const { getTransactionsByPhone } = require('../utils/firebaseAdmin');
+
+// Helper to format phone number
+function formatPhoneNumber(phone) {
+  if (!phone) return null;
+  let cleaned = phone.replace(/\s/g, '').replace(/[^0-9]/g, '');
+  if (cleaned.startsWith('0')) {
+    cleaned = '254' + cleaned.substring(1);
+  } else if (cleaned.startsWith('+')) {
+    cleaned = cleaned.substring(1);
+  }
+  if (!cleaned.startsWith('254')) {
+    cleaned = '254' + cleaned;
+  }
+  return cleaned;
+}
+
+// Verify phone number has completed payment - for "I Already Paid" feature
+router.post('/verify-phone', async (req, res) => {
+  try {
+    const { phoneNumber, category } = req.body;
+
+    if (!phoneNumber) {
+      return res.status(400).json({ success: false, message: 'Phone number required' });
+    }
+
+    const formattedPhone = formatPhoneNumber(phoneNumber);
+    console.log('Verifying payment for phone:', formattedPhone);
+
+    // Look for completed payments with this phone number
+    const transactions = await getTransactionsByPhone(formattedPhone, 'completed');
+
+    if (!transactions.length) {
+      return res.json({
+        success: false,
+        hasAccess: false,
+        message: 'No completed payment found for this phone number'
+      });
+    }
+
+    // Check if any match the category or return the most recent
+    let matchingPayment = null;
+    
+    for (const tx of transactions) {
+      if (category && tx.category === category) {
+        matchingPayment = tx;
+        break;
+      } else if (!matchingPayment) {
+        matchingPayment = tx;
+      }
+    }
+
+    if (matchingPayment) {
+      console.log('Found matching payment:', matchingPayment.id);
+      
+      return res.json({
+        success: true,
+        hasAccess: true,
+        sessionId: matchingPayment.sessionId || matchingPayment.id,
+        transactionId: matchingPayment.id,
+        category: matchingPayment.category,
+        amount: matchingPayment.amount,
+        mpesaCode: matchingPayment.mpesaReceiptNumber,
+        message: 'Payment verified successfully'
+      });
+    }
+
+    return res.json({
+      success: false,
+      hasAccess: false,
+      message: 'No matching payment found'
+    });
+
+  } catch (error) {
+    console.error('Verify phone error:', error);
+    return res.status(500).json({ 
+      success: false, 
+      message: 'Verification failed: ' + error.message 
+    });
+  }
+});
 
 // Approve access after payment
 router.post('/approve', (req, res) => {

@@ -98,6 +98,433 @@
         </div>
     </header>
 
+    <style>
+        /* Get Results Button Styles */
+        .cc-get-results-wrapper {
+            margin-top: 2rem;
+            text-align: center;
+        }
+        
+        .cc-btn-get-results {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+            border: none;
+            border-radius: 1rem;
+            padding: 1.25rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cc-btn-get-results::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .cc-btn-get-results:hover::before {
+            left: 100%;
+        }
+        
+        .cc-btn-get-results:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 50px rgba(16, 185, 129, 0.5);
+        }
+        
+        .cc-btn-get-results:disabled {
+            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        
+        .cc-btn-get-results:disabled::before {
+            display: none;
+        }
+        
+        .cc-btn-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .cc-btn-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .cc-btn-icon i {
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .cc-btn-text {
+            text-align: left;
+        }
+        
+        .cc-btn-main {
+            display: block;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: white;
+            letter-spacing: -0.02em;
+        }
+        
+        .cc-btn-sub {
+            display: block;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.8);
+            margin-top: 2px;
+        }
+        
+        .cc-btn-arrow {
+            font-size: 1.25rem;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+        
+        .cc-btn-get-results:hover:not(:disabled) .cc-btn-arrow {
+            transform: translateX(5px);
+        }
+        
+        .cc-results-message {
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            color: #6b7280;
+        }
+        
+        /* Teaser Results Styles */
+        .cc-teaser-section {
+            margin-top: 2rem;
+        }
+        
+        .cc-teaser-score-card {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 2px solid #86efac;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .cc-teaser-score-card.below-cplus {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-color: #fbbf24;
+        }
+        
+        .cc-teaser-grade {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #059669;
+            line-height: 1;
+        }
+        
+        .cc-teaser-score-card.below-cplus .cc-teaser-grade {
+            color: #d97706;
+        }
+        
+        .cc-teaser-points {
+            font-size: 1.25rem;
+            color: #065f46;
+            margin-top: 0.5rem;
+        }
+        
+        .cc-teaser-score-card.below-cplus .cc-teaser-points {
+            color: #92400e;
+        }
+        
+        .cc-teaser-message {
+            font-size: 1rem;
+            color: #047857;
+            margin-top: 1rem;
+            font-weight: 600;
+        }
+        
+        .cc-teaser-score-card.below-cplus .cc-teaser-message {
+            color: #b45309;
+        }
+        
+        .cc-eligibility-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+        
+        .cc-eligibility-badge.diploma {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+        
+        /* University Teaser Cards */
+        .cc-teaser-unis {
+            display: grid;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .cc-teaser-uni-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cc-teaser-uni-card:hover {
+            border-color: #10b981;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .cc-teaser-uni-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .cc-teaser-uni-icon i {
+            font-size: 1.75rem;
+            color: #6b7280;
+        }
+        
+        .cc-teaser-uni-info {
+            flex: 1;
+        }
+        
+        .cc-teaser-uni-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.25rem;
+        }
+        
+        .cc-teaser-uni-count {
+            font-size: 0.9rem;
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        .cc-teaser-uni-count span {
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+        
+        .cc-teaser-lock {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .cc-teaser-lock i {
+            color: #d97706;
+            font-size: 1rem;
+        }
+        
+        /* Stats Summary */
+        .cc-teaser-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+            border-radius: 1rem;
+        }
+        
+        .cc-teaser-stat {
+            text-align: center;
+        }
+        
+        .cc-teaser-stat-value {
+            font-size: 2rem;
+            font-weight: 900;
+            color: #111827;
+        }
+        
+        .cc-teaser-stat-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Unlock Section */
+        .cc-unlock-section {
+            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+            border: 2px solid #93c5fd;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .cc-unlock-header {
+            margin-bottom: 1.5rem;
+        }
+        
+        .cc-unlock-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+        }
+        
+        .cc-unlock-icon i {
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .cc-unlock-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+        }
+        
+        .cc-unlock-subtitle {
+            color: #3b82f6;
+            font-size: 0.95rem;
+        }
+        
+        /* Package selector inside unlock */
+        .cc-unlock-packages {
+            margin-top: 1.5rem;
+        }
+        
+        .cc-package-option {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 1rem;
+            padding: 1rem 1.5rem;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .cc-package-option:hover {
+            border-color: #3b82f6;
+            background: #f0f9ff;
+        }
+        
+        .cc-package-option.selected {
+            border-color: #10b981;
+            background: #f0fdf4;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+        
+        .cc-package-option-info {
+            text-align: left;
+        }
+        
+        .cc-package-option-name {
+            font-weight: 700;
+            color: #111827;
+            font-size: 1rem;
+        }
+        
+        .cc-package-option-desc {
+            font-size: 0.8rem;
+            color: #6b7280;
+            margin-top: 0.25rem;
+        }
+        
+        .cc-package-option-price {
+            font-weight: 800;
+            color: #059669;
+            font-size: 1.1rem;
+            white-space: nowrap;
+        }
+        
+        .cc-unlock-pay-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border: none;
+            border-radius: 1rem;
+            padding: 1rem 2rem;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px rgba(16, 185, 129, 0.4);
+        }
+        
+        .cc-unlock-pay-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(16, 185, 129, 0.5);
+        }
+        
+        .cc-unlock-pay-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
+        }
+        
+        .cc-trust-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            color: #6b7280;
+            font-size: 0.85rem;
+        }
+        
+        .cc-trust-badge i {
+            color: #10b981;
+        }
+        
+        /* Hidden original package selector */
+        .cc-package-selector-hidden {
+            display: none !important;
+        }
+    </style>
+    
     <!-- Calculator Section -->
     <section class="cc-calculator-section">
         <div class="cc-container">
@@ -642,61 +1069,38 @@
 
 
 
-                        <!-- Package Selector Card -->
-                        <div class="cc-package-selector-wrapper">
-                            <div class="cc-package-selector-card">
-                                <div class="cc-package-header">
-                                    <i class="fas fa-box-open"></i>
-                                    <h3>Select Your Package</h3>
-                                </div>
-
-                                <label for="packageSelect">Choose a service package:</label>
-                                <select id="packageSelect" class="cc-package-select">
-                                    <option value="" data-amount="0" data-description="">Select a Service...
-                                    </option>
-
-                                    <option value="gold" data-amount="600"
-                                        data-description="Universities + Courses + Cluster Points + FREE Expert Guidance (24hr response)">⭐ Gold Package (Ksh 600)</option>
-                                    <option value="silver" data-amount="500"
-                                        data-description="Universities + Courses + All 20 Cluster Points">🥈 Silver Package (Ksh 500)</option>
-                                    <option value="bronze" data-amount="400"
-                                        data-description="Universities & Courses You Qualify For">🥉 Bronze Package (Ksh 400)</option>
-
-                                    <option value="point-and-courses" data-amount="300"
-                                        data-description="Cluster Points & Eligible Courses">Premium Package (Points
-                                        & Courses)</option>
-                                    <option value="courses-only" data-amount="200"
-                                        data-description="View Eligible Courses Only">Standard Package (Courses
-                                        Only)</option>
-                                    <option value="calculate-cluster-points" data-amount="100"
-                                        data-description="Calculate Your Cluster Points">Starter Package (Cluster
-                                        Points)</option>
-                                </select>
-
-                                <div class="mt-4 text-center">
-                                    <a href="packages.html" class="cc-btn-glow">
-                                        See Packages
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div class="cc-package-display" id="packageDisplay">
-                                <div class="cc-package-info">
-                                    <div class="cc-package-service">
-                                        <span class="cc-service-label">Service:</span>
-                                        <span class="cc-service-name" id="serviceName">Select a package above</span>
+                        <!-- GET RESULTS BUTTON (Freemium Flow) -->
+                        <div class="cc-get-results-wrapper">
+                            <button id="getResultsBtn" class="cc-btn-get-results" disabled>
+                                <div class="cc-btn-content">
+                                    <div class="cc-btn-icon">
+                                        <i class="fas fa-chart-line"></i>
                                     </div>
-                                    <div class="cc-package-cost">
-                                        <span class="cc-cost-label">Cost:</span>
-                                        <span class="cc-cost-amount" id="costAmount">KES 0</span>
+                                    <div class="cc-btn-text">
+                                        <span class="cc-btn-main">Get My Results</span>
+                                        <span class="cc-btn-sub">See universities & courses you qualify for</span>
                                     </div>
+                                    <i class="fas fa-arrow-right cc-btn-arrow"></i>
                                 </div>
-                                <button id="payButton" class="cc-btn-pay payment-btn" disabled data-category=""
-                                    data-amount="0">
-                                    <i class="fas fa-credit-card"></i>
-                                    <span>Click to Pay</span>
-                                </button>
-                            </div>
+                            </button>
+                            <p id="getResultsMessage" class="cc-results-message">Enter at least 7 subjects to see your results</p>
+                        </div>
+                        
+                        <!-- Hidden original package selector (kept for payment processing) -->
+                        <div class="cc-package-selector-hidden">
+                            <select id="packageSelect" class="cc-package-select">
+                                <option value="" data-amount="0" data-description="">Select a Service...</option>
+                                <option value="gold" data-amount="600" data-description="Universities + Courses + Cluster Points + FREE Expert Guidance (24hr response)">Gold Package</option>
+                                <option value="silver" data-amount="500" data-description="Universities + Courses + All 20 Cluster Points">Silver Package</option>
+                                <option value="bronze" data-amount="400" data-description="Universities & Courses You Qualify For">Bronze Package</option>
+                                <option value="point-and-courses" data-amount="300" data-description="Cluster Points & Eligible Courses">Premium Package</option>
+                                <option value="courses-only" data-amount="200" data-description="View Eligible Courses Only">Standard Package</option>
+                                <option value="calculate-cluster-points" data-amount="100" data-description="Calculate Your Cluster Points">Starter Package</option>
+                            </select>
+                            <button id="payButton" class="cc-btn-pay payment-btn" disabled data-category="" data-amount="0">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Click to Pay</span>
+                            </button>
                         </div>
                     </div>
 
@@ -905,6 +1309,10 @@
                     this.classList.remove('has-value');
                 }
                 calculateTotalPoints();
+                // Also update Get Results button state
+                if (typeof updateGetResultsButtonState === 'function') {
+                    updateGetResultsButtonState();
+                }
             });
         });
 
@@ -1363,6 +1771,348 @@
             });
         }
 
+        // Store teaser data globally for use after payment
+        window.teaserData = null;
+        
+        // Update Get Results button state
+        function updateGetResultsButtonState() {
+            const validation = validateSubjects();
+            const getResultsBtn = document.getElementById('getResultsBtn');
+            const messageEl = document.getElementById('getResultsMessage');
+            
+            const subjectsPopulated = validation.totalSubjects >= 7;
+            
+            if (getResultsBtn) {
+                if (subjectsPopulated) {
+                    getResultsBtn.disabled = false;
+                    if (messageEl) {
+                        messageEl.innerHTML = '<span class="text-green-600"><i class="fas fa-check-circle"></i> Ready! Click to see your results</span>';
+                    }
+                } else {
+                    getResultsBtn.disabled = true;
+                    if (messageEl) {
+                        const needed = 7 - validation.totalSubjects;
+                        messageEl.textContent = `Enter ${needed} more subject${needed !== 1 ? 's' : ''} to see your results`;
+                    }
+                }
+            }
+        }
+        
+        // Show teaser results (freemium flow)
+        async function showTeaserResults() {
+            console.log('--- showTeaserResults ---');
+            
+            const resultsDiv = document.getElementById('results');
+            if (!resultsDiv) return;
+            
+            // Show loading state
+            resultsDiv.classList.remove('hidden');
+            resultsDiv.style.display = 'block';
+            resultsDiv.innerHTML = `
+                <div class="text-center p-12">
+                    <div class="inline-flex flex-col items-center gap-4">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-cog fa-spin text-3xl text-green-600"></i>
+                        </div>
+                        <p class="text-gray-600 font-medium">Analyzing your grades...</p>
+                    </div>
+                </div>
+            `;
+            
+            // Scroll to results
+            setTimeout(() => {
+                resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+            
+            try {
+                // Calculate total points
+                if (typeof calculateTotalPoints === 'function') {
+                    calculateTotalPoints();
+                }
+                
+                const overallPoints = parseInt(document.getElementById('overallGrade')?.value) || 0;
+                const gradeDisplay = document.getElementById('mainGradeDisplay')?.textContent || '-';
+                const isBelowCPlus = overallPoints < 46;
+                
+                // Get grade message
+                function getGradeMessage(points) {
+                    if (points >= 81) return "Outstanding! Top universities await you!";
+                    if (points >= 73) return "Excellent performance! Many doors open for you.";
+                    if (points >= 67) return "Very good! You qualify for many courses.";
+                    if (points >= 60) return "Good performance! Solid opportunities ahead.";
+                    if (points >= 53) return "Above average! You have good options.";
+                    if (points >= 46) return "You meet minimum university requirements.";
+                    if (points >= 39) return "Consider diploma & KMTC programs.";
+                    return "Technical courses may be your best path.";
+                }
+                
+                // Calculate cluster points
+                let points = {};
+                if (typeof window.calculateClusterPoints === 'function') {
+                    points = window.calculateClusterPoints();
+                }
+                
+                // Get highest cluster
+                let highestCluster = { name: 'N/A', points: 0 };
+                if (points && Object.keys(points).length > 0) {
+                    const sorted = Object.entries(points).sort((a, b) => b[1] - a[1]);
+                    if (sorted[0]) {
+                        highestCluster = { name: sorted[0][0], points: sorted[0][1] };
+                    }
+                }
+                
+                // Get qualified universities using placement engine
+                let universities = [];
+                let totalPrograms = 0;
+                
+                if (!isBelowCPlus && typeof window.CampusPlacementEngine !== 'undefined') {
+                    const engine = new window.CampusPlacementEngine();
+                    await engine.loadData();
+                    universities = engine.getQualifiedUniversities(points);
+                    totalPrograms = universities.reduce((sum, u) => sum + u.courses.length, 0);
+                }
+                
+                // Priority universities: UoN, KU, JKUAT
+                const priorityKeywords = [
+                    { keywords: ['nairobi'], name: 'University of Nairobi' },
+                    { keywords: ['kenyatta'], name: 'Kenyatta University' },
+                    { keywords: ['jomo', 'jkuat'], name: 'Jomo Kenyatta University of Agriculture and Technology' }
+                ];
+                
+                // Find priority universities in results
+                let topUnis = [];
+                for (const priority of priorityKeywords) {
+                    const found = universities.find(u => {
+                        const nameLower = u.name.toLowerCase();
+                        return priority.keywords.some(kw => nameLower.includes(kw));
+                    });
+                    if (found) {
+                        topUnis.push(found);
+                    }
+                }
+                
+                // If we don't have 3, fill with top universities by program count
+                if (topUnis.length < 3) {
+                    const remaining = universities
+                        .filter(u => !topUnis.includes(u))
+                        .sort((a, b) => b.courses.length - a.courses.length)
+                        .slice(0, 3 - topUnis.length);
+                    topUnis = [...topUnis, ...remaining];
+                }
+                
+                // Store teaser data for later use
+                window.teaserData = {
+                    points,
+                    universities,
+                    totalPrograms,
+                    overallPoints,
+                    gradeDisplay,
+                    isBelowCPlus
+                };
+                
+                // Build teaser HTML
+                let html = `
+                    <div class="cc-teaser-section">
+                        <!-- Score Card -->
+                        <div class="cc-teaser-score-card ${isBelowCPlus ? 'below-cplus' : ''}">
+                            <div class="cc-teaser-grade">${gradeDisplay}</div>
+                            <div class="cc-teaser-points">You scored <strong>${overallPoints}</strong> out of 84 points</div>
+                            <div class="cc-teaser-message">${getGradeMessage(overallPoints)}</div>
+                            <div class="cc-eligibility-badge ${isBelowCPlus ? 'diploma' : ''}">
+                                ${isBelowCPlus 
+                                    ? '<i class="fas fa-book"></i> Diploma & KMTC Programs Available'
+                                    : '<i class="fas fa-graduation-cap"></i> You Qualify for Degree Programs!'
+                                }
+                            </div>
+                        </div>
+                `;
+                
+                if (!isBelowCPlus && topUnis.length > 0) {
+                    // University teaser cards
+                    html += `
+                        <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">
+                            <i class="fas fa-university text-green-600 mr-2"></i>Top Universities You Qualify For
+                        </h3>
+                        <div class="cc-teaser-unis">
+                    `;
+                    
+                    topUnis.forEach(uni => {
+                        html += `
+                            <div class="cc-teaser-uni-card">
+                                <div class="cc-teaser-uni-icon">
+                                    <i class="fas fa-university"></i>
+                                </div>
+                                <div class="cc-teaser-uni-info">
+                                    <div class="cc-teaser-uni-name">${uni.name}</div>
+                                    <div class="cc-teaser-uni-count"><span>${uni.courses.length}</span> programs you qualify for</div>
+                                </div>
+                                <div class="cc-teaser-lock">
+                                    <i class="fas fa-lock"></i>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    html += `</div>`;
+                    
+                    // Stats summary
+                    html += `
+                        <div class="cc-teaser-stats">
+                            <div class="cc-teaser-stat">
+                                <div class="cc-teaser-stat-value">${universities.length}</div>
+                                <div class="cc-teaser-stat-label">Universities</div>
+                            </div>
+                            <div class="cc-teaser-stat">
+                                <div class="cc-teaser-stat-value">${totalPrograms}</div>
+                                <div class="cc-teaser-stat-label">Programs</div>
+                            </div>
+                            <div class="cc-teaser-stat">
+                                <div class="cc-teaser-stat-value">${highestCluster.points.toFixed(1)}</div>
+                                <div class="cc-teaser-stat-label">Highest Cluster</div>
+                            </div>
+                        </div>
+                    `;
+                } else if (isBelowCPlus) {
+                    // Show diploma/KMTC teaser for below C+ students
+                    html += `
+                        <div class="cc-teaser-stats">
+                            <div class="cc-teaser-stat">
+                                <div class="cc-teaser-stat-value"><i class="fas fa-lock text-amber-500"></i></div>
+                                <div class="cc-teaser-stat-label">KMTC Programs</div>
+                            </div>
+                            <div class="cc-teaser-stat">
+                                <div class="cc-teaser-stat-value"><i class="fas fa-lock text-amber-500"></i></div>
+                                <div class="cc-teaser-stat-label">Diploma Courses</div>
+                            </div>
+                            <div class="cc-teaser-stat">
+                                <div class="cc-teaser-stat-value"><i class="fas fa-lock text-amber-500"></i></div>
+                                <div class="cc-teaser-stat-label">Certificate Programs</div>
+                            </div>
+                        </div>
+                        <p class="text-center text-gray-600 mb-4">Unlock to see all KMTC, Diploma & Certificate programs available for your grades!</p>
+                    `;
+                }
+                
+                // Unlock Section
+                html += `
+                    <div class="cc-unlock-section">
+                        <div class="cc-unlock-header">
+                            <div class="cc-unlock-icon">
+                                <i class="fas fa-unlock-alt"></i>
+                            </div>
+                            <h3 class="cc-unlock-title">🔓 Unlock Your Complete Results</h3>
+                            <p class="cc-unlock-subtitle">See all universities, courses, cutoff points & cluster scores</p>
+                        </div>
+                        
+                        <div class="cc-unlock-packages">
+                            <div class="cc-package-option" data-package="gold" data-amount="600">
+                                <div class="cc-package-option-info">
+                                    <div class="cc-package-option-name">⭐ Gold Package</div>
+                                    <div class="cc-package-option-desc">All results + 20 Cluster Points + FREE Expert Guidance</div>
+                                </div>
+                                <div class="cc-package-option-price">KES 600</div>
+                            </div>
+                            
+                            <div class="cc-package-option" data-package="silver" data-amount="500">
+                                <div class="cc-package-option-info">
+                                    <div class="cc-package-option-name">🥈 Silver Package</div>
+                                    <div class="cc-package-option-desc">All results + All 20 Cluster Points</div>
+                                </div>
+                                <div class="cc-package-option-price">KES 500</div>
+                            </div>
+                            
+                            <div class="cc-package-option" data-package="bronze" data-amount="400">
+                                <div class="cc-package-option-info">
+                                    <div class="cc-package-option-name">🥉 Bronze Package</div>
+                                    <div class="cc-package-option-desc">Universities & Courses You Qualify For</div>
+                                </div>
+                                <div class="cc-package-option-price">KES 400</div>
+                            </div>
+                        </div>
+                        
+                        <button id="unlockPayBtn" class="cc-unlock-pay-btn" disabled data-category="" data-amount="0">
+                            <i class="fas fa-credit-card mr-2"></i>
+                            Select a Package Above
+                        </button>
+                        
+                        <div class="cc-trust-badge">
+                            <i class="fas fa-shield-alt"></i>
+                            <span>Trusted by <strong>100,000+</strong> Kenyan students</span>
+                        </div>
+                    </div>
+                </div>
+                `;
+                
+                resultsDiv.innerHTML = html;
+                
+                // Initialize package selection handlers
+                initializePackageSelection();
+                
+            } catch (error) {
+                console.error('Error in showTeaserResults:', error);
+                resultsDiv.innerHTML = `
+                    <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-xl">
+                        <h3 class="text-red-800 font-bold">Error Loading Results</h3>
+                        <p class="text-red-700">${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+        
+        // Initialize package selection in unlock section
+        function initializePackageSelection() {
+            const packageOptions = document.querySelectorAll('.cc-package-option');
+            const unlockBtn = document.getElementById('unlockPayBtn');
+            
+            packageOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove selected from all
+                    packageOptions.forEach(o => o.classList.remove('selected'));
+                    // Add selected to this one
+                    this.classList.add('selected');
+                    
+                    const pkg = this.getAttribute('data-package');
+                    const amount = this.getAttribute('data-amount');
+                    const name = this.querySelector('.cc-package-option-name').textContent;
+                    
+                    if (unlockBtn) {
+                        unlockBtn.disabled = false;
+                        unlockBtn.setAttribute('data-category', pkg);
+                        unlockBtn.setAttribute('data-amount', amount);
+                        unlockBtn.innerHTML = `<i class="fas fa-credit-card mr-2"></i>Pay KES ${amount} - ${name}`;
+                    }
+                });
+            });
+            
+            // Unlock button click handler
+            if (unlockBtn) {
+                unlockBtn.addEventListener('click', async function() {
+                    if (this.disabled) return;
+                    
+                    const category = this.getAttribute('data-category');
+                    const amount = this.getAttribute('data-amount');
+                    
+                    if (!category || !amount) return;
+                    
+                    // Trigger payment using existing payment handler
+                    try {
+                        await window.paymentHandler.processPayment(
+                            category,
+                            parseInt(amount),
+                            () => showResultsAfterPayment(category)
+                        );
+                    } catch (error) {
+                        console.error('Payment error:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Payment Error',
+                            text: error.message || 'Failed to process payment. Please try again.'
+                        });
+                    }
+                });
+            }
+        }
+        
         // Show results after successful payment
         async function showResultsAfterPayment(category) {
             console.log('--- showResultsAfterPayment ---');
@@ -1822,7 +2572,27 @@
 
         // Initialize payment button handlers
         document.addEventListener('DOMContentLoaded', function () {
-            // Package selector handler
+            // Get Results button handler (Freemium flow)
+            const getResultsBtn = document.getElementById('getResultsBtn');
+            if (getResultsBtn) {
+                getResultsBtn.addEventListener('click', function() {
+                    if (!this.disabled) {
+                        showTeaserResults();
+                    }
+                });
+            }
+            
+            // Update Get Results button state on grade changes
+            document.querySelectorAll('.grade-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    updateGetResultsButtonState();
+                });
+            });
+            
+            // Initial state update
+            setTimeout(updateGetResultsButtonState, 100);
+            
+            // Package selector handler (kept for backwards compatibility)
             const packageSelect = document.getElementById('packageSelect');
             const serviceName = document.getElementById('serviceName');
             const costAmount = document.getElementById('costAmount');

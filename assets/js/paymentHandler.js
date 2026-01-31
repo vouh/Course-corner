@@ -11,6 +11,45 @@ class PaymentHandler {
 
     // Base configuration is handled in the first constructor
 
+    // Validate referral code exists in database
+    async validateReferralCode(code) {
+        if (!code || code.trim() === '') {
+            return { valid: true, code: null }; // No code is valid (optional)
+        }
+
+        try {
+            const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
+            const db = getFirestore(window.firebaseApp);
+            
+            // Check in referralCodes collection
+            const codeDoc = await getDoc(doc(db, 'referralCodes', code.toUpperCase()));
+            
+            if (codeDoc.exists()) {
+                const codeData = codeDoc.data();
+                if (codeData.isActive) {
+                    return { valid: true, code: code.toUpperCase(), owner: codeData };
+                } else {
+                    return { valid: false, error: 'This referral code is no longer active' };
+                }
+            }
+            
+            // Fallback: Check in users collection (for older codes)
+            const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
+            const usersQuery = query(collection(db, 'users'), where('referralCode', '==', code.toUpperCase()));
+            const usersSnapshot = await getDocs(usersQuery);
+            
+            if (!usersSnapshot.empty) {
+                const userData = usersSnapshot.docs[0].data();
+                return { valid: true, code: code.toUpperCase(), owner: userData };
+            }
+            
+            return { valid: false, error: 'Invalid referral code. Please check and try again.' };
+        } catch (error) {
+            console.error('Error validating referral code:', error);
+            return { valid: false, error: 'Could not validate referral code. Please try again.' };
+        }
+    }
+
     // Initiate payment
     async initiatePayment(phoneNumber, category, amount, referralCode = null) {
         try {
@@ -25,6 +64,15 @@ class PaymentHandler {
                 throw new Error('Invalid category selected');
             }
             if (!amount) throw new Error('Invalid amount');
+
+            // Validate referral code if provided
+            if (referralCode) {
+                const validation = await this.validateReferralCode(referralCode);
+                if (!validation.valid) {
+                    throw new Error(validation.error);
+                }
+                referralCode = validation.code; // Use normalized code
+            }
 
             // Call backend to initiate STK push
             const response = await fetch(`${this.serverUrl}/mpesa/stkpush`, {

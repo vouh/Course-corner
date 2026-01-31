@@ -3399,6 +3399,11 @@
                         <input type="email" id="signupEmail" class="form-input" placeholder="Enter your email" required>
                     </div>
                     <div class="form-group">
+                        <label for="signupPhone">M-Pesa Phone Number <span class="text-xs text-gray-500">(for referral payouts)</span></label>
+                        <input type="tel" id="signupPhone" class="form-input" placeholder="07XXXXXXXX or 01XXXXXXXX"
+                            required pattern="^(0|254|\+254)?[17]\d{8}$">
+                    </div>
+                    <div class="form-group">
                         <label for="signupPassword">Password</label>
                         <input type="password" id="signupPassword" class="form-input"
                             placeholder="Create a password (min 6 characters)" required minlength="6">
@@ -3488,6 +3493,7 @@
             event.preventDefault();
             const name = document.getElementById('signupName').value;
             const email = document.getElementById('signupEmail').value;
+            const phone = document.getElementById('signupPhone').value;
             const password = document.getElementById('signupPassword').value;
             const confirmPassword = document.getElementById('signupConfirmPassword').value;
             const btn = document.getElementById('signupBtn');
@@ -3501,11 +3507,29 @@
                 return;
             }
 
+            // Validate phone number
+            if (!phone || !/^(0|254|\+254)?[17]\d{8}$/.test(phone.replace(/\s/g, ''))) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Phone Number',
+                    text: 'Please enter a valid Kenyan phone number (07... or 01...)'
+                });
+                return;
+            }
+
+            // Format phone number to 254...
+            let formattedPhone = phone.replace(/\s/g, '');
+            if (formattedPhone.startsWith('0')) {
+                formattedPhone = '254' + formattedPhone.substring(1);
+            } else if (formattedPhone.startsWith('+')) {
+                formattedPhone = formattedPhone.substring(1);
+            }
+
             try {
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating account...';
 
-                await window.firebaseAuth.signup(email, password, name);
+                await window.firebaseAuth.signUp(email, password, name, formattedPhone);
                 window.firebaseAuth.closeAuthModal();
 
                 Swal.fire({

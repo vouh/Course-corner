@@ -159,6 +159,11 @@
                 
                 <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
                     <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Tools</p>
+                    <a href="referral-codes.html"
+                        class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                        <i class="fas fa-ticket-alt text-xl w-6"></i>
+                        <span>All Referral Codes</span>
+                    </a>
                     <a href="#" onclick="openCodeGenerator()" 
                         class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
                         <i class="fas fa-gift text-xl w-6"></i>
@@ -695,7 +700,7 @@
         }
         function closeCodeGenerator() { document.getElementById('code-modal').classList.add('hidden'); document.getElementById('code-modal').classList.remove('flex'); }
         
-        function generateAdminReferralCode() {
+        async function generateAdminReferralCode() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let code = '';
             // Generate 5-char code
@@ -711,13 +716,38 @@
             
             document.getElementById('generated-code').value = code;
             
-            // Add to all codes list (no limit)
+            // Add to local codes list (no limit)
             if (!generatedCodes.includes(code)) { 
                 generatedCodes.unshift(code); 
                 localStorage.setItem('adminCodes', JSON.stringify(generatedCodes)); 
                 updateCodesHistory(); 
             }
-            showToast('Code generated: ' + code, 'success');
+
+            // Save to Firestore referralCodes collection
+            try {
+                const { getFirestore, doc, setDoc } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
+                const db = getFirestore(window.firebaseApp);
+                const user = window.firebaseAuth.currentUser;
+                
+                await setDoc(doc(db, 'referralCodes', code), {
+                    code: code,
+                    userId: user?.uid || 'admin',
+                    userEmail: user?.email || 'admin@coursecorner.com',
+                    userName: 'Admin Generated',
+                    phoneNumber: '',
+                    createdAt: new Date().toISOString(),
+                    totalReferrals: 0,
+                    paidReferrals: 0,
+                    totalEarnings: 0,
+                    pendingPayout: 0,
+                    isActive: true,
+                    isAdminGenerated: true
+                });
+                showToast('Code generated and saved: ' + code, 'success');
+            } catch (error) {
+                console.error('Error saving code to Firestore:', error);
+                showToast('Code generated (local only): ' + code, 'warning');
+            }
         }
         function copyGeneratedCode() {
             const code = document.getElementById('generated-code').value;

@@ -111,7 +111,7 @@ class FirebaseAuthHandler {
     /**
      * Sign up with email and password
      */
-    async signUp(email, password, displayName = '') {
+    async signUp(email, password, displayName = '', phoneNumber = '') {
         try {
             const { createUserWithEmailAndPassword, updateProfile } = this.firebaseFunctions;
             
@@ -123,8 +123,8 @@ class FirebaseAuthHandler {
                 await updateProfile(user, { displayName });
             }
 
-            // Create user profile in Firestore
-            await this.createUserProfile(user, { displayName });
+            // Create user profile in Firestore with phone number
+            await this.createUserProfile(user, { displayName, phoneNumber });
 
             this.showToast('Account created successfully!', 'success');
             return { success: true, user };
@@ -236,7 +236,7 @@ class FirebaseAuthHandler {
                 email: user.email,
                 displayName: additionalData.displayName || user.displayName || '',
                 photoURL: additionalData.photoURL || user.photoURL || '',
-                phoneNumber: '',
+                phoneNumber: additionalData.phoneNumber || '',
                 kcseYear: '',
                 kcseGrades: {
                     mathematics: '',

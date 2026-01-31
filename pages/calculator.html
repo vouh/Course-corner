@@ -1562,6 +1562,45 @@
                             });
 
                             placementHtml += `</div></div>`;
+                            
+                            // Add KUCCPS disclaimer
+                            placementHtml += `
+                                <div class="mt-8 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6 shadow-sm">
+                                    <div class="flex items-start gap-4">
+                                        <div class="flex-shrink-0">
+                                            <div class="h-10 w-10 bg-amber-100 rounded-full flex items-center justify-center">
+                                                <i class="fas fa-info-circle text-amber-600 text-lg"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <h4 class="text-amber-800 font-bold text-base mb-2">Important Notice - Data Source & Disclaimer</h4>
+                                            <p class="text-amber-700 text-sm leading-relaxed mb-3">
+                                                This placement data is sourced from <strong>KUCCPS (Kenya Universities and Colleges Central Placement Service)</strong>. 
+                                                Use this information as a <strong>guide only</strong>. Always verify cutoff points and program availability directly with KUCCPS or the respective institution before making decisions.
+                                            </p>
+                                            <div class="flex flex-wrap gap-2 mt-3">
+                                                <a href="https://www.kuccps.ac.ke/index.php/downloads" target="_blank" rel="noopener noreferrer" 
+                                                   class="inline-flex items-center gap-1.5 text-xs font-medium text-amber-700 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-full transition-colors">
+                                                    <i class="fas fa-file-pdf"></i> KUCCPS Downloads
+                                                </a>
+                                                <a href="https://www.kuccps.ac.ke/index.php/programmes" target="_blank" rel="noopener noreferrer" 
+                                                   class="inline-flex items-center gap-1.5 text-xs font-medium text-amber-700 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-full transition-colors">
+                                                    <i class="fas fa-graduation-cap"></i> Programmes
+                                                </a>
+                                                <a href="https://www.kuccps.ac.ke/index.php/institutions" target="_blank" rel="noopener noreferrer" 
+                                                   class="inline-flex items-center gap-1.5 text-xs font-medium text-amber-700 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-full transition-colors">
+                                                    <i class="fas fa-university"></i> Institutions
+                                                </a>
+                                                <a href="https://www.kuccps.ac.ke" target="_blank" rel="noopener noreferrer" 
+                                                   class="inline-flex items-center gap-1.5 text-xs font-medium text-amber-700 bg-amber-100 hover:bg-amber-200 px-3 py-1.5 rounded-full transition-colors">
+                                                    <i class="fas fa-external-link-alt"></i> KUCCPS Website
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            
                             resultsContent.innerHTML += placementHtml;
                             
                             // Attach copy handlers to code buttons

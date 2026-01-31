@@ -3466,16 +3466,11 @@
                 btn.disabled = true;
                 btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
 
-                await window.firebaseAuth.login(email, password);
+                await window.firebaseAuth.signIn(email, password);
                 window.firebaseAuth.closeAuthModal();
 
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Welcome back!',
-                    text: 'You have successfully logged in.',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
+                // Redirect to referral dashboard
+                window.location.href = 'referral.html';
             } catch (error) {
                 Swal.fire({
                     icon: 'error',
@@ -3539,6 +3534,9 @@
                     timer: 2500,
                     showConfirmButton: false
                 });
+
+                // Redirect to referral dashboard
+                window.location.href = 'referral.html';
             } catch (error) {
                 Swal.fire({
                     icon: 'error',
@@ -3557,13 +3555,8 @@
                 await window.firebaseAuth.signInWithGoogle();
                 window.firebaseAuth.closeAuthModal();
 
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Welcome!',
-                    text: 'You have successfully signed in with Google.',
-                    timer: 2000,
-                    showConfirmButton: false
-                });
+                // Redirect to referral dashboard
+                window.location.href = 'referral.html';
             } catch (error) {
                 Swal.fire({
                     icon: 'error',

@@ -112,6 +112,7 @@ class FirebaseAuthHandler {
      * Sign up with email and password
      */
     async signUp(email, password, displayName = '', phoneNumber = '') {
+        this.showLoadingOverlay('Creating your account...', 'Please wait');
         try {
             const { createUserWithEmailAndPassword, updateProfile } = this.firebaseFunctions;
             
@@ -126,11 +127,12 @@ class FirebaseAuthHandler {
             // Create user profile in Firestore with phone number
             await this.createUserProfile(user, { displayName, phoneNumber });
 
-            this.showToast('Account created successfully!', 'success');
+            this.showSuccessOverlay('Account Created!', 'Welcome to Course Corner', 2000);
             return { success: true, user };
 
         } catch (error) {
             console.error('Signup error:', error);
+            this.hideLoadingOverlay();
             this.showToast(this.getErrorMessage(error.code), 'error');
             return { success: false, error: error.message };
         }
@@ -140,16 +142,18 @@ class FirebaseAuthHandler {
      * Sign in with email and password
      */
     async signIn(email, password) {
+        this.showLoadingOverlay('Signing you in...', 'Please wait');
         try {
             const { signInWithEmailAndPassword } = this.firebaseFunctions;
             
             const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
             
-            this.showToast('Welcome back!', 'success');
+            this.showSuccessOverlay('Welcome Back!', 'You are now signed in', 1500);
             return { success: true, user: userCredential.user };
 
         } catch (error) {
             console.error('Sign in error:', error);
+            this.hideLoadingOverlay();
             this.showToast(this.getErrorMessage(error.code), 'error');
             return { success: false, error: error.message };
         }
@@ -169,6 +173,8 @@ class FirebaseAuthHandler {
             const result = await signInWithPopup(this.auth, provider);
             const user = result.user;
 
+            this.showLoadingOverlay('Completing sign in...', 'Please wait');
+
             // Check if user profile exists, if not create one
             const profileExists = await this.checkUserProfileExists(user.uid);
             if (!profileExists) {
@@ -178,11 +184,12 @@ class FirebaseAuthHandler {
                 });
             }
 
-            this.showToast('Signed in with Google!', 'success');
+            this.showSuccessOverlay('Welcome!', 'Signed in with Google', 1500);
             return { success: true, user };
 
         } catch (error) {
             console.error('Google sign in error:', error);
+            this.hideLoadingOverlay();
             if (error.code !== 'auth/popup-closed-by-user') {
                 this.showToast(this.getErrorMessage(error.code), 'error');
             }
@@ -194,13 +201,15 @@ class FirebaseAuthHandler {
      * Sign out
      */
     async logout() {
+        this.showLoadingOverlay('Signing out...', '');
         try {
             const { signOut } = this.firebaseFunctions;
             await signOut(this.auth);
-            this.showToast('Signed out successfully', 'success');
+            this.showSuccessOverlay('Goodbye!', 'You have been signed out', 1500);
             return { success: true };
         } catch (error) {
             console.error('Sign out error:', error);
+            this.hideLoadingOverlay();
             this.showToast('Error signing out', 'error');
             return { success: false, error: error.message };
         }
@@ -668,25 +677,298 @@ class FirebaseAuthHandler {
     }
 
     /**
-     * Show toast notification
+     * Show toast notification - Modern redesigned version
      */
     showToast(message, type = 'info') {
-        if (typeof Swal !== 'undefined') {
-            const Toast = Swal.mixin({
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true
-            });
+        // Remove any existing toasts
+        const existingToast = document.querySelector('.cc-toast');
+        if (existingToast) existingToast.remove();
 
-            Toast.fire({
-                icon: type,
-                title: message
-            });
-        } else {
-            alert(message);
+        const icons = {
+            success: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>',
+            error: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>',
+            warning: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>',
+            info: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>'
+        };
+
+        const colors = {
+            success: { bg: '#ecfdf5', border: '#10b981', text: '#065f46', icon: '#10b981' },
+            error: { bg: '#fef2f2', border: '#ef4444', text: '#991b1b', icon: '#ef4444' },
+            warning: { bg: '#fffbeb', border: '#f59e0b', text: '#92400e', icon: '#f59e0b' },
+            info: { bg: '#eff6ff', border: '#3b82f6', text: '#1e40af', icon: '#3b82f6' }
+        };
+
+        const color = colors[type] || colors.info;
+        const icon = icons[type] || icons.info;
+
+        const toast = document.createElement('div');
+        toast.className = 'cc-toast';
+        toast.innerHTML = `
+            <div class="cc-toast-icon" style="color: ${color.icon}">${icon}</div>
+            <div class="cc-toast-message">${message}</div>
+            <button class="cc-toast-close" onclick="this.parentElement.remove()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        `;
+
+        toast.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: ${color.bg};
+            border: 1px solid ${color.border};
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            font-family: 'Inter', -apple-system, sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            color: ${color.text};
+            max-width: 400px;
+            animation: ccToastSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        `;
+
+        // Add animation styles if not present
+        if (!document.getElementById('cc-toast-styles')) {
+            const style = document.createElement('style');
+            style.id = 'cc-toast-styles';
+            style.textContent = `
+                @keyframes ccToastSlideIn {
+                    from { opacity: 0; transform: translateX(100px); }
+                    to { opacity: 1; transform: translateX(0); }
+                }
+                @keyframes ccToastSlideOut {
+                    from { opacity: 1; transform: translateX(0); }
+                    to { opacity: 0; transform: translateX(100px); }
+                }
+                .cc-toast-icon { flex-shrink: 0; }
+                .cc-toast-message { flex: 1; line-height: 1.4; }
+                .cc-toast-close {
+                    flex-shrink: 0;
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    padding: 4px;
+                    opacity: 0.5;
+                    transition: opacity 0.2s;
+                }
+                .cc-toast-close:hover { opacity: 1; }
+                @media (max-width: 480px) {
+                    .cc-toast {
+                        left: 16px !important;
+                        right: 16px !important;
+                        max-width: none !important;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
         }
+
+        document.body.appendChild(toast);
+
+        // Auto remove after 4 seconds
+        setTimeout(() => {
+            toast.style.animation = 'ccToastSlideOut 0.3s ease forwards';
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+
+    /**
+     * Show loading overlay - Modern full-screen loader
+     */
+    showLoadingOverlay(message = 'Loading...', subtext = '') {
+        this.hideLoadingOverlay(); // Remove any existing
+
+        const overlay = document.createElement('div');
+        overlay.id = 'cc-loading-overlay';
+        overlay.innerHTML = `
+            <div class="cc-loader-content">
+                <div class="cc-loader-spinner">
+                    <svg viewBox="0 0 50 50">
+                        <circle cx="25" cy="25" r="20" fill="none" stroke-width="4"></circle>
+                    </svg>
+                </div>
+                <div class="cc-loader-text">${message}</div>
+                ${subtext ? `<div class="cc-loader-subtext">${subtext}</div>` : ''}
+            </div>
+        `;
+
+        overlay.style.cssText = `
+            position: fixed;
+            inset: 0;
+            z-index: 99998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            animation: ccOverlayFadeIn 0.3s ease;
+        `;
+
+        // Add loader styles if not present
+        if (!document.getElementById('cc-loader-styles')) {
+            const style = document.createElement('style');
+            style.id = 'cc-loader-styles';
+            style.textContent = `
+                @keyframes ccOverlayFadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes ccSpinnerRotate {
+                    100% { transform: rotate(360deg); }
+                }
+                @keyframes ccSpinnerDash {
+                    0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; }
+                    50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; }
+                    100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
+                }
+                .cc-loader-content {
+                    text-align: center;
+                }
+                .cc-loader-spinner {
+                    width: 56px;
+                    height: 56px;
+                    margin: 0 auto 20px;
+                }
+                .cc-loader-spinner svg {
+                    animation: ccSpinnerRotate 2s linear infinite;
+                }
+                .cc-loader-spinner circle {
+                    stroke: #16a34a;
+                    stroke-linecap: round;
+                    animation: ccSpinnerDash 1.5s ease-in-out infinite;
+                }
+                .cc-loader-text {
+                    font-family: 'Inter', -apple-system, sans-serif;
+                    font-size: 18px;
+                    font-weight: 600;
+                    color: #111827;
+                    margin-bottom: 8px;
+                }
+                .cc-loader-subtext {
+                    font-family: 'Inter', -apple-system, sans-serif;
+                    font-size: 14px;
+                    color: #6b7280;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
+    }
+
+    /**
+     * Hide loading overlay
+     */
+    hideLoadingOverlay() {
+        const overlay = document.getElementById('cc-loading-overlay');
+        if (overlay) {
+            overlay.remove();
+        }
+        document.body.style.overflow = '';
+    }
+
+    /**
+     * Show success overlay - For completed actions
+     */
+    showSuccessOverlay(title = 'Success!', message = '', duration = 2000) {
+        this.hideLoadingOverlay();
+
+        const overlay = document.createElement('div');
+        overlay.id = 'cc-success-overlay';
+        overlay.innerHTML = `
+            <div class="cc-success-content">
+                <div class="cc-success-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                        <polyline points="22 4 12 14.01 9 11.01"/>
+                    </svg>
+                </div>
+                <div class="cc-success-title">${title}</div>
+                ${message ? `<div class="cc-success-message">${message}</div>` : ''}
+            </div>
+        `;
+
+        overlay.style.cssText = `
+            position: fixed;
+            inset: 0;
+            z-index: 99998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(8px);
+            animation: ccOverlayFadeIn 0.3s ease;
+        `;
+
+        // Add success styles if not present
+        if (!document.getElementById('cc-success-styles')) {
+            const style = document.createElement('style');
+            style.id = 'cc-success-styles';
+            style.textContent = `
+                @keyframes ccSuccessPop {
+                    0% { transform: scale(0); opacity: 0; }
+                    50% { transform: scale(1.1); }
+                    100% { transform: scale(1); opacity: 1; }
+                }
+                @keyframes ccSuccessCheck {
+                    0% { stroke-dashoffset: 100; }
+                    100% { stroke-dashoffset: 0; }
+                }
+                .cc-success-content {
+                    text-align: center;
+                    animation: ccSuccessPop 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+                }
+                .cc-success-icon {
+                    width: 80px;
+                    height: 80px;
+                    margin: 0 auto 24px;
+                    background: #dcfce7;
+                    border-radius: 50%;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: #16a34a;
+                }
+                .cc-success-icon svg {
+                    stroke-dasharray: 100;
+                    animation: ccSuccessCheck 0.6s ease 0.2s forwards;
+                }
+                .cc-success-title {
+                    font-family: 'Inter', -apple-system, sans-serif;
+                    font-size: 24px;
+                    font-weight: 700;
+                    color: #111827;
+                    margin-bottom: 8px;
+                }
+                .cc-success-message {
+                    font-family: 'Inter', -apple-system, sans-serif;
+                    font-size: 16px;
+                    color: #6b7280;
+                    max-width: 300px;
+                    margin: 0 auto;
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        document.body.appendChild(overlay);
+        document.body.style.overflow = 'hidden';
+
+        // Auto remove
+        setTimeout(() => {
+            overlay.style.opacity = '0';
+            overlay.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => {
+                overlay.remove();
+                document.body.style.overflow = '';
+            }, 300);
+        }, duration);
     }
 }
 

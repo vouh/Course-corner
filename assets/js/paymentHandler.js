@@ -300,13 +300,18 @@ class PaymentHandler {
     // Verify existing payment (for "I Already Paid" option)
     async verifyExistingPayment(phoneNumber, category, onSuccess) {
         try {
-            Swal.fire({
-                title: 'Verifying Payment...',
-                html: '<p>Checking for your payment...</p>',
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                didOpen: () => Swal.showLoading()
-            });
+            // Show modern loading
+            if (window.firebaseAuth && window.firebaseAuth.showLoadingOverlay) {
+                window.firebaseAuth.showLoadingOverlay('Verifying Payment...', 'Checking your payment records');
+            } else {
+                Swal.fire({
+                    title: 'Verifying Payment...',
+                    html: '<p>Checking for your payment...</p>',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    didOpen: () => Swal.showLoading()
+                });
+            }
 
             // Format phone number
             let formattedPhone = phoneNumber.replace(/\s/g, '');
@@ -331,21 +336,36 @@ class PaymentHandler {
                 localStorage.setItem('paymentSessionId', this.sessionId);
                 this.isPaymentCompleted = true;
 
-                await Swal.fire({
-                    icon: 'success',
-                    title: '✅ Payment Verified!',
-                    text: 'Your previous payment has been found. Loading your results...',
-                    timer: 2000,
-                    showConfirmButton: false,
-                    timerProgressBar: true
-                });
+                // Show beautiful success
+                if (window.firebaseAuth && window.firebaseAuth.showSuccessOverlay) {
+                    window.firebaseAuth.showSuccessOverlay('Payment Verified!', 'Loading your results...', 2000);
+                    
+                    setTimeout(() => {
+                        if (onSuccess && typeof onSuccess === 'function') {
+                            onSuccess();
+                        }
+                    }, 2000);
+                } else {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Payment Verified!',
+                        text: 'Your previous payment has been found. Loading your results...',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        timerProgressBar: true
+                    });
 
-                if (onSuccess && typeof onSuccess === 'function') {
-                    onSuccess();
+                    if (onSuccess && typeof onSuccess === 'function') {
+                        onSuccess();
+                    }
                 }
                 return { success: true };
             } else {
-                // No payment found
+                // No payment found - hide loading first
+                if (window.firebaseAuth && window.firebaseAuth.hideLoadingOverlay) {
+                    window.firebaseAuth.hideLoadingOverlay();
+                }
+                
                 await Swal.fire({
                     icon: 'warning',
                     title: 'No Payment Found',
@@ -369,6 +389,11 @@ class PaymentHandler {
             }
         } catch (error) {
             console.error('Payment verification error:', error);
+            
+            if (window.firebaseAuth && window.firebaseAuth.hideLoadingOverlay) {
+                window.firebaseAuth.hideLoadingOverlay();
+            }
+            
             Swal.fire({
                 icon: 'error',
                 title: 'Verification Failed',
@@ -506,47 +531,83 @@ class PaymentHandler {
                 throw new Error('Failed to initiate payment');
             }
 
-            // Show waiting for payment
+            // Show waiting for payment - Modern design
             Swal.fire({
-                title: '⏳ Waiting for Payment',
+                title: '',
                 html: `
-                    <div style="text-align: center;">
-                        <p style="margin-bottom: 1rem;">Check your phone for the M-Pesa prompt</p>
-                        <p style="font-size: 0.875rem; color: #6b7280;">Enter your M-Pesa PIN to complete payment of <strong>KES ${amount}</strong></p>
-                        <div id="paymentStatus" style="margin-top: 1rem; padding: 0.5rem; background: #f3f4f6; border-radius: 0.5rem;">
-                            <i class="fas fa-spinner fa-spin"></i> Waiting for confirmation...
+                    <div style="text-align: center; padding: 1rem 0;">
+                        <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                <path d="M7 15h0M2 9h20"/>
+                            </svg>
+                        </div>
+                        <h2 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin-bottom: 0.5rem;">Check Your Phone</h2>
+                        <p style="color: #6b7280; margin-bottom: 1rem;">An M-Pesa payment request has been sent</p>
+                        <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
+                            <p style="font-size: 2rem; font-weight: 700; color: #16a34a;">KES ${amount}</p>
+                            <p style="font-size: 0.875rem; color: #166534;">Enter your M-Pesa PIN to complete</p>
+                        </div>
+                        <div id="paymentStatus" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #f9fafb; border-radius: 8px; color: #6b7280; font-size: 0.875rem;">
+                            <svg class="animate-spin" style="animation: spin 1s linear infinite; width: 16px; height: 16px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Waiting for confirmation...
                         </div>
                     </div>
+                    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
                 `,
                 allowOutsideClick: false,
                 showConfirmButton: false,
                 showCancelButton: true,
-                cancelButtonText: 'Cancel',
-                cancelButtonColor: '#6b7280'
+                cancelButtonText: 'Cancel Payment',
+                cancelButtonColor: '#9ca3af',
+                customClass: {
+                    popup: 'swal2-popup-modern',
+                    cancelButton: 'swal2-cancel-modern'
+                }
             });
 
             // Poll for payment status
             const result = await this.pollPaymentStatus(40, 3000, (status, attempt, max) => {
                 const statusEl = document.getElementById('paymentStatus');
                 if (statusEl) {
-                    statusEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Checking payment (${attempt}/${max})...`;
+                    statusEl.innerHTML = `
+                        <svg class="animate-spin" style="animation: spin 1s linear infinite; width: 16px; height: 16px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Verifying payment (${attempt}/${max})...
+                    `;
                 }
             });
 
             if (result.success && result.status === 'completed') {
-                // Payment successful!
-                await Swal.fire({
-                    icon: 'success',
-                    title: '✅ Payment Successful!',
-                    text: 'Your payment has been confirmed. Loading your results...',
-                    timer: 2000,
-                    showConfirmButton: false,
-                    timerProgressBar: true
-                });
+                // Payment successful! - Show beautiful success overlay
+                Swal.close();
+                
+                if (window.firebaseAuth && window.firebaseAuth.showSuccessOverlay) {
+                    window.firebaseAuth.showSuccessOverlay('Payment Successful!', 'Loading your results...', 2500);
+                    
+                    setTimeout(() => {
+                        if (onSuccess && typeof onSuccess === 'function') {
+                            onSuccess();
+                        }
+                    }, 2500);
+                } else {
+                    await Swal.fire({
+                        icon: 'success',
+                        title: 'Payment Successful!',
+                        text: 'Your payment has been confirmed. Loading your results...',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        timerProgressBar: true
+                    });
 
-                // Call success callback
-                if (onSuccess && typeof onSuccess === 'function') {
-                    onSuccess();
+                    if (onSuccess && typeof onSuccess === 'function') {
+                        onSuccess();
+                    }
                 }
             }
 

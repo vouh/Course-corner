@@ -248,18 +248,17 @@
                     <a href="pages/calculator.html" class="modern-nav-link">Calculator</a>
                     <a href="pages/application-process.html" class="modern-nav-link">Application</a>
                     <a href="pages/resources.html" class="modern-nav-link">Resources</a>
-                    <a href="pages/guide.html" class="modern-nav-link">Guide</a>
+                    <a href="pages/referral.html" class="modern-nav-link">Earn Money</a>
                     <a href="pages/contact.html" class="modern-nav-link">Contact</a>
                 </div>
 
                 <!-- Auth Buttons -->
                 <div class="nav-auth-buttons">
                     <div id="userAvatar" class="hidden"></div>
-                    <button id="profileBtn" class="btn-nav-profile hidden"
-                        onclick="window.firebaseAuth.openProfileModal()">
-                        <i class="fas fa-user-circle"></i>
-                        <span>Profile</span>
-                    </button>
+                    <a href="pages/referral.html" id="profileBtn" class="btn-nav-profile hidden">
+                        <i class="fas fa-gift"></i>
+                        <span>My Dashboard</span>
+                    </a>
                     <button id="authBtn" class="btn-nav-login" onclick="window.firebaseAuth.openAuthModal()">
                         <i class="fas fa-user"></i>
                         <span>Login</span>
@@ -284,15 +283,14 @@
                 <a href="pages/calculator.html" class="mobile-nav-link">Calculator</a>
                 <a href="pages/application-process.html" class="mobile-nav-link">Application</a>
                 <a href="pages/resources.html" class="mobile-nav-link">Resources</a>
-                <a href="pages/guide.html" class="mobile-nav-link">Guide</a>
+                <a href="pages/referral.html" class="mobile-nav-link">💰 Earn Money</a>
                 <a href="pages/contact.html" class="mobile-nav-link">Contact</a>
             </nav>
             <div class="mobile-auth-buttons">
-                <button id="profileBtnMobile" class="btn-nav-profile hidden" style="width:100%; justify-content:center;"
-                    onclick="window.firebaseAuth.openProfileModal()">
-                    <i class="fas fa-user-circle"></i>
-                    Profile
-                </button>
+                <a href="pages/referral.html" id="profileBtnMobile" class="btn-nav-profile hidden" style="width:100%; justify-content:center; text-decoration:none;">
+                    <i class="fas fa-gift"></i>
+                    My Dashboard
+                </a>
                 <button id="authBtnMobile" class="btn-nav-login" style="width:100%; justify-content:center;"
                     onclick="window.firebaseAuth.openAuthModal()">
                     <i class="fas fa-user"></i>
@@ -2712,6 +2710,8 @@
 
             if (result.success) {
                 window.firebaseAuth.closeAuthModal();
+                // Redirect to referral dashboard
+                window.location.href = 'pages/referral.html';
             }
         }
 
@@ -2762,6 +2762,8 @@
 
             if (result.success) {
                 window.firebaseAuth.closeAuthModal();
+                // Redirect to referral dashboard
+                window.location.href = 'pages/referral.html';
             }
         }
 
@@ -2770,6 +2772,8 @@
             const result = await window.firebaseAuth.signInWithGoogle();
             if (result.success) {
                 window.firebaseAuth.closeAuthModal();
+                // Redirect to referral dashboard
+                window.location.href = 'pages/referral.html';
             }
         }
 

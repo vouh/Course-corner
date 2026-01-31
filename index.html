@@ -659,11 +659,20 @@
 
     <script>
         // ========================================
-        // REFERRAL CODE CAPTURE
+        // REFERRAL CODE CAPTURE (supports both ?ref= and #ref=)
         // ========================================
         (function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const refCode = urlParams.get('ref');
+            // Check query params first
+            let refCode = new URLSearchParams(window.location.search).get('ref');
+            
+            // If not in query, check hash (e.g., #ref=XXXXX)
+            if (!refCode && window.location.hash) {
+                const hashParams = window.location.hash.substring(1); // Remove #
+                if (hashParams.startsWith('ref=')) {
+                    refCode = hashParams.split('=')[1];
+                }
+            }
+            
             if (refCode) {
                 localStorage.setItem('pendingReferralCode', refCode.toUpperCase());
                 console.log('📌 Referral code captured:', refCode);

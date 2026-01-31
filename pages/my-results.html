@@ -504,7 +504,7 @@
         window.copyReferralCode = function() {
             const code = document.getElementById('referralCode').textContent;
             if (code && code !== '-----') {
-                const link = `https://coursecornerkenya.com?ref=${code}`;
+                const link = `https://coursecornerkenya.com/#ref=${code}`;
                 navigator.clipboard.writeText(link);
                 Swal.fire({
                     icon: 'success',

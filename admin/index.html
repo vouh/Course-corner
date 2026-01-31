@@ -722,7 +722,7 @@
         function copyGeneratedCode() {
             const code = document.getElementById('generated-code').value;
             if (!code || code === 'XXXXX') { showToast('Generate first', 'warning'); return; }
-            navigator.clipboard.writeText('https://coursecornerkenya.com?ref=' + code).then(() => showToast('Link copied!', 'success'));
+            navigator.clipboard.writeText('https://coursecornerkenya.com/#ref=' + code).then(() => showToast('Link copied!', 'success'));
         }
         function updateCodesHistory() {
             const c = document.getElementById('codes-history'), l = document.getElementById('codes-list');

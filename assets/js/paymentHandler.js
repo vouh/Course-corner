@@ -337,9 +337,18 @@ class PaymentHandler {
             // Get referral code from localStorage or URL
             let storedReferralCode = localStorage.getItem('pendingReferralCode') || '';
             
-            // Check URL params for referral code
+            // Check URL params for referral code (supports both ?ref= and #ref=)
             const urlParams = new URLSearchParams(window.location.search);
-            const urlRefCode = urlParams.get('ref') || urlParams.get('referral');
+            let urlRefCode = urlParams.get('ref') || urlParams.get('referral');
+            
+            // Also check hash params (e.g., #ref=XXXXX)
+            if (!urlRefCode && window.location.hash) {
+                const hashParams = window.location.hash.substring(1);
+                if (hashParams.startsWith('ref=')) {
+                    urlRefCode = hashParams.split('=')[1];
+                }
+            }
+            
             if (urlRefCode) {
                 storedReferralCode = urlRefCode;
                 localStorage.setItem('pendingReferralCode', urlRefCode);

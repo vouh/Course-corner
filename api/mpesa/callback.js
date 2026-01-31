@@ -1,3 +1,5 @@
+const { updateTransactionByCheckoutId, creditReferrer } = require('../utils/firebase');
+
 module.exports = async (req, res) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -30,45 +32,63 @@ module.exports = async (req, res) => {
     const resultCode = stkCallback.ResultCode;
     const resultDesc = stkCallback.ResultDesc;
 
-    // Find payment by checkout request ID
-    global.payments = global.payments || {};
-    let payment = null;
-    
-    for (const sessionId in global.payments) {
-      if (global.payments[sessionId].checkoutRequestId === checkoutRequestID) {
-        payment = global.payments[sessionId];
-        break;
-      }
-    }
+    if (resultCode === 0) {
+      // Payment successful - extract metadata
+      const callbackMetadata = stkCallback.CallbackMetadata?.Item || [];
+      const metadata = {};
+      callbackMetadata.forEach(item => {
+        metadata[item.Name] = item.Value;
+      });
 
-    if (payment) {
-      if (resultCode === 0) {
-        // Payment successful
-        console.log('✅ Payment successful for session:', payment.sessionId);
-        
-        // Extract payment metadata
-        const callbackMetadata = stkCallback.CallbackMetadata?.Item || [];
-        const metadata = {};
-        callbackMetadata.forEach(item => {
-          metadata[item.Name] = item.Value;
-        });
+      const mpesaReceiptNumber = metadata.MpesaReceiptNumber || null;
+      
+      // Update transaction in Firebase
+      const transactionId = await updateTransactionByCheckoutId(checkoutRequestID, {
+        status: 'completed',
+        resultDesc: resultDesc,
+        mpesaReceiptNumber: mpesaReceiptNumber,
+        transactionCode: mpesaReceiptNumber,
+        metadata: metadata
+      });
 
-        payment.status = 'completed';
-        payment.resultDesc = resultDesc;
-        payment.metadata = metadata;
-        payment.updatedAt = new Date();
-        
-        console.log('💾 Payment data saved:', metadata);
-      } else {
-        // Payment failed
-        console.log('❌ Payment failed for session:', payment.sessionId);
-        console.log('Reason:', resultDesc);
-        payment.status = 'failed';
-        payment.resultDesc = resultDesc;
-        payment.updatedAt = new Date();
+      console.log('✅ Payment successful, transaction updated:', transactionId);
+
+      // Credit referrer if applicable (12% commission)
+      // We need to get the transaction to check for referral code
+      // This is handled in the updateTransactionByCheckoutId which also updates in-memory
+      global.payments = global.payments || {};
+      for (const sessionId in global.payments) {
+        if (global.payments[sessionId].checkoutRequestId === checkoutRequestID) {
+          const payment = global.payments[sessionId];
+          if (payment.referralCode && transactionId) {
+            console.log('💰 Processing referral commission for code:', payment.referralCode);
+            await creditReferrer(payment.referralCode, payment.amount, transactionId);
+          }
+          // Update in-memory too
+          payment.status = 'completed';
+          payment.mpesaReceiptNumber = mpesaReceiptNumber;
+          payment.metadata = metadata;
+          break;
+        }
       }
     } else {
-      console.warn('⚠️ Payment session not found for checkout ID:', checkoutRequestID);
+      // Payment failed
+      await updateTransactionByCheckoutId(checkoutRequestID, {
+        status: 'failed',
+        resultDesc: resultDesc
+      });
+      
+      console.log('❌ Payment failed:', resultDesc);
+
+      // Update in-memory
+      global.payments = global.payments || {};
+      for (const sessionId in global.payments) {
+        if (global.payments[sessionId].checkoutRequestId === checkoutRequestID) {
+          global.payments[sessionId].status = 'failed';
+          global.payments[sessionId].resultDesc = resultDesc;
+          break;
+        }
+      }
     }
 
     // Acknowledge callback receipt

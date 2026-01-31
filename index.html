@@ -658,6 +658,38 @@
     </section>
 
     <script>
+        // ========================================
+        // REFERRAL CODE CAPTURE
+        // ========================================
+        (function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const refCode = urlParams.get('ref');
+            if (refCode) {
+                localStorage.setItem('pendingReferralCode', refCode.toUpperCase());
+                console.log('📌 Referral code captured:', refCode);
+                
+                // Optional: Show referral banner
+                setTimeout(() => {
+                    const banner = document.createElement('div');
+                    banner.id = 'referralBanner';
+                    banner.className = 'fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-amber-500 to-yellow-500 text-white py-2 px-4 text-center text-sm font-medium shadow-lg';
+                    banner.innerHTML = `
+                        <span><i class="fas fa-gift mr-2"></i>You were referred by a friend! Your discount will be applied.</span>
+                        <button onclick="this.parentElement.remove()" class="ml-4 text-white/80 hover:text-white">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    document.body.prepend(banner);
+                    
+                    // Auto-hide after 10 seconds
+                    setTimeout(() => {
+                        const b = document.getElementById('referralBanner');
+                        if (b) b.remove();
+                    }, 10000);
+                }, 1000);
+            }
+        })();
+
         document.addEventListener('DOMContentLoaded', function () {
             // Modern Header Scroll Effect
             const header = document.getElementById('mainHeader');
@@ -1148,6 +1180,8 @@
                         <li><a href="pages/calculator.html">Calculator</a></li>
                         <li><a href="pages/cluster-points.html">Cluster Points Guide</a></li>
                         <li><a href="pages/application-process.html">Application Process</a></li>
+                        <li><a href="pages/my-results.html">My Dashboard</a></li>
+                        <li><a href="pages/referral.html">Referral Program</a></li>
                     </ul>
                 </div>
 
@@ -1157,6 +1191,7 @@
                     <ul>
                         <li><a href="pages/resources.html">Resources Library</a></li>
                         <li><a href="pages/guide.html">How to Use</a></li>
+                        <li><a href="pages/verify-payment.html">Verify Payment</a></li>
                         <li><a href="pages/privacy-policy.html">Privacy Policy</a></li>
                         <li><a href="pages/terms-of-service.html">Terms of Service</a></li>
                     </ul>

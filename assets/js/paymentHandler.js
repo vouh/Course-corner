@@ -288,8 +288,14 @@ class PaymentHandler {
                 didOpen: () => Swal.showLoading()
             });
 
-            // Initiate payment
-            const initResult = await this.initiatePayment(phoneNumber, category, amount);
+            // Get referral code if present
+            const referralCode = localStorage.getItem('pendingReferralCode') || null;
+            if (referralCode) {
+                console.log('📌 Applying referral code:', referralCode);
+            }
+
+            // Initiate payment with referral code
+            const initResult = await this.initiatePayment(phoneNumber, category, amount, referralCode);
             
             if (!initResult.success) {
                 throw new Error('Failed to initiate payment');

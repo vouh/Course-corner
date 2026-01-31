@@ -1,3 +1,5 @@
+const { getTransactionBySessionId } = require('../utils/firebase');
+
 module.exports = async (req, res) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,9 +22,8 @@ module.exports = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Session ID is required' });
     }
 
-    // Get payment from global store
-    global.payments = global.payments || {};
-    const payment = global.payments[sessionId];
+    // Get payment from Firebase (with in-memory fallback)
+    const payment = await getTransactionBySessionId(sessionId);
 
     if (!payment) {
       return res.status(404).json({ success: false, message: 'Payment session not found' });
@@ -31,16 +32,18 @@ module.exports = async (req, res) => {
     res.json({
       success: true,
       data: {
-        sessionId,
+        sessionId: payment.sessionId,
         category: payment.category,
         amount: payment.amount,
         status: payment.status,
+        mpesaReceiptNumber: payment.mpesaReceiptNumber || null,
         createdAt: payment.createdAt,
         updatedAt: payment.updatedAt || payment.createdAt
       }
     });
 
   } catch (error) {
+    console.error('Status check error:', error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };

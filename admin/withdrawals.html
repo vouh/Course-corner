@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Withdrawals - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac',
+                            400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d',
+                            800: '#166534', 900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #4b5563; }
+        .loader { width: 48px; height: 48px; border: 4px solid #e5e7eb; border-top-color: #22c55e; border-radius: 50%; animation: spin 1s linear infinite; }
+        .dark .loader { border-color: #374151; border-top-color: #22c55e; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .sidebar { transition: transform 0.3s ease; }
+        .hover-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .hover-lift:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15); }
+        .dark .hover-lift:hover { box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.4); }
+        @keyframes slide-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .animate-slide-in { animation: slide-in 0.3s ease; }
+    </style>
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
+    <!-- Auth Check -->
+    <div id="auth-check" class="min-h-screen flex items-center justify-center">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-40 sidebar -translate-x-full lg:translate-x-0">
+            <div class="h-20 flex items-center gap-3 px-6 border-b border-gray-200 dark:border-gray-700">
+                <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-lg">
+                    <i class="fas fa-graduation-cap text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-gray-900 dark:text-white">Course Corner</h1>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Admin Panel</p>
+                </div>
+            </div>
+
+            <nav class="p-4 space-y-2">
+                <a href="index.html" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                    <i class="fas fa-chart-pie text-xl w-6"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="index.html#transactions" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                    <i class="fas fa-receipt text-xl w-6"></i>
+                    <span>Transactions</span>
+                </a>
+                <a href="referrals.html" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                    <i class="fas fa-users text-xl w-6"></i>
+                    <span>Referrals</span>
+                </a>
+                <a href="withdrawals.html" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 font-medium">
+                    <i class="fas fa-money-bill-wave text-xl w-6"></i>
+                    <span>Withdrawals</span>
+                </a>
+            </nav>
+
+            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center">
+                        <i class="fas fa-user text-white"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p id="sidebar-email" class="text-sm font-medium text-gray-900 dark:text-white truncate">admin@email.com</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Administrator</p>
+                    </div>
+                    <button onclick="logout()" class="p-2 text-gray-400 hover:text-red-500 transition-colors" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="lg:ml-72 min-h-screen">
+            <!-- Top Bar -->
+            <header class="h-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30 px-4 lg:px-8 flex items-center justify-between">
+                <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <div class="hidden lg:block">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Withdrawals</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Manage withdrawal requests</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="loadWithdrawals()" class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" title="Refresh">
+                        <i class="fas fa-sync-alt text-lg"></i>
+                    </button>
+                    <button onclick="toggleTheme()" class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" title="Toggle Theme">
+                        <i class="fas fa-sun text-lg dark:hidden"></i>
+                        <i class="fas fa-moon text-lg hidden dark:inline"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden"></div>
+
+            <main class="p-4 lg:p-8">
+                <!-- Stats -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+                    <div class="hover-lift bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-clock text-white text-2xl"></i>
+                            </div>
+                            <span class="relative flex h-3 w-3">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+                            </span>
+                        </div>
+                        <p id="stat-pending" class="text-4xl font-bold text-gray-900 dark:text-white mb-1">-</p>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Pending Requests</p>
+                    </div>
+
+                    <div class="hover-lift bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-check-circle text-white text-2xl"></i>
+                            </div>
+                        </div>
+                        <p id="stat-approved" class="text-4xl font-bold text-gray-900 dark:text-white mb-1">-</p>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Approved</p>
+                    </div>
+
+                    <div class="hover-lift bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-14 h-14 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-times-circle text-white text-2xl"></i>
+                            </div>
+                        </div>
+                        <p id="stat-rejected" class="text-4xl font-bold text-gray-900 dark:text-white mb-1">-</p>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Rejected</p>
+                    </div>
+
+                    <div class="hover-lift bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-coins text-white text-2xl"></i>
+                            </div>
+                        </div>
+                        <p id="stat-total-amount" class="text-4xl font-bold text-gray-900 dark:text-white mb-1">-</p>
+                        <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Paid Out</p>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div class="md:col-span-2 relative">
+                            <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="search-input" placeholder="Search by phone or code..." 
+                                class="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white"
+                                onkeyup="filterWithdrawals()">
+                        </div>
+                        <select id="status-filter" onchange="filterWithdrawals()"
+                            class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white">
+                            <option value="">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                        <button onclick="clearFilters()" class="px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                            <i class="fas fa-times mr-2"></i>Clear Filters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Withdrawals Table -->
+                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50 dark:bg-gray-700/50">
+                                <tr>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Date</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Referrer</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Amount</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Phone</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="withdrawals-body" class="divide-y divide-gray-100 dark:divide-gray-700">
+                                <tr><td colspan="6" class="px-6 py-12 text-center"><div class="loader mx-auto mb-4"></div><p class="text-gray-500 dark:text-gray-400">Loading withdrawals...</p></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="empty-state" class="hidden p-12 text-center">
+                        <div class="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-wallet text-gray-400 text-3xl"></i>
+                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Withdrawals Found</h3>
+                        <p class="text-gray-500 dark:text-gray-400">No withdrawal requests yet</p>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div id="confirm-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-md w-full p-8">
+            <div class="text-center mb-6">
+                <div id="confirm-icon" class="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg"></div>
+                <h3 id="confirm-title" class="text-2xl font-bold text-gray-900 dark:text-white"></h3>
+                <p id="confirm-message" class="text-gray-500 dark:text-gray-400 mt-2"></p>
+            </div>
+            <div id="confirm-details" class="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-xl"></div>
+            <div class="flex gap-3">
+                <button onclick="closeConfirmModal()" class="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-4 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">Cancel</button>
+                <button id="confirm-btn" class="flex-1 py-4 rounded-xl font-bold transition-all"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
+            authDomain: "course-corner.firebaseapp.com",
+            projectId: "course-corner",
+            storageBucket: "course-corner.firebasestorage.app",
+            messagingSenderId: "961706784572",
+            appId: "1:961706784572:web:7aa6c24946570ffda59039"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        let allWithdrawals = [], filteredWithdrawals = [];
+        let pendingAction = null;
+
+        // Theme
+        function initTheme() {
+            const saved = localStorage.getItem('admin-theme');
+            if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        }
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('admin-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        }
+        initTheme();
+
+        // Sidebar
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebar-overlay').classList.toggle('hidden');
+        }
+
+        // Auth
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('auth-check').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                document.getElementById('sidebar-email').textContent = user.email;
+                loadWithdrawals();
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+
+        function logout() { auth.signOut().then(() => window.location.href = 'index.html'); }
+
+        // Load Withdrawals
+        async function loadWithdrawals() {
+            try {
+                const snapshot = await db.collection('withdrawals').orderBy('createdAt', 'desc').get();
+                allWithdrawals = [];
+                let pending = 0, approved = 0, rejected = 0, totalPaid = 0;
+
+                snapshot.forEach(doc => {
+                    const data = { id: doc.id, ...doc.data() };
+                    allWithdrawals.push(data);
+                    if (data.status === 'pending') pending++;
+                    else if (data.status === 'approved') { approved++; totalPaid += data.amount || 0; }
+                    else if (data.status === 'rejected') rejected++;
+                });
+
+                filteredWithdrawals = [...allWithdrawals];
+
+                document.getElementById('stat-pending').textContent = pending;
+                document.getElementById('stat-approved').textContent = approved;
+                document.getElementById('stat-rejected').textContent = rejected;
+                document.getElementById('stat-total-amount').textContent = `KSH ${totalPaid.toLocaleString()}`;
+
+                renderTable();
+            } catch (e) {
+                console.error('Error loading withdrawals:', e);
+                showToast('Failed to load withdrawals', 'error');
+            }
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('withdrawals-body');
+            const empty = document.getElementById('empty-state');
+
+            if (!filteredWithdrawals.length) {
+                tbody.innerHTML = '';
+                empty.classList.remove('hidden');
+                return;
+            }
+            empty.classList.add('hidden');
+
+            tbody.innerHTML = filteredWithdrawals.map(w => `
+                <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                    <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">${formatDate(w.createdAt)}</td>
+                    <td class="px-6 py-4">
+                        <div>
+                            <p class="font-semibold text-gray-900 dark:text-white">${w.referralCode || '-'}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">${w.referrerPhone || w.phone || '-'}</p>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400">KSH ${(w.amount || 0).toLocaleString()}</span>
+                    </td>
+                    <td class="px-6 py-4 font-medium text-gray-900 dark:text-white">${w.mpesaPhone || w.phone || '-'}</td>
+                    <td class="px-6 py-4">${getStatusBadge(w.status)}</td>
+                    <td class="px-6 py-4">
+                        ${w.status === 'pending' ? `
+                            <div class="flex gap-2">
+                                <button onclick="confirmApprove('${w.id}')" class="p-2 bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-lg hover:bg-green-200 dark:hover:bg-green-900/50 transition-colors" title="Approve">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button onclick="confirmReject('${w.id}')" class="p-2 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors" title="Reject">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        ` : `<span class="text-sm text-gray-400">${w.processedAt ? formatDate(w.processedAt) : '-'}</span>`}
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function formatDate(d) {
+            if (!d) return '-';
+            const date = d.toDate ? d.toDate() : new Date(d);
+            return date.toLocaleDateString('en-KE', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        }
+
+        function getStatusBadge(s) {
+            const badges = {
+                'pending': '<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400"><i class="fas fa-clock"></i>Pending</span>',
+                'approved': '<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400"><i class="fas fa-check-circle"></i>Approved</span>',
+                'rejected': '<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400"><i class="fas fa-times-circle"></i>Rejected</span>'
+            };
+            return badges[s] || `<span class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100">${s}</span>`;
+        }
+
+        function filterWithdrawals() {
+            const search = document.getElementById('search-input').value.toLowerCase().trim();
+            const status = document.getElementById('status-filter').value;
+
+            filteredWithdrawals = allWithdrawals.filter(w => {
+                if (status && w.status !== status) return false;
+                if (search && !(
+                    (w.referralCode && w.referralCode.toLowerCase().includes(search)) ||
+                    (w.phone && w.phone.includes(search)) ||
+                    (w.mpesaPhone && w.mpesaPhone.includes(search)) ||
+                    (w.referrerPhone && w.referrerPhone.includes(search))
+                )) return false;
+                return true;
+            });
+            renderTable();
+        }
+
+        function clearFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('status-filter').value = '';
+            filteredWithdrawals = [...allWithdrawals];
+            renderTable();
+        }
+
+        // Actions
+        function confirmApprove(id) {
+            const w = allWithdrawals.find(x => x.id === id);
+            if (!w) return;
+
+            pendingAction = { id, action: 'approve' };
+
+            document.getElementById('confirm-icon').innerHTML = '<i class="fas fa-check text-white text-2xl"></i>';
+            document.getElementById('confirm-icon').className = 'w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg';
+            document.getElementById('confirm-title').textContent = 'Approve Withdrawal';
+            document.getElementById('confirm-message').textContent = 'Are you sure you want to approve this withdrawal?';
+            document.getElementById('confirm-details').innerHTML = `
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                    <p class="text-gray-500 dark:text-gray-400">Amount:</p>
+                    <p class="font-bold text-emerald-600 dark:text-emerald-400">KSH ${(w.amount || 0).toLocaleString()}</p>
+                    <p class="text-gray-500 dark:text-gray-400">Phone:</p>
+                    <p class="font-medium text-gray-900 dark:text-white">${w.mpesaPhone || w.phone || '-'}</p>
+                    <p class="text-gray-500 dark:text-gray-400">Code:</p>
+                    <p class="font-mono text-purple-600 dark:text-purple-400">${w.referralCode || '-'}</p>
+                </div>
+            `;
+            document.getElementById('confirm-btn').className = 'flex-1 bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-xl font-bold transition-all hover:from-green-600 hover:to-emerald-700';
+            document.getElementById('confirm-btn').textContent = 'Approve';
+            document.getElementById('confirm-btn').onclick = executeAction;
+
+            document.getElementById('confirm-modal').classList.remove('hidden');
+            document.getElementById('confirm-modal').classList.add('flex');
+        }
+
+        function confirmReject(id) {
+            const w = allWithdrawals.find(x => x.id === id);
+            if (!w) return;
+
+            pendingAction = { id, action: 'reject' };
+
+            document.getElementById('confirm-icon').innerHTML = '<i class="fas fa-times text-white text-2xl"></i>';
+            document.getElementById('confirm-icon').className = 'w-16 h-16 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg';
+            document.getElementById('confirm-title').textContent = 'Reject Withdrawal';
+            document.getElementById('confirm-message').textContent = 'Are you sure you want to reject this withdrawal?';
+            document.getElementById('confirm-details').innerHTML = `
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                    <p class="text-gray-500 dark:text-gray-400">Amount:</p>
+                    <p class="font-bold text-gray-900 dark:text-white">KSH ${(w.amount || 0).toLocaleString()}</p>
+                    <p class="text-gray-500 dark:text-gray-400">Phone:</p>
+                    <p class="font-medium text-gray-900 dark:text-white">${w.mpesaPhone || w.phone || '-'}</p>
+                </div>
+            `;
+            document.getElementById('confirm-btn').className = 'flex-1 bg-gradient-to-r from-red-500 to-pink-600 text-white py-4 rounded-xl font-bold transition-all hover:from-red-600 hover:to-pink-700';
+            document.getElementById('confirm-btn').textContent = 'Reject';
+            document.getElementById('confirm-btn').onclick = executeAction;
+
+            document.getElementById('confirm-modal').classList.remove('hidden');
+            document.getElementById('confirm-modal').classList.add('flex');
+        }
+
+        async function executeAction() {
+            if (!pendingAction) return;
+
+            const { id, action } = pendingAction;
+            const status = action === 'approve' ? 'approved' : 'rejected';
+
+            try {
+                await db.collection('withdrawals').doc(id).update({
+                    status,
+                    processedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // If approved, update referrer balance
+                if (action === 'approve') {
+                    const w = allWithdrawals.find(x => x.id === id);
+                    if (w && w.referrerId) {
+                        await db.collection('referrers').doc(w.referrerId).update({
+                            balance: firebase.firestore.FieldValue.increment(-(w.amount || 0))
+                        });
+                    }
+                }
+
+                showToast(`Withdrawal ${status}!`, 'success');
+                closeConfirmModal();
+                loadWithdrawals();
+            } catch (e) {
+                console.error('Error processing withdrawal:', e);
+                showToast('Failed to process', 'error');
+            }
+        }
+
+        function closeConfirmModal() {
+            pendingAction = null;
+            document.getElementById('confirm-modal').classList.add('hidden');
+            document.getElementById('confirm-modal').classList.remove('flex');
+        }
+
+        // Toast
+        function showToast(msg, type = 'info') {
+            const c = document.getElementById('toast-container');
+            const colors = { success: 'bg-green-500', error: 'bg-red-500', warning: 'bg-yellow-500', info: 'bg-blue-500' };
+            const icons = { success: 'fa-check-circle', error: 'fa-times-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+            const t = document.createElement('div');
+            t.className = `${colors[type]} text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3 animate-slide-in`;
+            t.innerHTML = `<i class="fas ${icons[type]}"></i><span>${msg}</span>`;
+            c.appendChild(t);
+            setTimeout(() => t.remove(), 3000);
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeConfirmModal(); });
+        document.getElementById('confirm-modal').addEventListener('click', function(e) { if (e.target === this) closeConfirmModal(); });
+    </script>
+</body>
+</html>

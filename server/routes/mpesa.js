@@ -368,20 +368,26 @@ router.post('/callback', async (req, res) => {
           mpesaReceiptNumber: mpesaReceiptNumber
         });
 
-        // Update Firebase with success status and transaction details
-        await updatePaymentTransaction(checkoutRequestID, {
+        // SAVE (CREATE) transaction to Firebase since we skipped initial save
+        await savePaymentTransaction({
+          sessionId: payment.sessionId,
+          phoneNumber: payment.phoneNumber,
+          amount: payment.amount,
+          category: payment.category,
+          checkoutRequestId: payment.checkoutRequestId,
+          merchantRequestId: payment.merchantRequestId,
+          referralCode: payment.referralCode,
           status: 'completed',
           resultDesc,
           mpesaReceiptNumber: mpesaReceiptNumber,
           transactionCode: mpesaReceiptNumber,
           transactionDate: metadata.TransactionDate || null,
-          amount: metadata.Amount || payment.amount,
-          phoneNumber: metadata.PhoneNumber || payment.phoneNumber,
           metadata,
+          completedAt: new Date().toISOString(),
           callbackReceivedAt: new Date().toISOString()
         });
 
-        console.log('💾 Payment data saved successfully with Receipt:', mpesaReceiptNumber);
+        console.log('💾 Payment CREATED in Firebase with Receipt:', mpesaReceiptNumber);
 
         // Credit referrer if applicable (12% commission)
         if (payment.referralCode) {
@@ -402,8 +408,15 @@ router.post('/callback', async (req, res) => {
           failureReason: resultDesc
         });
 
-        // Update Firebase with failed status and detailed failure info
-        await updatePaymentTransaction(checkoutRequestID, {
+        // SAVE (CREATE) failed transaction to Firebase
+        await savePaymentTransaction({
+          sessionId: payment.sessionId,
+          phoneNumber: payment.phoneNumber,
+          amount: payment.amount,
+          category: payment.category,
+          checkoutRequestId: payment.checkoutRequestId,
+          merchantRequestId: payment.merchantRequestId,
+          referralCode: payment.referralCode,
           status: 'failed',
           resultDesc,
           resultCode,
@@ -412,7 +425,7 @@ router.post('/callback', async (req, res) => {
           callbackReceivedAt: new Date().toISOString()
         });
         
-        console.log('❌ Transaction marked as failed:', resultDesc);
+        console.log('❌ Transaction CREATED as failed:', resultDesc);
       }
     } else {
       console.warn('⚠️ Payment session NOT FOUND for checkout ID:', checkoutRequestID);

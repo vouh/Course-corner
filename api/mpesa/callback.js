@@ -1,4 +1,4 @@
-const { updateTransactionByCheckoutId, getTransactionByCheckoutId, creditReferrer } = require('../utils/firebase');
+const { updateTransactionByCheckoutId, getTransactionByCheckoutId, creditReferrer, saveTransaction } = require('../utils/firebase');
 
 // Helper function to update transaction with retry
 async function updateTransactionWithRetry(checkoutRequestID, updateData, maxRetries = 3) {
@@ -98,18 +98,46 @@ module.exports = async (req, res) => {
         metadata[item.Name] = item.Value;
       });
       
-      // Update transaction in Firebase with retry logic
+      // SAVE (CREATE) transaction in Firebase since we skipped initial save
       const updateData = {
         status: 'completed',
         resultDesc: resultDesc,
-        mpesaReceiptNumber: mpesaReceiptNumber, // Store receipt string only
+        mpesaReceiptNumber: mpesaReceiptNumber,
         transactionCode: mpesaReceiptNumber,
         metadata: metadata,
         completedAt: new Date().toISOString(),
         callbackReceivedAt: new Date().toISOString()
       };
       
-      const transactionId = await updateTransactionWithRetry(checkoutRequestID, updateData);
+      // Get payment details from in-memory store
+      global.payments = global.payments || {};
+      let payment = null;
+      for (const sessionId in global.payments) {
+        if (global.payments[sessionId].checkoutRequestId === checkoutRequestID) {
+          payment = global.payments[sessionId];
+          break;
+        }
+      }
+      
+      let transactionId;
+      if (payment) {
+        // CREATE new transaction with all details
+        const transactionData = {
+          sessionId: payment.sessionId,
+          phoneNumber: payment.phoneNumber,
+          amount: payment.amount,
+          category: payment.category,
+          checkoutRequestId: payment.checkoutRequestId,
+          merchantRequestId: payment.merchantRequestId,
+          referralCode: payment.referralCode,
+          ...updateData
+        };
+        transactionId = await saveTransaction(transactionData);
+        console.log('✅ Transaction CREATED in Firebase:', transactionId);
+      } else {
+        console.error('❌ Payment not found in memory for checkoutRequestID:', checkoutRequestID);
+        throw new Error('Payment not found in memory');
+      }
 
       console.log('✅ Payment successful, transaction updated:', transactionId);
       console.log('   M-Pesa Code Stored:', mpesaReceiptNumber || 'NULL - Code not in callback');

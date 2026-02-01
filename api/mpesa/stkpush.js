@@ -137,7 +137,7 @@ module.exports = async (req, res) => {
       category,
       phoneNumber: formattedPhone,
       amount,
-      status: 'pending',
+      status: 'processing',
       checkoutRequestId: response.data.CheckoutRequestID,
       merchantRequestId: response.data.MerchantRequestID,
       referralCode: referralCode ? referralCode.toUpperCase() : null,

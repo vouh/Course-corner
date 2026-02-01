@@ -77,7 +77,7 @@ router.post('/stkpush', async (req, res) => {
       phoneNumber,
       amount,
       category,
-      status: 'pending',
+      status: 'processing',
       checkoutRequestId: stkResult.checkoutRequestId,
       merchantRequestId: stkResult.merchantRequestId,
       referralCode: referralCode ? referralCode.toUpperCase() : null
@@ -328,25 +328,40 @@ router.post('/callback', async (req, res) => {
         // Payment successful - Extract metadata including M-Pesa Receipt Number
         console.log('✅ PAYMENT SUCCESSFUL!');
 
+        // ============================================
+        // COMPREHENSIVE RECEIPT EXTRACTION ALGORITHM
+        // ============================================
+        console.log('✅ ResultCode = 0: Payment SUCCESSFUL');
+        
         const callbackMetadata = stkCallback.CallbackMetadata?.Item || [];
         const metadata = {};
 
-        console.log('📦 Extracting CallbackMetadata:');
+        console.log('📦 RAW CallbackMetadata.Item[] array:');
         callbackMetadata.forEach(item => {
           metadata[item.Name] = item.Value;
           console.log(`   ${item.Name}: ${item.Value}`);
         });
 
-        // Extract the M-Pesa Receipt Number (transaction code) - try multiple possible field names
-        const mpesaReceiptNumber = metadata.MpesaReceiptNumber || 
-                                   metadata.mpesaReceiptNumber || 
-                                   metadata.ReceiptNumber || 
-                                   metadata.TransactionId || 
-                                   metadata.TransactionCode || 
-                                   null;
+        // Extract receipt with CASE-INSENSITIVE matching
+        let mpesaReceiptNumber = null;
         
-        console.log('🧾 M-PESA RECEIPT NUMBER:', mpesaReceiptNumber || 'NOT FOUND IN CALLBACK');
-        console.log('🔍 Available metadata fields:', Object.keys(metadata).join(', '));
+        for (const item of callbackMetadata) {
+          const itemName = item.Name || '';
+          // Check both 'MpesaReceiptNumber' and 'mpesaReceiptNumber' (case-insensitive)
+          if (itemName.toLowerCase() === 'mpesareceiptnumber') {
+            mpesaReceiptNumber = String(item.Value); // Store as string only
+            console.log(`🎯 RECEIPT FOUND! Name="${item.Name}" → Value="${mpesaReceiptNumber}"`);
+            break;
+          }
+        }
+        
+        // DEBUG: Log extraction result
+        if (mpesaReceiptNumber) {
+          console.log(`✅ Receipt extracted successfully: "${mpesaReceiptNumber}"`);
+        } else {
+          console.error('❌ CRITICAL: Receipt NOT FOUND in callback metadata!');
+          console.error('Available field names:', callbackMetadata.map(i => i.Name).join(', '));
+        }
 
         // Update PaymentStore with all metadata including receipt number
         PaymentStore.updatePaymentStatus(payment.sessionId, 'completed', resultDesc, {
@@ -379,22 +394,26 @@ router.post('/callback', async (req, res) => {
           }
         }
       } else {
-        // Payment failed
-        console.log('❌ PAYMENT FAILED!');
-        console.log('   Reason:', resultDesc);
-        console.log('   ResultCode:', resultCode);
+        // Payment failed (ResultCode != 0)
+        console.log(`❌ ResultCode = ${resultCode}: Payment FAILED`);
+        console.log(`📝 Failure Reason: ${resultDesc}`);
 
         PaymentStore.updatePaymentStatus(payment.sessionId, 'failed', resultDesc, {
-          resultCode: resultCode
+          resultCode: resultCode,
+          failureReason: resultDesc
         });
 
-        // Update Firebase with failed status
+        // Update Firebase with failed status and detailed failure info
         await updatePaymentTransaction(checkoutRequestID, {
           status: 'failed',
           resultDesc,
           resultCode,
+          failureReason: resultDesc,
+          failedAt: new Date().toISOString(),
           callbackReceivedAt: new Date().toISOString()
         });
+        
+        console.log('❌ Transaction marked as failed:', resultDesc);
       }
     } else {
       console.warn('⚠️ Payment session NOT FOUND for checkout ID:', checkoutRequestID);

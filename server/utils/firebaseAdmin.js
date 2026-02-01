@@ -240,6 +240,160 @@ const getTransactionsByPhone = async (phoneNumber, status = null) => {
   }
 };
 
+// Get transaction by M-Pesa receipt number (unique code)
+const getTransactionByMpesaCode = async (mpesaCode) => {
+  try {
+    const db = getFirestore();
+    const snapshot = await db.collection('transactions')
+      .where('mpesaReceiptNumber', '==', mpesaCode.toUpperCase())
+      .limit(1)
+      .get();
+
+    if (!snapshot.empty) {
+      const doc = snapshot.docs[0];
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate?.() || data.createdAt,
+        updatedAt: data.updatedAt?.toDate?.() || data.updatedAt
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting transaction by M-Pesa code:', error.message);
+    return null;
+  }
+};
+
+// Mark transaction as used (one-time use)
+const markTransactionAsUsed = async (transactionId) => {
+  try {
+    const db = getFirestore();
+    const docRef = db.collection('transactions').doc(transactionId);
+    await docRef.update({
+      used: true,
+      usedAt: admin.firestore.FieldValue.serverTimestamp(),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+    console.log('✅ Transaction marked as used:', transactionId);
+    return true;
+  } catch (error) {
+    console.error('Error marking transaction as used:', error.message);
+    return false;
+  }
+};
+
+// Credit referrer with commission (12%)
+const creditReferrer = async (referralCode, transactionAmount, transactionId) => {
+  try {
+    const db = getFirestore();
+    const commissionRate = 0.12; // 12%
+    const commissionAmount = Math.round(transactionAmount * commissionRate);
+
+    console.log('💰 Processing referral commission:');
+    console.log('   Referral Code:', referralCode);
+    console.log('   Transaction Amount:', transactionAmount);
+    console.log('   Commission (12%):', commissionAmount);
+
+    // Find the referral code owner
+    const codeSnapshot = await db.collection('referralCodes')
+      .where('code', '==', referralCode.toUpperCase())
+      .limit(1)
+      .get();
+
+    let referrerId = null;
+    let referrerEmail = null;
+
+    if (!codeSnapshot.empty) {
+      const codeData = codeSnapshot.docs[0].data();
+      referrerId = codeData.userId;
+      referrerEmail = codeData.userEmail;
+    } else {
+      // Fallback: check users collection
+      const userSnapshot = await db.collection('users')
+        .where('referralCode', '==', referralCode.toUpperCase())
+        .limit(1)
+        .get();
+      
+      if (!userSnapshot.empty) {
+        referrerId = userSnapshot.docs[0].id;
+        referrerEmail = userSnapshot.docs[0].data().email;
+      }
+    }
+
+    if (!referrerId) {
+      console.log('⚠️ Referral code owner not found:', referralCode);
+      return false;
+    }
+
+    // Update transaction with commission info
+    if (transactionId) {
+      await db.collection('transactions').doc(transactionId).update({
+        referrerCredited: true,
+        commissionAmount: commissionAmount,
+        referrerId: referrerId,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    // Add commission to referrer's earnings
+    const earningsRef = db.collection('referralEarnings').doc();
+    await earningsRef.set({
+      referrerId: referrerId,
+      referrerEmail: referrerEmail,
+      referralCode: referralCode.toUpperCase(),
+      transactionId: transactionId,
+      transactionAmount: transactionAmount,
+      commissionAmount: commissionAmount,
+      commissionRate: commissionRate,
+      status: 'pending', // pending, paid
+      createdAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+
+    // Update user's total earnings
+    const userRef = db.collection('users').doc(referrerId);
+    const userDoc = await userRef.get();
+    
+    if (userDoc.exists) {
+      const currentEarnings = userDoc.data().totalEarnings || 0;
+      const currentPending = userDoc.data().pendingEarnings || 0;
+      await userRef.update({
+        totalEarnings: currentEarnings + commissionAmount,
+        pendingEarnings: currentPending + commissionAmount,
+        lastEarningAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+    }
+
+    console.log('✅ Commission credited to referrer:', referrerId);
+    return true;
+  } catch (error) {
+    console.error('Error crediting referrer:', error.message);
+    return false;
+  }
+};
+
+// Bulk delete transactions
+const bulkDeleteTransactions = async (transactionIds) => {
+  try {
+    const db = getFirestore();
+    const batch = db.batch();
+    
+    for (const id of transactionIds) {
+      const docRef = db.collection('transactions').doc(id);
+      batch.delete(docRef);
+    }
+    
+    await batch.commit();
+    console.log('🗑️ Bulk deleted', transactionIds.length, 'transactions');
+    return true;
+  } catch (error) {
+    console.error('Error bulk deleting transactions:', error.message);
+    return false;
+  }
+};
+
 module.exports = {
   initializeFirebase,
   getFirestore,
@@ -248,5 +402,9 @@ module.exports = {
   getAllTransactions,
   getTransactionStats,
   deleteTransaction,
-  getTransactionsByPhone
+  getTransactionsByPhone,
+  getTransactionByMpesaCode,
+  markTransactionAsUsed,
+  creditReferrer,
+  bulkDeleteTransactions
 };

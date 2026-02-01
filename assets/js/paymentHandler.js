@@ -297,46 +297,44 @@ class PaymentHandler {
         console.log('Session cleared');
     }
 
-    // Verify existing payment (for "I Already Paid" option)
-    async verifyExistingPayment(phoneNumber, category, onSuccess) {
+    // Verify existing payment using M-Pesa transaction code (one-time use)
+    async verifyByMpesaCode(mpesaCode, category, onSuccess) {
         try {
             // Show modern loading
             if (window.firebaseAuth && window.firebaseAuth.showLoadingOverlay) {
-                window.firebaseAuth.showLoadingOverlay('Verifying Payment...', 'Checking your payment records');
+                window.firebaseAuth.showLoadingOverlay('Verifying Payment...', 'Checking your M-Pesa transaction');
             } else {
                 Swal.fire({
                     title: 'Verifying Payment...',
-                    html: '<p>Checking for your payment...</p>',
+                    html: '<p>Checking your M-Pesa transaction...</p>',
                     allowOutsideClick: false,
                     showConfirmButton: false,
                     didOpen: () => Swal.showLoading()
                 });
             }
 
-            // Format phone number
-            let formattedPhone = phoneNumber.replace(/\s/g, '');
-            if (formattedPhone.startsWith('0')) {
-                formattedPhone = '254' + formattedPhone.substring(1);
-            } else if (formattedPhone.startsWith('+')) {
-                formattedPhone = formattedPhone.substring(1);
-            }
-
-            // Check for completed payment with this phone
-            const response = await fetch(`${this.serverUrl}/payment/verify-phone`, {
+            // Verify M-Pesa code
+            const response = await fetch(`${this.serverUrl}/mpesa/verify-mpesa-code`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ phoneNumber: formattedPhone, category })
+                body: JSON.stringify({ mpesaCode: mpesaCode.toUpperCase(), category })
             });
 
             const data = await response.json();
 
+            // Hide loading
+            if (window.firebaseAuth && window.firebaseAuth.hideLoadingOverlay) {
+                window.firebaseAuth.hideLoadingOverlay();
+            }
+
             if (data.success && data.hasAccess) {
-                // Found a completed payment
-                this.sessionId = data.sessionId;
+                // Found and verified payment
+                this.sessionId = data.data.sessionId;
                 localStorage.setItem('paymentSessionId', this.sessionId);
+                localStorage.setItem('verifiedMpesaCode', mpesaCode.toUpperCase());
                 this.isPaymentCompleted = true;
 
-                // Show beautiful success
+                // Show success
                 if (window.firebaseAuth && window.firebaseAuth.showSuccessOverlay) {
                     window.firebaseAuth.showSuccessOverlay('Payment Verified!', 'Loading your results...', 2000);
                     
@@ -349,7 +347,7 @@ class PaymentHandler {
                     await Swal.fire({
                         icon: 'success',
                         title: 'Payment Verified!',
-                        text: 'Your previous payment has been found. Loading your results...',
+                        text: 'Your payment has been verified. Loading your results...',
                         timer: 2000,
                         showConfirmButton: false,
                         timerProgressBar: true
@@ -361,34 +359,28 @@ class PaymentHandler {
                 }
                 return { success: true };
             } else {
-                // No payment found - hide loading first
-                if (window.firebaseAuth && window.firebaseAuth.hideLoadingOverlay) {
-                    window.firebaseAuth.hideLoadingOverlay();
-                }
-                
+                // Verification failed
                 await Swal.fire({
-                    icon: 'warning',
-                    title: 'No Payment Found',
+                    icon: 'error',
+                    title: 'Verification Failed',
                     html: `
-                        <p>We couldn't find a completed payment for this phone number.</p>
-                        <p style="margin-top: 0.5rem; font-size: 0.9rem; color: #6b7280;">
-                            If you just paid, please wait a moment and try again. M-Pesa confirmations can take up to 2 minutes.
-                        </p>
+                        <p>${data.message || 'Could not verify this M-Pesa code.'}</p>
+                        ${data.usedAt ? '<p style="margin-top: 0.5rem; font-size: 0.85rem; color: #ef4444;"><i class="fas fa-exclamation-triangle"></i> This code was already used.</p>' : ''}
                     `,
                     confirmButtonText: 'Try Again',
                     confirmButtonColor: '#10b981',
                     showCancelButton: true,
-                    cancelButtonText: 'New Payment'
+                    cancelButtonText: 'Make New Payment'
                 }).then((result) => {
                     if (!result.isConfirmed) {
-                        // User wants to make new payment, re-trigger payment flow
+                        // User wants to make new payment
                         this.processPayment(category, data.amount || 100, onSuccess);
                     }
                 });
                 return { success: false };
             }
         } catch (error) {
-            console.error('Payment verification error:', error);
+            console.error('M-Pesa code verification error:', error);
             
             if (window.firebaseAuth && window.firebaseAuth.hideLoadingOverlay) {
                 window.firebaseAuth.hideLoadingOverlay();
@@ -397,11 +389,53 @@ class PaymentHandler {
             Swal.fire({
                 icon: 'error',
                 title: 'Verification Failed',
-                text: 'Could not verify payment. Please try again or contact support.',
+                text: 'Could not verify payment. Please check your M-Pesa code and try again.',
                 confirmButtonColor: '#10b981'
             });
             return { success: false };
         }
+    }
+
+    // Legacy: Verify existing payment by phone (deprecated - use verifyByMpesaCode)
+    async verifyExistingPayment(phoneNumber, category, onSuccess) {
+        // Prompt for M-Pesa code instead
+        const { value: mpesaCode } = await Swal.fire({
+            title: '📱 Enter M-Pesa Code',
+            html: `
+                <div style="text-align: left;">
+                    <p style="color: #6b7280; margin-bottom: 1rem; font-size: 0.9rem;">
+                        Enter the M-Pesa transaction code from your SMS confirmation (e.g., <strong>SG722NMVXQ</strong>)
+                    </p>
+                    <input type="text" id="swal-mpesa-code" class="swal2-input" placeholder="e.g., SG722NMVXQ" 
+                        style="margin: 0; width: 100%; box-sizing: border-box; text-transform: uppercase; font-family: monospace; font-size: 1.1rem; letter-spacing: 1px;">
+                    <p style="margin-top: 0.75rem; font-size: 0.8rem; color: #9ca3af;">
+                        <i class="fas fa-info-circle"></i> Each code can only be used once to view results.
+                    </p>
+                </div>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Verify Payment',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#10b981',
+            focusConfirm: false,
+            preConfirm: () => {
+                const code = document.getElementById('swal-mpesa-code').value.trim().toUpperCase();
+                if (!code) {
+                    Swal.showValidationMessage('Please enter your M-Pesa transaction code');
+                    return false;
+                }
+                if (code.length < 8) {
+                    Swal.showValidationMessage('M-Pesa codes are usually 10 characters long');
+                    return false;
+                }
+                return code;
+            }
+        });
+
+        if (mpesaCode) {
+            return await this.verifyByMpesaCode(mpesaCode, category, onSuccess);
+        }
+        return { success: false };
     }
 
     // Full payment flow with UI - processPayment wrapper

@@ -82,7 +82,7 @@ router.post('/stkpush', async (req, res) => {
     );
     console.log('💾 Payment stored in-memory (in PaymentStore), waiting for M-Pesa callback...');
     console.log('🎁 Referral Code:', referralCode ? referralCode.toUpperCase() : 'NONE');
-    console.log('📌 Transaction will be saved to Firebase ONLY when callback arrives with result')
+    console.log('📋 Transaction will be saved to Firebase ONLY when callback arrives with result');
 
     res.json({
       success: true,
@@ -327,40 +327,26 @@ router.post('/callback', async (req, res) => {
         // Payment successful - Extract metadata including M-Pesa Receipt Number
         console.log('✅ PAYMENT SUCCESSFUL!');
 
-        // ============================================
-        // COMPREHENSIVE RECEIPT EXTRACTION ALGORITHM
-        // ============================================
-        console.log('✅ ResultCode = 0: Payment SUCCESSFUL');
-        
         const callbackMetadata = stkCallback.CallbackMetadata?.Item || [];
         const metadata = {};
 
-        console.log('📦 RAW CallbackMetadata.Item[] array:');
+        console.log('📦 Extracting CallbackMetadata:');
         callbackMetadata.forEach(item => {
           metadata[item.Name] = item.Value;
           console.log(`   ${item.Name}: ${item.Value}`);
         });
 
-        // Extract receipt with CASE-INSENSITIVE matching
+        // Extract the M-Pesa Receipt Number (transaction code) - case-insensitive
         let mpesaReceiptNumber = null;
-        
         for (const item of callbackMetadata) {
           const itemName = item.Name || '';
-          // Check both 'MpesaReceiptNumber' and 'mpesaReceiptNumber' (case-insensitive)
           if (itemName.toLowerCase() === 'mpesareceiptnumber') {
-            mpesaReceiptNumber = String(item.Value); // Store as string only
+            mpesaReceiptNumber = String(item.Value);
             console.log(`🎯 RECEIPT FOUND! Name="${item.Name}" → Value="${mpesaReceiptNumber}"`);
             break;
           }
         }
-        
-        // DEBUG: Log extraction result
-        if (mpesaReceiptNumber) {
-          console.log(`✅ Receipt extracted successfully: "${mpesaReceiptNumber}"`);
-        } else {
-          console.error('❌ CRITICAL: Receipt NOT FOUND in callback metadata!');
-          console.error('Available field names:', callbackMetadata.map(i => i.Name).join(', '));
-        }
+        console.log('🧾 M-PESA RECEIPT NUMBER:', mpesaReceiptNumber || 'NOT FOUND IN CALLBACK');
 
         // Update PaymentStore with all metadata including receipt number
         PaymentStore.updatePaymentStatus(payment.sessionId, 'completed', resultDesc, {
@@ -368,127 +354,66 @@ router.post('/callback', async (req, res) => {
           mpesaReceiptNumber: mpesaReceiptNumber
         });
 
-        // SAVE (CREATE) transaction to Firebase since we skipped initial save
-        await savePaymentTransaction({
+        // CREATE transaction in Firebase (not UPDATE - since we didn't save on STK Push)
+        const transactionId = await savePaymentTransaction({
           sessionId: payment.sessionId,
           phoneNumber: payment.phoneNumber,
           amount: payment.amount,
           category: payment.category,
-          checkoutRequestId: payment.checkoutRequestId,
-          merchantRequestId: payment.merchantRequestId,
-          referralCode: payment.referralCode,
           status: 'completed',
           resultDesc,
           mpesaReceiptNumber: mpesaReceiptNumber,
           transactionCode: mpesaReceiptNumber,
+          checkoutRequestId: checkoutRequestID,
+          merchantRequestId: merchantRequestID,
           transactionDate: metadata.TransactionDate || null,
           metadata,
-          completedAt: new Date().toISOString(),
+          referralCode: payment.referralCode || null,
           callbackReceivedAt: new Date().toISOString()
         });
 
-        console.log('💾 Payment CREATED in Firebase with Receipt:', mpesaReceiptNumber);
+        console.log('💾 Payment data saved successfully with Receipt:', mpesaReceiptNumber);
+        console.log('   Transaction ID:', transactionId);
 
         // Credit referrer if applicable (12% commission)
         if (payment.referralCode) {
           console.log('💰 Processing referral commission for code:', payment.referralCode);
           try {
-            await creditReferrer(payment.referralCode, payment.amount, payment.sessionId);
+            await creditReferrer(payment.referralCode, payment.amount, transactionId);
           } catch (refError) {
             console.error('❌ Error crediting referrer:', refError.message);
           }
         }
       } else {
-        // Payment failed (ResultCode != 0)
-        console.log(`❌ ResultCode = ${resultCode}: Payment FAILED`);
-        console.log(`📝 Failure Reason: ${resultDesc}`);
+        // Payment failed
+        console.log('❌ PAYMENT FAILED!');
+        console.log('   Reason:', resultDesc);
+        console.log('   ResultCode:', resultCode);
 
         PaymentStore.updatePaymentStatus(payment.sessionId, 'failed', resultDesc, {
-          resultCode: resultCode,
-          failureReason: resultDesc
+          resultCode: resultCode
         });
 
-        // SAVE (CREATE) failed transaction to Firebase
+        // CREATE transaction record for failed payment
         await savePaymentTransaction({
           sessionId: payment.sessionId,
           phoneNumber: payment.phoneNumber,
           amount: payment.amount,
           category: payment.category,
-          checkoutRequestId: payment.checkoutRequestId,
-          merchantRequestId: payment.merchantRequestId,
-          referralCode: payment.referralCode,
           status: 'failed',
           resultDesc,
           resultCode,
-          failureReason: resultDesc,
-          failedAt: new Date().toISOString(),
+          checkoutRequestId: checkoutRequestID,
+          merchantRequestId: merchantRequestID,
+          referralCode: payment.referralCode || null,
           callbackReceivedAt: new Date().toISOString()
         });
         
-        console.log('❌ Transaction CREATED as failed:', resultDesc);
+        console.log('❌ Transaction marked as failed:', resultDesc);
       }
     } else {
       console.warn('⚠️ Payment session NOT FOUND for checkout ID:', checkoutRequestID);
-      console.warn('   Creating transaction from callback metadata (fallback)');
-      
-      // Extract metadata for fallback transaction creation
-      const callbackMetadata = stkCallback.CallbackMetadata?.Item || [];
-      const metadata = {};
-      let phoneNumber = null;
-      let amount = null;
-      let mpesaReceiptNumber = null;
-
-      callbackMetadata.forEach(item => {
-        metadata[item.Name] = item.Value;
-        if (item.Name === 'PhoneNumber') {
-          phoneNumber = item.Value;
-        }
-        if (item.Name === 'Amount') {
-          amount = item.Value;
-        }
-        if (item.Name === 'MpesaReceiptNumber') {
-          mpesaReceiptNumber = String(item.Value);
-        }
-      });
-
-      if (resultCode === 0 && phoneNumber && amount) {
-        // Create fallback transaction for successful payment
-        console.log('📝 Creating fallback successful transaction from metadata');
-        await savePaymentTransaction({
-          phoneNumber: phoneNumber,
-          amount: amount,
-          checkoutRequestId: checkoutRequestID,
-          merchantRequestId: merchantRequestID,
-          status: 'completed',
-          resultDesc: resultDesc,
-          mpesaReceiptNumber: mpesaReceiptNumber,
-          transactionCode: mpesaReceiptNumber,
-          metadata: metadata,
-          completedAt: new Date().toISOString(),
-          callbackReceivedAt: new Date().toISOString()
-        });
-        console.log('✅ Fallback transaction CREATED for successful payment');
-      } else if (resultCode !== 0 && phoneNumber && amount) {
-        // Create fallback transaction for failed payment
-        console.log('📝 Creating fallback failed transaction from metadata');
-        await savePaymentTransaction({
-          phoneNumber: phoneNumber,
-          amount: amount,
-          checkoutRequestId: checkoutRequestID,
-          merchantRequestId: merchantRequestID,
-          status: 'failed',
-          resultDesc: resultDesc,
-          resultCode: resultCode,
-          failureReason: resultDesc,
-          metadata: metadata,
-          failedAt: new Date().toISOString(),
-          callbackReceivedAt: new Date().toISOString()
-        });
-        console.log('❌ Fallback transaction CREATED for failed payment');
-      } else {
-        console.error('❌ Cannot create fallback transaction - missing required data');
-        console.error('   PhoneNumber:', phoneNumber, 'Amount:', amount, 'ResultCode:', resultCode);
-      }
+      console.warn('   This might be an orphan callback or the payment session expired');
     }
 
     console.log('═══════════════════════════════════════════════════════════');
@@ -690,38 +615,19 @@ router.post('/admin/requery/:transactionId', async (req, res) => {
     
     let updated = false;
     let newData = {};
-
-    // Normalize M-Pesa result fields across formats
-    const resultCode = queryResult?.ResultCode ?? queryResult?.errorCode ?? null;
-    const resultDesc = queryResult?.ResultDesc ?? queryResult?.errorMessage ?? queryResult?.errorDescription ?? null;
-
-    newData.lastRequeryAt = new Date().toISOString();
-    newData.lastRequeryResultCode = resultCode;
-    newData.lastRequeryResultDesc = resultDesc;
     
-    if (resultCode === '0' || resultCode === 0) {
+    if (queryResult.ResultCode === '0' || queryResult.ResultCode === 0) {
       newData.status = 'completed';
-      newData.resultDesc = resultDesc || 'Success';
+      newData.resultDesc = queryResult.ResultDesc || 'Success';
       if (queryResult.MpesaReceiptNumber) {
         newData.mpesaReceiptNumber = queryResult.MpesaReceiptNumber;
         newData.transactionCode = queryResult.MpesaReceiptNumber;
       }
       updated = true;
-    } else if (resultCode === 'pending') {
-      // Still pending – keep it pending, but store a human-readable reason
-      newData.status = tx.status || 'pending';
-      newData.resultDesc = resultDesc || 'Transaction is still being processed';
-      newData.resultCode = 'pending';
-      updated = true;
-    } else if (resultCode) {
+    } else if (queryResult.ResultCode && queryResult.ResultCode !== 'pending') {
       newData.status = 'failed';
-      newData.resultDesc = resultDesc || `Failed with code: ${resultCode}`;
-      newData.resultCode = resultCode;
-      updated = true;
-    } else {
-      // Unknown response – keep current status but record what we got
-      newData.status = tx.status || 'pending';
-      if (!newData.resultDesc) newData.resultDesc = 'Unable to determine M-Pesa status. Please retry re-query.';
+      newData.resultDesc = queryResult.ResultDesc || `Failed with code: ${queryResult.ResultCode}`;
+      newData.resultCode = queryResult.ResultCode;
       updated = true;
     }
     

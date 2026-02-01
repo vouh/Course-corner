@@ -1201,12 +1201,12 @@
                         <div class="cc-package-selector-hidden">
                             <select id="packageSelect" class="cc-package-select">
                                 <option value="" data-amount="0" data-description="">Select a Service...</option>
-                                <option value="gold" data-amount="600" data-description="Universities + Courses + Cluster Points + FREE Expert Guidance">⭐ Gold (All-in-one + Expert)</option>
-                                <option value="silver" data-amount="500" data-description="Universities + Courses + All 20 Cluster Points">🥈 Silver (Uni Courses + Cluster)</option>
-                                <option value="bronze" data-amount="400" data-description="Universities & Courses You Qualify For">🥉 Bronze (Unis & Courses)</option>
-                                <option value="point-and-courses" data-amount="300" data-description="Cluster Points & Eligible Courses">📊 Premium (Points & Courses)</option>
-                                <option value="courses-only" data-amount="200" data-description="View Eligible Courses Only">📚 Standard (Courses Only)</option>
-                                <option value="calculate-cluster-points" data-amount="100" data-description="Calculate Your Cluster Points">📈 Starter (Calculate Points)</option>
+                                <option value="gold" data-amount="600" data-description="Cluster Points + Universities + Expert Access.">Gold Package - Ksh 600</option>
+                                <option value="silver" data-amount="500" data-description="Detailed breakdown of University Courses you qualify for plus your accurate Cluster Points.">Silver Package - Ksh 500</option>
+                                <option value="bronze" data-amount="400" data-description="See the universities you qualify for and the courses you can do. Know what fits.">Bronze Plan - Ksh 400</option>
+                                <option value="point-and-courses" data-amount="300" data-description="Get your Points calculated and see eligible Courses.">Premium Package - Ksh 300</option>
+                                <option value="courses-only" data-amount="200" data-description="List of courses you qualify for based on your points.">Standard Package - Ksh 200</option>
+                                <option value="calculate-cluster-points" data-amount="100" data-description="Accurate calculation of your Cluster Points for all subjects.">Starter Package - Ksh 100</option>
                             </select>
                             <button id="payButton" class="cc-btn-pay payment-btn" disabled data-category="" data-amount="0">
                                 <i class="fas fa-credit-card"></i>
@@ -1839,15 +1839,11 @@
                 return false;
             }
 
-            // REAL MODE: Use payment handler to process actual M-Pesa payment
-            console.log('--- REAL MODE: Processing M-Pesa Payment ---');
-            
             try {
                 await window.paymentHandler.processPayment(
                     category,
                     parseInt(amount),
                     () => {
-                        console.log('Success callback from processPayment');
                         showResultsAfterPayment(category);
                     }
                 );
@@ -2233,12 +2229,12 @@
                             </label>
                             <select id="modalPackageSelect" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 0.75rem; font-size: 1rem; cursor: pointer;">
                                 <option value="" data-amount="0">-- Choose a package --</option>
-                                <option value="gold" data-amount="600">⭐ Gold Package - Ksh 600 (All-in-one + Expert)</option>
-                                <option value="silver" data-amount="500">🥈 Silver Package - Ksh 500 (Uni Courses + Cluster)</option>
-                                <option value="bronze" data-amount="400">🥉 Bronze Package - Ksh 400 (Unis & Courses)</option>
-                                <option value="point-and-courses" data-amount="300">📊 Premium Package - Ksh 300 (Points & Courses)</option>
-                                <option value="courses-only" data-amount="200">📚 Standard Package - Ksh 200 (Courses Only)</option>
-                                <option value="calculate-cluster-points" data-amount="100">📈 Starter Package - Ksh 100 (Calculate Points)</option>
+                                <option value="gold" data-amount="600">Gold Package - Ksh 600</option>
+                                <option value="silver" data-amount="500">Silver Package - Ksh 500</option>
+                                <option value="bronze" data-amount="400">Bronze Plan - Ksh 400</option>
+                                <option value="point-and-courses" data-amount="300">Premium Package - Ksh 300</option>
+                                <option value="courses-only" data-amount="200">Standard Package - Ksh 200</option>
+                                <option value="calculate-cluster-points" data-amount="100">Starter Package - Ksh 100</option>
                             </select>
                         </div>
                         
@@ -2273,63 +2269,63 @@
                     
                     const packageInfo = {
                         'gold': {
-                            title: '⭐ Gold Package',
+                            title: 'Gold Package (600 KSH)',
                             desc: 'The complete package for serious students',
                             features: [
-                                '✅ All Universities & Courses You Qualify For',
-                                '✅ All 20 Cluster Points Calculated',
-                                '✅ FREE Expert Guidance (24hr response)',
-                                '✅ Personalized Course Recommendations',
-                                '✅ Priority Support'
+                                'All Universities & Courses You Qualify For',
+                                'All 20 Cluster Points Calculated',
+                                'FREE Expert Guidance (24hr response)',
+                                'Personalized Course Recommendations',
+                                'Priority Support'
                             ]
                         },
                         'silver': {
-                            title: '🥈 Silver Package',
+                            title: 'Silver Package (500 KSH)',
                             desc: 'See your complete results with cluster analysis',
                             features: [
-                                '✅ All Universities & Courses You Qualify For',
-                                '✅ All 20 Cluster Points Calculated',
-                                '✅ Cutoff Point Comparisons',
-                                '❌ No Expert Guidance'
+                                'All Universities & Courses You Qualify For',
+                                'All 20 Cluster Points Calculated',
+                                'Cutoff Point Comparisons',
+                                'No Expert Guidance'
                             ]
                         },
                         'bronze': {
-                            title: '🥉 Bronze Package',
+                            title: 'Bronze Package (400 KSH)',
                             desc: 'Know which universities and courses you qualify for',
                             features: [
-                                '✅ All Universities You Qualify For',
-                                '✅ All Courses You Qualify For',
-                                '✅ Cutoff Points & Your Points',
-                                '❌ No Cluster Points Display',
-                                '❌ No Expert Guidance'
+                                'All Universities You Qualify For',
+                                'All Courses You Qualify For',
+                                'Cutoff Points & Your Points',
+                                'No Cluster Points Display',
+                                'No Expert Guidance'
                             ]
                         },
                         'point-and-courses': {
-                            title: '📊 Premium Package',
+                            title: 'Premium Package (300 KSH)',
                             desc: 'Cluster points and eligible courses',
                             features: [
-                                '✅ All 20 Cluster Points',
-                                '✅ Eligible Courses List',
-                                '❌ No University Placements',
-                                '❌ No Expert Guidance'
+                                'All 20 Cluster Points',
+                                'Eligible Courses List',
+                                'No University Placements',
+                                'No Expert Guidance'
                             ]
                         },
                         'courses-only': {
-                            title: '📚 Standard Package',
+                            title: 'Standard Package (200 KSH)',
                             desc: 'See courses you can apply for',
                             features: [
-                                '✅ Eligible Courses List',
-                                '❌ No Cluster Points',
-                                '❌ No University Placements'
+                                'Eligible Courses List',
+                                'No Cluster Points',
+                                'No University Placements'
                             ]
                         },
                         'calculate-cluster-points': {
-                            title: '📈 Starter Package',
+                            title: 'Starter Package (100 KSH)',
                             desc: 'Calculate your cluster points only',
                             features: [
-                                '✅ All 20 Cluster Points',
-                                '❌ No Courses List',
-                                '❌ No University Placements'
+                                'All 20 Cluster Points',
+                                'No Courses List',
+                                'No University Placements'
                             ]
                         }
                     };

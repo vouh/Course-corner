@@ -1201,12 +1201,12 @@
                         <div class="cc-package-selector-hidden">
                             <select id="packageSelect" class="cc-package-select">
                                 <option value="" data-amount="0" data-description="">Select a Service...</option>
-                                <option value="gold" data-amount="1" data-description="Universities + Courses + Cluster Points + FREE Expert Guidance">⭐ Gold (Expert Consultation)</option>
-                                <option value="silver" data-amount="1" data-description="Universities + Courses + All 20 Cluster Points">🥈 Silver (Cluster Points)</option>
-                                <option value="bronze" data-amount="1" data-description="Universities & Courses You Qualify For">🥉 Bronze (Universities & Courses)</option>
-                                <option value="point-and-courses" data-amount="1" data-description="Cluster Points & Eligible Courses">📊 Premium (Cluster Points)</option>
-                                <option value="courses-only" data-amount="1" data-description="View Eligible Courses Only">📚 Standard (Courses Only)</option>
-                                <option value="calculate-cluster-points" data-amount="1" data-description="Calculate Your Cluster Points">📈 Starter (Cluster Points)</option>
+                                <option value="gold" data-amount="600" data-description="Universities + Courses + Cluster Points + FREE Expert Guidance">⭐ Gold (All-in-one + Expert)</option>
+                                <option value="silver" data-amount="500" data-description="Universities + Courses + All 20 Cluster Points">🥈 Silver (Uni Courses + Cluster)</option>
+                                <option value="bronze" data-amount="400" data-description="Universities & Courses You Qualify For">🥉 Bronze (Unis & Courses)</option>
+                                <option value="point-and-courses" data-amount="300" data-description="Cluster Points & Eligible Courses">📊 Premium (Points & Courses)</option>
+                                <option value="courses-only" data-amount="200" data-description="View Eligible Courses Only">📚 Standard (Courses Only)</option>
+                                <option value="calculate-cluster-points" data-amount="100" data-description="Calculate Your Cluster Points">📈 Starter (Calculate Points)</option>
                             </select>
                             <button id="payButton" class="cc-btn-pay payment-btn" disabled data-category="" data-amount="0">
                                 <i class="fas fa-credit-card"></i>
@@ -1839,19 +1839,25 @@
                 return false;
             }
 
-            // TEST MODE: Bypass actual payment flow
-            console.log('--- TEST MODE: Bypassing Payment ---');
+            // REAL MODE: Use payment handler to process actual M-Pesa payment
+            console.log('--- REAL MODE: Processing M-Pesa Payment ---');
             
-            await Swal.fire({
-                icon: 'success',
-                title: 'Access Granted! (Test Mode)',
-                html: `<p class="text-green-600 mb-2 font-bold">${getCategoryName(category)}</p><p class="text-sm text-gray-500">Bypassing M-Pesa for testing purposes...</p>`,
-                showConfirmButton: false,
-                timer: 1500,
-                timerProgressBar: true
-            });
-
-            return true;
+            try {
+                await window.paymentHandler.processPayment(
+                    category,
+                    parseInt(amount),
+                    () => {
+                        console.log('Success callback from processPayment');
+                        showResultsAfterPayment(category);
+                    }
+                );
+                
+                // Return false because showResultsAfterPayment is handled by the callback
+                return false;
+            } catch (error) {
+                console.error('Payment processing failed:', error);
+                return false;
+            }
         }
 
         // Copy course code to clipboard
@@ -2227,12 +2233,12 @@
                             </label>
                             <select id="modalPackageSelect" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 0.75rem; font-size: 1rem; cursor: pointer;">
                                 <option value="" data-amount="0">-- Choose a package --</option>
-                                <option value="gold" data-amount="1">⭐ Gold Package - KES 1 (Test)</option>
-                                <option value="silver" data-amount="1">🥈 Silver Package - KES 1 (Test)</option>
-                                <option value="bronze" data-amount="1">🥉 Bronze Package - KES 1 (Test)</option>
-                                <option value="point-and-courses" data-amount="1">📊 Premium - Points & Courses - KES 1 (Test)</option>
-                                <option value="courses-only" data-amount="1">📚 Standard - Courses Only - KES 1 (Test)</option>
-                                <option value="calculate-cluster-points" data-amount="1">📈 Starter - Cluster Points - KES 1 (Test)</option>
+                                <option value="gold" data-amount="600">⭐ Gold Package - Ksh 600 (All-in-one + Expert)</option>
+                                <option value="silver" data-amount="500">🥈 Silver Package - Ksh 500 (Uni Courses + Cluster)</option>
+                                <option value="bronze" data-amount="400">🥉 Bronze Package - Ksh 400 (Unis & Courses)</option>
+                                <option value="point-and-courses" data-amount="300">📊 Premium Package - Ksh 300 (Points & Courses)</option>
+                                <option value="courses-only" data-amount="200">📚 Standard Package - Ksh 200 (Courses Only)</option>
+                                <option value="calculate-cluster-points" data-amount="100">📈 Starter Package - Ksh 100 (Calculate Points)</option>
                             </select>
                         </div>
                         

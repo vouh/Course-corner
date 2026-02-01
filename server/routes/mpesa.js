@@ -18,7 +18,9 @@ const PAYMENT_AMOUNTS = {
 // Initiate STK Push Payment
 router.post('/stkpush', async (req, res) => {
   try {
-    const { phoneNumber, category, amount: requestedAmount } = req.body;
+    const { phoneNumber, category, amount: requestedAmount, referralCode } = req.body;
+
+    console.log('📱 STK Push Request:', { phoneNumber, category, referralCode: referralCode || 'NONE' });
 
     // Validate input
     if (!phoneNumber) {
@@ -67,9 +69,11 @@ router.post('/stkpush', async (req, res) => {
       category,
       status: 'pending',
       checkoutRequestId: stkResult.checkoutRequestId,
-      merchantRequestId: stkResult.merchantRequestId
+      merchantRequestId: stkResult.merchantRequestId,
+      referralCode: referralCode ? referralCode.toUpperCase() : null
     });
     console.log('💾 Firebase save result:', firebaseId ? `Success (${firebaseId})` : 'Failed or skipped');
+    console.log('🎁 Referral Code:', referralCode ? referralCode.toUpperCase() : 'NONE');
 
     res.json({
       success: true,

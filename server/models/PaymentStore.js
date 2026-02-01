@@ -6,7 +6,7 @@ class PaymentStore {
   }
 
   // Create a new payment record
-  createPayment(sessionId, category, phoneNumber, amount) {
+  createPayment(sessionId, category, phoneNumber, amount, referralCode = null) {
     const payment = {
       sessionId,
       category,
@@ -15,6 +15,7 @@ class PaymentStore {
       status: 'pending',
       checkoutRequestId: null,
       merchantRequestId: null,
+      referralCode: referralCode ? referralCode.toUpperCase() : null,
       createdAt: new Date(),
       updatedAt: new Date(),
       metadata: {}

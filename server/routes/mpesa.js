@@ -3,7 +3,17 @@ const router = express.Router();
 const { initiateSTKPush, querySTKPushStatus } = require('../utils/mpesaUtil');
 const PaymentStore = require('../models/PaymentStore');
 const { generateSessionId } = require('../utils/helpers');
-const { savePaymentTransaction, updatePaymentTransaction, getAllTransactions, getTransactionStats } = require('../utils/firebaseAdmin');
+const { 
+  savePaymentTransaction, 
+  updatePaymentTransaction, 
+  getAllTransactions, 
+  getTransactionStats,
+  getTransactionByMpesaCode,
+  markTransactionAsUsed,
+  creditReferrer,
+  bulkDeleteTransactions,
+  deleteTransaction
+} = require('../utils/firebaseAdmin');
 
 // Payment amounts for each category
 const PAYMENT_AMOUNTS = {
@@ -41,8 +51,8 @@ router.post('/stkpush', async (req, res) => {
     const amount = requestedAmount || PAYMENT_AMOUNTS[category];
     const sessionId = generateSessionId();
 
-    // Create payment record
-    PaymentStore.createPayment(sessionId, category, phoneNumber, amount);
+    // Create payment record with referral code
+    PaymentStore.createPayment(sessionId, category, phoneNumber, amount, referralCode);
 
     // Initiate STK Push
     const stkResult = await initiateSTKPush(
@@ -351,6 +361,16 @@ router.post('/callback', async (req, res) => {
         });
 
         console.log('💾 Payment data saved successfully with Receipt:', mpesaReceiptNumber);
+
+        // Credit referrer if applicable (12% commission)
+        if (payment.referralCode) {
+          console.log('💰 Processing referral commission for code:', payment.referralCode);
+          try {
+            await creditReferrer(payment.referralCode, payment.amount, payment.sessionId);
+          } catch (refError) {
+            console.error('❌ Error crediting referrer:', refError.message);
+          }
+        }
       } else {
         // Payment failed
         console.log('❌ PAYMENT FAILED!');
@@ -939,6 +959,119 @@ router.post('/admin/update-transaction', async (req, res) => {
     }
   } catch (error) {
     console.error('Update transaction error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// =====================================================
+// VERIFY BY M-PESA CODE (One-time use)
+// =====================================================
+router.post('/verify-mpesa-code', async (req, res) => {
+  try {
+    const { mpesaCode, category } = req.body;
+
+    if (!mpesaCode) {
+      return res.status(400).json({
+        success: false,
+        message: 'M-Pesa transaction code is required'
+      });
+    }
+
+    // Find transaction by M-Pesa receipt number
+    const transaction = await getTransactionByMpesaCode(mpesaCode.toUpperCase());
+
+    if (!transaction) {
+      return res.status(404).json({
+        success: false,
+        message: 'No payment found with this M-Pesa code. Please check and try again.'
+      });
+    }
+
+    // Check if payment was successful
+    if (transaction.status !== 'completed') {
+      return res.status(400).json({
+        success: false,
+        message: `This payment is ${transaction.status}. Only completed payments can be used.`
+      });
+    }
+
+    // Check if already used (one-time use)
+    if (transaction.used) {
+      return res.status(400).json({
+        success: false,
+        message: 'This M-Pesa code has already been used to view results. Each code can only be used once.',
+        usedAt: transaction.usedAt
+      });
+    }
+
+    // Check category match if specified
+    if (category && transaction.category !== category) {
+      return res.status(400).json({
+        success: false,
+        message: `This payment was for ${transaction.category} package, not ${category}.`,
+        actualCategory: transaction.category
+      });
+    }
+
+    // Mark as used
+    await markTransactionAsUsed(transaction.id);
+
+    res.json({
+      success: true,
+      message: 'Payment verified successfully',
+      hasAccess: true,
+      data: {
+        sessionId: transaction.sessionId,
+        category: transaction.category,
+        amount: transaction.amount,
+        mpesaCode: transaction.mpesaReceiptNumber,
+        paidAt: transaction.createdAt
+      }
+    });
+
+  } catch (error) {
+    console.error('Verify M-Pesa code error:', error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+// =====================================================
+// ADMIN BULK DELETE ENDPOINT
+// =====================================================
+
+// Bulk delete transactions
+router.post('/admin/transactions/bulk-delete', async (req, res) => {
+  try {
+    const { ids } = req.body;
+    
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Array of transaction IDs is required'
+      });
+    }
+
+    const result = await bulkDeleteTransactions(ids);
+    
+    if (result) {
+      res.json({
+        success: true,
+        message: `Successfully deleted ${ids.length} transactions`
+      });
+    } else {
+      res.status(500).json({
+        success: false,
+        message: 'Failed to delete transactions'
+      });
+    }
+  } catch (error) {
+    console.error('Bulk delete error:', error);
     res.status(500).json({
       success: false,
       message: error.message

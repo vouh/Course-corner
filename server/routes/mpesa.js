@@ -600,19 +600,52 @@ router.post('/admin/requery/:transactionId', async (req, res) => {
     
     let updated = false;
     let newData = {};
+
+    // Timeout handling: don't allow "pending" to be an end-state
+    const timeoutMinutes = parseInt(process.env.TRANSACTION_TIMEOUT_MINUTES || '5', 10);
+    const createdAtDate = tx.createdAt ? new Date(tx.createdAt) : null;
+    const isCreatedAtValid = createdAtDate && !Number.isNaN(createdAtDate.getTime());
+    const ageMs = isCreatedAtValid ? (Date.now() - createdAtDate.getTime()) : null;
+    const isExpired = ageMs != null && ageMs > timeoutMinutes * 60 * 1000;
+
+    // Normalize M-Pesa result fields across formats
+    const resultCode = queryResult?.ResultCode ?? queryResult?.errorCode ?? null;
+    const resultDesc = queryResult?.ResultDesc ?? queryResult?.errorMessage ?? queryResult?.errorDescription ?? null;
+
+    newData.lastRequeryAt = new Date().toISOString();
+    newData.lastRequeryResultCode = resultCode;
+    newData.lastRequeryResultDesc = resultDesc;
     
-    if (queryResult.ResultCode === '0' || queryResult.ResultCode === 0) {
+    if (resultCode === '0' || resultCode === 0) {
       newData.status = 'completed';
-      newData.resultDesc = queryResult.ResultDesc || 'Success';
+      newData.resultDesc = resultDesc || 'Success';
       if (queryResult.MpesaReceiptNumber) {
         newData.mpesaReceiptNumber = queryResult.MpesaReceiptNumber;
         newData.transactionCode = queryResult.MpesaReceiptNumber;
       }
       updated = true;
-    } else if (queryResult.ResultCode && queryResult.ResultCode !== 'pending') {
+    } else if (resultCode === 'pending') {
+      // Still pending – keep it pending, but store a human-readable reason
+      newData.status = tx.status || 'pending';
+      newData.resultDesc = resultDesc || 'Transaction is still being processed';
+      newData.resultCode = 'pending';
+      updated = true;
+
+      // If it's been pending too long, mark as failed (timeout)
+      if (isExpired) {
+        newData.status = 'failed';
+        newData.resultCode = 'timeout';
+        newData.resultDesc = `Timed out waiting for customer response (${timeoutMinutes} minutes).`;
+      }
+    } else if (resultCode) {
       newData.status = 'failed';
-      newData.resultDesc = queryResult.ResultDesc || `Failed with code: ${queryResult.ResultCode}`;
-      newData.resultCode = queryResult.ResultCode;
+      newData.resultDesc = resultDesc || `Failed with code: ${resultCode}`;
+      newData.resultCode = resultCode;
+      updated = true;
+    } else {
+      // Unknown response – keep current status but record what we got
+      newData.status = tx.status || 'pending';
+      if (!newData.resultDesc) newData.resultDesc = 'Unable to determine M-Pesa status. Please retry re-query.';
       updated = true;
     }
     

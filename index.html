@@ -17,6 +17,7 @@
         content="Course Corner offers a wide range of courses to help you achieve your educational and career goals. Explore now!">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="assets/js/firebase-config.js" type="module"></script>
+    <script src="assets/js/placements/placement-engine.js"></script>
     <script src="assets/js/calculator.js" type="module"></script>
     <script src="assets/js/courses-eligibility.js" type="module"></script>
     <meta charset="UTF-8">
@@ -247,18 +248,17 @@
                     <a href="pages/calculator.html" class="modern-nav-link">Calculator</a>
                     <a href="pages/application-process.html" class="modern-nav-link">Application</a>
                     <a href="pages/resources.html" class="modern-nav-link">Resources</a>
-                    <a href="pages/guide.html" class="modern-nav-link">Guide</a>
+                    <a href="pages/referral.html" class="modern-nav-link">Earn Money</a>
                     <a href="pages/contact.html" class="modern-nav-link">Contact</a>
                 </div>
 
                 <!-- Auth Buttons -->
                 <div class="nav-auth-buttons">
                     <div id="userAvatar" class="hidden"></div>
-                    <button id="profileBtn" class="btn-nav-profile hidden"
-                        onclick="window.firebaseAuth.openProfileModal()">
-                        <i class="fas fa-user-circle"></i>
-                        <span>Profile</span>
-                    </button>
+                    <a href="pages/referral.html" id="profileBtn" class="btn-nav-profile hidden">
+                        <i class="fas fa-gift"></i>
+                        <span>My Dashboard</span>
+                    </a>
                     <button id="authBtn" class="btn-nav-login" onclick="window.firebaseAuth.openAuthModal()">
                         <i class="fas fa-user"></i>
                         <span>Login</span>
@@ -283,15 +283,14 @@
                 <a href="pages/calculator.html" class="mobile-nav-link">Calculator</a>
                 <a href="pages/application-process.html" class="mobile-nav-link">Application</a>
                 <a href="pages/resources.html" class="mobile-nav-link">Resources</a>
-                <a href="pages/guide.html" class="mobile-nav-link">Guide</a>
+                <a href="pages/referral.html" class="mobile-nav-link">💰 Earn Money</a>
                 <a href="pages/contact.html" class="mobile-nav-link">Contact</a>
             </nav>
             <div class="mobile-auth-buttons">
-                <button id="profileBtnMobile" class="btn-nav-profile hidden" style="width:100%; justify-content:center;"
-                    onclick="window.firebaseAuth.openProfileModal()">
-                    <i class="fas fa-user-circle"></i>
-                    Profile
-                </button>
+                <a href="pages/referral.html" id="profileBtnMobile" class="btn-nav-profile hidden" style="width:100%; justify-content:center; text-decoration:none;">
+                    <i class="fas fa-gift"></i>
+                    My Dashboard
+                </a>
                 <button id="authBtnMobile" class="btn-nav-login" style="width:100%; justify-content:center;"
                     onclick="window.firebaseAuth.openAuthModal()">
                     <i class="fas fa-user"></i>
@@ -657,6 +656,47 @@
     </section>
 
     <script>
+        // ========================================
+        // REFERRAL CODE CAPTURE (supports both ?ref= and #ref=)
+        // ========================================
+        (function() {
+            // Check query params first
+            let refCode = new URLSearchParams(window.location.search).get('ref');
+            
+            // If not in query, check hash (e.g., #ref=XXXXX)
+            if (!refCode && window.location.hash) {
+                const hashParams = window.location.hash.substring(1); // Remove #
+                if (hashParams.startsWith('ref=')) {
+                    refCode = hashParams.split('=')[1];
+                }
+            }
+            
+            if (refCode) {
+                localStorage.setItem('pendingReferralCode', refCode.toUpperCase());
+                console.log('📌 Referral code captured:', refCode);
+                
+                // Optional: Show referral banner
+                setTimeout(() => {
+                    const banner = document.createElement('div');
+                    banner.id = 'referralBanner';
+                    banner.className = 'fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-amber-500 to-yellow-500 text-white py-2 px-4 text-center text-sm font-medium shadow-lg';
+                    banner.innerHTML = `
+                        <span><i class="fas fa-gift mr-2"></i>You were referred by a friend! Your discount will be applied.</span>
+                        <button onclick="this.parentElement.remove()" class="ml-4 text-white/80 hover:text-white">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    document.body.prepend(banner);
+                    
+                    // Auto-hide after 10 seconds
+                    setTimeout(() => {
+                        const b = document.getElementById('referralBanner');
+                        if (b) b.remove();
+                    }, 10000);
+                }, 1000);
+            }
+        })();
+
         document.addEventListener('DOMContentLoaded', function () {
             // Modern Header Scroll Effect
             const header = document.getElementById('mainHeader');
@@ -1147,6 +1187,8 @@
                         <li><a href="pages/calculator.html">Calculator</a></li>
                         <li><a href="pages/cluster-points.html">Cluster Points Guide</a></li>
                         <li><a href="pages/application-process.html">Application Process</a></li>
+                        <li><a href="pages/my-results.html">My Dashboard</a></li>
+                        <li><a href="pages/referral.html">Referral Program</a></li>
                     </ul>
                 </div>
 
@@ -1156,6 +1198,7 @@
                     <ul>
                         <li><a href="pages/resources.html">Resources Library</a></li>
                         <li><a href="pages/guide.html">How to Use</a></li>
+                        <li><a href="pages/verify-payment.html">Verify Payment</a></li>
                         <li><a href="pages/privacy-policy.html">Privacy Policy</a></li>
                         <li><a href="pages/terms-of-service.html">Terms of Service</a></li>
                     </ul>
@@ -2269,6 +2312,11 @@
                         <input type="email" id="signupEmail" class="form-input" placeholder="Enter your email" required>
                     </div>
                     <div class="form-group">
+                        <label for="signupPhone">M-Pesa Phone Number <span class="text-xs text-gray-500">(for referral payouts)</span></label>
+                        <input type="tel" id="signupPhone" class="form-input" placeholder="07XXXXXXXX or 01XXXXXXXX"
+                            required pattern="^(0|254|\+254)?[17]\d{8}$">
+                    </div>
+                    <div class="form-group">
                         <label for="signupPassword">Password</label>
                         <input type="password" id="signupPassword" class="form-input"
                             placeholder="Create a password (min 6 characters)" required minlength="6">
@@ -2662,6 +2710,8 @@
 
             if (result.success) {
                 window.firebaseAuth.closeAuthModal();
+                // Redirect to referral dashboard
+                window.location.href = 'pages/referral.html';
             }
         }
 
@@ -2670,6 +2720,7 @@
             e.preventDefault();
             const name = document.getElementById('signupName').value;
             const email = document.getElementById('signupEmail').value;
+            const phone = document.getElementById('signupPhone').value;
             const password = document.getElementById('signupPassword').value;
             const confirmPassword = document.getElementById('signupConfirmPassword').value;
             const btn = document.getElementById('signupBtn');
@@ -2683,16 +2734,36 @@
                 return;
             }
 
+            // Validate phone number
+            if (!phone || !/^(0|254|\+254)?[17]\d{8}$/.test(phone.replace(/\s/g, ''))) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Phone Number',
+                    text: 'Please enter a valid Kenyan phone number (07... or 01...)'
+                });
+                return;
+            }
+
+            // Format phone number to 254...
+            let formattedPhone = phone.replace(/\s/g, '');
+            if (formattedPhone.startsWith('0')) {
+                formattedPhone = '254' + formattedPhone.substring(1);
+            } else if (formattedPhone.startsWith('+')) {
+                formattedPhone = formattedPhone.substring(1);
+            }
+
             btn.classList.add('btn-loading');
             btn.disabled = true;
 
-            const result = await window.firebaseAuth.signUp(email, password, name);
+            const result = await window.firebaseAuth.signUp(email, password, name, formattedPhone);
 
             btn.classList.remove('btn-loading');
             btn.disabled = false;
 
             if (result.success) {
                 window.firebaseAuth.closeAuthModal();
+                // Redirect to referral dashboard
+                window.location.href = 'pages/referral.html';
             }
         }
 
@@ -2701,6 +2772,8 @@
             const result = await window.firebaseAuth.signInWithGoogle();
             if (result.success) {
                 window.firebaseAuth.closeAuthModal();
+                // Redirect to referral dashboard
+                window.location.href = 'pages/referral.html';
             }
         }
 

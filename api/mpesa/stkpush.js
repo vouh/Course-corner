@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { saveTransaction, formatPhoneNumber } = require('../utils/firebase');
 
 // M-Pesa Configuration
 const CONSUMER_KEY = process.env.CONSUMER_KEY;
@@ -11,14 +12,14 @@ const CALLBACK_URL = process.env.CALLBACK_URL;
 const AUTH_URL = 'https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
 const STK_PUSH_URL = 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
 
-// In-memory payment store (for serverless, consider using a database)
-const payments = new Map();
-
 // Payment amounts for each category
 const PAYMENT_AMOUNTS = {
   'calculate-cluster-points': 100,
   'courses-only': 200,
-  'point-and-courses': 300
+  'point-and-courses': 300,
+  'bronze': 400,
+  'silver': 500,
+  'gold': 600
 };
 
 // Get M-Pesa Access Token
@@ -87,7 +88,7 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { phoneNumber, category } = req.body;
+    const { phoneNumber, category, referralCode } = req.body;
 
     // Validate input
     if (!phoneNumber) {
@@ -97,7 +98,7 @@ module.exports = async (req, res) => {
     if (!category || !PAYMENT_AMOUNTS[category]) {
       return res.status(400).json({
         success: false,
-        message: 'Invalid category. Must be one of: calculate-cluster-points, courses-only, point-and-courses'
+        message: 'Invalid category. Must be one of: ' + Object.keys(PAYMENT_AMOUNTS).join(', ')
       });
     }
 
@@ -117,8 +118,8 @@ module.exports = async (req, res) => {
       PartyA: formattedPhone,
       PartyB: BUSINESS_SHORT_CODE,
       PhoneNumber: formattedPhone,
-      CallBackURL: CALLBACK_URL || `https://course-corner-server.vercel.app/api/mpesa/callback`,
-      AccountReference: `CC-${category}-${sessionId}`,
+      CallBackURL: CALLBACK_URL || `https://course-corner.vercel.app/api/mpesa/callback`,
+      AccountReference: `CC-${category.substring(0, 10)}-${sessionId.substring(0, 10)}`,
       TransactionDesc: `Course Corner - ${category}`
     };
 
@@ -130,9 +131,8 @@ module.exports = async (req, res) => {
       timeout: 10000
     });
 
-    // Store payment info (in production, use a database)
-    global.payments = global.payments || {};
-    global.payments[sessionId] = {
+    // Save payment to Firebase (and in-memory as backup)
+    const paymentData = {
       sessionId,
       category,
       phoneNumber: formattedPhone,
@@ -140,8 +140,12 @@ module.exports = async (req, res) => {
       status: 'pending',
       checkoutRequestId: response.data.CheckoutRequestID,
       merchantRequestId: response.data.MerchantRequestID,
+      referralCode: referralCode ? referralCode.toUpperCase() : null,
       createdAt: new Date()
     };
+
+    await saveTransaction(paymentData);
+    console.log('✅ STK Push initiated and saved:', sessionId);
 
     res.json({
       success: true,

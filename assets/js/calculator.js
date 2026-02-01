@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', function () {
     window.calculateClusterPoints = calculateClusterPoints;
     window.displayResults = displayResults;
     window.generateClusterPointsHTML = generateClusterPointsHTML;
+    window.getAllSubjectScores = getAllSubjectScores;
+    window.validateInputs = validateInputs;
 
     // Get all grade select dropdowns
     const gradeSelects = document.querySelectorAll('.grade-select');
@@ -463,6 +465,37 @@ function generateClusterPointsHTML(allClusterPoints) {
         <div class="mt-6 space-y-4">
             <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-md text-sm text-gray-600">
                 <p>Note: We strive to provide the most accurate calculations possible. However, due to KUCCPS standardization, actual cluster points may vary by ±2 points range. However this approximation is important to have proper campus and course goals. These results should be used as a close approximation for making preliminary decisions.</p>
+            </div>
+        </div>
+        <div class="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-5 shadow-sm">
+            <div class="flex items-start gap-3">
+                <div class="flex-shrink-0">
+                    <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-base font-semibold text-amber-800 mb-2">Data Source & Disclaimer</h4>
+                    <p class="text-sm text-amber-700 mb-3">
+                        This data was received from the official KUCCPS website (<a href="https://students.kuccps.net" target="_blank" class="underline hover:text-amber-900">students.kuccps.net</a>) as of <strong>July 14, 2025</strong>.
+                    </p>
+                    <div class="bg-white/60 rounded-lg p-3 mb-3">
+                        <p class="text-xs font-medium text-amber-800 mb-2">Official Reference Links:</p>
+                        <ul class="text-xs text-amber-700 space-y-1">
+                            <li>📄 <a href="https://statics.kuccps.net/uploads/globalFiles/DEGREE_CUTOFFS_14-07-2025.pdf" target="_blank" class="underline hover:text-amber-900">Degree Cutoffs PDF (2025)</a> - Verify university cutoff points</li>
+                            <li>📚 <a href="https://students.kuccps.net/programmes/" target="_blank" class="underline hover:text-amber-900">All Programmes</a> - Browse all available programs & cluster information</li>
+                            <li>🏛️ <a href="https://students.kuccps.net/institutions/" target="_blank" class="underline hover:text-amber-900">Institutions</a> - View all universities and colleges</li>
+                            <li>🌐 <a href="https://kuccps.net/" target="_blank" class="underline hover:text-amber-900">KUCCPS Official Website</a> - General information</li>
+                        </ul>
+                    </div>
+                    <div class="bg-red-50 border-l-4 border-red-400 p-3 rounded-r-lg">
+                        <p class="text-xs text-red-700">
+                            <strong>⚠️ Important:</strong> Please verify all information with the official KUCCPS sources linked above. 
+                            Use Course Corner results as a <strong>guide only</strong>, not as absolute data. 
+                            Cutoffs and requirements may change. Always confirm with KUCCPS before making final decisions.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     `;

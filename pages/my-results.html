@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View your Course Corner purchase history and referral earnings">
+    <title>My Results - Course Corner</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="../assets/js/firebase-config.js" type="module"></script>
+    
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%);
+        }
+        .card-shadow {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 1px solid #86efac;
+        }
+        .gold-gradient {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 1px solid #fbbf24;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <header class="gradient-bg text-white py-6 shadow-lg">
+        <div class="container mx-auto px-4">
+            <div class="flex items-center justify-between">
+                <a href="../index.html" class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur">
+                        <i class="fas fa-graduation-cap text-2xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-2xl font-bold">Course Corner</h1>
+                        <p class="text-green-100 text-sm">My Dashboard</p>
+                    </div>
+                </a>
+                <div class="flex items-center gap-3">
+                    <a href="calculator.html" class="hidden sm:flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-lg transition-all">
+                        <i class="fas fa-calculator"></i>
+                        <span>Calculator</span>
+                    </a>
+                    <button id="logoutBtn" class="hidden items-center gap-2 bg-red-500/80 hover:bg-red-500 px-4 py-2 rounded-lg transition-all">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="hidden sm:inline">Logout</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Guest View (Not Logged In) -->
+        <div id="guestView" class="max-w-lg mx-auto">
+            <div class="bg-white rounded-2xl card-shadow overflow-hidden">
+                <div class="bg-gradient-to-r from-green-500 to-emerald-600 p-6 text-white text-center">
+                    <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-user-circle text-4xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-2">Welcome to Your Dashboard</h2>
+                    <p class="text-green-100">Sign in to view your purchase history and referral earnings</p>
+                </div>
+
+                <div class="p-6 sm:p-8">
+                    <!-- Login Options -->
+                    <div class="space-y-4">
+                        <button id="googleSignInBtn" class="w-full flex items-center justify-center gap-3 bg-white border-2 border-gray-200 hover:border-gray-300 text-gray-700 font-semibold py-3 px-6 rounded-xl transition-all">
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" class="w-6 h-6">
+                            <span>Continue with Google</span>
+                        </button>
+                        
+                        <div class="flex items-center my-6">
+                            <div class="flex-1 border-t border-gray-200"></div>
+                            <span class="px-4 text-gray-400 text-sm">or</span>
+                            <div class="flex-1 border-t border-gray-200"></div>
+                        </div>
+
+                        <!-- Phone Lookup (for non-logged-in users) -->
+                        <form id="phoneLookupForm" class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="fas fa-phone text-green-600 mr-2"></i>Lookup by Phone Number
+                                </label>
+                                <input 
+                                    type="tel" 
+                                    id="lookupPhone"
+                                    placeholder="e.g., 0712345678"
+                                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all"
+                                >
+                            </div>
+                            <button type="submit" class="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all">
+                                <i class="fas fa-search mr-2"></i>Find My Purchases
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Verify Code Link -->
+                    <div class="mt-6 pt-6 border-t border-gray-100 text-center">
+                        <p class="text-gray-600 text-sm mb-3">Have an M-Pesa transaction code?</p>
+                        <a href="verify-payment.html" class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-semibold">
+                            <i class="fas fa-receipt"></i>
+                            Verify Payment Code
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logged In View -->
+        <div id="dashboardView" class="hidden">
+            <!-- User Header -->
+            <div class="bg-white rounded-2xl card-shadow p-6 mb-6">
+                <div class="flex flex-col sm:flex-row items-center gap-4">
+                    <img id="userAvatar" src="" alt="User" class="w-16 h-16 rounded-full border-4 border-green-200">
+                    <div class="text-center sm:text-left flex-1">
+                        <h2 id="userName" class="text-2xl font-bold text-gray-800">Welcome!</h2>
+                        <p id="userEmail" class="text-gray-600"></p>
+                    </div>
+                    <div class="flex gap-3">
+                        <a href="referral.html" class="bg-amber-100 hover:bg-amber-200 text-amber-700 font-semibold px-4 py-2 rounded-lg transition-all">
+                            <i class="fas fa-gift mr-2"></i>Referral Program
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                <div class="stat-card rounded-xl p-4 text-center">
+                    <div class="text-3xl font-bold text-green-700" id="statPurchases">0</div>
+                    <div class="text-sm text-green-600">Total Purchases</div>
+                </div>
+                <div class="stat-card rounded-xl p-4 text-center">
+                    <div class="text-3xl font-bold text-green-700" id="statSpent">0</div>
+                    <div class="text-sm text-green-600">KES Spent</div>
+                </div>
+                <div class="gold-gradient rounded-xl p-4 text-center">
+                    <div class="text-3xl font-bold text-amber-700" id="statReferrals">0</div>
+                    <div class="text-sm text-amber-600">Referrals</div>
+                </div>
+                <div class="gold-gradient rounded-xl p-4 text-center">
+                    <div class="text-3xl font-bold text-amber-700" id="statEarnings">0</div>
+                    <div class="text-sm text-amber-600">KES Earned</div>
+                </div>
+            </div>
+
+            <!-- Referral Section -->
+            <div id="referralSection" class="bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 rounded-2xl p-6 mb-8">
+                <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                    <div>
+                        <h3 class="text-xl font-bold text-amber-800 mb-1">
+                            <i class="fas fa-gift mr-2"></i>Your Referral Code
+                        </h3>
+                        <p class="text-amber-600 text-sm">Share this code and earn 12% on every purchase!</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="bg-white border-2 border-amber-300 rounded-lg px-4 py-2">
+                            <span id="referralCode" class="text-2xl font-mono font-bold text-amber-700">-----</span>
+                        </div>
+                        <button onclick="copyReferralCode()" class="bg-amber-500 hover:bg-amber-600 text-white p-3 rounded-lg transition-all">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Withdrawable Balance -->
+                <div id="withdrawSection" class="hidden mt-6 pt-6 border-t border-amber-200">
+                    <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div>
+                            <p class="text-amber-700 text-sm">Available for Withdrawal</p>
+                            <p class="text-3xl font-bold text-green-600">KES <span id="withdrawableAmount">0</span></p>
+                        </div>
+                        <button onclick="requestWithdrawal()" class="bg-green-500 hover:bg-green-600 text-white font-bold px-6 py-3 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed" id="withdrawBtn">
+                            <i class="fas fa-money-bill-wave mr-2"></i>Request Withdrawal
+                        </button>
+                    </div>
+                    <p class="text-amber-600 text-xs mt-2">
+                        <i class="fas fa-info-circle mr-1"></i>Minimum withdrawal: KES 100
+                    </p>
+                </div>
+            </div>
+
+            <!-- Purchase History -->
+            <div class="bg-white rounded-2xl card-shadow overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <h3 class="text-xl font-bold text-gray-800">
+                        <i class="fas fa-history text-green-600 mr-2"></i>Purchase History
+                    </h3>
+                </div>
+                <div id="purchaseHistory" class="divide-y divide-gray-100">
+                    <!-- Purchases will be loaded here -->
+                    <div class="p-8 text-center text-gray-500">
+                        <i class="fas fa-spinner fa-spin text-2xl mb-3"></i>
+                        <p>Loading purchases...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, doc, getDoc, collection, query, where, orderBy, getDocs } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase config (same as firebase-config.js)
+        const firebaseConfig = {
+            apiKey: "AIzaSyD-example",
+            authDomain: "course-corner.firebaseapp.com",
+            projectId: "course-corner",
+            storageBucket: "course-corner.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+
+        let app, auth, db;
+        
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (e) {
+            console.log('Firebase already initialized');
+            app = window.firebaseApp;
+            auth = getAuth();
+            db = getFirestore();
+        }
+
+        const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000' : '';
+
+        // Auth state listener
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                showDashboard(user);
+                await loadUserData(user);
+            } else {
+                showGuestView();
+            }
+        });
+
+        // Google Sign In
+        document.getElementById('googleSignInBtn').addEventListener('click', async () => {
+            try {
+                const provider = new GoogleAuthProvider();
+                await signInWithPopup(auth, provider);
+            } catch (error) {
+                console.error('Sign in error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Sign In Failed',
+                    text: error.message
+                });
+            }
+        });
+
+        // Logout
+        document.getElementById('logoutBtn').addEventListener('click', async () => {
+            try {
+                await signOut(auth);
+                showGuestView();
+            } catch (error) {
+                console.error('Sign out error:', error);
+            }
+        });
+
+        // Phone Lookup
+        document.getElementById('phoneLookupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const phone = document.getElementById('lookupPhone').value.trim();
+            
+            if (!phone) {
+                Swal.fire({ icon: 'warning', title: 'Phone Required', text: 'Please enter a phone number' });
+                return;
+            }
+
+            await lookupByPhone(phone);
+        });
+
+        function showGuestView() {
+            document.getElementById('guestView').classList.remove('hidden');
+            document.getElementById('dashboardView').classList.add('hidden');
+            document.getElementById('logoutBtn').classList.add('hidden');
+        }
+
+        function showDashboard(user) {
+            document.getElementById('guestView').classList.add('hidden');
+            document.getElementById('dashboardView').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.remove('hidden');
+            document.getElementById('logoutBtn').classList.add('flex');
+            
+            document.getElementById('userAvatar').src = user.photoURL || 'https://via.placeholder.com/64';
+            document.getElementById('userName').textContent = user.displayName || 'Welcome!';
+            document.getElementById('userEmail').textContent = user.email;
+        }
+
+        async function loadUserData(user) {
+            try {
+                // Load user profile from Firestore
+                const userDoc = await getDoc(doc(db, 'users', user.uid));
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    
+                    // Update referral stats
+                    document.getElementById('referralCode').textContent = userData.referralCode || 'N/A';
+                    document.getElementById('statReferrals').textContent = userData.referralPaidCount || 0;
+                    document.getElementById('statEarnings').textContent = userData.referralEarnings || 0;
+                    
+                    // Show withdrawal section if has withdrawable balance
+                    const withdrawable = userData.referralWithdrawable || 0;
+                    if (withdrawable > 0) {
+                        document.getElementById('withdrawSection').classList.remove('hidden');
+                        document.getElementById('withdrawableAmount').textContent = withdrawable;
+                        document.getElementById('withdrawBtn').disabled = withdrawable < 100;
+                    }
+
+                    // Store for later use
+                    window.currentUserData = userData;
+                }
+
+                // Load purchase history
+                await loadPurchaseHistory(user.uid);
+
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        async function loadPurchaseHistory(userId) {
+            const historyDiv = document.getElementById('purchaseHistory');
+            
+            try {
+                // Try to get transactions by user ID or phone
+                const userData = window.currentUserData;
+                let transactions = [];
+
+                // For now, show a message to use phone lookup
+                // In production, you'd query by userId if linked
+                
+                historyDiv.innerHTML = `
+                    <div class="p-8 text-center">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-receipt text-gray-400 text-2xl"></i>
+                        </div>
+                        <p class="text-gray-600 mb-4">Enter your phone number to find purchases</p>
+                        <form id="historyPhoneForm" class="max-w-xs mx-auto">
+                            <input type="tel" id="historyPhone" placeholder="e.g., 0712345678" 
+                                class="w-full px-4 py-2 border rounded-lg mb-3">
+                            <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg">
+                                <i class="fas fa-search mr-2"></i>Find Purchases
+                            </button>
+                        </form>
+                    </div>
+                `;
+
+                document.getElementById('historyPhoneForm').addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const phone = document.getElementById('historyPhone').value.trim();
+                    if (phone) await lookupByPhone(phone);
+                });
+
+            } catch (error) {
+                console.error('Error loading history:', error);
+                historyDiv.innerHTML = `
+                    <div class="p-8 text-center text-red-500">
+                        <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
+                        <p>Error loading purchase history</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function lookupByPhone(phone) {
+            const historyDiv = document.getElementById('purchaseHistory');
+            historyDiv.innerHTML = `
+                <div class="p-8 text-center">
+                    <i class="fas fa-spinner fa-spin text-2xl text-green-500 mb-3"></i>
+                    <p class="text-gray-600">Searching for purchases...</p>
+                </div>
+            `;
+
+            try {
+                // Format phone number
+                let formattedPhone = phone.replace(/[^\d]/g, '');
+                if (formattedPhone.startsWith('0')) {
+                    formattedPhone = '254' + formattedPhone.substring(1);
+                } else if (!formattedPhone.startsWith('254')) {
+                    formattedPhone = '254' + formattedPhone;
+                }
+
+                // Query Firestore for transactions
+                const q = query(
+                    collection(db, 'transactions'),
+                    where('phoneNumber', '==', formattedPhone),
+                    orderBy('createdAt', 'desc')
+                );
+
+                const snapshot = await getDocs(q);
+                const transactions = [];
+                snapshot.forEach(doc => {
+                    transactions.push({ id: doc.id, ...doc.data() });
+                });
+
+                displayPurchaseHistory(transactions);
+
+            } catch (error) {
+                console.error('Lookup error:', error);
+                historyDiv.innerHTML = `
+                    <div class="p-8 text-center text-red-500">
+                        <i class="fas fa-exclamation-circle text-2xl mb-2"></i>
+                        <p>Error searching purchases. Please try again.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function displayPurchaseHistory(transactions) {
+            const historyDiv = document.getElementById('purchaseHistory');
+            
+            if (transactions.length === 0) {
+                historyDiv.innerHTML = `
+                    <div class="p-8 text-center">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-inbox text-gray-400 text-2xl"></i>
+                        </div>
+                        <p class="text-gray-600">No purchases found for this phone number</p>
+                        <a href="calculator.html" class="inline-block mt-4 text-green-600 hover:text-green-700 font-semibold">
+                            <i class="fas fa-calculator mr-2"></i>Make a Purchase
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+
+            // Update stats
+            document.getElementById('statPurchases').textContent = transactions.filter(t => t.status === 'completed').length;
+            document.getElementById('statSpent').textContent = transactions
+                .filter(t => t.status === 'completed')
+                .reduce((sum, t) => sum + (t.amount || 0), 0);
+
+            const packageNames = {
+                'calculate-cluster-points': 'Cluster Points',
+                'courses-only': 'Eligible Courses',
+                'point-and-courses': 'Points & Courses',
+                'bronze': 'Bronze Package',
+                'silver': 'Silver Package',
+                'gold': 'Gold Package'
+            };
+
+            const statusColors = {
+                'completed': 'bg-green-100 text-green-700',
+                'pending': 'bg-yellow-100 text-yellow-700',
+                'failed': 'bg-red-100 text-red-700'
+            };
+
+            let html = '';
+            transactions.forEach(tx => {
+                const date = tx.createdAt?.toDate?.() || new Date(tx.createdAt);
+                const dateStr = date.toLocaleDateString('en-KE', { 
+                    year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+                });
+
+                html += `
+                    <div class="p-4 hover:bg-gray-50 transition-all">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
+                                    <i class="fas fa-receipt text-green-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-gray-800">${packageNames[tx.category] || tx.category}</h4>
+                                    <p class="text-sm text-gray-500">${dateStr}</p>
+                                    ${tx.mpesaReceiptNumber ? `<p class="text-xs font-mono text-gray-400">${tx.mpesaReceiptNumber}</p>` : ''}
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="font-bold text-gray-800">KES ${tx.amount}</p>
+                                <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full ${statusColors[tx.status] || 'bg-gray-100 text-gray-700'}">
+                                    ${tx.status}
+                                </span>
+                                ${tx.status === 'completed' && !tx.used ? `
+                                    <button onclick="verifyCode('${tx.mpesaReceiptNumber}')" class="ml-2 text-green-600 hover:text-green-700 text-sm font-semibold">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                ` : ''}
+                                ${tx.used ? '<span class="ml-2 text-xs text-gray-400">Used</span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            historyDiv.innerHTML = html;
+        }
+
+        // Make functions available globally
+        window.copyReferralCode = function() {
+            const code = document.getElementById('referralCode').textContent;
+            if (code && code !== '-----') {
+                const link = `https://coursecornerkenya.com/#ref=${code}`;
+                navigator.clipboard.writeText(link);
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Copied!',
+                    text: 'Referral link copied to clipboard',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+        };
+
+        window.verifyCode = function(code) {
+            window.location.href = `verify-payment.html?code=${code}`;
+        };
+
+        window.requestWithdrawal = async function() {
+            const userData = window.currentUserData;
+            const withdrawable = userData?.referralWithdrawable || 0;
+
+            if (withdrawable < 100) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Minimum Not Met',
+                    text: 'Minimum withdrawal is KES 100'
+                });
+                return;
+            }
+
+            const { value: formValues } = await Swal.fire({
+                title: 'Request Withdrawal',
+                html: `
+                    <div class="text-left">
+                        <p class="mb-4">Available: <strong class="text-green-600">KES ${withdrawable}</strong></p>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Amount to Withdraw</label>
+                        <input type="number" id="swal-amount" class="swal2-input" placeholder="Enter amount" value="${withdrawable}" max="${withdrawable}" min="100">
+                        <label class="block text-sm font-medium text-gray-700 mb-1 mt-3">M-Pesa Phone Number</label>
+                        <input type="tel" id="swal-phone" class="swal2-input" placeholder="e.g., 0712345678">
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: 'Submit Request',
+                confirmButtonColor: '#10b981',
+                preConfirm: () => {
+                    const amount = parseInt(document.getElementById('swal-amount').value);
+                    const phone = document.getElementById('swal-phone').value.trim();
+                    
+                    if (!amount || amount < 100) {
+                        Swal.showValidationMessage('Minimum withdrawal is KES 100');
+                        return false;
+                    }
+                    if (amount > withdrawable) {
+                        Swal.showValidationMessage('Amount exceeds available balance');
+                        return false;
+                    }
+                    if (!phone) {
+                        Swal.showValidationMessage('M-Pesa phone number is required');
+                        return false;
+                    }
+                    
+                    return { amount, phone };
+                }
+            });
+
+            if (formValues) {
+                try {
+                    const response = await fetch(`${API_BASE}/api/referral/withdraw`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            userId: auth.currentUser.uid,
+                            amount: formValues.amount,
+                            mpesaPhone: formValues.phone
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Request Submitted!',
+                            text: 'Your withdrawal request has been submitted. We will process it within 24 hours.',
+                            confirmButtonColor: '#10b981'
+                        });
+                        
+                        // Update UI
+                        const newWithdrawable = withdrawable - formValues.amount;
+                        document.getElementById('withdrawableAmount').textContent = newWithdrawable;
+                        if (newWithdrawable < 100) {
+                            document.getElementById('withdrawBtn').disabled = true;
+                        }
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Request Failed',
+                            text: result.message,
+                            confirmButtonColor: '#10b981'
+                        });
+                    }
+                } catch (error) {
+                    console.error('Withdrawal error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to submit withdrawal request. Please try again.'
+                    });
+                }
+            }
+        };
+
+        // Check for code in URL params
+        const urlParams = new URLSearchParams(window.location.search);
+        const codeParam = urlParams.get('code');
+        if (codeParam) {
+            document.getElementById('lookupPhone').focus();
+        }
+    </script>
+</body>
+</html>

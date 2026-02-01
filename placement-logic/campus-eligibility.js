@@ -30,7 +30,6 @@
         'german': { code: 'GER', aliases: ['GER', 'German'] },
         'arabic': { code: 'ARB', aliases: ['ARB', 'Arabic'] },
         'music': { code: 'MUS', aliases: ['MUS', 'Music'] },
-        'electricity': { code: 'ELC', aliases: ['ELC', 'Electricity'] },
         'agriculture': { code: 'AGR', aliases: ['AGR', 'Agriculture'] }
     };
 
@@ -38,7 +37,7 @@
     const SUBJECT_GROUPS = {
         GROUP2: ['biology', 'physics', 'chemistry'],
         GROUP3: ['geography', 'history', 'cre', 'ire', 'hre'],
-        GROUP4: ['homeScience', 'artDesign', 'agriculture', 'computerStudies', 'business', 'electricity'],
+        GROUP4: ['homeScience', 'artDesign', 'agriculture', 'computerStudies', 'business'],
         GROUP5: ['french', 'german', 'arabic', 'music']
     };
 
@@ -46,7 +45,7 @@
         GROUP1: ['MATHEMATICS', 'ENGLISH', 'KISWAHILI'],
         GROUP2: ['BIOLOGY', 'PHYSICS', 'CHEMISTRY'],
         GROUP3: ['GEOGRAPHY', 'HISTORY', 'CRE', 'IRE', 'HRE'],
-        GROUP4: ['HOME_SCIENCE', 'ART_DESIGN', 'COMPUTER_STUDIES', 'BUSINESS_STUDIES', 'ELECTRICITY'],
+        GROUP4: ['HOME_SCIENCE', 'ART_DESIGN', 'COMPUTER_STUDIES', 'BUSINESS_STUDIES'],
         GROUP5: ['FRENCH', 'GERMAN', 'ARABIC']
     };
 
@@ -589,9 +588,6 @@
             }
         }
 
-        // Add KUCCPS source disclaimer at the end of all results
-        html += generateKUCCPSDisclaimer();
-
         resultsDiv.innerHTML = html;
         initializeCollapsibleSections();
         initializeDownloadButton();
@@ -723,54 +719,34 @@
     // Function to generate KUCCPS source disclaimer
     function generateKUCCPSDisclaimer() {
         return `
-        <div class="mt-8 bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200 rounded-xl p-5 shadow-sm">
+        <div class="mt-8 bg-amber-50 border border-amber-200 rounded-xl p-5 shadow-sm">
             <div class="flex items-start gap-3">
-                <div class="flex-shrink-0 mt-0.5">
-                    <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div class="flex-shrink-0">
+                    <svg class="w-6 h-6 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
                 </div>
                 <div class="flex-1">
-                    <h4 class="text-sm font-semibold text-amber-800 mb-2">Data Source & Disclaimer</h4>
-                    <p class="text-xs text-amber-700 mb-3 leading-relaxed">
-                        The cutoff data displayed was sourced from the official KUCCPS website 
-                        (<a href="https://students.kuccps.net" target="_blank" class="underline hover:text-amber-900">students.kuccps.net</a>) 
-                        as of <strong>July 14, 2025</strong>. Course Corner provides this information as a guide only. 
-                        <strong>Please verify all information with official KUCCPS sources before making decisions.</strong>
+                    <h4 class="text-base font-semibold text-amber-800 mb-2">Data Source & Disclaimer</h4>
+                    <p class="text-sm text-amber-700 mb-3">
+                        This data was received from the official KUCCPS website (<a href="https://students.kuccps.net" target="_blank" class="underline hover:text-amber-900">students.kuccps.net</a>) as of <strong>July 14, 2025</strong>.
                     </p>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                        <a href="https://statics.kuccps.net/uploads/globalFiles/DEGREE_CUTOFFS_14-07-2025.pdf" target="_blank" 
-                           class="flex items-center gap-2 px-3 py-2 bg-white/70 rounded-lg border border-amber-200 text-amber-800 hover:bg-white hover:border-amber-300 transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/>
-                            </svg>
-                            <span>Degree Cutoffs (PDF)</span>
-                        </a>
-                        <a href="https://students.kuccps.net/programmes/" target="_blank" 
-                           class="flex items-center gap-2 px-3 py-2 bg-white/70 rounded-lg border border-amber-200 text-amber-800 hover:bg-white hover:border-amber-300 transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                            </svg>
-                            <span>All Programs & Clusters</span>
-                        </a>
-                        <a href="https://students.kuccps.net/institutions/" target="_blank" 
-                           class="flex items-center gap-2 px-3 py-2 bg-white/70 rounded-lg border border-amber-200 text-amber-800 hover:bg-white hover:border-amber-300 transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                            </svg>
-                            <span>All Institutions</span>
-                        </a>
-                        <a href="https://kuccps.net/" target="_blank" 
-                           class="flex items-center gap-2 px-3 py-2 bg-white/70 rounded-lg border border-amber-200 text-amber-800 hover:bg-white hover:border-amber-300 transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
-                            </svg>
-                            <span>KUCCPS Official Site</span>
-                        </a>
+                    <div class="bg-white/60 rounded-lg p-3 mb-3">
+                        <p class="text-xs font-medium text-amber-800 mb-2">Official Reference Links:</p>
+                        <ul class="text-xs text-amber-700 space-y-1">
+                            <li>📄 <a href="https://statics.kuccps.net/uploads/globalFiles/DEGREE_CUTOFFS_14-07-2025.pdf" target="_blank" class="underline hover:text-amber-900">Degree Cutoffs PDF (2025)</a> - Verify university cutoff points</li>
+                            <li>📚 <a href="https://students.kuccps.net/programmes/" target="_blank" class="underline hover:text-amber-900">All Programmes</a> - Browse all available programs & cluster information</li>
+                            <li>🏛️ <a href="https://students.kuccps.net/institutions/" target="_blank" class="underline hover:text-amber-900">Institutions</a> - View all universities and colleges</li>
+                            <li>🌐 <a href="https://kuccps.net/" target="_blank" class="underline hover:text-amber-900">KUCCPS Official Website</a> - General information</li>
+                        </ul>
                     </div>
-                    <p class="text-[10px] text-amber-600 mt-3 italic">
-                        ⚠️ Use this tool as a guide only. Always confirm with official KUCCPS data before making university or course selections.
-                    </p>
+                    <div class="bg-red-50 border-l-4 border-red-400 p-3 rounded-r-lg">
+                        <p class="text-xs text-red-700">
+                            <strong>⚠️ Important:</strong> Please verify all information with the official KUCCPS sources linked above. 
+                            Use Course Corner results as a <strong>guide only</strong>, not as absolute data. 
+                            Cutoffs and requirements may change. Always confirm with KUCCPS before making final decisions.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>

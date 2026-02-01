@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Referral Codes - Admin | Course Corner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        th {
+            background: rgba(30, 41, 59, 0.8);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        tr:hover td {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .status-active {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+
+        .status-inactive {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .search-input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body class="text-white">
+    <!-- Navigation -->
+    <nav class="glass-card sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex items-center gap-4">
+                    <a href="index.html" class="text-gray-400 hover:text-white transition">
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+                    <h1 class="text-xl font-bold">
+                        <i class="fas fa-share-alt text-blue-400 mr-2"></i>
+                        Referral Codes
+                    </h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button onclick="exportToCSV()" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                        <i class="fas fa-download"></i>
+                        Export CSV
+                    </button>
+                    <button onclick="loadReferralCodes()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                        <i class="fas fa-sync"></i>
+                        Refresh
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+            <div class="stat-card rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Total Codes</p>
+                        <p class="text-3xl font-bold" id="totalCodes">0</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
+                        <i class="fas fa-ticket-alt text-blue-400 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Active Codes</p>
+                        <p class="text-3xl font-bold" id="activeCodes">0</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
+                        <i class="fas fa-check-circle text-green-400 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Total Referrals</p>
+                        <p class="text-3xl font-bold" id="totalReferrals">0</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center">
+                        <i class="fas fa-users text-purple-400 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card rounded-xl p-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-400 text-sm">Total Earnings</p>
+                        <p class="text-3xl font-bold" id="totalEarnings">KES 0</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-full bg-yellow-500/20 flex items-center justify-center">
+                        <i class="fas fa-coins text-yellow-400 text-xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="glass-card rounded-xl p-4 mb-6">
+            <div class="flex flex-col md:flex-row gap-4">
+                <div class="flex-1">
+                    <div class="relative">
+                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="searchInput" placeholder="Search by code, email, phone, or name..." 
+                               class="search-input w-full pl-12 pr-4 py-3 rounded-lg text-white placeholder-gray-400">
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <select id="statusFilter" class="search-input px-4 py-3 rounded-lg text-white cursor-pointer">
+                        <option value="all">All Status</option>
+                        <option value="active">Active Only</option>
+                        <option value="inactive">Inactive Only</option>
+                    </select>
+                    <select id="sortBy" class="search-input px-4 py-3 rounded-lg text-white cursor-pointer">
+                        <option value="createdAt">Sort by Date</option>
+                        <option value="totalReferrals">Sort by Referrals</option>
+                        <option value="totalEarnings">Sort by Earnings</option>
+                        <option value="code">Sort by Code</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table -->
+        <div class="glass-card rounded-xl overflow-hidden">
+            <div class="table-container max-h-[600px] overflow-y-auto">
+                <table class="w-full">
+                    <thead>
+                        <tr class="text-left text-gray-300 text-sm">
+                            <th class="px-6 py-4 font-medium">#</th>
+                            <th class="px-6 py-4 font-medium">Code</th>
+                            <th class="px-6 py-4 font-medium">User</th>
+                            <th class="px-6 py-4 font-medium">Phone</th>
+                            <th class="px-6 py-4 font-medium">Referrals</th>
+                            <th class="px-6 py-4 font-medium">Paid</th>
+                            <th class="px-6 py-4 font-medium">Earnings</th>
+                            <th class="px-6 py-4 font-medium">Pending</th>
+                            <th class="px-6 py-4 font-medium">Status</th>
+                            <th class="px-6 py-4 font-medium">Created</th>
+                            <th class="px-6 py-4 font-medium">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="codesTableBody" class="text-sm">
+                        <!-- Table rows will be inserted here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="flex flex-col items-center justify-center py-12">
+                <div class="loading-spinner mb-4"></div>
+                <p class="text-gray-400">Loading referral codes...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden flex flex-col items-center justify-center py-12">
+                <i class="fas fa-ticket-alt text-4xl text-gray-600 mb-4"></i>
+                <p class="text-gray-400">No referral codes found</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, query, orderBy, getDoc, where } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
+            authDomain: "course-corner.firebaseapp.com",
+            projectId: "course-corner",
+            storageBucket: "course-corner.firebasestorage.app",
+            messagingSenderId: "961706784572",
+            appId: "1:961706784572:web:7aa6c24946570ffda59039"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        let allCodes = [];
+        const adminEmail = 'admin@coursecorner.com';
+
+        // Auth check
+        onAuthStateChanged(auth, (user) => {
+            console.log('Auth state:', user ? user.email : 'not logged in');
+            
+            if (!user) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Not Logged In',
+                    text: 'Please login first from the admin dashboard',
+                    confirmButtonColor: '#3b82f6'
+                }).then(() => {
+                    window.location.href = 'index.html';
+                });
+                return;
+            }
+            
+            if (user.email !== adminEmail) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Access Denied',
+                    html: `You are logged in as: <strong>${user.email}</strong><br><br>Only <strong>${adminEmail}</strong> can access this page.`,
+                    confirmButtonColor: '#3b82f6'
+                }).then(() => {
+                    window.location.href = 'index.html';
+                });
+                return;
+            }
+            loadReferralCodes();
+        });
+
+        // Load referral codes
+        window.loadReferralCodes = async function() {
+            const tableBody = document.getElementById('codesTableBody');
+            const loadingState = document.getElementById('loadingState');
+            const emptyState = document.getElementById('emptyState');
+
+            tableBody.innerHTML = '';
+            loadingState.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            try {
+                allCodes = [];
+
+                // Get from referralCodes collection
+                const codesSnapshot = await getDocs(collection(db, 'referralCodes'));
+                codesSnapshot.forEach(doc => {
+                    allCodes.push({ id: doc.id, source: 'referralCodes', ...doc.data() });
+                });
+
+                // Also get from users collection (for older codes not in referralCodes)
+                const usersSnapshot = await getDocs(collection(db, 'users'));
+                usersSnapshot.forEach(userDoc => {
+                    const userData = userDoc.data();
+                    if (userData.referralCode) {
+                        // Check if this code already exists in allCodes
+                        const existingIndex = allCodes.findIndex(c => c.code === userData.referralCode);
+                        if (existingIndex === -1) {
+                            // Add from users collection
+                            allCodes.push({
+                                id: userData.referralCode,
+                                source: 'users',
+                                code: userData.referralCode,
+                                userId: userDoc.id,
+                                userEmail: userData.email,
+                                userName: userData.displayName || '',
+                                phoneNumber: userData.phoneNumber || '',
+                                createdAt: userData.referralCreatedAt || userData.createdAt,
+                                totalReferrals: userData.referralCount || 0,
+                                paidReferrals: userData.referralPaidCount || 0,
+                                totalEarnings: userData.referralEarnings || 0,
+                                pendingPayout: userData.referralPending || 0,
+                                isActive: true
+                            });
+                        } else {
+                            // Merge data from users collection if referralCodes entry exists
+                            allCodes[existingIndex] = {
+                                ...allCodes[existingIndex],
+                                totalReferrals: userData.referralCount || allCodes[existingIndex].totalReferrals || 0,
+                                paidReferrals: userData.referralPaidCount || allCodes[existingIndex].paidReferrals || 0,
+                                totalEarnings: userData.referralEarnings || allCodes[existingIndex].totalEarnings || 0,
+                                pendingPayout: userData.referralPending || allCodes[existingIndex].pendingPayout || 0
+                            };
+                        }
+                    }
+                });
+
+                loadingState.classList.add('hidden');
+
+                if (allCodes.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+
+                // Update stats
+                updateStats();
+
+                // Apply filters and display
+                filterAndDisplayCodes();
+
+            } catch (error) {
+                console.error('Error loading codes:', error);
+                loadingState.classList.add('hidden');
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to load referral codes: ' + error.message,
+                    confirmButtonColor: '#3b82f6'
+                });
+            }
+        };
+
+        // Update stats
+        function updateStats() {
+            const activeCodes = allCodes.filter(c => c.isActive !== false);
+            const totalReferrals = allCodes.reduce((sum, c) => sum + (c.totalReferrals || 0), 0);
+            const totalEarnings = allCodes.reduce((sum, c) => sum + (c.totalEarnings || 0), 0);
+
+            document.getElementById('totalCodes').textContent = allCodes.length;
+            document.getElementById('activeCodes').textContent = activeCodes.length;
+            document.getElementById('totalReferrals').textContent = totalReferrals;
+            document.getElementById('totalEarnings').textContent = 'KES ' + totalEarnings.toLocaleString();
+        }
+
+        // Filter and display codes
+        function filterAndDisplayCodes() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const statusFilter = document.getElementById('statusFilter').value;
+            const sortBy = document.getElementById('sortBy').value;
+
+            let filtered = [...allCodes];
+
+            // Apply search filter
+            if (searchTerm) {
+                filtered = filtered.filter(c => 
+                    (c.code && c.code.toLowerCase().includes(searchTerm)) ||
+                    (c.userEmail && c.userEmail.toLowerCase().includes(searchTerm)) ||
+                    (c.userName && c.userName.toLowerCase().includes(searchTerm)) ||
+                    (c.phoneNumber && c.phoneNumber.includes(searchTerm))
+                );
+            }
+
+            // Apply status filter
+            if (statusFilter === 'active') {
+                filtered = filtered.filter(c => c.isActive !== false);
+            } else if (statusFilter === 'inactive') {
+                filtered = filtered.filter(c => c.isActive === false);
+            }
+
+            // Sort
+            filtered.sort((a, b) => {
+                switch (sortBy) {
+                    case 'totalReferrals':
+                        return (b.totalReferrals || 0) - (a.totalReferrals || 0);
+                    case 'totalEarnings':
+                        return (b.totalEarnings || 0) - (a.totalEarnings || 0);
+                    case 'code':
+                        return (a.code || '').localeCompare(b.code || '');
+                    case 'createdAt':
+                    default:
+                        const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+                        const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+                        return dateB - dateA;
+                }
+            });
+
+            displayCodes(filtered);
+        }
+
+        // Display codes in table
+        function displayCodes(codes) {
+            const tableBody = document.getElementById('codesTableBody');
+            const emptyState = document.getElementById('emptyState');
+
+            if (codes.length === 0) {
+                tableBody.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+
+            tableBody.innerHTML = codes.map((code, index) => `
+                <tr class="border-t border-gray-700/50">
+                    <td class="px-6 py-4 text-gray-400">${index + 1}</td>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono font-bold text-blue-400">${code.code || 'N/A'}</span>
+                            <button onclick="copyCode('${code.code}')" class="copy-btn p-1 rounded text-gray-400 hover:text-white transition">
+                                <i class="fas fa-copy text-xs"></i>
+                            </button>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <div>
+                            <p class="font-medium">${code.userName || 'Unknown'}</p>
+                            <p class="text-gray-400 text-xs">${code.userEmail || 'N/A'}</p>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="${code.phoneNumber ? 'text-white' : 'text-red-400'}">${formatPhone(code.phoneNumber) || 'Not set'}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="font-bold">${code.totalReferrals || 0}</span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                        <span class="text-green-400">${code.paidReferrals || 0}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="font-medium text-green-400">KES ${(code.totalEarnings || 0).toLocaleString()}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="font-medium text-yellow-400">KES ${(code.pendingPayout || 0).toLocaleString()}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2 py-1 rounded-full text-xs ${code.isActive !== false ? 'status-active' : 'status-inactive'}">
+                            ${code.isActive !== false ? 'Active' : 'Inactive'}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-gray-400">
+                        ${formatDate(code.createdAt)}
+                    </td>
+                    <td class="px-6 py-4">
+                        <div class="flex gap-2">
+                            <button onclick="toggleCodeStatus('${code.code}', ${code.isActive !== false})" 
+                                    class="p-2 rounded-lg ${code.isActive !== false ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30' : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'} transition"
+                                    title="${code.isActive !== false ? 'Deactivate' : 'Activate'}">
+                                <i class="fas ${code.isActive !== false ? 'fa-ban' : 'fa-check'}"></i>
+                            </button>
+                            <button onclick="viewCodeDetails('${code.code}')" 
+                                    class="p-2 rounded-lg bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 transition"
+                                    title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Format phone number
+        function formatPhone(phone) {
+            if (!phone) return null;
+            phone = String(phone);
+            if (phone.startsWith('254')) {
+                return '0' + phone.substring(3);
+            }
+            return phone;
+        }
+
+        // Format date
+        function formatDate(dateStr) {
+            if (!dateStr) return 'N/A';
+            try {
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('en-KE', { 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+            } catch {
+                return 'N/A';
+            }
+        }
+
+        // Copy code to clipboard
+        window.copyCode = function(code) {
+            navigator.clipboard.writeText(code);
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Code copied!',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        };
+
+        // Toggle code status
+        window.toggleCodeStatus = async function(code, currentlyActive) {
+            const action = currentlyActive ? 'deactivate' : 'activate';
+            
+            const result = await Swal.fire({
+                title: `${action.charAt(0).toUpperCase() + action.slice(1)} Code?`,
+                text: `Are you sure you want to ${action} the code "${code}"?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: currentlyActive ? '#ef4444' : '#22c55e',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: `Yes, ${action} it`
+            });
+
+            if (result.isConfirmed) {
+                try {
+                    await updateDoc(doc(db, 'referralCodes', code), {
+                        isActive: !currentlyActive
+                    });
+                    
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: `Code ${action}d!`,
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+
+                    loadReferralCodes();
+                } catch (error) {
+                    console.error('Error updating code status:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to update code status',
+                        confirmButtonColor: '#3b82f6'
+                    });
+                }
+            }
+        };
+
+        // View code details
+        window.viewCodeDetails = async function(code) {
+            const codeData = allCodes.find(c => c.code === code);
+            if (!codeData) return;
+
+            // Get referral transactions for this code
+            let referralTxns = [];
+            try {
+                const txnQuery = query(collection(db, 'transactions'), where('referralCode', '==', code));
+                const txnSnapshot = await getDocs(txnQuery);
+                txnSnapshot.forEach(doc => {
+                    referralTxns.push(doc.data());
+                });
+            } catch (err) {
+                console.log('Could not fetch transactions:', err);
+            }
+
+            Swal.fire({
+                title: `Code: ${code}`,
+                html: `
+                    <div class="text-left text-sm">
+                        <div class="grid grid-cols-2 gap-4 mb-4">
+                            <div class="p-3 bg-gray-100 rounded-lg">
+                                <p class="text-gray-500 text-xs">Owner</p>
+                                <p class="font-medium">${codeData.userName || 'Unknown'}</p>
+                                <p class="text-gray-600 text-xs">${codeData.userEmail || 'N/A'}</p>
+                            </div>
+                            <div class="p-3 bg-gray-100 rounded-lg">
+                                <p class="text-gray-500 text-xs">Phone (for payout)</p>
+                                <p class="font-medium">${formatPhone(codeData.phoneNumber) || 'Not set'}</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-4 gap-2 mb-4">
+                            <div class="p-2 bg-blue-50 rounded text-center">
+                                <p class="text-blue-600 font-bold">${codeData.totalReferrals || 0}</p>
+                                <p class="text-xs text-gray-500">Referrals</p>
+                            </div>
+                            <div class="p-2 bg-green-50 rounded text-center">
+                                <p class="text-green-600 font-bold">${codeData.paidReferrals || 0}</p>
+                                <p class="text-xs text-gray-500">Paid</p>
+                            </div>
+                            <div class="p-2 bg-purple-50 rounded text-center">
+                                <p class="text-purple-600 font-bold">KES ${(codeData.totalEarnings || 0).toLocaleString()}</p>
+                                <p class="text-xs text-gray-500">Earned</p>
+                            </div>
+                            <div class="p-2 bg-yellow-50 rounded text-center">
+                                <p class="text-yellow-600 font-bold">KES ${(codeData.pendingPayout || 0).toLocaleString()}</p>
+                                <p class="text-xs text-gray-500">Pending</p>
+                            </div>
+                        </div>
+                        <div class="border-t pt-3">
+                            <p class="font-medium mb-2">Recent Referral Transactions (${referralTxns.length})</p>
+                            ${referralTxns.length > 0 ? `
+                                <div class="max-h-40 overflow-y-auto">
+                                    <table class="w-full text-xs">
+                                        <thead class="bg-gray-100">
+                                            <tr>
+                                                <th class="p-2 text-left">Phone</th>
+                                                <th class="p-2 text-left">Amount</th>
+                                                <th class="p-2 text-left">Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${referralTxns.slice(0, 10).map(t => `
+                                                <tr class="border-t">
+                                                    <td class="p-2">${formatPhone(t.phone) || t.phone}</td>
+                                                    <td class="p-2">KES ${t.amount || 0}</td>
+                                                    <td class="p-2">${t.completedAt ? new Date(t.completedAt).toLocaleDateString() : 'N/A'}</td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            ` : '<p class="text-gray-500">No referral transactions yet</p>'}
+                        </div>
+                        <div class="border-t pt-3 mt-3 text-xs text-gray-500">
+                            <p>Created: ${formatDate(codeData.createdAt)}</p>
+                            <p>Source: ${codeData.source || 'Unknown'}</p>
+                            <p>User ID: ${codeData.userId || 'N/A'}</p>
+                        </div>
+                    </div>
+                `,
+                width: '500px',
+                confirmButtonColor: '#3b82f6'
+            });
+        };
+
+        // Export to CSV
+        window.exportToCSV = function() {
+            if (allCodes.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No Data',
+                    text: 'No referral codes to export',
+                    confirmButtonColor: '#3b82f6'
+                });
+                return;
+            }
+
+            const headers = ['Code', 'User Name', 'Email', 'Phone', 'Total Referrals', 'Paid Referrals', 'Total Earnings', 'Pending Payout', 'Status', 'Created At'];
+            const rows = allCodes.map(c => [
+                c.code || '',
+                c.userName || '',
+                c.userEmail || '',
+                c.phoneNumber || '',
+                c.totalReferrals || 0,
+                c.paidReferrals || 0,
+                c.totalEarnings || 0,
+                c.pendingPayout || 0,
+                c.isActive !== false ? 'Active' : 'Inactive',
+                c.createdAt || ''
+            ]);
+
+            const csv = [headers.join(','), ...rows.map(r => r.map(cell => `"${cell}"`).join(','))].join('\n');
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `referral-codes-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'CSV exported!',
+                showConfirmButton: false,
+                timer: 1500
+            });
+        };
+
+        // Event listeners for filters
+        document.getElementById('searchInput').addEventListener('input', filterAndDisplayCodes);
+        document.getElementById('statusFilter').addEventListener('change', filterAndDisplayCodes);
+        document.getElementById('sortBy').addEventListener('change', filterAndDisplayCodes);
+    </script>
+</body>
+</html>

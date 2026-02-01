@@ -766,12 +766,13 @@
         async function syncPendingTransactions() { showToast('Refreshing...', 'info'); await loadTransactions(); showToast('Refreshed!', 'success'); }
         
         async function syncMissingReceipts() {
-            showToast('Syncing M-Pesa receipts...', 'info');
+            showToast('Syncing payments status...', 'info');
             try {
-                const res = await fetch(`${API_BASE}/api/mpesa/admin/sync-receipts`, { method: 'POST' });
+                // Use the new status sync endpoint
+                const res = await fetch(`/api/payment/sync-status`);
                 const data = await res.json();
                 if (data.success) {
-                    showToast(`Synced ${data.data.synced} receipts`, 'success');
+                    showToast(`Synced ${data.summary.completed} payments`, 'success');
                     await loadTransactions(); // Reload to show updated data
                 } else {
                     showToast('Sync failed: ' + data.message, 'error');

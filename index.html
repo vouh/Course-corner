@@ -1120,7 +1120,7 @@
     <!-- Floating Referral Bubble -->
     <a href="#referral-program" class="referral-bubble" id="referralBubble">
         <i class="fas fa-gift"></i>
-        <span>Earn 10%</span>
+        <span>Earn 12%</span>
     </a>
 
 
@@ -2020,7 +2020,12 @@
                 });
 
                 // Initiate payment
-                await window.paymentHandler.initiatePayment(phoneNumber, category);
+                const referralCode = localStorage.getItem('pendingReferralCode') || null;
+                if (referralCode) {
+                    console.log('📌 Applying referral code from storage:', referralCode);
+                }
+                
+                await window.paymentHandler.initiatePayment(phoneNumber, category, amount, referralCode);
 
                 // Show payment status and start polling immediately
                 const paymentStatusDiv = document.getElementById('paymentStatus');

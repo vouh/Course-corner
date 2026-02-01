@@ -1821,19 +1821,25 @@
                 return false;
             }
 
-            // TEST MODE: Bypass actual payment flow
-            console.log('--- TEST MODE: Bypassing Payment ---');
+            // REAL MODE: Use payment handler to process actual M-Pesa payment
+            console.log('--- REAL MODE: Processing M-Pesa Payment ---');
             
-            await Swal.fire({
-                icon: 'success',
-                title: 'Access Granted! (Test Mode)',
-                html: `<p class="text-green-600 mb-2 font-bold">${getCategoryName(category)}</p><p class="text-sm text-gray-500">Bypassing M-Pesa for testing purposes...</p>`,
-                showConfirmButton: false,
-                timer: 1500,
-                timerProgressBar: true
-            });
-
-            return true;
+            try {
+                await window.paymentHandler.processPayment(
+                    category,
+                    parseInt(amount),
+                    () => {
+                        console.log('Success callback from processPayment');
+                        showResultsAfterPayment(category);
+                    }
+                );
+                
+                // Return false because showResultsAfterPayment is handled by the callback
+                return false;
+            } catch (error) {
+                console.error('Payment processing failed:', error);
+                return false;
+            }
         }
 
         // Copy course code to clipboard
@@ -3607,7 +3613,7 @@
     <!-- Floating Referral Bubble -->
     <a href="../index.html#referral-program" class="referral-bubble">
         <i class="fas fa-gift"></i>
-        <span>Earn 10%</span>
+        <span>Earn 12%</span>
     </a>
     <!-- WhatsApp Floating CTAs -->
     <div class="wa-floating-container">

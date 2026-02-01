@@ -429,7 +429,66 @@ router.post('/callback', async (req, res) => {
       }
     } else {
       console.warn('⚠️ Payment session NOT FOUND for checkout ID:', checkoutRequestID);
-      console.warn('   This might be an orphan callback or the payment session expired');
+      console.warn('   Creating transaction from callback metadata (fallback)');
+      
+      // Extract metadata for fallback transaction creation
+      const callbackMetadata = stkCallback.CallbackMetadata?.Item || [];
+      const metadata = {};
+      let phoneNumber = null;
+      let amount = null;
+      let mpesaReceiptNumber = null;
+
+      callbackMetadata.forEach(item => {
+        metadata[item.Name] = item.Value;
+        if (item.Name === 'PhoneNumber') {
+          phoneNumber = item.Value;
+        }
+        if (item.Name === 'Amount') {
+          amount = item.Value;
+        }
+        if (item.Name === 'MpesaReceiptNumber') {
+          mpesaReceiptNumber = String(item.Value);
+        }
+      });
+
+      if (resultCode === 0 && phoneNumber && amount) {
+        // Create fallback transaction for successful payment
+        console.log('📝 Creating fallback successful transaction from metadata');
+        await savePaymentTransaction({
+          phoneNumber: phoneNumber,
+          amount: amount,
+          checkoutRequestId: checkoutRequestID,
+          merchantRequestId: merchantRequestID,
+          status: 'completed',
+          resultDesc: resultDesc,
+          mpesaReceiptNumber: mpesaReceiptNumber,
+          transactionCode: mpesaReceiptNumber,
+          metadata: metadata,
+          completedAt: new Date().toISOString(),
+          callbackReceivedAt: new Date().toISOString()
+        });
+        console.log('✅ Fallback transaction CREATED for successful payment');
+      } else if (resultCode !== 0 && phoneNumber && amount) {
+        // Create fallback transaction for failed payment
+        console.log('📝 Creating fallback failed transaction from metadata');
+        await savePaymentTransaction({
+          phoneNumber: phoneNumber,
+          amount: amount,
+          checkoutRequestId: checkoutRequestID,
+          merchantRequestId: merchantRequestID,
+          status: 'failed',
+          resultDesc: resultDesc,
+          resultCode: resultCode,
+          failureReason: resultDesc,
+          metadata: metadata,
+          failedAt: new Date().toISOString(),
+          callbackReceivedAt: new Date().toISOString()
+        });
+        console.log('❌ Fallback transaction CREATED for failed payment');
+      } else {
+        console.error('❌ Cannot create fallback transaction - missing required data');
+        console.error('   PhoneNumber:', phoneNumber, 'Amount:', amount, 'ResultCode:', resultCode);
+      }
     }
 
     console.log('═══════════════════════════════════════════════════════════');

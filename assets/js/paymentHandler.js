@@ -113,74 +113,85 @@ class PaymentHandler {
     }
 
     // Poll payment status with real-time feedback
-    async pollPaymentStatus(maxAttempts = 40, interval = 3000, onStatusUpdate = null) {
+    async pollPaymentStatus(maxAttempts = 15, interval = 3000, onStatusUpdate = null, options = {}) {
         if (!this.sessionId) {
             throw new Error('No active payment session');
         }
 
+        const { shouldStop = null, requestTimeoutMs = 10000 } = options || {};
+        const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+
+        const fetchJsonWithTimeout = async (url, timeoutMs) => {
+            const controller = new AbortController();
+            const t = setTimeout(() => controller.abort(), timeoutMs);
+            try {
+                const response = await fetch(url, { signal: controller.signal });
+                const data = await response.json();
+                return { response, data };
+            } finally {
+                clearTimeout(t);
+            }
+        };
+
         console.log('Starting payment status polling...');
         let attempts = 0;
 
-        return new Promise((resolve, reject) => {
-            const pollInterval = setInterval(async () => {
-                attempts++;
-                console.log(`Polling attempt ${attempts}/${maxAttempts}`);
+        while (attempts < maxAttempts) {
+            attempts++;
+            console.log(`Polling attempt ${attempts}/${maxAttempts}`);
 
-                try {
-                    const response = await fetch(`${this.serverUrl}/mpesa/status?sessionId=${this.sessionId}`);
-                    const data = await response.json();
+            if (shouldStop && typeof shouldStop === 'function' && shouldStop()) {
+                return { success: false, status: 'cancelled' };
+            }
 
-                    console.log('Poll response:', data.data);
+            try {
+                const { response, data } = await fetchJsonWithTimeout(
+                    `${this.serverUrl}/mpesa/status?sessionId=${this.sessionId}`,
+                    requestTimeoutMs
+                );
 
-                    // Call status update callback if provided
-                    if (onStatusUpdate && typeof onStatusUpdate === 'function') {
-                        onStatusUpdate(data.data?.status, attempts, maxAttempts);
-                    }
+                const payload = data?.data || null;
+                const status = payload?.status || null;
+                const resultDesc = payload?.resultDesc || payload?.errorMessage || '';
 
-                    if (data.data?.status === 'completed') {
-                        clearInterval(pollInterval);
-                        this.isPaymentCompleted = true;
-                        console.log('Payment completed!');
-                        resolve({
-                            success: true,
-                            status: 'completed',
-                            data: data.data
-                        });
-                    } else if (data.data?.status === 'failed') {
-                        // Check if it's actually still processing (server bug workaround)
-                        const resultDesc = data.data?.resultDesc || data.data?.errorMessage || '';
-                        if (resultDesc.toLowerCase().includes('processing')) {
-                            console.log('Still processing despite failed status, continuing to poll...');
-                            // Don't stop polling - this is a false "failed" status
-                        } else {
-                            clearInterval(pollInterval);
-                            console.log('Payment failed!');
+                console.log('Poll response:', payload);
 
-                            // Get detailed error message from M-Pesa
-                            const errorMessage = this.getMpesaErrorMessage(resultDesc);
-                            reject(new Error(errorMessage));
-                        }
-                    } else if (data.data?.status === 'cancelled') {
-                        clearInterval(pollInterval);
-                        console.log('Payment cancelled!');
-                        reject(new Error('You cancelled the M-Pesa payment request'));
-                    }
-
-                    if (attempts >= maxAttempts) {
-                        clearInterval(pollInterval);
-                        console.log('Payment polling timed out');
-                        reject(new Error('Payment verification timed out. If money was deducted, please contact support.'));
-                    }
-
-                } catch (error) {
-                    console.error('Poll error:', error);
-                    if (attempts >= maxAttempts) {
-                        clearInterval(pollInterval);
-                        reject(error);
-                    }
+                if (onStatusUpdate && typeof onStatusUpdate === 'function') {
+                    onStatusUpdate(status, attempts, maxAttempts);
                 }
-            }, interval);
-        });
+
+                if (!response.ok || data?.success === false) {
+                    // Server error — keep polling for a few attempts, then return pending
+                    if (attempts >= maxAttempts) {
+                        return { success: false, status: 'pending', timedOut: true, data: payload };
+                    }
+                } else if (status === 'completed') {
+                    this.isPaymentCompleted = true;
+                    console.log('Payment completed!');
+                    return { success: true, status: 'completed', data: payload };
+                } else if (status === 'failed') {
+                    // Sometimes M-Pesa returns a temporary state that looks like failure; treat "processing" as pending
+                    if (String(resultDesc).toLowerCase().includes('processing')) {
+                        console.log('Still processing, continuing to poll...');
+                    } else {
+                        console.log('Payment failed!');
+                        throw new Error(this.getMpesaErrorMessage(resultDesc));
+                    }
+                } else if (status === 'cancelled') {
+                    throw new Error('You cancelled the M-Pesa payment request');
+                }
+            } catch (error) {
+                // Network/timeouts: keep trying until attempts exhausted
+                console.error('Poll error:', error);
+                if (attempts >= maxAttempts) {
+                    return { success: false, status: 'pending', timedOut: true };
+                }
+            }
+
+            await sleep(interval);
+        }
+
+        return { success: false, status: 'pending', timedOut: true };
     }
 
     // Get user-friendly M-Pesa error message
@@ -603,8 +614,22 @@ class PaymentHandler {
                 }
             });
 
+            // Allow user to cancel polling immediately
+            let userCancelled = false;
+            try {
+                const cancelBtn = Swal.getCancelButton && Swal.getCancelButton();
+                if (cancelBtn) {
+                    cancelBtn.addEventListener('click', () => {
+                        userCancelled = true;
+                    }, { once: true });
+                }
+            } catch (e) {
+                // ignore
+            }
+
             // Poll for payment status
-            const result = await this.pollPaymentStatus(40, 3000, (status, attempt, max) => {
+            const pollOnce = async () => {
+                return await this.pollPaymentStatus(15, 3000, (status, attempt, max) => {
                 const statusEl = document.getElementById('paymentStatus');
                 if (statusEl) {
                     statusEl.innerHTML = `
@@ -615,7 +640,92 @@ class PaymentHandler {
                         Verifying payment (${attempt}/${max})...
                     `;
                 }
-            });
+                }, { shouldStop: () => userCancelled, requestTimeoutMs: 10000 });
+            };
+
+            let result = await pollOnce();
+
+            if (result.status === 'cancelled') {
+                Swal.close();
+                return;
+            }
+
+            // If still pending after a short wait, don't mark as failed — show user options.
+            while (!result.success && result.status === 'pending' && result.timedOut) {
+                Swal.close();
+
+                const pendingChoice = await Swal.fire({
+                    icon: 'info',
+                    title: 'Payment Pending',
+                    html: `
+                        <p style="margin-bottom: 0.75rem;">We haven’t received confirmation yet.</p>
+                        <p style="font-size: 0.9rem; color: #6b7280;">If you completed payment, tap <strong>I Already Paid</strong> and enter your M-Pesa code from the SMS.</p>
+                    `,
+                    showCancelButton: true,
+                    showDenyButton: true,
+                    confirmButtonText: 'Keep Waiting',
+                    denyButtonText: 'I Already Paid',
+                    cancelButtonText: 'Close',
+                    confirmButtonColor: '#10b981',
+                    denyButtonColor: '#3b82f6',
+                    cancelButtonColor: '#6b7280'
+                });
+
+                if (pendingChoice.isDenied) {
+                    await this.verifyExistingPayment(phoneNumber, category, onSuccess);
+                    return;
+                }
+
+                if (!pendingChoice.isConfirmed) {
+                    return;
+                }
+
+                // User chose to keep waiting — show waiting modal again and poll again
+                Swal.fire({
+                    title: '',
+                    html: `
+                        <div style="text-align: center; padding: 1rem 0;">
+                            <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="2" y="4" width="20" height="16" rx="2"/>
+                                    <path d="M7 15h0M2 9h20"/>
+                                </svg>
+                            </div>
+                            <h2 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin-bottom: 0.5rem;">Still Checking…</h2>
+                            <p style="color: #6b7280; margin-bottom: 1rem;">Please complete the prompt on your phone</p>
+                            <div id="paymentStatus" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #f9fafb; border-radius: 8px; color: #6b7280; font-size: 0.875rem;">
+                                <svg class="animate-spin" style="animation: spin 1s linear infinite; width: 16px; height: 16px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Waiting for confirmation...
+                            </div>
+                        </div>
+                        <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+                    `,
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    showCancelButton: true,
+                    cancelButtonText: 'Cancel',
+                    cancelButtonColor: '#9ca3af'
+                });
+
+                userCancelled = false;
+                try {
+                    const cancelBtn2 = Swal.getCancelButton && Swal.getCancelButton();
+                    if (cancelBtn2) {
+                        cancelBtn2.addEventListener('click', () => { userCancelled = true; }, { once: true });
+                    }
+                } catch (e) {
+                    // ignore
+                }
+
+                result = await pollOnce();
+                if (result.status === 'cancelled') {
+                    Swal.close();
+                    return;
+                }
+            }
 
             if (result.success && result.status === 'completed') {
                 // Payment successful! - Show beautiful success overlay
@@ -647,13 +757,20 @@ class PaymentHandler {
 
         } catch (error) {
             console.error('Payment process error:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Payment Failed',
-                text: error.message || 'Something went wrong. Please try again.',
+            const msg = error?.message || 'Something went wrong. Please try again.';
+            const isTimeout = msg.toLowerCase().includes('timed out') || msg.toLowerCase().includes('timeout');
+
+            await Swal.fire({
+                icon: isTimeout ? 'info' : 'error',
+                title: isTimeout ? 'Payment Pending' : 'Payment Failed',
+                text: msg,
                 confirmButtonColor: '#10b981'
             });
-            throw error;
+
+            // Do not throw on timeout/pending — let user retry/verify.
+            if (!isTimeout) {
+                throw error;
+            }
         }
     }
 }

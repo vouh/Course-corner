@@ -601,13 +601,6 @@ router.post('/admin/requery/:transactionId', async (req, res) => {
     let updated = false;
     let newData = {};
 
-    // Timeout handling: don't allow "pending" to be an end-state
-    const timeoutMinutes = parseInt(process.env.TRANSACTION_TIMEOUT_MINUTES || '5', 10);
-    const createdAtDate = tx.createdAt ? new Date(tx.createdAt) : null;
-    const isCreatedAtValid = createdAtDate && !Number.isNaN(createdAtDate.getTime());
-    const ageMs = isCreatedAtValid ? (Date.now() - createdAtDate.getTime()) : null;
-    const isExpired = ageMs != null && ageMs > timeoutMinutes * 60 * 1000;
-
     // Normalize M-Pesa result fields across formats
     const resultCode = queryResult?.ResultCode ?? queryResult?.errorCode ?? null;
     const resultDesc = queryResult?.ResultDesc ?? queryResult?.errorMessage ?? queryResult?.errorDescription ?? null;
@@ -630,13 +623,6 @@ router.post('/admin/requery/:transactionId', async (req, res) => {
       newData.resultDesc = resultDesc || 'Transaction is still being processed';
       newData.resultCode = 'pending';
       updated = true;
-
-      // If it's been pending too long, mark as failed (timeout)
-      if (isExpired) {
-        newData.status = 'failed';
-        newData.resultCode = 'timeout';
-        newData.resultDesc = `Timed out waiting for customer response (${timeoutMinutes} minutes).`;
-      }
     } else if (resultCode) {
       newData.status = 'failed';
       newData.resultDesc = resultDesc || `Failed with code: ${resultCode}`;

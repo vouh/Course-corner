@@ -269,7 +269,41 @@ module.exports = async (req, res) => {
         global.payments[sessionId].status = 'failed';
         global.payments[sessionId].resultDesc = resultDesc;
       } else {
-        console.error('❌ Payment not found in memory for checkoutRequestID:', checkoutRequestID);
+        // FALLBACK: Payment not found in memory (serverless cold start)
+        console.warn('⚠️ Payment not found in memory for failed transaction. Creating from callback metadata.');
+        
+        let phoneNumber = null;
+        let amount = null;
+        
+        for (const item of callbackMetadata) {
+          if (item.Name === 'PhoneNumber') {
+            phoneNumber = item.Value;
+          }
+          if (item.Name === 'Amount') {
+            amount = item.Value;
+          }
+        }
+        
+        if (phoneNumber && amount) {
+          // CREATE fallback failed transaction
+          const fallbackFailureData = {
+            phoneNumber: phoneNumber,
+            amount: amount,
+            checkoutRequestId: checkoutRequestID,
+            merchantRequestId: stkCallback.MerchantRequestID,
+            status: 'failed',
+            resultDesc: resultDesc,
+            failureReason: resultDesc,
+            resultCode: resultCode,
+            failedAt: new Date().toISOString(),
+            callbackReceivedAt: new Date().toISOString()
+          };
+          
+          await saveTransaction(fallbackFailureData);
+          console.log('❌ Fallback failed transaction CREATED:', resultDesc);
+        } else {
+          console.error('❌ Cannot create fallback failed transaction - missing phone/amount');
+        }
       }
     }
 

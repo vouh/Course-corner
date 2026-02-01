@@ -336,8 +336,16 @@ router.post('/callback', async (req, res) => {
           console.log(`   ${item.Name}: ${item.Value}`);
         });
 
-        // Extract the M-Pesa Receipt Number (transaction code)
-        const mpesaReceiptNumber = metadata.MpesaReceiptNumber || null;
+        // Extract the M-Pesa Receipt Number (transaction code) - case-insensitive
+        let mpesaReceiptNumber = null;
+        for (const item of callbackMetadata) {
+          const itemName = item.Name || '';
+          if (itemName.toLowerCase() === 'mpesareceiptnumber') {
+            mpesaReceiptNumber = String(item.Value);
+            console.log(`🎯 RECEIPT FOUND! Name="${item.Name}" → Value="${mpesaReceiptNumber}"`);
+            break;
+          }
+        }
         console.log('🧾 M-PESA RECEIPT NUMBER:', mpesaReceiptNumber || 'NOT FOUND IN CALLBACK');
 
         // Update PaymentStore with all metadata including receipt number
@@ -346,26 +354,32 @@ router.post('/callback', async (req, res) => {
           mpesaReceiptNumber: mpesaReceiptNumber
         });
 
-        // Update Firebase with success status and transaction details
-        await updatePaymentTransaction(checkoutRequestID, {
+        // CREATE transaction in Firebase (not UPDATE - since we didn't save on STK Push)
+        const transactionId = await savePaymentTransaction({
+          sessionId: payment.sessionId,
+          phoneNumber: payment.phoneNumber,
+          amount: payment.amount,
+          category: payment.category,
           status: 'completed',
           resultDesc,
           mpesaReceiptNumber: mpesaReceiptNumber,
           transactionCode: mpesaReceiptNumber,
+          checkoutRequestId: checkoutRequestID,
+          merchantRequestId: merchantRequestID,
           transactionDate: metadata.TransactionDate || null,
-          amount: metadata.Amount || payment.amount,
-          phoneNumber: metadata.PhoneNumber || payment.phoneNumber,
           metadata,
+          referralCode: payment.referralCode || null,
           callbackReceivedAt: new Date().toISOString()
         });
 
         console.log('💾 Payment data saved successfully with Receipt:', mpesaReceiptNumber);
+        console.log('   Transaction ID:', transactionId);
 
         // Credit referrer if applicable (12% commission)
         if (payment.referralCode) {
           console.log('💰 Processing referral commission for code:', payment.referralCode);
           try {
-            await creditReferrer(payment.referralCode, payment.amount, payment.sessionId);
+            await creditReferrer(payment.referralCode, payment.amount, transactionId);
           } catch (refError) {
             console.error('❌ Error crediting referrer:', refError.message);
           }
@@ -380,13 +394,22 @@ router.post('/callback', async (req, res) => {
           resultCode: resultCode
         });
 
-        // Update Firebase with failed status
-        await updatePaymentTransaction(checkoutRequestID, {
+        // CREATE transaction record for failed payment
+        await savePaymentTransaction({
+          sessionId: payment.sessionId,
+          phoneNumber: payment.phoneNumber,
+          amount: payment.amount,
+          category: payment.category,
           status: 'failed',
           resultDesc,
           resultCode,
+          checkoutRequestId: checkoutRequestID,
+          merchantRequestId: merchantRequestID,
+          referralCode: payment.referralCode || null,
           callbackReceivedAt: new Date().toISOString()
         });
+        
+        console.log('❌ Transaction marked as failed:', resultDesc);
       }
     } else {
       console.warn('⚠️ Payment session NOT FOUND for checkout ID:', checkoutRequestID);

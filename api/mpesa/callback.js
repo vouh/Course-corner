@@ -1,4 +1,4 @@
-const { updateTransactionByCheckoutId, creditReferrer } = require('../utils/firebase');
+const { saveTransaction, creditReferrer } = require('../utils/firebase');
 
 module.exports = async (req, res) => {
   // Set CORS headers
@@ -72,64 +72,102 @@ module.exports = async (req, res) => {
         metadata[item.Name] = item.Value;
       });
       
-      // Update transaction in Firebase
-      const updateData = {
+      // Get payment data from in-memory store
+      global.payments = global.payments || {};
+      let paymentData = null;
+      let sessionId = null;
+      
+      for (const sid in global.payments) {
+        if (global.payments[sid].checkoutRequestId === checkoutRequestID) {
+          paymentData = global.payments[sid];
+          sessionId = sid;
+          break;
+        }
+      }
+      
+      if (!paymentData) {
+        console.error('❌ Payment data not found in memory for checkoutRequestID:', checkoutRequestID);
+        return res.json({ ResultCode: 1, ResultDesc: 'Payment record not found' });
+      }
+      
+      // CREATE transaction in Firebase (not UPDATE - since we didn't save on STK Push)
+      const transactionData = {
+        sessionId: paymentData.sessionId,
+        phoneNumber: paymentData.phoneNumber,
+        amount: paymentData.amount,
+        category: paymentData.category,
         status: 'completed',
-        resultDesc: resultDesc,
-        mpesaReceiptNumber: mpesaReceiptNumber, // Store receipt string only
+        checkoutRequestId: checkoutRequestID,
+        merchantRequestId: paymentData.merchantRequestId || null,
+        mpesaReceiptNumber: mpesaReceiptNumber,
         transactionCode: mpesaReceiptNumber,
+        resultDesc: resultDesc,
         metadata: metadata,
+        referralCode: paymentData.referralCode || null,
         completedAt: new Date().toISOString(),
         callbackReceivedAt: new Date().toISOString()
       };
       
-      const transactionId = await updateTransactionByCheckoutId(checkoutRequestID, updateData);
+      const transactionId = await saveTransaction(transactionData);
 
-      console.log('✅ Payment successful, transaction updated:', transactionId);
+      console.log('✅ Payment successful, transaction CREATED:', transactionId);
       console.log('   M-Pesa Code Stored:', mpesaReceiptNumber || 'NULL - Code not in callback');
 
       // Credit referrer if applicable (12% commission)
-      // We need to get the transaction to check for referral code
-      // This is handled in the updateTransactionByCheckoutId which also updates in-memory
-      global.payments = global.payments || {};
-      for (const sessionId in global.payments) {
-        if (global.payments[sessionId].checkoutRequestId === checkoutRequestID) {
-          const payment = global.payments[sessionId];
-          if (payment.referralCode && transactionId) {
-            console.log('💰 Processing referral commission for code:', payment.referralCode);
-            await creditReferrer(payment.referralCode, payment.amount, transactionId);
-          }
-          // Update in-memory too
-          payment.status = 'completed';
-          payment.mpesaReceiptNumber = mpesaReceiptNumber;
-          payment.metadata = metadata;
-          break;
-        }
+      if (paymentData.referralCode && transactionId) {
+        console.log('💰 Processing referral commission for code:', paymentData.referralCode);
+        await creditReferrer(paymentData.referralCode, paymentData.amount, transactionId);
+      }
+      
+      // Update in-memory too
+      if (sessionId) {
+        global.payments[sessionId].status = 'completed';
+        global.payments[sessionId].mpesaReceiptNumber = mpesaReceiptNumber;
+        global.payments[sessionId].metadata = metadata;
+        global.payments[sessionId].transactionId = transactionId;
       }
     } else {
       // Payment failed (ResultCode != 0)
       console.log(`❌ ResultCode = ${resultCode}: Payment FAILED`);
       console.log(`📝 Failure Reason: ${resultDesc}`);
       
-      await updateTransactionByCheckoutId(checkoutRequestID, {
-        status: 'failed',
-        resultDesc: resultDesc,
-        failureReason: resultDesc,
-        resultCode: resultCode,
-        failedAt: new Date().toISOString(),
-        callbackReceivedAt: new Date().toISOString()
-      });
-      
-      console.log('❌ Transaction marked as failed:', resultDesc);
-
-      // Update in-memory
+      // Get payment data from in-memory store
       global.payments = global.payments || {};
-      for (const sessionId in global.payments) {
-        if (global.payments[sessionId].checkoutRequestId === checkoutRequestID) {
-          global.payments[sessionId].status = 'failed';
-          global.payments[sessionId].resultDesc = resultDesc;
+      let paymentData = null;
+      let sessionId = null;
+      
+      for (const sid in global.payments) {
+        if (global.payments[sid].checkoutRequestId === checkoutRequestID) {
+          paymentData = global.payments[sid];
+          sessionId = sid;
           break;
         }
+      }
+      
+      if (paymentData) {
+        // CREATE transaction record for failed payment
+        const failureData = {
+          sessionId: paymentData.sessionId,
+          phoneNumber: paymentData.phoneNumber,
+          amount: paymentData.amount,
+          category: paymentData.category,
+          status: 'failed',
+          checkoutRequestId: checkoutRequestID,
+          merchantRequestId: paymentData.merchantRequestId || null,
+          resultDesc: resultDesc,
+          resultCode: resultCode,
+          failureReason: resultDesc,
+          referralCode: paymentData.referralCode || null,
+          failedAt: new Date().toISOString(),
+          callbackReceivedAt: new Date().toISOString()
+        };
+        
+        await saveTransaction(failureData);
+        console.log('❌ Transaction marked as failed:', resultDesc);
+        
+        // Update in-memory
+        global.payments[sessionId].status = 'failed';
+        global.payments[sessionId].resultDesc = resultDesc;
       }
     }
 

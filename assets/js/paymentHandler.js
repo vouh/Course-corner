@@ -828,15 +828,83 @@ class PaymentHandler {
             const msg = error?.message || 'Something went wrong. Please try again.';
             const isTimeout = msg.toLowerCase().includes('timed out') || msg.toLowerCase().includes('timeout');
 
-            await Swal.fire({
-                icon: isTimeout ? 'info' : 'error',
-                title: isTimeout ? 'Payment Pending' : 'Payment Failed',
-                text: msg,
-                confirmButtonColor: '#10b981'
-            });
+            if (isTimeout) {
+                // Show timeout dialog with verify button
+                const result = await Swal.fire({
+                    icon: 'warning',
+                    title: 'Payment Verification Timeout',
+                    html: `
+                        <p style="margin-bottom: 1rem;">${msg}</p>
+                        <div style="background: #fef3c7; border: 1px solid #fbbf24; border-radius: 0.5rem; padding: 1rem; margin-top: 1rem;">
+                            <p style="color: #92400e; font-size: 0.9rem; margin: 0;">
+                                <i class="fas fa-info-circle"></i> If money was deducted from your M-Pesa, click <strong>"Verify Payment"</strong> to check the status directly with M-Pesa.
+                            </p>
+                        </div>
+                    `,
+                    showCancelButton: true,
+                    showDenyButton: true,
+                    confirmButtonText: '<i class="fas fa-sync"></i> Verify Payment',
+                    denyButtonText: '<i class="fas fa-receipt"></i> I Have M-Pesa Code',
+                    cancelButtonText: 'Close',
+                    confirmButtonColor: '#10b981',
+                    denyButtonColor: '#3b82f6',
+                    cancelButtonColor: '#6b7280'
+                });
 
-            // Do not throw on timeout/pending — let user retry/verify.
-            if (!isTimeout) {
+                if (result.isConfirmed) {
+                    // User clicked "Verify Payment" - query M-Pesa directly
+                    Swal.fire({
+                        title: 'Verifying Payment...',
+                        html: '<p>Checking with M-Pesa...</p>',
+                        allowOutsideClick: false,
+                        showConfirmButton: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+
+                    try {
+                        const verifyResult = await this.verifyPaymentManually();
+                        
+                        if (verifyResult.success && verifyResult.status === 'completed') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Payment Verified!',
+                                html: '<p>Your payment has been confirmed. Loading your results...</p>',
+                                timer: 2000,
+                                showConfirmButton: false,
+                                timerProgressBar: true
+                            });
+
+                            if (onSuccess && typeof onSuccess === 'function') {
+                                setTimeout(() => onSuccess(), 2000);
+                            }
+                        } else {
+                            Swal.fire({
+                                icon: 'info',
+                                title: verifyResult.status === 'failed' ? 'Payment Failed' : 'Still Pending',
+                                text: verifyResult.message,
+                                confirmButtonColor: '#10b981'
+                            });
+                        }
+                    } catch (verifyError) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Verification Failed',
+                            text: verifyError.message || 'Could not verify payment status. Please try again later.',
+                            confirmButtonColor: '#10b981'
+                        });
+                    }
+                } else if (result.isDenied) {
+                    // User has M-Pesa code - redirect to verification
+                    await this.verifyExistingPayment(null, category, onSuccess);
+                }
+            } else {
+                // Non-timeout error
+                await Swal.fire({
+                    icon: 'error',
+                    title: 'Payment Failed',
+                    text: msg,
+                    confirmButtonColor: '#10b981'
+                });
                 throw error;
             }
         }

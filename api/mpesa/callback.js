@@ -59,23 +59,50 @@ module.exports = async (req, res) => {
     const resultDesc = stkCallback.ResultDesc;
 
     if (resultCode === 0) {
-      // Payment successful - extract metadata
+      // ============================================
+      // COMPREHENSIVE RECEIPT EXTRACTION ALGORITHM
+      // ============================================
+      console.log('✅ ResultCode = 0: Payment SUCCESSFUL');
+      
+      // Get CallbackMetadata items array
       const callbackMetadata = stkCallback.CallbackMetadata?.Item || [];
+      
+      // DEBUG: Log raw callback structure before extraction
+      console.log('📦 RAW CallbackMetadata.Item[] array:');
+      console.log(JSON.stringify(callbackMetadata, null, 2));
+      
+      // Extract receipt with CASE-INSENSITIVE matching
+      let mpesaReceiptNumber = null;
+      
+      for (const item of callbackMetadata) {
+        const itemName = item.Name || '';
+        // Check both 'MpesaReceiptNumber' and 'mpesaReceiptNumber' (case-insensitive)
+        if (itemName.toLowerCase() === 'mpesareceiptnumber') {
+          mpesaReceiptNumber = String(item.Value); // Store as string only
+          console.log(`🎯 RECEIPT FOUND! Name="${item.Name}" → Value="${mpesaReceiptNumber}"`);
+          break;
+        }
+      }
+      
+      // DEBUG: Log extraction result
+      if (mpesaReceiptNumber) {
+        console.log(`✅ Receipt extracted successfully: "${mpesaReceiptNumber}"`);
+      } else {
+        console.error('❌ CRITICAL: Receipt NOT FOUND in callback metadata!');
+        console.error('Available field names:', callbackMetadata.map(i => i.Name).join(', '));
+      }
+      
+      // Build metadata object for reference (optional)
       const metadata = {};
       callbackMetadata.forEach(item => {
         metadata[item.Name] = item.Value;
       });
-
-      const mpesaReceiptNumber = metadata.MpesaReceiptNumber || null;
-      
-      console.log('🧾 M-Pesa Receipt Number:', mpesaReceiptNumber || 'NOT FOUND IN CALLBACK');
-      console.log('📋 Full Metadata:', JSON.stringify(metadata, null, 2));
       
       // Update transaction in Firebase with retry logic
       const updateData = {
         status: 'completed',
         resultDesc: resultDesc,
-        mpesaReceiptNumber: mpesaReceiptNumber,
+        mpesaReceiptNumber: mpesaReceiptNumber, // Store receipt string only
         transactionCode: mpesaReceiptNumber,
         metadata: metadata,
         completedAt: new Date().toISOString(),
@@ -120,14 +147,20 @@ module.exports = async (req, res) => {
         console.error('❌ Error processing referral:', refError.message);
       }
     } else {
-      // Payment failed
+      // Payment failed (ResultCode != 0)
+      console.log(`❌ ResultCode = ${resultCode}: Payment FAILED`);
+      console.log(`📝 Failure Reason: ${resultDesc}`);
+      
       await updateTransactionWithRetry(checkoutRequestID, {
         status: 'failed',
         resultDesc: resultDesc,
-        failedAt: new Date().toISOString()
+        failureReason: resultDesc,
+        resultCode: resultCode,
+        failedAt: new Date().toISOString(),
+        callbackReceivedAt: new Date().toISOString()
       });
       
-      console.log('❌ Payment failed:', resultDesc);
+      console.log('❌ Transaction marked as failed:', resultDesc);
 
       // Update in-memory
       global.payments = global.payments || {};

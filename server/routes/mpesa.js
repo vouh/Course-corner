@@ -1042,42 +1042,8 @@ router.post('/verify-mpesa-code', async (req, res) => {
 });
 
 // =====================================================
-// ADMIN DELETE ENDPOINTS
+// ADMIN BULK DELETE ENDPOINT
 // =====================================================
-
-// Delete single transaction
-router.delete('/admin/transactions/:id', async (req, res) => {
-  try {
-    const { id } = req.params;
-    
-    if (!id) {
-      return res.status(400).json({
-        success: false,
-        message: 'Transaction ID is required'
-      });
-    }
-
-    const result = await deleteTransaction(id);
-    
-    if (result) {
-      res.json({
-        success: true,
-        message: 'Transaction deleted successfully'
-      });
-    } else {
-      res.status(404).json({
-        success: false,
-        message: 'Transaction not found'
-      });
-    }
-  } catch (error) {
-    console.error('Delete transaction error:', error);
-    res.status(500).json({
-      success: false,
-      message: error.message
-    });
-  }
-});
 
 // Bulk delete transactions
 router.post('/admin/transactions/bulk-delete', async (req, res) => {

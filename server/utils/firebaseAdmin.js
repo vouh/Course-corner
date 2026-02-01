@@ -76,12 +76,17 @@ const savePaymentTransaction = async (paymentData) => {
       merchantRequestId: paymentData.merchantRequestId || null,
       resultDesc: paymentData.resultDesc || null,
       metadata: paymentData.metadata || {},
+      // Referral tracking
+      referralCode: paymentData.referralCode || null,
+      referrerCredited: false,
+      commissionAmount: 0,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     };
 
     await transactionRef.set(transaction);
     console.log('💾 Transaction saved to Firebase:', transactionRef.id);
+    console.log('🎁 Referral Code saved:', paymentData.referralCode || 'NONE');
     return transactionRef.id;
   } catch (error) {
     console.error('Error saving transaction to Firebase:', error.message);

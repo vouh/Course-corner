@@ -143,9 +143,52 @@ module.exports = async (req, res) => {
           throw new Error('saveTransaction returned no ID');
         }
       } else {
-        console.error('❌ Payment not found in memory for checkoutRequestID:', checkoutRequestID);
-        console.error('Available payments in memory:', Object.keys(global.payments || {}));
-        throw new Error('Payment not found in memory');
+        // FALLBACK: Payment not found in memory (happens on serverless cold starts)
+        // Extract phone number and amount from M-Pesa metadata
+        console.warn('⚠️ Payment not found in memory (serverless cold start?). Creating from callback metadata.');
+        
+        let phoneNumber = null;
+        let amount = null;
+        
+        for (const item of callbackMetadata) {
+          if (item.Name === 'PhoneNumber') {
+            phoneNumber = item.Value;
+          }
+          if (item.Name === 'Amount') {
+            amount = item.Value;
+          }
+        }
+        
+        if (!phoneNumber || !amount) {
+          console.error('❌ Cannot extract phone number or amount from callback metadata');
+          console.error('Available metadata:', callbackMetadata.map(i => `${i.Name}=${i.Value}`).join(', '));
+          throw new Error('Missing required payment info in callback');
+        }
+        
+        // CREATE transaction with callback data (limited info, but still saves the payment)
+        const fallbackData = {
+          phoneNumber: phoneNumber,
+          amount: amount,
+          checkoutRequestId: checkoutRequestID,
+          merchantRequestId: stkCallback.MerchantRequestID,
+          status: 'completed',
+          resultDesc: resultDesc,
+          mpesaReceiptNumber: mpesaReceiptNumber,
+          transactionCode: mpesaReceiptNumber,
+          metadata: metadata,
+          completedAt: new Date().toISOString(),
+          callbackReceivedAt: new Date().toISOString()
+        };
+        
+        console.log('📝 Saving fallback transaction:', JSON.stringify(fallbackData, null, 2));
+        transactionId = await saveTransaction(fallbackData);
+        
+        if (transactionId) {
+          console.log('✅ Fallback transaction CREATED in Firebase:', transactionId);
+        } else {
+          console.error('❌ Fallback transaction creation returned null/empty');
+          throw new Error('saveTransaction returned no ID');
+        }
       }
 
       console.log('✅ Payment successful, transaction updated:', transactionId);

@@ -194,6 +194,74 @@ class PaymentHandler {
         return { success: false, status: 'pending', timedOut: true };
     }
 
+    // Manually verify payment status (for when polling times out)
+    async verifyPaymentManually() {
+        if (!this.sessionId) {
+            throw new Error('No payment session found');
+        }
+
+        console.log('🔍 Manually verifying payment status...');
+
+        try {
+            // First check current status
+            const statusResponse = await fetch(`${this.serverUrl}/mpesa/status?sessionId=${this.sessionId}`);
+            const statusData = await statusResponse.json();
+
+            if (statusData.data?.status === 'completed') {
+                this.isPaymentCompleted = true;
+                return {
+                    success: true,
+                    status: 'completed',
+                    message: 'Payment already completed!',
+                    data: statusData.data
+                };
+            }
+
+            // If still pending, query M-Pesa directly
+            console.log('⏳ Status still pending, querying M-Pesa...');
+            
+            const queryResponse = await fetch(`${this.serverUrl}/mpesa/query`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId: this.sessionId })
+            });
+
+            const queryData = await queryResponse.json();
+
+            if (!queryData.success) {
+                throw new Error(queryData.message || 'Failed to verify payment');
+            }
+
+            if (queryData.data?.status === 'completed') {
+                this.isPaymentCompleted = true;
+                console.log('✅ Payment verified successfully!');
+                return {
+                    success: true,
+                    status: 'completed',
+                    message: 'Payment verified successfully!',
+                    data: queryData.data,
+                    verified: true
+                };
+            } else if (queryData.data?.status === 'failed') {
+                return {
+                    success: false,
+                    status: 'failed',
+                    message: queryData.data?.resultDesc || 'Payment failed'
+                };
+            } else {
+                return {
+                    success: false,
+                    status: 'pending',
+                    message: 'Payment is still being processed by M-Pesa. Please wait a moment and try again.'
+                };
+            }
+
+        } catch (error) {
+            console.error('Manual verification error:', error);
+            throw error;
+        }
+    }
+
     // Get user-friendly M-Pesa error message
     getMpesaErrorMessage(resultDesc) {
         if (!resultDesc) return 'Payment failed. Please try again.';

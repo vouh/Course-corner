@@ -1,5 +1,31 @@
 const { updateTransactionByCheckoutId, getTransactionByCheckoutId, creditReferrer } = require('../utils/firebase');
 
+// Helper function to update transaction with retry
+async function updateTransactionWithRetry(checkoutRequestID, updateData, maxRetries = 3) {
+  let lastError;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      console.log(`📝 Updating transaction (attempt ${attempt}/${maxRetries})...`);
+      const transactionId = await updateTransactionByCheckoutId(checkoutRequestID, updateData);
+      console.log(`✅ Transaction updated successfully on attempt ${attempt}`);
+      return transactionId;
+    } catch (error) {
+      lastError = error;
+      console.error(`❌ Update attempt ${attempt} failed:`, error.message);
+      
+      if (attempt < maxRetries) {
+        // Wait before retrying (exponential backoff)
+        const delay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
+        console.log(`⏳ Waiting ${delay}ms before retry...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
+  
+  throw lastError;
+}
+
 module.exports = async (req, res) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -45,7 +71,7 @@ module.exports = async (req, res) => {
       console.log('🧾 M-Pesa Receipt Number:', mpesaReceiptNumber || 'NOT FOUND IN CALLBACK');
       console.log('📋 Full Metadata:', JSON.stringify(metadata, null, 2));
       
-      // Update transaction in Firebase
+      // Update transaction in Firebase with retry logic
       const updateData = {
         status: 'completed',
         resultDesc: resultDesc,
@@ -56,7 +82,7 @@ module.exports = async (req, res) => {
         callbackReceivedAt: new Date().toISOString()
       };
       
-      const transactionId = await updateTransactionByCheckoutId(checkoutRequestID, updateData);
+      const transactionId = await updateTransactionWithRetry(checkoutRequestID, updateData);
 
       console.log('✅ Payment successful, transaction updated:', transactionId);
       console.log('   M-Pesa Code Stored:', mpesaReceiptNumber || 'NULL - Code not in callback');
@@ -95,9 +121,10 @@ module.exports = async (req, res) => {
       }
     } else {
       // Payment failed
-      await updateTransactionByCheckoutId(checkoutRequestID, {
+      await updateTransactionWithRetry(checkoutRequestID, {
         status: 'failed',
-        resultDesc: resultDesc
+        resultDesc: resultDesc,
+        failedAt: new Date().toISOString()
       });
       
       console.log('❌ Payment failed:', resultDesc);

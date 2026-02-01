@@ -285,6 +285,7 @@ const markTransactionAsUsed = async (transactionId) => {
 };
 
 // Credit referrer with commission (12%)
+// Uses the 'users' collection with fields matching firebase-auth.js schema
 const creditReferrer = async (referralCode, transactionAmount, transactionId) => {
   try {
     const db = getFirestore();
@@ -296,36 +297,18 @@ const creditReferrer = async (referralCode, transactionAmount, transactionId) =>
     console.log('   Transaction Amount:', transactionAmount);
     console.log('   Commission (12%):', commissionAmount);
 
-    // Find the referral code owner
-    const codeSnapshot = await db.collection('referralCodes')
-      .where('code', '==', referralCode.toUpperCase())
+    // Find referrer directly in users collection (single source of truth)
+    const userSnapshot = await db.collection('users')
+      .where('referralCode', '==', referralCode.toUpperCase())
       .limit(1)
       .get();
 
-    let referrerId = null;
-    let referrerEmail = null;
-
-    if (!codeSnapshot.empty) {
-      const codeData = codeSnapshot.docs[0].data();
-      referrerId = codeData.userId;
-      referrerEmail = codeData.userEmail;
-    } else {
-      // Fallback: check users collection
-      const userSnapshot = await db.collection('users')
-        .where('referralCode', '==', referralCode.toUpperCase())
-        .limit(1)
-        .get();
-      
-      if (!userSnapshot.empty) {
-        referrerId = userSnapshot.docs[0].id;
-        referrerEmail = userSnapshot.docs[0].data().email;
-      }
-    }
-
-    if (!referrerId) {
+    if (userSnapshot.empty) {
       console.log('⚠️ Referral code owner not found:', referralCode);
       return false;
     }
+
+    const referrerId = userSnapshot.docs[0].id;
 
     // Update transaction with commission info
     if (transactionId) {
@@ -337,36 +320,17 @@ const creditReferrer = async (referralCode, transactionAmount, transactionId) =>
       });
     }
 
-    // Add commission to referrer's earnings
-    const earningsRef = db.collection('referralEarnings').doc();
-    await earningsRef.set({
-      referrerId: referrerId,
-      referrerEmail: referrerEmail,
-      referralCode: referralCode.toUpperCase(),
-      transactionId: transactionId,
-      transactionAmount: transactionAmount,
-      commissionAmount: commissionAmount,
-      commissionRate: commissionRate,
-      status: 'pending', // pending, paid
-      createdAt: admin.firestore.FieldValue.serverTimestamp()
+    // Update user's referral stats (matching firebase-auth.js schema)
+    // Fields: referralCount, referralPaidCount, referralEarnings, referralPending
+    await db.collection('users').doc(referrerId).update({
+      referralCount: admin.firestore.FieldValue.increment(1),
+      referralPaidCount: admin.firestore.FieldValue.increment(1),
+      referralEarnings: admin.firestore.FieldValue.increment(commissionAmount),
+      referralPending: admin.firestore.FieldValue.increment(commissionAmount),
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    // Update user's total earnings
-    const userRef = db.collection('users').doc(referrerId);
-    const userDoc = await userRef.get();
-    
-    if (userDoc.exists) {
-      const currentEarnings = userDoc.data().totalEarnings || 0;
-      const currentPending = userDoc.data().pendingEarnings || 0;
-      await userRef.update({
-        totalEarnings: currentEarnings + commissionAmount,
-        pendingEarnings: currentPending + commissionAmount,
-        lastEarningAt: admin.firestore.FieldValue.serverTimestamp(),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-    }
-
-    console.log('✅ Commission credited to referrer:', referrerId);
+    console.log('✅ Commission credited to referrer:', referrerId, '| Amount:', commissionAmount);
     return true;
   } catch (error) {
     console.error('Error crediting referrer:', error.message);

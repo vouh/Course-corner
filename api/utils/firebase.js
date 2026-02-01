@@ -412,11 +412,13 @@ const creditReferrer = async (referralCode, paymentAmount, paymentId) => {
     const referrerId = userSnapshot.docs[0].id;
     const commissionAmount = Math.round(paymentAmount * COMMISSION_RATE);
 
-    // Update referrer's earnings
+    // Update referrer's earnings (matching firebase-auth.js schema)
+    // Fields: referralCount, referralPaidCount, referralEarnings, referralPending
     await userSnapshot.docs[0].ref.update({
+      referralCount: admin.firestore.FieldValue.increment(1),
       referralPaidCount: admin.firestore.FieldValue.increment(1),
       referralEarnings: admin.firestore.FieldValue.increment(commissionAmount),
-      referralWithdrawable: admin.firestore.FieldValue.increment(commissionAmount),
+      referralPending: admin.firestore.FieldValue.increment(commissionAmount),
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
 

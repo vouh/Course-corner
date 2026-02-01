@@ -314,21 +314,30 @@
 
         function logout() { auth.signOut().then(() => window.location.href = 'index.html'); }
 
-        // Load Referrals from Firestore
+        // Load Referrals from Firestore - queries users with referralCode
         async function loadReferrals() {
             try {
-                const snapshot = await db.collection('referrers').orderBy('createdAt', 'desc').get();
+                // Query users who have a referral code (single source of truth)
+                const snapshot = await db.collection('users')
+                    .where('referralCode', '!=', '')
+                    .get();
+                
                 allReferrers = [];
                 let totalEarnings = 0, totalReferrals = 0, pendingPayout = 0;
 
                 snapshot.forEach(doc => {
                     const data = { id: doc.id, ...doc.data() };
-                    allReferrers.push(data);
-                    totalEarnings += data.totalEarnings || 0;
-                    totalReferrals += data.referralCount || 0;
-                    pendingPayout += data.balance || 0;
+                    // Only include users with a referral code
+                    if (data.referralCode) {
+                        allReferrers.push(data);
+                        totalEarnings += data.referralEarnings || 0;
+                        totalReferrals += data.referralCount || 0;
+                        pendingPayout += data.referralPending || 0;
+                    }
                 });
 
+                // Sort by earnings descending
+                allReferrers.sort((a, b) => (b.referralEarnings || 0) - (a.referralEarnings || 0));
                 filteredReferrers = [...allReferrers];
                 
                 document.getElementById('stat-total-referrers').textContent = allReferrers.length;
@@ -359,32 +368,37 @@
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center">
-                                <span class="text-white font-semibold">${(r.phone || r.email || 'U')[0].toUpperCase()}</span>
+                                <span class="text-white font-semibold">${(r.phoneNumber || r.displayName || r.email || 'U')[0].toUpperCase()}</span>
                             </div>
                             <div>
-                                <p class="font-semibold text-gray-900 dark:text-white">${r.phone || '-'}</p>
+                                <p class="font-semibold text-gray-900 dark:text-white">${r.phoneNumber || r.displayName || '-'}</p>
                                 <p class="text-sm text-gray-500 dark:text-gray-400">${r.email || '-'}</p>
                             </div>
                         </div>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-lg font-mono font-bold">${r.referralCode || r.code || '-'}</span>
+                        <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-lg font-mono font-bold">${r.referralCode || '-'}</span>
                     </td>
                     <td class="px-6 py-4">
                         <span class="text-2xl font-bold text-gray-900 dark:text-white">${r.referralCount || 0}</span>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="font-bold text-emerald-600 dark:text-emerald-400">KSH ${(r.totalEarnings || 0).toLocaleString()}</span>
+                        <span class="font-bold text-emerald-600 dark:text-emerald-400">KSH ${(r.referralEarnings || 0).toLocaleString()}</span>
                     </td>
                     <td class="px-6 py-4">
-                        <span class="font-bold text-amber-600 dark:text-amber-400">KSH ${(r.balance || 0).toLocaleString()}</span>
+                        <span class="font-bold text-amber-600 dark:text-amber-400">KSH ${(r.referralPending || 0).toLocaleString()}</span>
                     </td>
                     <td class="px-6 py-4">
-                        ${r.balance > 0 ? '<span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Pending</span>' : '<span class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">Paid</span>'}
+                        ${(r.referralPending || 0) > 0 ? '<span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Pending</span>' : '<span class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">Paid</span>'}
                     </td>
-                    <td class="px-6 py-4">
-                        <button onclick="showDetail('${r.id}')" class="p-2 text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                    <td class="px-6 py-4 flex items-center gap-2">
+                        <button onclick="showDetail('${r.id}')" class="p-2 text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors" title="View Details">
                             <i class="fas fa-eye text-lg"></i>
+                        </button>
+                        <button onclick="markAsPaid('${r.id}', ${r.referralPending || 0}, '${r.phoneNumber || r.displayName || r.email || ''}')" 
+                            class="p-2 ${(r.referralPending || 0) > 0 ? 'text-amber-500 hover:text-green-600' : 'text-gray-300 cursor-not-allowed'}" 
+                            title="Mark as Paid" ${(r.referralPending || 0) === 0 ? 'disabled' : ''}>
+                            <i class="fas fa-money-bill-wave text-lg"></i>
                         </button>
                     </td>
                 </tr>
@@ -398,12 +412,49 @@
             } else {
                 filteredReferrers = allReferrers.filter(r =>
                     (r.referralCode && r.referralCode.toLowerCase().includes(search)) ||
-                    (r.code && r.code.toLowerCase().includes(search)) ||
-                    (r.phone && r.phone.includes(search)) ||
+                    (r.phoneNumber && r.phoneNumber.includes(search)) ||
+                    (r.displayName && r.displayName.toLowerCase().includes(search)) ||
                     (r.email && r.email.toLowerCase().includes(search))
                 );
             }
             renderTable();
+        }
+
+        // Mark referrer as paid (manual payout)
+        async function markAsPaid(userId, amount, userName) {
+            if (!amount || amount <= 0) {
+                showToast('No pending balance to pay', 'warning');
+                return;
+            }
+            
+            // Show confirmation dialog
+            const confirmed = confirm(`Confirm Manual Payout\n\nUser: ${userName}\nAmount: KSH ${amount.toLocaleString()}\n\nHave you sent this amount via M-Pesa?\nClick OK to mark as paid and reset their balance to 0.`);
+            
+            if (!confirmed) return;
+            
+            try {
+                // Update user's referralPending to 0
+                await db.collection('users').doc(userId).update({
+                    referralPending: 0,
+                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                // Log the payout in withdrawals collection for record keeping
+                await db.collection('withdrawals').add({
+                    userId: userId,
+                    amount: amount,
+                    status: 'completed',
+                    paidBy: 'admin-manual',
+                    paidAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                
+                showToast(`Marked KSH ${amount.toLocaleString()} as paid!`, 'success');
+                loadReferrals(); // Refresh table
+            } catch (e) {
+                console.error('Error marking as paid:', e);
+                showToast('Failed to update. Please try again.', 'error');
+            }
         }
 
         // Show referrer detail
@@ -415,18 +466,19 @@
                 <div class="space-y-6">
                     <div class="flex items-center gap-4 p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl">
                         <div class="w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center">
-                            <span class="text-white text-2xl font-bold">${(r.phone || r.email || 'U')[0].toUpperCase()}</span>
+                            <span class="text-white text-2xl font-bold">${(r.phoneNumber || r.displayName || r.email || 'U')[0].toUpperCase()}</span>
                         </div>
                         <div>
-                            <p class="text-xl font-bold text-gray-900 dark:text-white">${r.phone || 'No Phone'}</p>
+                            <p class="text-xl font-bold text-gray-900 dark:text-white">${r.displayName || r.phoneNumber || 'No Name'}</p>
                             <p class="text-gray-500 dark:text-gray-400">${r.email || 'No Email'}</p>
+                            <p class="text-sm text-gray-400 dark:text-gray-500">${r.phoneNumber || 'No Phone'}</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
                             <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Referral Code</p>
-                            <p class="font-mono font-bold text-xl text-purple-600 dark:text-purple-400">${r.referralCode || r.code || '-'}</p>
+                            <p class="font-mono font-bold text-xl text-purple-600 dark:text-purple-400">${r.referralCode || '-'}</p>
                         </div>
                         <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
                             <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Referrals</p>
@@ -434,13 +486,23 @@
                         </div>
                         <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
                             <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Total Earnings</p>
-                            <p class="font-bold text-xl text-emerald-600 dark:text-emerald-400">KSH ${(r.totalEarnings || 0).toLocaleString()}</p>
+                            <p class="font-bold text-xl text-emerald-600 dark:text-emerald-400">KSH ${(r.referralEarnings || 0).toLocaleString()}</p>
                         </div>
                         <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Current Balance</p>
-                            <p class="font-bold text-xl text-amber-600 dark:text-amber-400">KSH ${(r.balance || 0).toLocaleString()}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1">Pending Balance</p>
+                            <p class="font-bold text-xl text-amber-600 dark:text-amber-400">KSH ${(r.referralPending || 0).toLocaleString()}</p>
                         </div>
                     </div>
+
+                    ${(r.referralPending || 0) > 0 ? `
+                    <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                        <button onclick="markAsPaid('${r.id}', ${r.referralPending}, '${r.displayName || r.phoneNumber || r.email || ''}'); closeDetailModal();" 
+                            class="w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl font-semibold hover:from-green-600 hover:to-emerald-700 transition-all flex items-center justify-center gap-2">
+                            <i class="fas fa-money-bill-wave"></i>
+                            Mark KSH ${(r.referralPending || 0).toLocaleString()} as Paid
+                        </button>
+                    </div>
+                    ` : ''}
 
                     ${r.referrals && r.referrals.length > 0 ? `
                     <div class="border-t border-gray-200 dark:border-gray-700 pt-4">

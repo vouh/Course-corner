@@ -337,9 +337,16 @@ router.post('/callback', async (req, res) => {
           console.log(`   ${item.Name}: ${item.Value}`);
         });
 
-        // Extract the M-Pesa Receipt Number (transaction code)
-        const mpesaReceiptNumber = metadata.MpesaReceiptNumber || null;
+        // Extract the M-Pesa Receipt Number (transaction code) - try multiple possible field names
+        const mpesaReceiptNumber = metadata.MpesaReceiptNumber || 
+                                   metadata.mpesaReceiptNumber || 
+                                   metadata.ReceiptNumber || 
+                                   metadata.TransactionId || 
+                                   metadata.TransactionCode || 
+                                   null;
+        
         console.log('🧾 M-PESA RECEIPT NUMBER:', mpesaReceiptNumber || 'NOT FOUND IN CALLBACK');
+        console.log('🔍 Available metadata fields:', Object.keys(metadata).join(', '));
 
         // Update PaymentStore with all metadata including receipt number
         PaymentStore.updatePaymentStatus(payment.sessionId, 'completed', resultDesc, {

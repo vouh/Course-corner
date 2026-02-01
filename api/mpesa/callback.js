@@ -1,4 +1,4 @@
-const { updateTransactionByCheckoutId, creditReferrer } = require('../utils/firebase');
+const { updateTransactionByCheckoutId, getTransactionByCheckoutId, creditReferrer } = require('../utils/firebase');
 
 module.exports = async (req, res) => {
   // Set CORS headers
@@ -62,22 +62,36 @@ module.exports = async (req, res) => {
       console.log('   M-Pesa Code Stored:', mpesaReceiptNumber || 'NULL - Code not in callback');
 
       // Credit referrer if applicable (12% commission)
-      // We need to get the transaction to check for referral code
-      // This is handled in the updateTransactionByCheckoutId which also updates in-memory
-      global.payments = global.payments || {};
-      for (const sessionId in global.payments) {
-        if (global.payments[sessionId].checkoutRequestId === checkoutRequestID) {
-          const payment = global.payments[sessionId];
-          if (payment.referralCode && transactionId) {
-            console.log('💰 Processing referral commission for code:', payment.referralCode);
-            await creditReferrer(payment.referralCode, payment.amount, transactionId);
+      try {
+        // Fetch the full transaction to ensure we have referral information
+        // (especially if memory was cleared or it's a cold start)
+        const transaction = await getTransactionByCheckoutId(checkoutRequestID);
+        
+        if (transaction && transaction.referralCode) {
+          console.log('💰 Processing referral commission for code:', transaction.referralCode);
+          await creditReferrer(transaction.referralCode, transaction.amount, transactionId || transaction.id);
+        } else {
+          console.log('ℹ️ No referral code found for this transaction');
+          
+          // Fallback legacy check
+          global.payments = global.payments || {};
+          for (const sessionId in global.payments) {
+            if (global.payments[sessionId].checkoutRequestId === checkoutRequestID) {
+              const payment = global.payments[sessionId];
+              if (payment.referralCode) {
+                console.log('💰 (Fallback) Processing referral commission for code:', payment.referralCode);
+                await creditReferrer(payment.referralCode, payment.amount, transactionId || payment.id);
+              }
+              // Update in-memory too
+              payment.status = 'completed';
+              payment.mpesaReceiptNumber = mpesaReceiptNumber;
+              payment.metadata = metadata;
+              break;
+            }
           }
-          // Update in-memory too
-          payment.status = 'completed';
-          payment.mpesaReceiptNumber = mpesaReceiptNumber;
-          payment.metadata = metadata;
-          break;
         }
+      } catch (refError) {
+        console.error('❌ Error processing referral:', refError.message);
       }
     } else {
       // Payment failed

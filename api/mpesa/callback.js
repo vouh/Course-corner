@@ -179,25 +179,45 @@ module.exports = async (req, res) => {
       console.log(`❌ ResultCode = ${resultCode}: Payment FAILED`);
       console.log(`📝 Failure Reason: ${resultDesc}`);
       
-      await updateTransactionWithRetry(checkoutRequestID, {
-        status: 'failed',
-        resultDesc: resultDesc,
-        failureReason: resultDesc,
-        resultCode: resultCode,
-        failedAt: new Date().toISOString(),
-        callbackReceivedAt: new Date().toISOString()
-      });
-      
-      console.log('❌ Transaction marked as failed:', resultDesc);
-
-      // Update in-memory
+      // Get payment data from in-memory store
       global.payments = global.payments || {};
-      for (const sessionId in global.payments) {
-        if (global.payments[sessionId].checkoutRequestId === checkoutRequestID) {
-          global.payments[sessionId].status = 'failed';
-          global.payments[sessionId].resultDesc = resultDesc;
+      let payment = null;
+      let sessionId = null;
+      
+      for (const sid in global.payments) {
+        if (global.payments[sid].checkoutRequestId === checkoutRequestID) {
+          payment = global.payments[sid];
+          sessionId = sid;
           break;
         }
+      }
+      
+      if (payment) {
+        // CREATE failed transaction in Firebase (not UPDATE)
+        const failureData = {
+          sessionId: payment.sessionId,
+          phoneNumber: payment.phoneNumber,
+          amount: payment.amount,
+          category: payment.category,
+          checkoutRequestId: payment.checkoutRequestId,
+          merchantRequestId: payment.merchantRequestId,
+          referralCode: payment.referralCode,
+          status: 'failed',
+          resultDesc: resultDesc,
+          failureReason: resultDesc,
+          resultCode: resultCode,
+          failedAt: new Date().toISOString(),
+          callbackReceivedAt: new Date().toISOString()
+        };
+        
+        await saveTransaction(failureData);
+        console.log('❌ Transaction CREATED as failed:', resultDesc);
+        
+        // Update in-memory
+        global.payments[sessionId].status = 'failed';
+        global.payments[sessionId].resultDesc = resultDesc;
+      } else {
+        console.error('❌ Payment not found in memory for checkoutRequestID:', checkoutRequestID);
       }
     }
 

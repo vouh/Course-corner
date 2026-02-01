@@ -42,16 +42,24 @@ module.exports = async (req, res) => {
 
       const mpesaReceiptNumber = metadata.MpesaReceiptNumber || null;
       
+      console.log('🧾 M-Pesa Receipt Number:', mpesaReceiptNumber || 'NOT FOUND IN CALLBACK');
+      console.log('📋 Full Metadata:', JSON.stringify(metadata, null, 2));
+      
       // Update transaction in Firebase
-      const transactionId = await updateTransactionByCheckoutId(checkoutRequestID, {
+      const updateData = {
         status: 'completed',
         resultDesc: resultDesc,
         mpesaReceiptNumber: mpesaReceiptNumber,
         transactionCode: mpesaReceiptNumber,
-        metadata: metadata
-      });
+        metadata: metadata,
+        completedAt: new Date().toISOString(),
+        callbackReceivedAt: new Date().toISOString()
+      };
+      
+      const transactionId = await updateTransactionByCheckoutId(checkoutRequestID, updateData);
 
       console.log('✅ Payment successful, transaction updated:', transactionId);
+      console.log('   M-Pesa Code Stored:', mpesaReceiptNumber || 'NULL - Code not in callback');
 
       // Credit referrer if applicable (12% commission)
       // We need to get the transaction to check for referral code

@@ -132,10 +132,19 @@ module.exports = async (req, res) => {
           referralCode: payment.referralCode,
           ...updateData
         };
+        
+        console.log('📝 Saving transaction with data:', JSON.stringify(transactionData, null, 2));
         transactionId = await saveTransaction(transactionData);
-        console.log('✅ Transaction CREATED in Firebase:', transactionId);
+        
+        if (transactionId) {
+          console.log('✅ Transaction CREATED successfully in Firebase:', transactionId);
+        } else {
+          console.error('❌ Transaction creation returned null/empty ID');
+          throw new Error('saveTransaction returned no ID');
+        }
       } else {
         console.error('❌ Payment not found in memory for checkoutRequestID:', checkoutRequestID);
+        console.error('Available payments in memory:', Object.keys(global.payments || {}));
         throw new Error('Payment not found in memory');
       }
 

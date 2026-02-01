@@ -133,22 +133,24 @@ module.exports = async (req, res) => {
       timeout: 10000
     });
 
-    // Save payment to Firebase (and in-memory as backup)
-    const paymentData = {
+    // Store in-memory ONLY - don't save to Firebase yet
+    // Wait for callback to arrive with actual result (completed or failed)
+    // This eliminates the "pending" limbo state
+    global.payments = global.payments || {};
+    global.payments[sessionId] = {
       sessionId,
       category,
       phoneNumber: formattedPhone,
       amount,
-      status: 'processing',
       checkoutRequestId: response.data.CheckoutRequestID,
       merchantRequestId: response.data.MerchantRequestID,
       referralCode: referralCode ? referralCode.toUpperCase() : null,
-      createdAt: new Date()
+      createdAt: new Date(),
+      status: 'awaiting_callback'
     };
-
-    await saveTransaction(paymentData);
-    console.log('✅ STK Push initiated and saved:', sessionId);
+    console.log('✅ STK Push initiated (in-memory only, waiting for callback):', sessionId);
     console.log('🎁 Referral Code:', referralCode ? referralCode.toUpperCase() : 'NONE');
+    console.log('📌 Transaction will be saved to Firebase ONLY when callback arrives with result')
 
     res.json({
       success: true,

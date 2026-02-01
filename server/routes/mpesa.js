@@ -70,20 +70,19 @@ router.post('/stkpush', async (req, res) => {
       stkResult.responseCode
     );
 
-    // Save transaction to Firebase
-    console.log('💾 Saving transaction to Firebase...');
-    const firebaseId = await savePaymentTransaction({
+    // Store in-memory ONLY - don't save to Firebase yet
+    // Wait for callback to arrive with actual result (completed or failed)
+    // This eliminates the "pending" limbo state
+    PaymentStore.createPayment(sessionId, category, phoneNumber, amount, referralCode);
+    PaymentStore.updatePaymentCheckout(
       sessionId,
-      phoneNumber,
-      amount,
-      category,
-      status: 'processing',
-      checkoutRequestId: stkResult.checkoutRequestId,
-      merchantRequestId: stkResult.merchantRequestId,
-      referralCode: referralCode ? referralCode.toUpperCase() : null
-    });
-    console.log('💾 Firebase save result:', firebaseId ? `Success (${firebaseId})` : 'Failed or skipped');
+      stkResult.checkoutRequestId,
+      stkResult.merchantRequestId,
+      stkResult.responseCode
+    );
+    console.log('💾 Payment stored in-memory (in PaymentStore), waiting for M-Pesa callback...');
     console.log('🎁 Referral Code:', referralCode ? referralCode.toUpperCase() : 'NONE');
+    console.log('📌 Transaction will be saved to Firebase ONLY when callback arrives with result')
 
     res.json({
       success: true,

@@ -90,6 +90,8 @@ module.exports = async (req, res) => {
   try {
     const { phoneNumber, category, referralCode } = req.body;
 
+    console.log('📱 STK Push Request:', { phoneNumber, category, referralCode: referralCode || 'NONE' });
+
     // Validate input
     if (!phoneNumber) {
       return res.status(400).json({ success: false, message: 'Phone number is required' });
@@ -146,6 +148,7 @@ module.exports = async (req, res) => {
 
     await saveTransaction(paymentData);
     console.log('✅ STK Push initiated and saved:', sessionId);
+    console.log('🎁 Referral Code:', referralCode ? referralCode.toUpperCase() : 'NONE');
 
     res.json({
       success: true,

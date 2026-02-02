@@ -134,141 +134,120 @@ module.exports = async (req, res) => {
           console.error('❌ Payment data lost and unrecoverable.');
           return res.json({ ResultCode: 1, ResultDesc: 'Payment record not found and unrecoverable' });
         }
-      }
 
-      // CREATE transaction in Firebase (not UPDATE - since we didn't save on STK Push)
-      const transactionData = {
-        sessionId: paymentData?.sessionId || `success-${checkoutRequestID}`,
-        phoneNumber: paymentData?.phoneNumber || 'unknown',
-        amount: paymentData?.amount || 0,
-        category: paymentData?.category || 'unknown',
-        status: 'completed',
-        checkoutRequestId: checkoutRequestID,
-        merchantRequestId: paymentData?.merchantRequestId || null,
-        mpesaReceiptNumber: mpesaReceiptNumber || null,
-        transactionCode: mpesaReceiptNumber || null,
-        resultDesc: resultDesc,
-        resultCode: 0,
-        completedAt: new Date().toISOString(),
-        callbackReceivedAt: new Date().toISOString()
-      };
+        // Use EXACT SAME structure as failed transactions (which work!)
+        const successData = {
+          sessionId: paymentData?.sessionId || `unknown-${checkoutRequestID}`,
+          phoneNumber: paymentData?.phoneNumber || 'unknown',
+          amount: paymentData?.amount || 0,
+          category: paymentData?.category || 'unknown',
+          status: 'completed',
+          checkoutRequestId: checkoutRequestID,
+          merchantRequestId: paymentData?.merchantRequestId || null,
+          mpesaReceiptNumber: mpesaReceiptNumber || null,
+          transactionCode: mpesaReceiptNumber || null,
+          resultDesc: resultDesc,
+          resultCode: 0,
+          completedAt: new Date().toISOString(),
+          callbackReceivedAt: new Date().toISOString()
+        };
 
-      console.log('💾 Saving SUCCESSFUL transaction to Firebase...');
-      console.log('📋 Transaction data:', JSON.stringify(transactionData, null, 2));
+        console.log('💾 Saving SUCCESSFUL transaction to Firebase...');
+        const successTxId = await saveTransaction(successData);
 
-      callbackLog.steps.push({ step: 'Calling saveTransaction for SUCCESS', transactionData });
-
-      let transactionId = null;
-      try {
-        console.log('🔄 About to call saveTransaction...');
-        transactionId = await saveTransaction(transactionData);
-        console.log('✅ saveTransaction returned:', transactionId);
-      } catch (saveError) {
-        console.error('❌❌❌ CRITICAL ERROR in saveTransaction call:');
-        console.error('   Error message:', saveError.message);
-        console.error('   Error stack:', saveError.stack);
-        console.error('   Error name:', saveError.name);
-        console.error('   Full error object:', JSON.stringify(saveError, Object.getOwnPropertyNames(saveError)));
-        callbackLog.steps.push({
-          step: 'saveTransaction threw error',
-          error: saveError.message,
-          stack: saveError.stack
-        });
-      }
-
-      if (transactionId) {
-        console.log('✅ Payment successful, transaction CREATED:', transactionId);
-        callbackLog.steps.push({ step: 'Transaction saved', transactionId, success: true });
-        callbackLog.transactionId = transactionId;
-        callbackLog.success = true;
-      } else {
-        console.error('⚠️ Transaction may not have been saved to Firebase! Check Firebase credentials.');
-        callbackLog.steps.push({ step: 'Transaction save returned null', success: false });
-        callbackLog.warning = 'Transaction ID is null - check Firebase credentials';
-      }
-      console.log('   M-Pesa Receipt Number:', mpesaReceiptNumber || 'NOT FOUND IN CALLBACK');
-      callbackLog.mpesaReceiptNumber = mpesaReceiptNumber;
-
-      // Update in-memory tracking
-      if (sessionId) {
-        global.payments[sessionId].status = 'completed';
-        global.payments[sessionId].mpesaReceiptNumber = mpesaReceiptNumber;
-        // REMOVED: metadata update - causes undefined values in Firestore
-        global.payments[sessionId].transactionId = transactionId;
-      }
-
-      logToAdmin(callbackLog);
-    } else {
-      // Payment failed (ResultCode != 0)
-      console.log(`❌ ResultCode = ${resultCode}: Payment FAILED`);
-      console.log(`📝 Failure Reason: ${resultDesc}`);
-
-      // Get payment data from in-memory store
-      global.payments = global.payments || {};
-      let paymentData = null;
-      let sessionId = null;
-
-      for (const sid in global.payments) {
-        if (global.payments[sid].checkoutRequestId === checkoutRequestID) {
-          paymentData = global.payments[sid];
-          sessionId = sid;
-          break;
+        if (successTxId) {
+          console.log('✅ Transaction marked as successful:', resultDesc, '| ID:', successTxId);
+          callbackLog.steps.push({ step: 'Successful transaction saved', transactionId: successTxId, success: true });
+          callbackLog.transactionId = successTxId;
+          callbackLog.success = true;
+        } else {
+          console.error('⚠️ Successful transaction may not have been saved to Firebase!');
+          callbackLog.steps.push({ step: 'Successful transaction save returned null', success: false });
         }
-      }
 
-      // Even if paymentData not found, try to save the failed transaction with available info
-      const failureData = {
-        sessionId: paymentData?.sessionId || `unknown-${checkoutRequestID}`,
-        phoneNumber: paymentData?.phoneNumber || 'unknown',
-        amount: paymentData?.amount || 0,
-        category: paymentData?.category || 'unknown',
-        status: 'failed',
-        checkoutRequestId: checkoutRequestID,
-        merchantRequestId: paymentData?.merchantRequestId || null,
-        resultDesc: resultDesc,
-        resultCode: resultCode,
-        failureReason: resultDesc,
-        failedAt: new Date().toISOString(),
-        callbackReceivedAt: new Date().toISOString()
-      };
+        console.log('   M-Pesa Receipt Number:', mpesaReceiptNumber || 'NOT FOUND IN CALLBACK');
+        callbackLog.mpesaReceiptNumber = mpesaReceiptNumber;
 
-      console.log('💾 Saving failed transaction to Firebase...');
-      const failedTxId = await saveTransaction(failureData);
+        // Update in-memory tracking
+        if (sessionId) {
+          global.payments[sessionId].status = 'completed';
+          global.payments[sessionId].mpesaReceiptNumber = mpesaReceiptNumber;
+          // REMOVED: metadata update - causes undefined values in Firestore
+          global.payments[sessionId].transactionId = transactionId;
+        }
 
-      if (failedTxId) {
-        console.log('❌ Transaction marked as failed:', resultDesc, '| ID:', failedTxId);
-        callbackLog.steps.push({ step: 'Failed transaction saved', transactionId: failedTxId, success: true });
-        callbackLog.transactionId = failedTxId;
+        logToAdmin(callbackLog);
       } else {
-        console.error('⚠️ Failed transaction may not have been saved to Firebase!');
-        callbackLog.steps.push({ step: 'Failed transaction save returned null', success: false });
+        // Payment failed (ResultCode != 0)
+        console.log(`❌ ResultCode = ${resultCode}: Payment FAILED`);
+        console.log(`📝 Failure Reason: ${resultDesc}`);
+
+        // Get payment data from in-memory store
+        global.payments = global.payments || {};
+        let paymentData = null;
+        let sessionId = null;
+
+        for (const sid in global.payments) {
+          if (global.payments[sid].checkoutRequestId === checkoutRequestID) {
+            paymentData = global.payments[sid];
+            sessionId = sid;
+            break;
+          }
+        }
+
+        // Even if paymentData not found, try to save the failed transaction with available info
+        const failureData = {
+          sessionId: paymentData?.sessionId || `unknown-${checkoutRequestID}`,
+          phoneNumber: paymentData?.phoneNumber || 'unknown',
+          amount: paymentData?.amount || 0,
+          category: paymentData?.category || 'unknown',
+          status: 'failed',
+          checkoutRequestId: checkoutRequestID,
+          merchantRequestId: paymentData?.merchantRequestId || null,
+          resultDesc: resultDesc,
+          resultCode: resultCode,
+          failureReason: resultDesc,
+          failedAt: new Date().toISOString(),
+          callbackReceivedAt: new Date().toISOString()
+        };
+
+        console.log('💾 Saving failed transaction to Firebase...');
+        const failedTxId = await saveTransaction(failureData);
+
+        if (failedTxId) {
+          console.log('❌ Transaction marked as failed:', resultDesc, '| ID:', failedTxId);
+          callbackLog.steps.push({ step: 'Failed transaction saved', transactionId: failedTxId, success: true });
+          callbackLog.transactionId = failedTxId;
+        } else {
+          console.error('⚠️ Failed transaction may not have been saved to Firebase!');
+          callbackLog.steps.push({ step: 'Failed transaction save returned null', success: false });
+        }
+
+        callbackLog.success = false;
+        callbackLog.failureReason = resultDesc;
+
+        // Update in-memory if we have the session
+        if (sessionId && paymentData) {
+          global.payments[sessionId].status = 'failed';
+          global.payments[sessionId].resultDesc = resultDesc;
+        }
+
+        logToAdmin(callbackLog);
       }
 
-      callbackLog.success = false;
-      callbackLog.failureReason = resultDesc;
+      // Acknowledge callback receipt
+      res.json({ ResultCode: 0, ResultDesc: 'Callback received and processed successfully' });
 
-      // Update in-memory if we have the session
-      if (sessionId && paymentData) {
-        global.payments[sessionId].status = 'failed';
-        global.payments[sessionId].resultDesc = resultDesc;
+    } catch (error) {
+      console.error('❌ Callback Error:', error);
+      console.error('Stack:', error.stack);
+
+      if (typeof callbackLog !== 'undefined') {
+        callbackLog.error = error.message;
+        callbackLog.stack = error.stack;
+        logToAdmin(callbackLog);
       }
 
-      logToAdmin(callbackLog);
+      res.status(500).json({ ResultCode: 1, ResultDesc: 'Error processing callback' });
     }
-
-    // Acknowledge callback receipt
-    res.json({ ResultCode: 0, ResultDesc: 'Callback received and processed successfully' });
-
-  } catch (error) {
-    console.error('❌ Callback Error:', error);
-    console.error('Stack:', error.stack);
-
-    if (typeof callbackLog !== 'undefined') {
-      callbackLog.error = error.message;
-      callbackLog.stack = error.stack;
-      logToAdmin(callbackLog);
-    }
-
-    res.status(500).json({ ResultCode: 1, ResultDesc: 'Error processing callback' });
-  }
-};
+  };

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,7 +10,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-    
+    <script src="js/admin-auth.js"></script>
+
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -29,20 +31,81 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        * { font-family: 'Inter', sans-serif; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
-        .dark ::-webkit-scrollbar-thumb { background: #4b5563; }
-        .loader { width: 48px; height: 48px; border: 4px solid #e5e7eb; border-top-color: #22c55e; border-radius: 50%; animation: spin 1s linear infinite; }
-        .dark .loader { border-color: #374151; border-top-color: #22c55e; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .sidebar { transition: transform 0.3s ease; }
-        .hover-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .hover-lift:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15); }
-        .dark .hover-lift:hover { box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.4); }
-        @keyframes slide-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        .animate-slide-in { animation: slide-in 0.3s ease; }
+
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 4px;
+        }
+
+        .dark ::-webkit-scrollbar-thumb {
+            background: #4b5563;
+        }
+
+        .loader {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #22c55e;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .dark .loader {
+            border-color: #374151;
+            border-top-color: #22c55e;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .sidebar {
+            transition: transform 0.3s ease;
+        }
+
+        .hover-lift {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        .dark .hover-lift:hover {
+            box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.4);
+        }
+
+        @keyframes slide-in {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .animate-slide-in {
+            animation: slide-in 0.3s ease;
+        }
     </style>
 </head>
 
@@ -55,9 +118,11 @@
     <!-- Main Dashboard -->
     <div id="dashboard" class="hidden">
         <!-- Sidebar -->
-        <aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-40 sidebar -translate-x-full lg:translate-x-0">
+        <aside id="sidebar"
+            class="fixed left-0 top-0 h-full w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-40 sidebar -translate-x-full lg:translate-x-0">
             <div class="h-20 flex items-center gap-3 px-6 border-b border-gray-200 dark:border-gray-700">
-                <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-lg">
+                <div
+                    class="w-12 h-12 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center shadow-lg">
                     <i class="fas fa-graduation-cap text-white text-xl"></i>
                 </div>
                 <div>
@@ -67,26 +132,33 @@
             </div>
 
             <nav class="p-4 space-y-2">
-                <a href="index.html" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                <a href="index.html"
+                    class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
                     <i class="fas fa-chart-pie text-xl w-6"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="index.html#transactions" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                <a href="index.html#transactions"
+                    class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
                     <i class="fas fa-receipt text-xl w-6"></i>
                     <span>Transactions</span>
                 </a>
-                <a href="referrals.html" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 font-medium">
+                <a href="referrals.html"
+                    class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 font-medium">
                     <i class="fas fa-users text-xl w-6"></i>
                     <span>Referrals</span>
                 </a>
-                <a href="withdrawals.html" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                <a href="withdrawals.html"
+                    class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
                     <i class="fas fa-money-bill-wave text-xl w-6"></i>
                     <span>Withdrawals</span>
                 </a>
-                
+
                 <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
-                    <p class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">Tools</p>
-                    <a href="#" onclick="openCodeGenerator()" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                    <p
+                        class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
+                        Tools</p>
+                    <a href="#" onclick="openCodeGenerator()"
+                        class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
                         <i class="fas fa-gift text-xl w-6"></i>
                         <span>Code Generator</span>
                     </a>
@@ -95,14 +167,17 @@
 
             <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center">
+                    <div
+                        class="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center">
                         <i class="fas fa-user text-white"></i>
                     </div>
                     <div class="flex-1 min-w-0">
-                        <p id="sidebar-email" class="text-sm font-medium text-gray-900 dark:text-white truncate">admin@email.com</p>
+                        <p id="sidebar-email" class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                            admin@email.com</p>
                         <p class="text-xs text-gray-500 dark:text-gray-400">Administrator</p>
                     </div>
-                    <button onclick="logout()" class="p-2 text-gray-400 hover:text-red-500 transition-colors" title="Logout">
+                    <button onclick="logout()" class="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                        title="Logout">
                         <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </div>
@@ -112,8 +187,10 @@
         <!-- Main Content -->
         <div class="lg:ml-72 min-h-screen">
             <!-- Top Bar -->
-            <header class="h-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30 px-4 lg:px-8 flex items-center justify-between">
-                <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+            <header
+                class="h-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30 px-4 lg:px-8 flex items-center justify-between">
+                <button onclick="toggleSidebar()"
+                    class="lg:hidden p-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
                     <i class="fas fa-bars text-xl"></i>
                 </button>
                 <div class="hidden lg:block">
@@ -121,24 +198,31 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400">Manage referral codes and earnings</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button onclick="loadReferrals()" class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" title="Refresh">
+                    <button onclick="loadReferrals()"
+                        class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                        title="Refresh">
                         <i class="fas fa-sync-alt text-lg"></i>
                     </button>
-                    <button onclick="toggleTheme()" class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" title="Toggle Theme">
+                    <button onclick="toggleTheme()"
+                        class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                        title="Toggle Theme">
                         <i class="fas fa-sun text-lg dark:hidden"></i>
                         <i class="fas fa-moon text-lg hidden dark:inline"></i>
                     </button>
                 </div>
             </header>
 
-            <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden"></div>
+            <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden">
+            </div>
 
             <main class="p-4 lg:p-8">
                 <!-- Stats -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-                    <div class="hover-lift bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                    <div
+                        class="hover-lift bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
+                            <div
+                                class="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
                                 <i class="fas fa-users text-white text-2xl"></i>
                             </div>
                         </div>
@@ -146,9 +230,11 @@
                         <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Referrers</p>
                     </div>
 
-                    <div class="hover-lift bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                    <div
+                        class="hover-lift bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg">
+                            <div
+                                class="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-600 rounded-2xl flex items-center justify-center shadow-lg">
                                 <i class="fas fa-user-plus text-white text-2xl"></i>
                             </div>
                         </div>
@@ -156,9 +242,11 @@
                         <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Referrals</p>
                     </div>
 
-                    <div class="hover-lift bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                    <div
+                        class="hover-lift bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
+                            <div
+                                class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center shadow-lg">
                                 <i class="fas fa-coins text-white text-2xl"></i>
                             </div>
                         </div>
@@ -166,9 +254,11 @@
                         <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Total Earnings</p>
                     </div>
 
-                    <div class="hover-lift bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
+                    <div
+                        class="hover-lift bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
+                            <div
+                                class="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg">
                                 <i class="fas fa-wallet text-white text-2xl"></i>
                             </div>
                         </div>
@@ -182,11 +272,12 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div class="md:col-span-2 relative">
                             <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <input type="text" id="search-input" placeholder="Search by code, phone, or email..." 
+                            <input type="text" id="search-input" placeholder="Search by code, phone, or email..."
                                 class="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white"
                                 onkeyup="filterReferrals()">
                         </div>
-                        <button onclick="openCodeGenerator()" class="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold hover:from-primary-600 hover:to-primary-700 transition-all">
+                        <button onclick="openCodeGenerator()"
+                            class="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold hover:from-primary-600 hover:to-primary-700 transition-all">
                             <i class="fas fa-plus"></i>
                             <span>Generate Code</span>
                         </button>
@@ -194,27 +285,48 @@
                 </div>
 
                 <!-- Referrers Table -->
-                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+                <div
+                    class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full">
                             <thead class="bg-gray-50 dark:bg-gray-700/50">
                                 <tr>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Referrer</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Code</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Referrals</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Earnings</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Balance</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Status</th>
-                                    <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Actions</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                        Referrer</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                        Code</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                        Referrals</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                        Earnings</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                        Balance</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                        Status</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
+                                        Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="referrals-body" class="divide-y divide-gray-100 dark:divide-gray-700">
-                                <tr><td colspan="7" class="px-6 py-12 text-center"><div class="loader mx-auto mb-4"></div><p class="text-gray-500 dark:text-gray-400">Loading referrals...</p></td></tr>
+                                <tr>
+                                    <td colspan="7" class="px-6 py-12 text-center">
+                                        <div class="loader mx-auto mb-4"></div>
+                                        <p class="text-gray-500 dark:text-gray-400">Loading referrals...</p>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
                     <div id="empty-state" class="hidden p-12 text-center">
-                        <div class="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <div
+                            class="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
                             <i class="fas fa-users-slash text-gray-400 text-3xl"></i>
                         </div>
                         <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">No Referrers Found</h3>
@@ -229,7 +341,8 @@
     <div id="code-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
         <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-md w-full p-8">
             <div class="text-center mb-6">
-                <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <div
+                    class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                     <i class="fas fa-magic text-white text-2xl"></i>
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Referral Code Generator</h3>
@@ -241,23 +354,30 @@
                     value="XXXXX">
             </div>
             <div class="flex gap-3 mb-6">
-                <button onclick="generateCode()" class="flex-1 bg-gradient-to-r from-primary-500 to-primary-600 text-white py-4 rounded-xl font-bold hover:from-primary-600 hover:to-primary-700 transition-all">
+                <button onclick="generateCode()"
+                    class="flex-1 bg-gradient-to-r from-primary-500 to-primary-600 text-white py-4 rounded-xl font-bold hover:from-primary-600 hover:to-primary-700 transition-all">
                     <i class="fas fa-sync-alt mr-2"></i>Generate
                 </button>
-                <button onclick="copyCode()" class="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-4 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
+                <button onclick="copyCode()"
+                    class="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-4 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
                     <i class="fas fa-copy mr-2"></i>Copy Link
                 </button>
             </div>
-            <button onclick="closeCodeGenerator()" class="w-full py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 font-medium">Close</button>
+            <button onclick="closeCodeGenerator()"
+                class="w-full py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 font-medium">Close</button>
         </div>
     </div>
 
     <!-- Detail Modal -->
-    <div id="detail-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div id="detail-modal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
         <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white dark:bg-gray-800">
+            <div
+                class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white dark:bg-gray-800">
                 <h3 class="text-xl font-bold text-gray-900 dark:text-white">Referrer Details</h3>
-                <button onclick="closeDetailModal()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-400"><i class="fas fa-times text-xl"></i></button>
+                <button onclick="closeDetailModal()"
+                    class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-400"><i
+                        class="fas fa-times text-xl"></i></button>
             </div>
             <div id="detail-content" class="p-6"></div>
         </div>
@@ -301,16 +421,12 @@
         }
 
         // Auth
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById('auth-check').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-                document.getElementById('sidebar-email').textContent = user.email;
-                loadReferrals();
-            } else {
-                window.location.href = 'index.html';
-            }
-        });
+        auth.onAuthStateChanged(user => handleAdminAuthState(user, (u) => {
+            document.getElementById('auth-check').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('sidebar-email').textContent = u.email;
+            loadReferrals();
+        }));
 
         function logout() { auth.signOut().then(() => window.location.href = 'index.html'); }
 
@@ -321,7 +437,7 @@
                 const snapshot = await db.collection('users')
                     .where('referralCode', '!=', '')
                     .get();
-                
+
                 allReferrers = [];
                 let totalEarnings = 0, totalReferrals = 0, pendingPayout = 0;
 
@@ -339,7 +455,7 @@
                 // Sort by earnings descending
                 allReferrers.sort((a, b) => (b.referralEarnings || 0) - (a.referralEarnings || 0));
                 filteredReferrers = [...allReferrers];
-                
+
                 document.getElementById('stat-total-referrers').textContent = allReferrers.length;
                 document.getElementById('stat-total-referrals').textContent = totalReferrals;
                 document.getElementById('stat-total-earnings').textContent = `KSH ${totalEarnings.toLocaleString()}`;
@@ -426,19 +542,19 @@
                 showToast('No pending balance to pay', 'warning');
                 return;
             }
-            
+
             // Show confirmation dialog
             const confirmed = confirm(`Confirm Manual Payout\n\nUser: ${userName}\nAmount: KSH ${amount.toLocaleString()}\n\nHave you sent this amount via M-Pesa?\nClick OK to mark as paid and reset their balance to 0.`);
-            
+
             if (!confirmed) return;
-            
+
             try {
                 // Update user's referralPending to 0
                 await db.collection('users').doc(userId).update({
                     referralPending: 0,
                     updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                
+
                 // Log the payout in withdrawals collection for record keeping
                 await db.collection('withdrawals').add({
                     userId: userId,
@@ -448,7 +564,7 @@
                     paidAt: firebase.firestore.FieldValue.serverTimestamp(),
                     createdAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
-                
+
                 showToast(`Marked KSH ${amount.toLocaleString()} as paid!`, 'success');
                 loadReferrals(); // Refresh table
             } catch (e) {
@@ -568,8 +684,9 @@
 
         // Keyboard shortcuts
         document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDetailModal(); closeCodeGenerator(); } });
-        document.getElementById('detail-modal').addEventListener('click', function(e) { if (e.target === this) closeDetailModal(); });
-        document.getElementById('code-modal').addEventListener('click', function(e) { if (e.target === this) closeCodeGenerator(); });
+        document.getElementById('detail-modal').addEventListener('click', function (e) { if (e.target === this) closeDetailModal(); });
+        document.getElementById('code-modal').addEventListener('click', function (e) { if (e.target === this) closeCodeGenerator(); });
     </script>
 </body>
+
 </html>

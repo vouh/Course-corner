@@ -84,8 +84,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
     </style>
 </head>
@@ -105,11 +110,13 @@
                     </h1>
                 </div>
                 <div class="flex items-center gap-4">
-                    <button onclick="exportToCSV()" class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                    <button onclick="exportToCSV()"
+                        class="px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg text-sm font-medium transition flex items-center gap-2">
                         <i class="fas fa-download"></i>
                         Export CSV
                     </button>
-                    <button onclick="loadReferralCodes()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                    <button onclick="loadReferralCodes()"
+                        class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-sm font-medium transition flex items-center gap-2">
                         <i class="fas fa-sync"></i>
                         Refresh
                     </button>
@@ -174,8 +181,8 @@
                 <div class="flex-1">
                     <div class="relative">
                         <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" id="searchInput" placeholder="Search by code, email, phone, or name..." 
-                               class="search-input w-full pl-12 pr-4 py-3 rounded-lg text-white placeholder-gray-400">
+                        <input type="text" id="searchInput" placeholder="Search by code, email, phone, or name..."
+                            class="search-input w-full pl-12 pr-4 py-3 rounded-lg text-white placeholder-gray-400">
                     </div>
                 </div>
                 <div class="flex gap-2">
@@ -238,6 +245,10 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, updateDoc, query, orderBy, getDoc, where } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
         import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+        // Import shared auth script
+    </script>
+    <script src="js/admin-auth.js"></script>
+    <script type="module">
 
         const firebaseConfig = {
             apiKey: "AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
@@ -252,13 +263,15 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
+        // Access shared auth from a module context
+        // isAuthorizedAdmin is global from admin-auth.js
+
         let allCodes = [];
-        const adminEmail = 'admin@coursecorner.com';
 
         // Auth check
         onAuthStateChanged(auth, (user) => {
             console.log('Auth state:', user ? user.email : 'not logged in');
-            
+
             if (!user) {
                 Swal.fire({
                     icon: 'warning',
@@ -270,15 +283,15 @@
                 });
                 return;
             }
-            
-            if (user.email !== adminEmail) {
+
+            if (user && !isAuthorizedAdmin(user)) {
                 Swal.fire({
                     icon: 'error',
                     title: 'Access Denied',
-                    html: `You are logged in as: <strong>${user.email}</strong><br><br>Only <strong>${adminEmail}</strong> can access this page.`,
+                    html: `You are logged in as: <strong>${user.email}</strong><br><br>Unauthorized: Admin access only.`,
                     confirmButtonColor: '#3b82f6'
                 }).then(() => {
-                    window.location.href = 'index.html';
+                    auth.signOut().then(() => window.location.href = 'index.html');
                 });
                 return;
             }
@@ -286,7 +299,7 @@
         });
 
         // Load referral codes
-        window.loadReferralCodes = async function() {
+        window.loadReferralCodes = async function () {
             const tableBody = document.getElementById('codesTableBody');
             const loadingState = document.getElementById('loadingState');
             const emptyState = document.getElementById('emptyState');
@@ -388,7 +401,7 @@
 
             // Apply search filter
             if (searchTerm) {
-                filtered = filtered.filter(c => 
+                filtered = filtered.filter(c =>
                     (c.code && c.code.toLowerCase().includes(searchTerm)) ||
                     (c.userEmail && c.userEmail.toLowerCase().includes(searchTerm)) ||
                     (c.userName && c.userName.toLowerCase().includes(searchTerm)) ||
@@ -509,10 +522,10 @@
             if (!dateStr) return 'N/A';
             try {
                 const date = new Date(dateStr);
-                return date.toLocaleDateString('en-KE', { 
-                    year: 'numeric', 
-                    month: 'short', 
-                    day: 'numeric' 
+                return date.toLocaleDateString('en-KE', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric'
                 });
             } catch {
                 return 'N/A';
@@ -520,7 +533,7 @@
         }
 
         // Copy code to clipboard
-        window.copyCode = function(code) {
+        window.copyCode = function (code) {
             navigator.clipboard.writeText(code);
             Swal.fire({
                 toast: true,
@@ -533,9 +546,9 @@
         };
 
         // Toggle code status
-        window.toggleCodeStatus = async function(code, currentlyActive) {
+        window.toggleCodeStatus = async function (code, currentlyActive) {
             const action = currentlyActive ? 'deactivate' : 'activate';
-            
+
             const result = await Swal.fire({
                 title: `${action.charAt(0).toUpperCase() + action.slice(1)} Code?`,
                 text: `Are you sure you want to ${action} the code "${code}"?`,
@@ -551,7 +564,7 @@
                     await updateDoc(doc(db, 'referralCodes', code), {
                         isActive: !currentlyActive
                     });
-                    
+
                     Swal.fire({
                         toast: true,
                         position: 'top-end',
@@ -575,7 +588,7 @@
         };
 
         // View code details
-        window.viewCodeDetails = async function(code) {
+        window.viewCodeDetails = async function (code) {
             const codeData = allCodes.find(c => c.code === code);
             if (!codeData) return;
 
@@ -662,7 +675,7 @@
         };
 
         // Export to CSV
-        window.exportToCSV = function() {
+        window.exportToCSV = function () {
             if (allCodes.length === 0) {
                 Swal.fire({
                     icon: 'warning',
@@ -712,4 +725,5 @@
         document.getElementById('sortBy').addEventListener('change', filterAndDisplayCodes);
     </script>
 </body>
+
 </html>

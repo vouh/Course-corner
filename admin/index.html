@@ -11,6 +11,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="js/admin-auth.js"></script>
 
     <script>
         tailwind.config = {
@@ -380,7 +381,7 @@
                     </div>
 
                     <!-- Quick Actions -->
-                    <div class="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                         <button onclick="syncPendingTransactions()"
                             class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-all group">
                             <div
@@ -393,29 +394,7 @@
                             </div>
                         </button>
 
-                        <button onclick="syncMissingReceipts()"
-                            class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-500 transition-all group">
-                            <div
-                                class="w-12 h-12 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <i class="fas fa-sync-alt text-green-600 dark:text-green-400 text-xl"></i>
-                            </div>
-                            <div class="text-left">
-                                <p class="font-semibold text-gray-900 dark:text-white">Sync</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">M-Pesa Receipts</p>
-                            </div>
-                        </button>
 
-                        <button onclick="testFirebaseConnection()"
-                            class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-orange-500 dark:hover:border-orange-500 transition-all group">
-                            <div
-                                class="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <i class="fas fa-database text-orange-600 dark:text-orange-400 text-xl"></i>
-                            </div>
-                            <div class="text-left">
-                                <p class="font-semibold text-gray-900 dark:text-white">Test DB</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Check Firebase</p>
-                            </div>
-                        </button>
 
                         <button onclick="exportToCSV()"
                             class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-all group">
@@ -453,17 +432,7 @@
                             </div>
                         </button>
 
-                        <button onclick="viewCallbackLogs()"
-                            class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-cyan-500 dark:hover:border-cyan-500 transition-all group">
-                            <div
-                                class="w-12 h-12 bg-cyan-100 dark:bg-cyan-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <i class="fas fa-terminal text-cyan-600 dark:text-cyan-400 text-xl"></i>
-                            </div>
-                            <div class="text-left">
-                                <p class="font-semibold text-gray-900 dark:text-white">Logs</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">View Callbacks</p>
-                            </div>
-                        </button>
+
                     </div>
 
                     <!-- Recent Transactions -->
@@ -697,7 +666,8 @@
         }
 
         // Auth
-        auth.onAuthStateChanged(user => user ? showDashboard(user) : showLogin());
+        auth.onAuthStateChanged(user => handleAdminAuthState(user, showDashboard));
+
         function showLogin() { document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('dashboard').classList.add('hidden'); }
         function showDashboard(user) {
             document.getElementById('login-screen').classList.add('hidden');
@@ -716,7 +686,13 @@
             document.getElementById('login-spinner').classList.remove('hidden');
             document.getElementById('login-error').classList.add('hidden');
 
-            try { await auth.signInWithEmailAndPassword(email, password); }
+            try {
+                const result = await auth.signInWithEmailAndPassword(email, password);
+                if (!isAuthorizedAdmin(result.user)) {
+                    await auth.signOut();
+                    throw { code: 'auth/unauthorized', message: 'Unauthorized: Admin access only.' };
+                }
+            }
             catch (error) {
                 document.getElementById('login-error').classList.remove('hidden');
                 document.getElementById('login-error-message').textContent = getAuthError(error.code);
@@ -728,7 +704,13 @@
         });
 
         function getAuthError(code) {
-            return { 'auth/invalid-email': 'Invalid email.', 'auth/user-not-found': 'No account found.', 'auth/wrong-password': 'Incorrect password.', 'auth/invalid-credential': 'Invalid credentials.' }[code] || 'Login failed.';
+            return {
+                'auth/invalid-email': 'Invalid email.',
+                'auth/user-not-found': 'No account found.',
+                'auth/wrong-password': 'Incorrect password.',
+                'auth/invalid-credential': 'Invalid credentials.',
+                'auth/unauthorized': 'Access denied: Admin only.'
+            }[code] || 'Login failed.';
         }
         function logout() { auth.signOut(); }
 
@@ -1110,117 +1092,11 @@
         // Actions
         async function syncPendingTransactions() { showToast('Refreshing...', 'info'); await loadTransactions(); showToast('Refreshed!', 'success'); }
 
-        async function testFirebaseConnection() {
-            showToast('Testing Firebase connection...', 'info');
-            try {
-                // Try the Vercel API endpoint first
-                const res = await fetch(`${API_FALLBACK}/api/admin/firebase-test`);
-                const data = await res.json();
 
-                console.log('🔥 Firebase Test Results:', data);
 
-                if (data.success) {
-                    const failedChecks = data.checks.filter(c => c.status === 'fail');
-                    if (failedChecks.length === 0) {
-                        showToast(`✅ Firebase OK! Found ${data.checks.find(c => c.name === 'Firestore Read Test')?.details?.documentsFound || 0} transactions`, 'success');
-                    } else {
-                        showToast(`⚠️ Firebase issues: ${failedChecks.map(c => c.name).join(', ')}`, 'warning');
-                    }
 
-                    // Log detailed results
-                    data.checks.forEach(check => {
-                        console.log(`${check.status === 'pass' ? '✅' : '❌'} ${check.name}:`, check.details || check.error);
-                    });
-                } else {
-                    showToast('Firebase test failed: ' + data.error, 'error');
-                }
-            } catch (e) {
-                console.error('Firebase test error:', e);
-                showToast('Test error: ' + e.message, 'error');
-            }
-        }
 
-        async function viewCallbackLogs() {
-            showToast('Loading callback logs...', 'info');
-            try {
-                const res = await fetch(`${API_FALLBACK}/api/admin/recent-logs`);
-                const data = await res.json();
 
-                if (data.success) {
-                    const logs = data.logs || [];
-                    if (logs.length === 0) {
-                        showToast('No callback logs yet', 'warning');
-                        return;
-                    }
-
-                    // Show in modal
-                    const modalContent = document.getElementById('modal-content');
-                    modalContent.innerHTML = `
-                        <div class="space-y-4">
-                            <div class="flex items-center justify-between mb-4">
-                                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Recent Callback Logs (${logs.length})</h3>
-                                <button onclick="viewCallbackLogs()" class="text-sm text-primary-600 hover:text-primary-700">
-                                    <i class="fas fa-sync-alt mr-1"></i>Refresh
-                                </button>
-                            </div>
-                            ${logs.reverse().map(log => `
-                                <div class="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl border ${log.success ? 'border-green-200 dark:border-green-800' : log.error ? 'border-red-200 dark:border-red-800' : 'border-gray-200 dark:border-gray-600'}">
-                                    <div class="flex items-center justify-between mb-2">
-                                        <span class="text-xs font-mono text-gray-500 dark:text-gray-400">${log.timestamp}</span>
-                                        <span class="px-2 py-1 rounded text-xs font-bold ${log.success ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : log.error ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400'}">
-                                            ${log.success ? '✅ Success' : log.error ? '❌ Error' : '⏳ Processing'}
-                                        </span>
-                                    </div>
-                                    ${log.checkoutRequestID ? `<p class="text-xs text-gray-600 dark:text-gray-300 mb-1"><strong>Checkout:</strong> ${log.checkoutRequestID}</p>` : ''}
-                                    ${log.transactionId ? `<p class="text-xs text-gray-600 dark:text-gray-300 mb-1"><strong>Transaction:</strong> ${log.transactionId}</p>` : ''}
-                                    ${log.mpesaReceiptNumber ? `<p class="text-xs text-green-600 dark:text-green-400 mb-1"><strong>Receipt:</strong> ${log.mpesaReceiptNumber}</p>` : ''}
-                                    ${log.resultDesc ? `<p class="text-xs text-gray-600 dark:text-gray-300 mb-2">${log.resultDesc}</p>` : ''}
-                                    ${log.error ? `<p class="text-xs text-red-600 dark:text-red-400 mb-2"><strong>Error:</strong> ${log.error}</p>` : ''}
-                                    ${log.warning ? `<p class="text-xs text-yellow-600 dark:text-yellow-400 mb-2"><strong>Warning:</strong> ${log.warning}</p>` : ''}
-                                    <details class="mt-2">
-                                        <summary class="text-xs text-gray-500 dark:text-gray-400 cursor-pointer hover:text-primary-600">View steps (${log.steps?.length || 0})</summary>
-                                        <div class="mt-2 space-y-1 pl-4 border-l-2 border-gray-300 dark:border-gray-600">
-                                            ${(log.steps || []).map(step => `
-                                                <div class="text-xs">
-                                                    <span class="text-gray-600 dark:text-gray-300">${step.step}</span>
-                                                    ${step.transactionId ? `<code class="ml-2 text-primary-600">${step.transactionId}</code>` : ''}
-                                                </div>
-                                            `).join('')}
-                                        </div>
-                                    </details>
-                                </div>
-                            `).join('')}
-                        </div>
-                    `;
-                    document.getElementById('detail-modal').classList.remove('hidden');
-                    document.getElementById('detail-modal').classList.add('flex');
-                    console.log('📋 Callback logs:', logs);
-                } else {
-                    showToast('Failed to load logs: ' + data.message, 'error');
-                }
-            } catch (e) {
-                console.error('Logs error:', e);
-                showToast('Error loading logs: ' + e.message, 'error');
-            }
-        }
-
-        async function syncMissingReceipts() {
-            showToast('Syncing payments status...', 'info');
-            try {
-                // Use the new status sync endpoint
-                const res = await fetch(`/api/payment/sync-status`);
-                const data = await res.json();
-                if (data.success) {
-                    showToast(`Synced ${data.summary.completed} payments`, 'success');
-                    await loadTransactions(); // Reload to show updated data
-                } else {
-                    showToast('Sync failed: ' + data.message, 'error');
-                }
-            } catch (e) {
-                console.error('Sync error:', e);
-                showToast('Sync error: ' + e.message, 'error');
-            }
-        }
 
         async function requeryTransaction(transactionId) {
             showToast('Re-querying M-Pesa...', 'info');

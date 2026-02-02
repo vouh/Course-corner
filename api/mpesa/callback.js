@@ -179,7 +179,23 @@ module.exports = async (req, res) => {
 
       callbackLog.steps.push({ step: 'Calling saveTransaction for SUCCESS', transactionData });
 
-      const transactionId = await saveTransaction(transactionData);
+      let transactionId = null;
+      try {
+        console.log('🔄 About to call saveTransaction...');
+        transactionId = await saveTransaction(transactionData);
+        console.log('✅ saveTransaction returned:', transactionId);
+      } catch (saveError) {
+        console.error('❌❌❌ CRITICAL ERROR in saveTransaction call:');
+        console.error('   Error message:', saveError.message);
+        console.error('   Error stack:', saveError.stack);
+        console.error('   Error name:', saveError.name);
+        console.error('   Full error object:', JSON.stringify(saveError, Object.getOwnPropertyNames(saveError)));
+        callbackLog.steps.push({
+          step: 'saveTransaction threw error',
+          error: saveError.message,
+          stack: saveError.stack
+        });
+      }
 
       if (transactionId) {
         console.log('✅ Payment successful, transaction CREATED:', transactionId);

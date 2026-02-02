@@ -492,7 +492,10 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
+        // IMPORTANT: Always use live server for admin - callbacks are sent to live server only
+        // Transactions are saved to live server, so admin must read from live server
         const API_BASE = 'https://course-corner-server.vercel.app';
+        console.log('🌐 API_BASE:', API_BASE, '(Using live server for transaction callbacks)');
         let allTransactions = [], filteredTransactions = [], currentTransactionId = null;
 
         // Theme

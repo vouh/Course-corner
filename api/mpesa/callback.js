@@ -1,5 +1,17 @@
 const { saveTransaction, creditReferrer } = require('../utils/firebase');
 
+// Helper to store logs for admin viewing
+function logToAdmin(logEntry) {
+  global.recentCallbackLogs = global.recentCallbackLogs || [];
+  global.recentCallbackLogs.push({
+    ...logEntry,
+    timestamp: new Date().toISOString()
+  });
+  if (global.recentCallbackLogs.length > 50) {
+    global.recentCallbackLogs = global.recentCallbackLogs.slice(-50);
+  }
+}
+
 module.exports = async (req, res) => {
   // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -15,22 +27,36 @@ module.exports = async (req, res) => {
     return res.status(405).json({ success: false, message: 'Method not allowed' });
   }
 
+  const callbackLog = {
+    type: 'callback',
+    timestamp: new Date().toISOString(),
+    steps: []
+  };
+
   try {
     const callbackData = req.body;
     console.log('📱 M-Pesa Callback Received:', new Date().toISOString());
     console.log(JSON.stringify(callbackData, null, 2));
+    
+    callbackLog.steps.push({ step: 'Callback received', time: new Date().toISOString() });
 
     // Extract callback data
     const stkCallback = callbackData.Body?.stkCallback;
     
     if (!stkCallback) {
       console.error('Invalid callback structure');
+      callbackLog.error = 'Invalid callback structure';
+      logToAdmin(callbackLog);
       return res.json({ ResultCode: 1, ResultDesc: 'Invalid callback structure' });
     }
 
     const checkoutRequestID = stkCallback.CheckoutRequestID;
     const resultCode = stkCallback.ResultCode;
     const resultDesc = stkCallback.ResultDesc;
+    
+    callbackLog.checkoutRequestID = checkoutRequestID;
+    callbackLog.resultCode = resultCode;
+    callbackLog.resultDesc = resultDesc;
 
     if (resultCode === 0) {
       // ============================================
@@ -38,6 +64,7 @@ module.exports = async (req, res) => {
       // (Based on proven Spectre Tech system)
       // ============================================
       console.log('✅ ResultCode = 0: Payment SUCCESSFUL');
+      callbackLog.steps.push({ step: 'Payment SUCCESSFUL', status: 'completed' });
       
       // Get CallbackMetadata items array
       const callbackMetadata = stkCallback.CallbackMetadata?.Item || [];
@@ -148,14 +175,22 @@ module.exports = async (req, res) => {
       console.log('💾 Attempting to save transaction to Firebase...');
       console.log('📋 Transaction data:', JSON.stringify(transactionData, null, 2));
       
+      callbackLog.steps.push({ step: 'Calling saveTransaction', transactionData: { ...transactionData, metadata: 'omitted' } });
+      
       const transactionId = await saveTransaction(transactionData);
 
       if (transactionId) {
         console.log('✅ Payment successful, transaction CREATED:', transactionId);
+        callbackLog.steps.push({ step: 'Transaction saved', transactionId, success: true });
+        callbackLog.transactionId = transactionId;
+        callbackLog.success = true;
       } else {
         console.error('⚠️ Transaction may not have been saved to Firebase! Check Firebase credentials.');
+        callbackLog.steps.push({ step: 'Transaction save returned null', success: false });
+        callbackLog.warning = 'Transaction ID is null - check Firebase credentials';
       }
       console.log('   M-Pesa Receipt Number:', mpesaReceiptNumber || 'NOT FOUND IN CALLBACK');
+      callbackLog.mpesaReceiptNumber = mpesaReceiptNumber;
       
       // Update in-memory tracking
       if (sessionId) {
@@ -164,6 +199,8 @@ module.exports = async (req, res) => {
         global.payments[sessionId].metadata = metadataObj;
         global.payments[sessionId].transactionId = transactionId;
       }
+      
+      logToAdmin(callbackLog);
     } else {
       // Payment failed (ResultCode != 0)
       console.log(`❌ ResultCode = ${resultCode}: Payment FAILED`);
@@ -203,15 +240,23 @@ module.exports = async (req, res) => {
       
       if (failedTxId) {
         console.log('❌ Transaction marked as failed:', resultDesc, '| ID:', failedTxId);
+        callbackLog.steps.push({ step: 'Failed transaction saved', transactionId: failedTxId, success: true });
+        callbackLog.transactionId = failedTxId;
       } else {
         console.error('⚠️ Failed transaction may not have been saved to Firebase!');
+        callbackLog.steps.push({ step: 'Failed transaction save returned null', success: false });
       }
+      
+      callbackLog.success = false;
+      callbackLog.failureReason = resultDesc;
       
       // Update in-memory if we have the session
       if (sessionId && paymentData) {
         global.payments[sessionId].status = 'failed';
         global.payments[sessionId].resultDesc = resultDesc;
       }
+      
+      logToAdmin(callbackLog);
     }
 
     // Acknowledge callback receipt
@@ -220,3 +265,13 @@ module.exports = async (req, res) => {
   } catch (error) {
     console.error('❌ Callback Error:', error);
     console.error('Stack:', error.stack);
+    
+    if (typeof callbackLog !== 'undefined') {
+      callbackLog.error = error.message;
+      callbackLog.stack = error.stack;
+      logToAdmin(callbackLog);
+    }
+    
+    res.status(500).json({ ResultCode: 1, ResultDesc: 'Error processing callback' });
+  }
+};

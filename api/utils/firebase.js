@@ -60,12 +60,19 @@ const initializeFirebase = async () => {
  * Save a new payment transaction
  */
 const saveTransaction = async (paymentData) => {
+  console.log('🔥 saveTransaction called with status:', paymentData.status);
+  
   try {
     const { admin, db } = await initializeFirebase();
     if (!db) {
-      console.warn('Firebase not available, using in-memory fallback');
-      return saveToMemory(paymentData);
+      console.error('❌ Firebase DB is NULL - Firebase initialization failed!');
+      console.error('   Check FIREBASE_PRIVATE_KEY and FIREBASE_CLIENT_EMAIL environment variables');
+      const memId = saveToMemory(paymentData);
+      console.warn('⚠️ Transaction saved to MEMORY ONLY (not Firebase):', memId);
+      return memId;
     }
+    
+    console.log('✅ Firebase DB initialized, creating transaction...');
     
     const transactionRef = db.collection('transactions').doc();
     const transaction = {
@@ -80,6 +87,7 @@ const saveTransaction = async (paymentData) => {
       mpesaReceiptNumber: paymentData.mpesaReceiptNumber || null,
       transactionCode: paymentData.transactionCode || null,
       resultDesc: paymentData.resultDesc || null,
+      resultCode: paymentData.resultCode || null,
       metadata: paymentData.metadata || {},
       // Referral tracking
       referralCode: paymentData.referralCode || null,
@@ -95,16 +103,26 @@ const saveTransaction = async (paymentData) => {
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     };
 
+    console.log('📤 Writing to Firestore...');
     await transactionRef.set(transaction);
-    console.log('💾 Transaction saved to Firebase:', transactionRef.id);
+    console.log('💾✅ Transaction SUCCESSFULLY saved to Firebase:', transactionRef.id);
+    console.log('   Status:', transaction.status);
+    console.log('   Amount:', transaction.amount);
+    console.log('   Phone:', transaction.phoneNumber);
+    console.log('   Receipt:', transaction.mpesaReceiptNumber || 'N/A');
     
     // Also save to memory for immediate access
     saveToMemory({ ...transaction, id: transactionRef.id });
     
     return transactionRef.id;
   } catch (error) {
-    console.error('Error saving transaction:', error.message);
-    return saveToMemory(paymentData);
+    console.error('❌ FIREBASE SAVE ERROR:', error.message);
+    console.error('   Error stack:', error.stack);
+    console.error('   Transaction status:', paymentData.status);
+    
+    const memId = saveToMemory(paymentData);
+    console.warn('⚠️ Transaction saved to MEMORY as fallback:', memId);
+    return memId;
   }
 };
 

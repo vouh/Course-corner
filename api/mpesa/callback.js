@@ -169,7 +169,7 @@ module.exports = async (req, res) => {
         mpesaReceiptNumber: mpesaReceiptNumber,
         transactionCode: mpesaReceiptNumber,
         resultDesc: resultDesc,
-        metadata: metadataObj,
+        // REMOVED metadata: metadataObj - causes Firestore write failures
         completedAt: new Date().toISOString(),
         callbackReceivedAt: new Date().toISOString()
       };

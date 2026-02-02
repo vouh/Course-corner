@@ -20,10 +20,10 @@ class PaymentHandler {
         try {
             const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
             const db = getFirestore(window.firebaseApp);
-            
+
             // Check in referralCodes collection
             const codeDoc = await getDoc(doc(db, 'referralCodes', code.toUpperCase()));
-            
+
             if (codeDoc.exists()) {
                 const codeData = codeDoc.data();
                 if (codeData.isActive) {
@@ -32,17 +32,17 @@ class PaymentHandler {
                     return { valid: false, error: 'This referral code is no longer active' };
                 }
             }
-            
+
             // Fallback: Check in users collection (for older codes)
             const { collection, query, where, getDocs } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
             const usersQuery = query(collection(db, 'users'), where('referralCode', '==', code.toUpperCase()));
             const usersSnapshot = await getDocs(usersQuery);
-            
+
             if (!usersSnapshot.empty) {
                 const userData = usersSnapshot.docs[0].data();
                 return { valid: true, code: code.toUpperCase(), owner: userData };
             }
-            
+
             return { valid: false, error: 'Invalid referral code. Please check and try again.' };
         } catch (error) {
             console.error('Error validating referral code:', error);
@@ -224,7 +224,7 @@ class PaymentHandler {
 
             // If still pending, query M-Pesa directly
             console.log('⏳ Status still pending, querying M-Pesa...');
-            
+
             const queryResponse = await fetch(`${this.serverUrl}/mpesa/query`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -420,13 +420,14 @@ class PaymentHandler {
 
                 // Show success
                 if (window.firebaseAuth && window.firebaseAuth.showSuccessOverlay) {
-                    window.firebaseAuth.showSuccessOverlay('Payment Verified!', 'Loading your results...', 2000);
-                    
+                    const message = mpesaCode ? `Ref: <b>${mpesaCode.toUpperCase()}</b><br>Loading your results...` : 'Loading your results...';
+                    window.firebaseAuth.showSuccessOverlay('Payment Verified!', message, 2500);
+
                     setTimeout(() => {
                         if (onSuccess && typeof onSuccess === 'function') {
                             onSuccess();
                         }
-                    }, 2000);
+                    }, 2500);
                 } else {
                     await Swal.fire({
                         icon: 'success',
@@ -465,11 +466,11 @@ class PaymentHandler {
             }
         } catch (error) {
             console.error('M-Pesa code verification error:', error);
-            
+
             if (window.firebaseAuth && window.firebaseAuth.hideLoadingOverlay) {
                 window.firebaseAuth.hideLoadingOverlay();
             }
-            
+
             Swal.fire({
                 icon: 'error',
                 title: 'Verification Failed',
@@ -527,11 +528,11 @@ class PaymentHandler {
         try {
             // Get referral code from localStorage or URL
             let storedReferralCode = localStorage.getItem('pendingReferralCode') || '';
-            
+
             // Check URL params for referral code (supports both ?ref= and #ref=)
             const urlParams = new URLSearchParams(window.location.search);
             let urlRefCode = urlParams.get('ref') || urlParams.get('referral');
-            
+
             // Also check hash params (e.g., #ref=XXXXX)
             if (!urlRefCode && window.location.hash) {
                 const hashParams = window.location.hash.substring(1);
@@ -539,7 +540,7 @@ class PaymentHandler {
                     urlRefCode = hashParams.split('=')[1];
                 }
             }
-            
+
             if (urlRefCode) {
                 storedReferralCode = urlRefCode;
                 localStorage.setItem('pendingReferralCode', urlRefCode);
@@ -583,29 +584,29 @@ class PaymentHandler {
                 preConfirm: () => {
                     const phone = document.getElementById('swal-phone').value;
                     const referral = document.getElementById('swal-referral').value.trim().toUpperCase();
-                    
+
                     if (!phone) {
                         Swal.showValidationMessage('Please enter your phone number');
                         return false;
                     }
-                    
+
                     const cleaned = phone.replace(/\s/g, '');
                     if (!/^(0|254|\+254)?[17]\d{8}$/.test(cleaned)) {
                         Swal.showValidationMessage('Please enter a valid Kenyan phone number');
                         return false;
                     }
-                    
+
                     return { phone, referral };
                 },
                 preDeny: () => {
                     const phone = document.getElementById('swal-phone').value;
                     const referral = document.getElementById('swal-referral').value.trim().toUpperCase();
-                    
+
                     if (!phone) {
                         Swal.showValidationMessage('Please enter your phone number to verify payment');
                         return false;
                     }
-                    
+
                     return { phone, referral };
                 }
             });
@@ -644,7 +645,7 @@ class PaymentHandler {
 
             // Initiate payment with referral code
             const initResult = await this.initiatePayment(phoneNumber, category, amount, referralCode);
-            
+
             if (!initResult.success) {
                 throw new Error('Failed to initiate payment');
             }
@@ -703,16 +704,16 @@ class PaymentHandler {
             // Poll for payment status
             const pollOnce = async () => {
                 return await this.pollPaymentStatus(15, 3000, (status, attempt, max) => {
-                const statusEl = document.getElementById('paymentStatus');
-                if (statusEl) {
-                    statusEl.innerHTML = `
+                    const statusEl = document.getElementById('paymentStatus');
+                    if (statusEl) {
+                        statusEl.innerHTML = `
                         <svg class="animate-spin" style="animation: spin 1s linear infinite; width: 16px; height: 16px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                             <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                         </svg>
                         Verifying payment (${attempt}/${max})...
                     `;
-                }
+                    }
                 }, { shouldStop: () => userCancelled, requestTimeoutMs: 10000 });
             };
 
@@ -803,15 +804,18 @@ class PaymentHandler {
             if (result.success && result.status === 'completed') {
                 // Payment successful! - Show beautiful success overlay
                 Swal.close();
-                
+
                 if (window.firebaseAuth && window.firebaseAuth.showSuccessOverlay) {
-                    window.firebaseAuth.showSuccessOverlay('Payment Successful!', 'Loading your results...', 2500);
-                    
+                    const receipt = result.data?.mpesaReceiptNumber;
+                    const message = receipt ? `Ref: <b>${receipt}</b><br>Loading your results...` : 'Loading your results...';
+
+                    window.firebaseAuth.showSuccessOverlay('Payment Successful!', message, 3000);
+
                     setTimeout(() => {
                         if (onSuccess && typeof onSuccess === 'function') {
                             onSuccess();
                         }
-                    }, 2500);
+                    }, 3000);
                 } else {
                     await Swal.fire({
                         icon: 'success',
@@ -868,7 +872,7 @@ class PaymentHandler {
 
                     try {
                         const verifyResult = await this.verifyPaymentManually();
-                        
+
                         if (verifyResult.success && verifyResult.status === 'completed') {
                             Swal.fire({
                                 icon: 'success',

@@ -3,10 +3,10 @@ const router = express.Router();
 const { initiateSTKPush, querySTKPushStatus } = require('../utils/mpesaUtil');
 const PaymentStore = require('../models/PaymentStore');
 const { generateSessionId } = require('../utils/helpers');
-const { 
-  savePaymentTransaction, 
-  updatePaymentTransaction, 
-  getAllTransactions, 
+const {
+  savePaymentTransaction,
+  updatePaymentTransaction,
+  getAllTransactions,
   getTransactionStats,
   getTransactionByMpesaCode,
   markTransactionAsUsed,
@@ -319,11 +319,14 @@ router.post('/callback', async (req, res) => {
 
         const callbackMetadata = stkCallback.CallbackMetadata?.Item || [];
         const metadata = {};
-
         console.log('📦 Extracting CallbackMetadata:');
         callbackMetadata.forEach(item => {
-          metadata[item.Name] = item.Value;
-          console.log(`   ${item.Name}: ${item.Value}`);
+          if (item.Name && item.Value !== undefined) {
+            metadata[item.Name] = item.Value;
+            console.log(`   ${item.Name}: ${item.Value}`);
+          } else if (item.Name) {
+            console.log(`   ${item.Name}: (skipped - undefined)`);
+          }
         });
 
         // Extract the M-Pesa Receipt Number (transaction code) - case-insensitive
@@ -398,7 +401,7 @@ router.post('/callback', async (req, res) => {
           referralCode: payment.referralCode || null,
           callbackReceivedAt: new Date().toISOString()
         });
-        
+
         console.log('❌ Transaction marked as failed:', resultDesc);
       }
     } else {
@@ -536,22 +539,22 @@ router.get('/admin/transactions', async (req, res) => {
 router.post('/admin/sync-receipts', async (req, res) => {
   try {
     console.log('🔄 Starting receipt sync for pending/missing receipts...');
-    
+
     // Get all completed transactions without receipt numbers
     const transactions = await getAllTransactions(200);
-    const toSync = transactions.filter(tx => 
+    const toSync = transactions.filter(tx =>
       tx.status === 'completed' && !tx.mpesaReceiptNumber && tx.checkoutRequestId
     );
-    
+
     console.log(`📋 Found ${toSync.length} completed transactions without receipts`);
-    
+
     const results = { synced: 0, failed: 0, errors: [] };
-    
+
     for (const tx of toSync) {
       try {
         console.log(`🔍 Querying M-Pesa for: ${tx.checkoutRequestId}`);
         const queryResult = await querySTKPushStatus(tx.checkoutRequestId);
-        
+
         if (queryResult.ResultCode === '0' || queryResult.ResultCode === 0) {
           // Try to get receipt from callback metadata if stored
           if (queryResult.MpesaReceiptNumber) {
@@ -569,7 +572,7 @@ router.post('/admin/sync-receipts', async (req, res) => {
         console.log(`⚠️ Failed to sync ${tx.id}: ${err.message}`);
       }
     }
-    
+
     res.json({
       success: true,
       message: `Synced ${results.synced} receipts, ${results.failed} failed`,
@@ -586,26 +589,26 @@ router.post('/admin/requery/:transactionId', async (req, res) => {
   try {
     const { transactionId } = req.params;
     console.log(`🔍 Force re-querying transaction: ${transactionId}`);
-    
+
     // Get transaction from Firebase
     const transactions = await getAllTransactions(500);
     const tx = transactions.find(t => t.id === transactionId || t.checkoutRequestId === transactionId);
-    
+
     if (!tx) {
       return res.status(404).json({ success: false, message: 'Transaction not found' });
     }
-    
+
     if (!tx.checkoutRequestId) {
       return res.status(400).json({ success: false, message: 'No checkoutRequestId for this transaction' });
     }
-    
+
     console.log(`📋 Found transaction, querying M-Pesa for: ${tx.checkoutRequestId}`);
     const queryResult = await querySTKPushStatus(tx.checkoutRequestId);
     console.log('📱 M-Pesa Query Result:', JSON.stringify(queryResult, null, 2));
-    
+
     let updated = false;
     let newData = {};
-    
+
     if (queryResult.ResultCode === '0' || queryResult.ResultCode === 0) {
       newData.status = 'completed';
       newData.resultDesc = queryResult.ResultDesc || 'Success';
@@ -620,12 +623,12 @@ router.post('/admin/requery/:transactionId', async (req, res) => {
       newData.resultCode = queryResult.ResultCode;
       updated = true;
     }
-    
+
     if (updated && Object.keys(newData).length > 0) {
       await updatePaymentTransaction(tx.checkoutRequestId, newData);
       console.log('✅ Transaction updated:', newData);
     }
-    
+
     res.json({
       success: true,
       transaction: tx,
@@ -1061,7 +1064,7 @@ router.post('/verify-mpesa-code', async (req, res) => {
 router.post('/admin/transactions/bulk-delete', async (req, res) => {
   try {
     const { ids } = req.body;
-    
+
     if (!ids || !Array.isArray(ids) || ids.length === 0) {
       return res.status(400).json({
         success: false,
@@ -1070,7 +1073,7 @@ router.post('/admin/transactions/bulk-delete', async (req, res) => {
     }
 
     const result = await bulkDeleteTransactions(ids);
-    
+
     if (result) {
       res.json({
         success: true,

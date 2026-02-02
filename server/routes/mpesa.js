@@ -28,9 +28,9 @@ const PAYMENT_AMOUNTS = {
 // Initiate STK Push Payment
 router.post('/stkpush', async (req, res) => {
   try {
-    const { phoneNumber, category, amount: requestedAmount, referralCode } = req.body;
+    const { phoneNumber, category, amount: requestedAmount } = req.body;
 
-    console.log('📱 STK Push Request:', { phoneNumber, category, referralCode: referralCode || 'NONE' });
+    console.log('📱 STK Push Request:', { phoneNumber, category });
 
     // Validate input
     if (!phoneNumber) {
@@ -51,8 +51,9 @@ router.post('/stkpush', async (req, res) => {
     const amount = requestedAmount || PAYMENT_AMOUNTS[category];
     const sessionId = generateSessionId();
 
-    // Create payment record with referral code
-    PaymentStore.createPayment(sessionId, category, phoneNumber, amount, referralCode);
+    // Create payment record WITHOUT referral validation
+    // Referral processing happens AFTER payment is confirmed in callback
+    PaymentStore.createPayment(sessionId, category, phoneNumber, amount, null);
 
     // Initiate STK Push
     const stkResult = await initiateSTKPush(
@@ -70,19 +71,8 @@ router.post('/stkpush', async (req, res) => {
       stkResult.responseCode
     );
 
-    // Store in-memory ONLY - don't save to Firebase yet
-    // Wait for callback to arrive with actual result (completed or failed)
-    // This eliminates the "pending" limbo state
-    PaymentStore.createPayment(sessionId, category, phoneNumber, amount, referralCode);
-    PaymentStore.updatePaymentCheckout(
-      sessionId,
-      stkResult.checkoutRequestId,
-      stkResult.merchantRequestId,
-      stkResult.responseCode
-    );
     console.log('💾 Payment stored in-memory (in PaymentStore), waiting for M-Pesa callback...');
-    console.log('🎁 Referral Code:', referralCode ? referralCode.toUpperCase() : 'NONE');
-    console.log('📋 Transaction will be saved to Firebase ONLY when callback arrives with result');
+    console.log('📋 Transaction will be saved to Firebase ONLY when callback arrives with M-Pesa receipt');
 
     res.json({
       success: true,

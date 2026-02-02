@@ -162,6 +162,60 @@ const updateTransactionByCheckoutId = async (checkoutRequestId, updateData) => {
 };
 
 /**
+ * Update transaction by ID
+ */
+const updateTransaction = async (transactionId, updateData) => {
+  try {
+    const { admin, db } = await initializeFirebase();
+    if (!db) return false;
+    
+    const docRef = db.collection('transactions').doc(transactionId);
+    await docRef.update({
+      ...updateData,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+    
+    return transactionId;
+  } catch (error) {
+    console.error('Error updating transaction by ID:', error.message);
+    return false;
+  }
+};
+
+/**
+ * Get transaction by checkoutRequestId
+ */
+const getTransactionByCheckoutId = async (checkoutRequestId) => {
+  try {
+    const { db } = await initializeFirebase();
+    if (!db) {
+      return getFromMemoryByCheckoutId(checkoutRequestId);
+    }
+    
+    const snapshot = await db.collection('transactions')
+      .where('checkoutRequestId', '==', checkoutRequestId)
+      .limit(1)
+      .get();
+
+    if (!snapshot.empty) {
+      const data = snapshot.docs[0].data();
+      return {
+        id: snapshot.docs[0].id,
+        ...data,
+        createdAt: data.createdAt?.toDate?.() || data.createdAt,
+        updatedAt: data.updatedAt?.toDate?.() || data.updatedAt
+      };
+    }
+    
+    // Fallback to memory
+    return getFromMemoryByCheckoutId(checkoutRequestId);
+  } catch (error) {
+    console.error('Error getting transaction by checkoutId:', error.message);
+    return getFromMemoryByCheckoutId(checkoutRequestId);
+  }
+};
+
+/**
  * Get transaction by sessionId
  */
 const getTransactionBySessionId = async (sessionId) => {
@@ -419,11 +473,13 @@ const creditReferrer = async (referralCode, paymentAmount, paymentId) => {
     const referrerId = userSnapshot.docs[0].id;
     const commissionAmount = Math.round(paymentAmount * COMMISSION_RATE);
 
-    // Update referrer's earnings
+    // Update referrer's earnings (matching firebase-auth.js schema)
+    // Fields: referralCount, referralPaidCount, referralEarnings, referralPending
     await userSnapshot.docs[0].ref.update({
+      referralCount: admin.firestore.FieldValue.increment(1),
       referralPaidCount: admin.firestore.FieldValue.increment(1),
       referralEarnings: admin.firestore.FieldValue.increment(commissionAmount),
-      referralWithdrawable: admin.firestore.FieldValue.increment(commissionAmount),
+      referralPending: admin.firestore.FieldValue.increment(commissionAmount),
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
@@ -725,6 +781,16 @@ function getFromMemory(sessionId) {
   return global.payments[sessionId] || null;
 }
 
+function getFromMemoryByCheckoutId(checkoutRequestId) {
+  global.payments = global.payments || {};
+  for (const sessionId in global.payments) {
+    if (global.payments[sessionId].checkoutRequestId === checkoutRequestId) {
+      return global.payments[sessionId];
+    }
+  }
+  return null;
+}
+
 function getAllFromMemory() {
   global.payments = global.payments || {};
   return Object.values(global.payments).sort((a, b) => 
@@ -738,7 +804,11 @@ module.exports = {
   initializeFirebase,
   // Transactions
   saveTransaction,
+  createPaymentTransaction: saveTransaction, // Alias
+  updateTransaction,
+  updatePaymentTransaction: updateTransaction, // Alias
   updateTransactionByCheckoutId,
+  getTransactionByCheckoutId,
   getTransactionBySessionId,
   getTransactionByMpesaCode,
   markTransactionAsUsed,

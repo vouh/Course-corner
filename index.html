@@ -1120,7 +1120,7 @@
     <!-- Floating Referral Bubble -->
     <a href="#referral-program" class="referral-bubble" id="referralBubble">
         <i class="fas fa-gift"></i>
-        <span>Earn 10%</span>
+        <span>Earn 12%</span>
     </a>
 
 
@@ -1208,7 +1208,7 @@
                 <div class="footer-col">
                     <h4>Contact Us</h4>
                     <ul>
-                        <li><i class="fas fa-envelope"></i> info@coursecorner.com</li>
+                        <li><i class="fas fa-envelope"></i> info.coursecorner@gmail.com</li>
                         <li><i class="fas fa-phone"></i> 0718 744780</li>
                         <li><i class="fas fa-phone"></i> 0741 739262</li>
                     </ul>
@@ -2020,7 +2020,12 @@
                 });
 
                 // Initiate payment
-                await window.paymentHandler.initiatePayment(phoneNumber, category);
+                const referralCode = localStorage.getItem('pendingReferralCode') || null;
+                if (referralCode) {
+                    console.log('📌 Applying referral code from storage:', referralCode);
+                }
+                
+                await window.paymentHandler.initiatePayment(phoneNumber, category, amount, referralCode);
 
                 // Show payment status and start polling immediately
                 const paymentStatusDiv = document.getElementById('paymentStatus');

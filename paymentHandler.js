@@ -66,14 +66,15 @@ class PaymentHandler {
         }
     }
 
-    // Poll payment status with real-time feedback
-    async pollPaymentStatus(maxAttempts = 40, interval = 3000, onStatusUpdate = null) {
+    // Poll payment status with real-time feedback and M-Pesa query fallback
+    async pollPaymentStatus(maxAttempts = 80, interval = 3000, onStatusUpdate = null) {
         if (!this.sessionId) {
             throw new Error('No active payment session');
         }
 
-        console.log('Starting payment status polling...');
+        console.log('Starting payment status polling (4 minutes max)...');
         let attempts = 0;
+        let queriedMpesa = false;
 
         return new Promise((resolve, reject) => {
             const pollInterval = setInterval(async () => {
@@ -94,7 +95,7 @@ class PaymentHandler {
                     if (data.data?.status === 'completed') {
                         clearInterval(pollInterval);
                         this.isPaymentCompleted = true;
-                        console.log('Payment completed!');
+                        console.log('✅ Payment completed!');
                         resolve({
                             success: true,
                             status: 'completed',
@@ -102,21 +103,53 @@ class PaymentHandler {
                         });
                     } else if (data.data?.status === 'failed') {
                         clearInterval(pollInterval);
-                        console.log('Payment failed!');
+                        console.log('❌ Payment failed!');
                         
                         // Get detailed error message from M-Pesa
                         const errorMessage = this.getMpesaErrorMessage(data.data?.resultDesc || data.data?.errorMessage);
                         reject(new Error(errorMessage));
                     } else if (data.data?.status === 'cancelled') {
                         clearInterval(pollInterval);
-                        console.log('Payment cancelled!');
+                        console.log('❌ Payment cancelled!');
                         reject(new Error('You cancelled the M-Pesa payment request'));
+                    }
+
+                    // FALLBACK: After 2 minutes (40 attempts), query M-Pesa directly if still pending
+                    if (attempts === 40 && data.data?.status === 'pending' && !queriedMpesa) {
+                        queriedMpesa = true;
+                        console.log('⏰ 2 minutes elapsed, querying M-Pesa directly for status...');
+                        
+                        try {
+                            const queryResponse = await fetch(`${this.serverUrl}/mpesa/query`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ sessionId: this.sessionId })
+                            });
+                            
+                            const queryData = await queryResponse.json();
+                            console.log('📞 M-Pesa Query Result:', queryData);
+                            
+                            if (queryData.success && queryData.data?.status === 'completed') {
+                                clearInterval(pollInterval);
+                                this.isPaymentCompleted = true;
+                                console.log('✅ Payment verified via M-Pesa query!');
+                                resolve({
+                                    success: true,
+                                    status: 'completed',
+                                    data: queryData.data,
+                                    verified: true
+                                });
+                            }
+                        } catch (queryError) {
+                            console.error('Query fallback error:', queryError);
+                            // Continue polling if query fails
+                        }
                     }
 
                     if (attempts >= maxAttempts) {
                         clearInterval(pollInterval);
-                        console.log('Payment polling timed out');
-                        reject(new Error('Payment verification timed out. If money was deducted, please contact support.'));
+                        console.log('⏰ Payment polling timed out after 4 minutes');
+                        reject(new Error('Payment verification timed out. If money was deducted, click "Verify Payment" below.'));
                     }
 
                 } catch (error) {
@@ -128,6 +161,74 @@ class PaymentHandler {
                 }
             }, interval);
         });
+    }
+
+    // Manually verify payment status (for when polling times out)
+    async verifyPaymentManually() {
+        if (!this.sessionId) {
+            throw new Error('No payment session found');
+        }
+
+        console.log('🔍 Manually verifying payment status...');
+
+        try {
+            // First check current status
+            const statusResponse = await fetch(`${this.serverUrl}/mpesa/status?sessionId=${this.sessionId}`);
+            const statusData = await statusResponse.json();
+
+            if (statusData.data?.status === 'completed') {
+                this.isPaymentCompleted = true;
+                return {
+                    success: true,
+                    status: 'completed',
+                    message: 'Payment already completed!',
+                    data: statusData.data
+                };
+            }
+
+            // If still pending, query M-Pesa directly
+            console.log('⏳ Status still pending, querying M-Pesa...');
+            
+            const queryResponse = await fetch(`${this.serverUrl}/mpesa/query`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId: this.sessionId })
+            });
+
+            const queryData = await queryResponse.json();
+
+            if (!queryData.success) {
+                throw new Error(queryData.message || 'Failed to verify payment');
+            }
+
+            if (queryData.data?.status === 'completed') {
+                this.isPaymentCompleted = true;
+                console.log('✅ Payment verified successfully!');
+                return {
+                    success: true,
+                    status: 'completed',
+                    message: 'Payment verified successfully!',
+                    data: queryData.data,
+                    verified: true
+                };
+            } else if (queryData.data?.status === 'failed') {
+                return {
+                    success: false,
+                    status: 'failed',
+                    message: queryData.data?.resultDesc || 'Payment failed'
+                };
+            } else {
+                return {
+                    success: false,
+                    status: 'pending',
+                    message: 'Payment is still being processed by M-Pesa. Please wait a moment and try again.'
+                };
+            }
+
+        } catch (error) {
+            console.error('Manual verification error:', error);
+            throw error;
+        }
     }
 
     // Get user-friendly M-Pesa error message

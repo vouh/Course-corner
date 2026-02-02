@@ -23,7 +23,14 @@ module.exports = async (req, res) => {
     }
 
     // Get payment from Firebase (with in-memory fallback)
-    const payment = await getTransactionBySessionId(sessionId);
+    let payment = await getTransactionBySessionId(sessionId);
+
+    // FIX: If not found by sessionId, try finding by checkoutRequestId (handles server restarts)
+    if (!payment && req.query.checkoutRequestId) {
+      console.log('🔄 Session not found, trying lookup by checkoutRequestId:', req.query.checkoutRequestId);
+      const { getTransactionByCheckoutId } = require('../utils/firebase');
+      payment = await getTransactionByCheckoutId(req.query.checkoutRequestId);
+    }
 
     if (!payment) {
       return res.status(404).json({ success: false, message: 'Payment session not found' });
@@ -32,11 +39,12 @@ module.exports = async (req, res) => {
     res.json({
       success: true,
       data: {
-        sessionId: payment.sessionId,
+        sessionId: payment.sessionId, // This might be "recovered-..." which is fine, we just need the status
         category: payment.category,
         amount: payment.amount,
         status: payment.status,
-        mpesaReceiptNumber: payment.mpesaReceiptNumber || null,
+        resultDesc: payment.resultDesc || null,
+        mpesaReceiptNumber: payment.mpesaReceiptNumber || payment.transactionCode || null,
         createdAt: payment.createdAt,
         updatedAt: payment.updatedAt || payment.createdAt
       }

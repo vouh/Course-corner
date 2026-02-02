@@ -24,13 +24,13 @@ class FirebaseAuthHandler {
             await this.waitForFirebase();
 
             // Import Firebase Auth
-            const { getAuth, onAuthStateChanged, signInWithEmailAndPassword, 
-                    createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider,
-                    signOut, sendPasswordResetEmail, updateProfile } = 
+            const { getAuth, onAuthStateChanged, signInWithEmailAndPassword,
+                createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider,
+                signOut, sendPasswordResetEmail, updateProfile } =
                 await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js");
 
             // Import Firestore
-            const { getFirestore, doc, setDoc, getDoc, updateDoc, serverTimestamp } = 
+            const { getFirestore, doc, setDoc, getDoc, updateDoc, serverTimestamp } =
                 await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
 
             this.auth = getAuth(window.firebaseApp);
@@ -82,7 +82,7 @@ class FirebaseAuthHandler {
         return new Promise((resolve, reject) => {
             let attempts = 0;
             const maxAttempts = 50;
-            
+
             const check = () => {
                 if (window.firebaseApp) {
                     resolve();
@@ -115,7 +115,7 @@ class FirebaseAuthHandler {
         this.showLoadingOverlay('Creating your account...', 'Please wait');
         try {
             const { createUserWithEmailAndPassword, updateProfile } = this.firebaseFunctions;
-            
+
             const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
             const user = userCredential.user;
 
@@ -145,9 +145,9 @@ class FirebaseAuthHandler {
         this.showLoadingOverlay('Signing you in...', 'Please wait');
         try {
             const { signInWithEmailAndPassword } = this.firebaseFunctions;
-            
+
             const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
-            
+
             this.showSuccessOverlay('Welcome Back!', 'You are now signed in', 1500);
             return { success: true, user: userCredential.user };
 
@@ -165,11 +165,11 @@ class FirebaseAuthHandler {
     async signInWithGoogle() {
         try {
             const { signInWithPopup, GoogleAuthProvider } = this.firebaseFunctions;
-            
+
             const provider = new GoogleAuthProvider();
             provider.addScope('profile');
             provider.addScope('email');
-            
+
             const result = await signInWithPopup(this.auth, provider);
             const user = result.user;
 
@@ -237,9 +237,9 @@ class FirebaseAuthHandler {
     async createUserProfile(user, additionalData = {}) {
         try {
             const { doc, setDoc, serverTimestamp } = this.firebaseFunctions;
-            
+
             const userRef = doc(this.db, 'users', user.uid);
-            
+
             const profileData = {
                 uid: user.uid,
                 email: user.email,
@@ -275,7 +275,7 @@ class FirebaseAuthHandler {
 
             await setDoc(userRef, profileData);
             this.userProfile = profileData;
-            
+
             console.log('User profile created');
             return profileData;
 
@@ -609,9 +609,9 @@ class FirebaseAuthHandler {
 
         // KCSE Grades
         const grades = this.userProfile.kcseGrades || {};
-        const gradeFields = ['mathematics', 'english', 'kiswahili', 'biology', 'chemistry', 
-                            'physics', 'history', 'geography', 'cre', 'agriculture', 
-                            'business', 'computer'];
+        const gradeFields = ['mathematics', 'english', 'kiswahili', 'biology', 'chemistry',
+            'physics', 'history', 'geography', 'cre', 'agriculture',
+            'business', 'computer'];
 
         gradeFields.forEach(field => {
             const select = document.getElementById(`profile_${field}`);
@@ -627,10 +627,10 @@ class FirebaseAuthHandler {
     async saveProfile() {
         const phoneNumber = document.getElementById('profilePhone')?.value || '';
         const kcseYear = document.getElementById('profileKcseYear')?.value || '';
-        
-        const gradeFields = ['mathematics', 'english', 'kiswahili', 'biology', 'chemistry', 
-                            'physics', 'history', 'geography', 'cre', 'agriculture', 
-                            'business', 'computer'];
+
+        const gradeFields = ['mathematics', 'english', 'kiswahili', 'biology', 'chemistry',
+            'physics', 'history', 'geography', 'cre', 'agriculture',
+            'business', 'computer'];
 
         const kcseGrades = {};
         gradeFields.forEach(field => {
@@ -923,6 +923,7 @@ class FirebaseAuthHandler {
                 .cc-success-content {
                     text-align: center;
                     animation: ccSuccessPop 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+                    padding: 20px;
                 }
                 .cc-success-icon {
                     width: 80px;
@@ -952,6 +953,11 @@ class FirebaseAuthHandler {
                     color: #6b7280;
                     max-width: 300px;
                     margin: 0 auto;
+                    line-height: 1.5;
+                }
+                .cc-success-message strong, .cc-success-message b {
+                    color: #059669;
+                    font-weight: 700;
                 }
             `;
             document.head.appendChild(style);

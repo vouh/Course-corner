@@ -214,7 +214,7 @@ module.exports = async (req, res) => {
       if (sessionId) {
         global.payments[sessionId].status = 'completed';
         global.payments[sessionId].mpesaReceiptNumber = mpesaReceiptNumber;
-        global.payments[sessionId].metadata = metadataObj;
+        // REMOVED: metadata update - causes undefined values in Firestore
         global.payments[sessionId].transactionId = transactionId;
       }
 

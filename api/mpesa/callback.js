@@ -73,49 +73,31 @@ module.exports = async (req, res) => {
       console.log('📦 RAW CallbackMetadata.Item[] array:');
       console.log(JSON.stringify(callbackMetadata, null, 2));
 
-      // Extract all metadata fields for inspection (SAFE for Firestore)
-      const metadataObj = {};
-      callbackMetadata.forEach(item => {
-        if (item.Name) {
-          metadataObj[item.Name] = item.Value !== undefined ? item.Value : null;
-          console.log(`   ${item.Name}: ${item.Value}`);
-        }
-      });
-
-      // Extract receipt with CASE-INSENSITIVE matching
+      // Extract receipt number, amount, and phone directly from callback
       let mpesaReceiptNumber = null;
+      let extractedAmount = null;
+      let extractedPhone = null;
 
-      for (const item of callbackMetadata) {
-        const itemName = (item.Name || '').toLowerCase();
-        // Match 'MpesaReceiptNumber' case-insensitively
+      console.log('📱 Extracting data from M-Pesa callback...');
+      callbackMetadata.forEach(item => {
+        if (!item.Name) return;
+
+        const itemName = item.Name.toLowerCase();
+        console.log(`   ${item.Name}: ${item.Value}`);
+
+        // Extract receipt
         if (itemName === 'mpesareceiptnumber') {
           mpesaReceiptNumber = String(item.Value || '').trim();
-          console.log(`🎯 RECEIPT FOUND! Name="${item.Name}" → Value="${mpesaReceiptNumber}"`);
-          break;
+          console.log(`🎯 RECEIPT FOUND: "${mpesaReceiptNumber}"`);
         }
-      }
-
-      // DEBUG: Log extraction result
-      if (mpesaReceiptNumber) {
-        console.log(`✅ Receipt extracted successfully: "${mpesaReceiptNumber}"`);
-      } else {
-        console.error('❌ CRITICAL: Receipt NOT FOUND in callback metadata!');
-        console.error('Available fields:', Object.keys(metadataObj).join(', '));
-        // Fallback: try to find it by checking all fields
-        for (const key in metadataObj) {
-          if (key.toLowerCase().includes('receipt')) {
-            mpesaReceiptNumber = String(metadataObj[key]).trim();
-            console.warn('⚠️ Found receipt in alternate field:', key, '→', mpesaReceiptNumber);
-            break;
-          }
-        }
-      }
-
-      // Build metadata object for reference (optional)
-      const metadata = {};
-      callbackMetadata.forEach(item => {
-        metadata[item.Name] = item.Value;
+        // Extract amount and phone for recovery
+        if (item.Name === 'Amount') extractedAmount = item.Value;
+        if (item.Name === 'PhoneNumber') extractedPhone = item.Value;
       });
+
+
+
+
 
       // Get payment data from in-memory store
       global.payments = global.payments || {};

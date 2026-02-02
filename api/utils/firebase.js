@@ -9,17 +9,17 @@ let db = null;
 
 const initializeFirebase = async () => {
   if (admin && db) return { admin, db };
-  
+
   try {
     admin = require('firebase-admin');
-    
+
     if (admin.apps.length === 0) {
       // Handle private key - it may have literal \n or escaped \\n
       let privateKey = process.env.FIREBASE_PRIVATE_KEY;
       if (privateKey) {
         privateKey = privateKey.replace(/\\n/g, '\n');
       }
-      
+
       const serviceAccount = {
         type: 'service_account',
         project_id: process.env.FIREBASE_PROJECT_ID || 'course-corner',
@@ -45,7 +45,7 @@ const initializeFirebase = async () => {
         console.log('🔥 Firebase Admin initialized (limited mode)');
       }
     }
-    
+
     db = admin.firestore();
     return { admin, db };
   } catch (error) {
@@ -61,7 +61,7 @@ const initializeFirebase = async () => {
  */
 const saveTransaction = async (paymentData) => {
   console.log('🔥 saveTransaction called with status:', paymentData.status);
-  
+
   try {
     const { admin, db } = await initializeFirebase();
     if (!db) {
@@ -71,9 +71,9 @@ const saveTransaction = async (paymentData) => {
       console.warn('⚠️ Transaction saved to MEMORY ONLY (not Firebase):', memId);
       return memId;
     }
-    
+
     console.log('✅ Firebase DB initialized, creating transaction...');
-    
+
     const transactionRef = db.collection('transactions').doc();
     const transaction = {
       id: transactionRef.id,
@@ -88,7 +88,7 @@ const saveTransaction = async (paymentData) => {
       transactionCode: paymentData.transactionCode || null,
       resultDesc: paymentData.resultDesc || null,
       resultCode: paymentData.resultCode || null,
-      metadata: paymentData.metadata || {},
+      // REMOVED: metadata field causes Firestore write failures
       // Referral tracking
       referralCode: paymentData.referralCode || null,
       referrerCredited: false,
@@ -110,16 +110,16 @@ const saveTransaction = async (paymentData) => {
     console.log('   Amount:', transaction.amount);
     console.log('   Phone:', transaction.phoneNumber);
     console.log('   Receipt:', transaction.mpesaReceiptNumber || 'N/A');
-    
+
     // Also save to memory for immediate access
     saveToMemory({ ...transaction, id: transactionRef.id });
-    
+
     return transactionRef.id;
   } catch (error) {
     console.error('❌ FIREBASE SAVE ERROR:', error.message);
     console.error('   Error stack:', error.stack);
     console.error('   Transaction status:', paymentData.status);
-    
+
     const memId = saveToMemory(paymentData);
     console.warn('⚠️ Transaction saved to MEMORY as fallback:', memId);
     return memId;
@@ -135,7 +135,7 @@ const updateTransactionByCheckoutId = async (checkoutRequestId, updateData) => {
     if (!db) {
       return updateInMemory(checkoutRequestId, updateData);
     }
-    
+
     const snapshot = await db.collection('transactions')
       .where('checkoutRequestId', '==', checkoutRequestId)
       .limit(1)
@@ -147,10 +147,10 @@ const updateTransactionByCheckoutId = async (checkoutRequestId, updateData) => {
         ...updateData,
         updatedAt: admin.firestore.FieldValue.serverTimestamp()
       });
-      
+
       // Update in-memory too
       updateInMemory(checkoutRequestId, updateData);
-      
+
       console.log('📝 Transaction updated in Firebase');
       return snapshot.docs[0].id;
     }
@@ -168,13 +168,13 @@ const updateTransaction = async (transactionId, updateData) => {
   try {
     const { admin, db } = await initializeFirebase();
     if (!db) return false;
-    
+
     const docRef = db.collection('transactions').doc(transactionId);
     await docRef.update({
       ...updateData,
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
-    
+
     return transactionId;
   } catch (error) {
     console.error('Error updating transaction by ID:', error.message);
@@ -191,7 +191,7 @@ const getTransactionByCheckoutId = async (checkoutRequestId) => {
     if (!db) {
       return getFromMemoryByCheckoutId(checkoutRequestId);
     }
-    
+
     const snapshot = await db.collection('transactions')
       .where('checkoutRequestId', '==', checkoutRequestId)
       .limit(1)
@@ -206,7 +206,7 @@ const getTransactionByCheckoutId = async (checkoutRequestId) => {
         updatedAt: data.updatedAt?.toDate?.() || data.updatedAt
       };
     }
-    
+
     // Fallback to memory
     return getFromMemoryByCheckoutId(checkoutRequestId);
   } catch (error) {
@@ -224,7 +224,7 @@ const getTransactionBySessionId = async (sessionId) => {
     if (!db) {
       return getFromMemory(sessionId);
     }
-    
+
     const snapshot = await db.collection('transactions')
       .where('sessionId', '==', sessionId)
       .limit(1)
@@ -239,7 +239,7 @@ const getTransactionBySessionId = async (sessionId) => {
         updatedAt: data.updatedAt?.toDate?.() || data.updatedAt
       };
     }
-    
+
     // Fallback to memory
     return getFromMemory(sessionId);
   } catch (error) {
@@ -255,17 +255,17 @@ const getTransactionByMpesaCode = async (mpesaCode, phoneNumber = null) => {
   try {
     const { db } = await initializeFirebase();
     if (!db) return null;
-    
+
     let query = db.collection('transactions')
       .where('mpesaReceiptNumber', '==', mpesaCode.toUpperCase())
       .where('status', '==', 'completed')
       .limit(1);
-    
+
     const snapshot = await query.get();
-    
+
     if (!snapshot.empty) {
       const data = snapshot.docs[0].data();
-      
+
       // Optional: verify phone number matches
       if (phoneNumber) {
         const formattedPhone = formatPhoneNumber(phoneNumber);
@@ -273,7 +273,7 @@ const getTransactionByMpesaCode = async (mpesaCode, phoneNumber = null) => {
           return { error: 'Phone number does not match payment record' };
         }
       }
-      
+
       return {
         id: snapshot.docs[0].id,
         ...data,
@@ -281,7 +281,7 @@ const getTransactionByMpesaCode = async (mpesaCode, phoneNumber = null) => {
         updatedAt: data.updatedAt?.toDate?.() || data.updatedAt
       };
     }
-    
+
     return null;
   } catch (error) {
     console.error('Error finding transaction by M-Pesa code:', error.message);
@@ -296,7 +296,7 @@ const markTransactionAsUsed = async (transactionId) => {
   try {
     const { admin, db } = await initializeFirebase();
     if (!db) return false;
-    
+
     const docRef = db.collection('transactions').doc(transactionId);
     await docRef.update({
       used: true,
@@ -304,7 +304,7 @@ const markTransactionAsUsed = async (transactionId) => {
       downloadCount: admin.firestore.FieldValue.increment(1),
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
-    
+
     return true;
   } catch (error) {
     console.error('Error marking transaction as used:', error.message);
@@ -319,7 +319,7 @@ const saveStudentResults = async (sessionId, studentData) => {
   try {
     const { admin, db } = await initializeFirebase();
     if (!db) return false;
-    
+
     const snapshot = await db.collection('transactions')
       .where('sessionId', '==', sessionId)
       .limit(1)
@@ -349,25 +349,25 @@ const getAllTransactions = async (limit = 100, status = null) => {
       console.warn('⚠️ Firebase DB not available, using memory fallback');
       return getAllFromMemory();
     }
-    
+
     console.log(`📊 Querying Firebase transactions: limit=${limit}, status=${status || 'all'}`);
-    
+
     // Build query - Note: If status filter is used with orderBy, a composite index is required
     let query = db.collection('transactions');
-    
+
     // Add status filter first if provided (Firestore requires filter before orderBy)
     if (status) {
       query = query.where('status', '==', status);
     }
-    
+
     // Add ordering and limit
     query = query.orderBy('createdAt', 'desc').limit(limit);
 
     const snapshot = await query.get();
     const transactions = [];
-    
+
     console.log(`✅ Firebase returned ${snapshot.size} documents`);
-    
+
     snapshot.forEach(doc => {
       const data = doc.data();
       transactions.push({
@@ -381,7 +381,7 @@ const getAllTransactions = async (limit = 100, status = null) => {
     return transactions;
   } catch (error) {
     console.error('❌ Error getting transactions:', error.message);
-    
+
     // If it's an index error, try without ordering
     if (error.message.includes('index')) {
       console.log('🔄 Retrying without ordering (missing index)...');
@@ -413,7 +413,7 @@ const getAllTransactions = async (limit = 100, status = null) => {
         console.error('❌ Retry also failed:', retryError.message);
       }
     }
-    
+
     return getAllFromMemory();
   }
 };
@@ -427,7 +427,7 @@ const validateReferralCode = async (code) => {
   try {
     const { db } = await initializeFirebase();
     if (!db) return null;
-    
+
     const snapshot = await db.collection('users')
       .where('referralCode', '==', code.toUpperCase())
       .limit(1)
@@ -441,7 +441,7 @@ const validateReferralCode = async (code) => {
         referrerName: userData.displayName || 'Course Corner User'
       };
     }
-    
+
     return { valid: false };
   } catch (error) {
     console.error('Error validating referral code:', error.message);
@@ -454,11 +454,11 @@ const validateReferralCode = async (code) => {
  */
 const creditReferrer = async (referralCode, paymentAmount, paymentId) => {
   const COMMISSION_RATE = 0.12; // 12%
-  
+
   try {
     const { admin, db } = await initializeFirebase();
     if (!db) return false;
-    
+
     // Find referrer by code
     const userSnapshot = await db.collection('users')
       .where('referralCode', '==', referralCode.toUpperCase())
@@ -517,13 +517,13 @@ const getReferralStats = async (userId) => {
   try {
     const { db } = await initializeFirebase();
     if (!db) return null;
-    
+
     // Get user data
     const userDoc = await db.collection('users').doc(userId).get();
     if (!userDoc.exists) return null;
-    
+
     const userData = userDoc.data();
-    
+
     // Get referral transaction history
     const txSnapshot = await db.collection('referralTransactions')
       .where('referrerId', '==', userId)
@@ -561,40 +561,40 @@ const getReferralStats = async (userId) => {
  */
 const createWithdrawalRequest = async (userId, amount, mpesaPhone) => {
   const MINIMUM_WITHDRAWAL = 100; // 100 KES minimum
-  
+
   try {
     const { admin, db } = await initializeFirebase();
     if (!db) return { success: false, error: 'Database not available' };
-    
+
     // Get user data
     const userDoc = await db.collection('users').doc(userId).get();
     if (!userDoc.exists) {
       return { success: false, error: 'User not found' };
     }
-    
+
     const userData = userDoc.data();
     const withdrawable = userData.referralWithdrawable || 0;
-    
+
     // Validate amount
     if (amount < MINIMUM_WITHDRAWAL) {
       return { success: false, error: `Minimum withdrawal is ${MINIMUM_WITHDRAWAL} KES` };
     }
-    
+
     if (amount > withdrawable) {
       return { success: false, error: `Insufficient balance. Available: ${withdrawable} KES` };
     }
-    
+
     // Check for pending withdrawals (cooldown)
     const pendingSnapshot = await db.collection('withdrawals')
       .where('userId', '==', userId)
       .where('status', '==', 'pending')
       .limit(1)
       .get();
-    
+
     if (!pendingSnapshot.empty) {
       return { success: false, error: 'You have a pending withdrawal request' };
     }
-    
+
     // Create withdrawal request
     const withdrawalRef = await db.collection('withdrawals').add({
       userId: userId,
@@ -608,13 +608,13 @@ const createWithdrawalRequest = async (userId, amount, mpesaPhone) => {
       processedBy: null,
       mpesaReference: null
     });
-    
+
     // Deduct from withdrawable (move to pending)
     await userDoc.ref.update({
       referralWithdrawable: admin.firestore.FieldValue.increment(-amount),
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
-    
+
     console.log(`📤 Withdrawal request created: ${withdrawalRef.id}`);
     return { success: true, withdrawalId: withdrawalRef.id };
   } catch (error) {
@@ -630,7 +630,7 @@ const getPendingWithdrawals = async () => {
   try {
     const { db } = await initializeFirebase();
     if (!db) return [];
-    
+
     const snapshot = await db.collection('withdrawals')
       .where('status', '==', 'pending')
       .orderBy('requestedAt', 'asc')
@@ -660,20 +660,20 @@ const processWithdrawal = async (withdrawalId, adminId, mpesaReference) => {
   try {
     const { admin, db } = await initializeFirebase();
     if (!db) return { success: false, error: 'Database not available' };
-    
+
     const withdrawalRef = db.collection('withdrawals').doc(withdrawalId);
     const withdrawalDoc = await withdrawalRef.get();
-    
+
     if (!withdrawalDoc.exists) {
       return { success: false, error: 'Withdrawal not found' };
     }
-    
+
     const withdrawalData = withdrawalDoc.data();
-    
+
     if (withdrawalData.status !== 'pending') {
       return { success: false, error: 'Withdrawal already processed' };
     }
-    
+
     // Update withdrawal status
     await withdrawalRef.update({
       status: 'completed',
@@ -681,13 +681,13 @@ const processWithdrawal = async (withdrawalId, adminId, mpesaReference) => {
       processedBy: adminId,
       mpesaReference: mpesaReference || null
     });
-    
+
     // Update user's total withdrawn
     await db.collection('users').doc(withdrawalData.userId).update({
       referralTotalWithdrawn: admin.firestore.FieldValue.increment(withdrawalData.amount),
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
-    
+
     console.log(`✅ Withdrawal ${withdrawalId} processed`);
     return { success: true };
   } catch (error) {
@@ -703,7 +703,7 @@ const getAllReferrers = async (limit = 100) => {
   try {
     const { db } = await initializeFirebase();
     if (!db) return [];
-    
+
     const snapshot = await db.collection('users')
       .where('referralCode', '!=', '')
       .orderBy('referralCode')
@@ -793,7 +793,7 @@ function getFromMemoryByCheckoutId(checkoutRequestId) {
 
 function getAllFromMemory() {
   global.payments = global.payments || {};
-  return Object.values(global.payments).sort((a, b) => 
+  return Object.values(global.payments).sort((a, b) =>
     new Date(b.createdAt) - new Date(a.createdAt)
   );
 }

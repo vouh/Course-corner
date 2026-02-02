@@ -50,10 +50,10 @@ class PaymentHandler {
         }
     }
 
-    // Initiate payment
+    // Initiate payment - simplified (no referral validation before STK push)
     async initiatePayment(phoneNumber, category, amount, referralCode = null) {
         try {
-            console.log('Initiating payment:', { phoneNumber, category, amount, referralCode });
+            console.log('Initiating payment:', { phoneNumber, category, amount });
 
             // Validate inputs
             if (!phoneNumber) {
@@ -65,16 +65,8 @@ class PaymentHandler {
             }
             if (!amount) throw new Error('Invalid amount');
 
-            // Validate referral code if provided
-            if (referralCode) {
-                const validation = await this.validateReferralCode(referralCode);
-                if (!validation.valid) {
-                    throw new Error(validation.error);
-                }
-                referralCode = validation.code; // Use normalized code
-            }
-
             // Call backend to initiate STK push
+            // NOTE: Referral code is NOT sent during STK push - removed to simplify flow
             const response = await fetch(`${this.serverUrl}/mpesa/stkpush`, {
                 method: 'POST',
                 headers: {
@@ -83,8 +75,7 @@ class PaymentHandler {
                 body: JSON.stringify({
                     phoneNumber,
                     category,
-                    amount: parseInt(amount),
-                    referralCode
+                    amount: parseInt(amount)
                 })
             });
 

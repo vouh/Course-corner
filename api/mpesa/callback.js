@@ -35,6 +35,7 @@ module.exports = async (req, res) => {
     if (resultCode === 0) {
       // ============================================
       // COMPREHENSIVE RECEIPT EXTRACTION ALGORITHM
+      // (Based on proven Spectre Tech system)
       // ============================================
       console.log('✅ ResultCode = 0: Payment SUCCESSFUL');
       
@@ -45,14 +46,21 @@ module.exports = async (req, res) => {
       console.log('📦 RAW CallbackMetadata.Item[] array:');
       console.log(JSON.stringify(callbackMetadata, null, 2));
       
+      // Extract all metadata fields for inspection
+      const metadataObj = {};
+      callbackMetadata.forEach(item => {
+        metadataObj[item.Name] = item.Value;
+        console.log(`   ${item.Name}: ${item.Value}`);
+      });
+      
       // Extract receipt with CASE-INSENSITIVE matching
       let mpesaReceiptNumber = null;
       
       for (const item of callbackMetadata) {
-        const itemName = item.Name || '';
-        // Check both 'MpesaReceiptNumber' and 'mpesaReceiptNumber' (case-insensitive)
-        if (itemName.toLowerCase() === 'mpesareceiptnumber') {
-          mpesaReceiptNumber = String(item.Value); // Store as string only
+        const itemName = (item.Name || '').toLowerCase();
+        // Match 'MpesaReceiptNumber' case-insensitively
+        if (itemName === 'mpesareceiptnumber') {
+          mpesaReceiptNumber = String(item.Value || '').trim();
           console.log(`🎯 RECEIPT FOUND! Name="${item.Name}" → Value="${mpesaReceiptNumber}"`);
           break;
         }
@@ -63,7 +71,15 @@ module.exports = async (req, res) => {
         console.log(`✅ Receipt extracted successfully: "${mpesaReceiptNumber}"`);
       } else {
         console.error('❌ CRITICAL: Receipt NOT FOUND in callback metadata!');
-        console.error('Available field names:', callbackMetadata.map(i => i.Name).join(', '));
+        console.error('Available fields:', Object.keys(metadataObj).join(', '));
+        // Fallback: try to find it by checking all fields
+        for (const key in metadataObj) {
+          if (key.toLowerCase().includes('receipt')) {
+            mpesaReceiptNumber = String(metadataObj[key]).trim();
+            console.warn('⚠️ Found receipt in alternate field:', key, '→', mpesaReceiptNumber);
+            break;
+          }
+        }
       }
       
       // Build metadata object for reference (optional)
@@ -102,8 +118,7 @@ module.exports = async (req, res) => {
         mpesaReceiptNumber: mpesaReceiptNumber,
         transactionCode: mpesaReceiptNumber,
         resultDesc: resultDesc,
-        metadata: metadata,
-        referralCode: paymentData.referralCode || null,
+        metadata: metadataObj,
         completedAt: new Date().toISOString(),
         callbackReceivedAt: new Date().toISOString()
       };
@@ -111,19 +126,13 @@ module.exports = async (req, res) => {
       const transactionId = await saveTransaction(transactionData);
 
       console.log('✅ Payment successful, transaction CREATED:', transactionId);
-      console.log('   M-Pesa Code Stored:', mpesaReceiptNumber || 'NULL - Code not in callback');
-
-      // Credit referrer if applicable (12% commission)
-      if (paymentData.referralCode && transactionId) {
-        console.log('💰 Processing referral commission for code:', paymentData.referralCode);
-        await creditReferrer(paymentData.referralCode, paymentData.amount, transactionId);
-      }
+      console.log('   M-Pesa Receipt Number:', mpesaReceiptNumber || 'PENDING - waiting for M-Pesa to send in callback');
       
-      // Update in-memory too
+      // Update in-memory tracking
       if (sessionId) {
         global.payments[sessionId].status = 'completed';
         global.payments[sessionId].mpesaReceiptNumber = mpesaReceiptNumber;
-        global.payments[sessionId].metadata = metadata;
+        global.payments[sessionId].metadata = metadataObj;
         global.payments[sessionId].transactionId = transactionId;
       }
     } else {
@@ -157,7 +166,7 @@ module.exports = async (req, res) => {
           resultDesc: resultDesc,
           resultCode: resultCode,
           failureReason: resultDesc,
-          referralCode: paymentData.referralCode || null,
+          // referralCode removed - no longer tracking in payment flow
           failedAt: new Date().toISOString(),
           callbackReceivedAt: new Date().toISOString()
         };

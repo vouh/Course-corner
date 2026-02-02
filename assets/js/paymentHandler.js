@@ -75,7 +75,8 @@ class PaymentHandler {
                 body: JSON.stringify({
                     phoneNumber,
                     category,
-                    amount: parseInt(amount)
+                    amount: parseInt(amount),
+                    referralCode // Pass the referral code to the backend
                 })
             });
 

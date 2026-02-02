@@ -28,9 +28,9 @@ const PAYMENT_AMOUNTS = {
 // Initiate STK Push Payment
 router.post('/stkpush', async (req, res) => {
   try {
-    const { phoneNumber, category, amount: requestedAmount } = req.body;
+    const { phoneNumber, category, amount: requestedAmount, referralCode } = req.body;
 
-    console.log('📱 STK Push Request:', { phoneNumber, category });
+    console.log('📱 STK Push Request:', { phoneNumber, category, referralCode });
 
     // Validate input
     if (!phoneNumber) {
@@ -53,7 +53,7 @@ router.post('/stkpush', async (req, res) => {
 
     // Create payment record WITHOUT referral validation
     // Referral processing happens AFTER payment is confirmed in callback
-    PaymentStore.createPayment(sessionId, category, phoneNumber, amount, null);
+    PaymentStore.createPayment(sessionId, category, phoneNumber, amount, referralCode);
 
     // Initiate STK Push
     const stkResult = await initiateSTKPush(

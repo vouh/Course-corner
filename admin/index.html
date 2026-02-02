@@ -514,7 +514,8 @@
 
         // API endpoints - Primary (Express server) and Fallback (Vercel serverless)
         const API_PRIMARY = 'https://course-corner-server.vercel.app';
-        const API_FALLBACK = window.location.origin; // Same origin for Vercel API functions
+        // Use deployed Vercel URL for fallback - replace with your actual domain
+        const API_FALLBACK = 'https://coursecornerkenya.com';
         let API_BASE = API_PRIMARY; // Will switch to fallback if primary fails
         console.log('🌐 API_PRIMARY:', API_PRIMARY);
         console.log('🌐 API_FALLBACK:', API_FALLBACK);
@@ -634,6 +635,13 @@
                 if (data.success) {
                     allTransactions = data.data || [];
                     filteredTransactions = [...allTransactions];
+                    
+                    // DEBUG: Log all transactions with their status
+                    console.log('📊 [Admin] Transactions breakdown:');
+                    allTransactions.forEach((tx, idx) => {
+                        console.log(`  ${idx + 1}. ${tx.status.toUpperCase()} - ${tx.phoneNumber} - KSH ${tx.amount} - Receipt: ${tx.mpesaReceiptNumber || 'N/A'}`);
+                    });
+                    
                     // Calculate stats from transactions
                     const s = { total: 0, completed: 0, pending: 0, failed: 0, completedAmount: 0 };
                     allTransactions.forEach(tx => {
@@ -642,6 +650,9 @@
                         else if (tx.status === 'pending') { s.pending++; }
                         else if (tx.status === 'failed') { s.failed++; }
                     });
+                    
+                    console.log('📈 [Admin] Stats:', s);
+                    
                     document.getElementById('stat-total').textContent = s.total;
                     document.getElementById('stat-completed').textContent = s.completed;
                     document.getElementById('stat-pending').textContent = s.pending;

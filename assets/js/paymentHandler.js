@@ -85,9 +85,11 @@ class PaymentHandler {
                 throw new Error(data.message || 'Failed to initiate payment');
             }
 
-            // Store session ID
+            // Store session ID and CheckoutRequestID
             this.sessionId = data.data.sessionId;
+            this.checkoutRequestId = data.data.checkoutRequestId;
             localStorage.setItem('paymentSessionId', this.sessionId);
+            localStorage.setItem('paymentCheckoutRequestId', this.checkoutRequestId);
             console.log('Payment initiated. Session ID:', this.sessionId);
 
             return {
@@ -106,6 +108,12 @@ class PaymentHandler {
     // Poll payment status with real-time feedback
     async pollPaymentStatus(maxAttempts = 15, interval = 3000, onStatusUpdate = null, options = {}) {
         if (!this.sessionId) {
+            // Try to recover from localStorage
+            this.sessionId = localStorage.getItem('paymentSessionId');
+            this.checkoutRequestId = localStorage.getItem('paymentCheckoutRequestId');
+        }
+
+        if (!this.sessionId && !this.checkoutRequestId) {
             throw new Error('No active payment session');
         }
 
@@ -136,8 +144,14 @@ class PaymentHandler {
             }
 
             try {
+                // Construct URL with both sessionId and checkoutRequestId
+                let statusUrl = `${this.serverUrl}/mpesa/status?sessionId=${this.sessionId}`;
+                if (this.checkoutRequestId) {
+                    statusUrl += `&checkoutRequestId=${this.checkoutRequestId}`;
+                }
+
                 const { response, data } = await fetchJsonWithTimeout(
-                    `${this.serverUrl}/mpesa/status?sessionId=${this.sessionId}`,
+                    statusUrl,
                     requestTimeoutMs
                 );
 

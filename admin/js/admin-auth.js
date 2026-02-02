@@ -4,7 +4,7 @@
  */
 
 const ADMIN_EMAILS = [
-    'peterkelvinkibiru1532.com',
+    'peterkelvinkibiru1532@gmail.com',
     'admin@coursecornerkenya.com' // Example of adding another one
 ];
 

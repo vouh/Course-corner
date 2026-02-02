@@ -117,10 +117,7 @@ module.exports = async (req, res) => {
         console.warn('⚠️ Payment data not found in memory for checkoutRequestID:', checkoutRequestID);
         console.log('🔄 Attempting to recover transaction details from Callback Metadata...');
 
-        // Recovery Mode: Extract details directly from metadata
-        const extractedAmount = metadataObj['Amount'];
-        const extractedPhone = metadataObj['PhoneNumber'];
-
+        // Recovery Mode: Use extracted values from earlier loop
         if (extractedAmount && extractedPhone) {
           console.log('✅ Recovered details from metadata:', { amount: extractedAmount, phone: extractedPhone });
 

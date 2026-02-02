@@ -273,18 +273,28 @@ const saveStudentResults = async (sessionId, studentData) => {
 const getAllTransactions = async (limit = 100, status = null) => {
   try {
     const { db } = await initializeFirebase();
-    if (!db) return getAllFromMemory();
+    if (!db) {
+      console.warn('⚠️ Firebase DB not available, using memory fallback');
+      return getAllFromMemory();
+    }
     
-    let query = db.collection('transactions')
-      .orderBy('createdAt', 'desc')
-      .limit(limit);
-
+    console.log(`📊 Querying Firebase transactions: limit=${limit}, status=${status || 'all'}`);
+    
+    // Build query - Note: If status filter is used with orderBy, a composite index is required
+    let query = db.collection('transactions');
+    
+    // Add status filter first if provided (Firestore requires filter before orderBy)
     if (status) {
       query = query.where('status', '==', status);
     }
+    
+    // Add ordering and limit
+    query = query.orderBy('createdAt', 'desc').limit(limit);
 
     const snapshot = await query.get();
     const transactions = [];
+    
+    console.log(`✅ Firebase returned ${snapshot.size} documents`);
     
     snapshot.forEach(doc => {
       const data = doc.data();
@@ -298,7 +308,40 @@ const getAllTransactions = async (limit = 100, status = null) => {
 
     return transactions;
   } catch (error) {
-    console.error('Error getting transactions:', error.message);
+    console.error('❌ Error getting transactions:', error.message);
+    
+    // If it's an index error, try without ordering
+    if (error.message.includes('index')) {
+      console.log('🔄 Retrying without ordering (missing index)...');
+      try {
+        const { db } = await initializeFirebase();
+        let query = db.collection('transactions').limit(limit);
+        if (status) {
+          query = query.where('status', '==', status);
+        }
+        const snapshot = await query.get();
+        const transactions = [];
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          transactions.push({
+            id: doc.id,
+            ...data,
+            createdAt: data.createdAt?.toDate?.() || data.createdAt,
+            updatedAt: data.updatedAt?.toDate?.() || data.updatedAt
+          });
+        });
+        // Sort in memory
+        transactions.sort((a, b) => {
+          const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+          const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+          return dateB - dateA;
+        });
+        return transactions;
+      } catch (retryError) {
+        console.error('❌ Retry also failed:', retryError.message);
+      }
+    }
+    
     return getAllFromMemory();
   }
 };

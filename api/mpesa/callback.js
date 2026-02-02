@@ -145,10 +145,17 @@ module.exports = async (req, res) => {
         callbackReceivedAt: new Date().toISOString()
       };
       
+      console.log('💾 Attempting to save transaction to Firebase...');
+      console.log('📋 Transaction data:', JSON.stringify(transactionData, null, 2));
+      
       const transactionId = await saveTransaction(transactionData);
 
-      console.log('✅ Payment successful, transaction CREATED:', transactionId);
-      console.log('   M-Pesa Receipt Number:', mpesaReceiptNumber || 'PENDING - waiting for M-Pesa to send in callback');
+      if (transactionId) {
+        console.log('✅ Payment successful, transaction CREATED:', transactionId);
+      } else {
+        console.error('⚠️ Transaction may not have been saved to Firebase! Check Firebase credentials.');
+      }
+      console.log('   M-Pesa Receipt Number:', mpesaReceiptNumber || 'NOT FOUND IN CALLBACK');
       
       // Update in-memory tracking
       if (sessionId) {
@@ -175,28 +182,33 @@ module.exports = async (req, res) => {
         }
       }
       
-      if (paymentData) {
-        // CREATE transaction record for failed payment
-        const failureData = {
-          sessionId: paymentData.sessionId,
-          phoneNumber: paymentData.phoneNumber,
-          amount: paymentData.amount,
-          category: paymentData.category,
-          status: 'failed',
-          checkoutRequestId: checkoutRequestID,
-          merchantRequestId: paymentData.merchantRequestId || null,
-          resultDesc: resultDesc,
-          resultCode: resultCode,
-          failureReason: resultDesc,
-          // referralCode removed - no longer tracking in payment flow
-          failedAt: new Date().toISOString(),
-          callbackReceivedAt: new Date().toISOString()
-        };
-        
-        await saveTransaction(failureData);
-        console.log('❌ Transaction marked as failed:', resultDesc);
-        
-        // Update in-memory
+      // Even if paymentData not found, try to save the failed transaction with available info
+      const failureData = {
+        sessionId: paymentData?.sessionId || `unknown-${checkoutRequestID}`,
+        phoneNumber: paymentData?.phoneNumber || 'unknown',
+        amount: paymentData?.amount || 0,
+        category: paymentData?.category || 'unknown',
+        status: 'failed',
+        checkoutRequestId: checkoutRequestID,
+        merchantRequestId: paymentData?.merchantRequestId || null,
+        resultDesc: resultDesc,
+        resultCode: resultCode,
+        failureReason: resultDesc,
+        failedAt: new Date().toISOString(),
+        callbackReceivedAt: new Date().toISOString()
+      };
+      
+      console.log('💾 Saving failed transaction to Firebase...');
+      const failedTxId = await saveTransaction(failureData);
+      
+      if (failedTxId) {
+        console.log('❌ Transaction marked as failed:', resultDesc, '| ID:', failedTxId);
+      } else {
+        console.error('⚠️ Failed transaction may not have been saved to Firebase!');
+      }
+      
+      // Update in-memory if we have the session
+      if (sessionId && paymentData) {
         global.payments[sessionId].status = 'failed';
         global.payments[sessionId].resultDesc = resultDesc;
       }
@@ -207,6 +219,4 @@ module.exports = async (req, res) => {
 
   } catch (error) {
     console.error('❌ Callback Error:', error);
-    res.status(500).json({ ResultCode: 1, ResultDesc: 'Error processing callback' });
-  }
-};
+    console.error('Stack:', error.stack);

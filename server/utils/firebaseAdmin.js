@@ -11,7 +11,7 @@ const initializeFirebase = () => {
       // Replace escaped newlines with actual newlines
       privateKey = privateKey.replace(/\\n/g, '\n');
     }
-    
+
     const serviceAccount = {
       type: 'service_account',
       project_id: process.env.FIREBASE_PROJECT_ID || 'course-corner',
@@ -31,7 +31,15 @@ const initializeFirebase = () => {
         admin.initializeApp({
           credential: admin.credential.cert(serviceAccount)
         });
+
+        // Configure Firestore to ignore undefined values
+        const firestore = admin.firestore();
+        firestore.settings({
+          ignoreUndefinedProperties: true
+        });
+
         console.log('🔥 Firebase Admin initialized with service account');
+        console.log('✅ Firestore configured to ignore undefined properties');
       } else {
         // Fallback: Initialize without credentials (for development/testing)
         admin.initializeApp({
@@ -62,7 +70,7 @@ const savePaymentTransaction = async (paymentData) => {
   try {
     const db = getFirestore();
     const transactionRef = db.collection('transactions').doc();
-    
+
     const transaction = {
       id: transactionRef.id,
       sessionId: paymentData.sessionId,
@@ -75,7 +83,7 @@ const savePaymentTransaction = async (paymentData) => {
       checkoutRequestId: paymentData.checkoutRequestId || null,
       merchantRequestId: paymentData.merchantRequestId || null,
       resultDesc: paymentData.resultDesc || null,
-      metadata: paymentData.metadata || {},
+      // REMOVED: metadata field causes Firestore write failures
       // Referral tracking
       referralCode: paymentData.referralCode || null,
       referrerCredited: false,
@@ -124,25 +132,25 @@ const updatePaymentTransaction = async (checkoutRequestId, updateData) => {
 const getAllTransactions = async (limit = 100, status = null) => {
   try {
     const db = getFirestore();
-    
+
     console.log(`📊 [Server] Querying Firebase transactions: limit=${limit}, status=${status || 'all'}`);
-    
+
     // Build query - Note: If status filter is used with orderBy, a composite index may be required
     let query = db.collection('transactions');
-    
+
     // Add status filter first if provided
     if (status) {
       query = query.where('status', '==', status);
     }
-    
+
     // Add ordering and limit
     query = query.orderBy('createdAt', 'desc').limit(limit);
 
     const snapshot = await query.get();
     const transactions = [];
-    
+
     console.log(`✅ [Server] Firebase returned ${snapshot.size} documents`);
-    
+
     snapshot.forEach(doc => {
       const data = doc.data();
       transactions.push({
@@ -156,7 +164,7 @@ const getAllTransactions = async (limit = 100, status = null) => {
     return transactions;
   } catch (error) {
     console.error('❌ [Server] Error getting transactions from Firebase:', error.message);
-    
+
     // If it's an index error, try without ordering
     if (error.message.includes('index')) {
       console.log('🔄 [Server] Retrying without ordering (missing index)...');
@@ -188,7 +196,7 @@ const getAllTransactions = async (limit = 100, status = null) => {
         console.error('❌ [Server] Retry also failed:', retryError.message);
       }
     }
-    
+
     return [];
   }
 };
@@ -198,7 +206,7 @@ const getTransactionStats = async () => {
   try {
     const db = getFirestore();
     const snapshot = await db.collection('transactions').get();
-    
+
     const stats = {
       total: 0,
       completed: 0,
@@ -211,7 +219,7 @@ const getTransactionStats = async () => {
     snapshot.forEach(doc => {
       const data = doc.data();
       stats.total++;
-      
+
       if (data.status === 'completed') {
         stats.completed++;
         stats.completedAmount += data.amount || 0;
@@ -220,7 +228,7 @@ const getTransactionStats = async () => {
       } else {
         stats.pending++;
       }
-      
+
       stats.totalAmount += data.amount || 0;
     });
 
@@ -237,7 +245,7 @@ const deleteTransaction = async (transactionId) => {
     const db = getFirestore();
     const docRef = db.collection('transactions').doc(transactionId);
     const doc = await docRef.get();
-    
+
     if (doc.exists) {
       await docRef.delete();
       console.log('🗑️ Transaction deleted from Firebase:', transactionId);
@@ -261,7 +269,7 @@ const getTransactionsByPhone = async (phoneNumber, status = null) => {
 
     const snapshot = await query.get();
     const transactions = [];
-    
+
     snapshot.forEach(doc => {
       const data = doc.data();
       if (!status || data.status === status) {
@@ -384,12 +392,12 @@ const bulkDeleteTransactions = async (transactionIds) => {
   try {
     const db = getFirestore();
     const batch = db.batch();
-    
+
     for (const id of transactionIds) {
       const docRef = db.collection('transactions').doc(id);
       batch.delete(docRef);
     }
-    
+
     await batch.commit();
     console.log('🗑️ Bulk deleted', transactionIds.length, 'transactions');
     return true;

@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
     <script src="js/admin-auth.js"></script>
@@ -1080,14 +1081,10 @@
 
             // Save to Firestore referralCodes collection
             try {
-                const { getFirestore, doc, setDoc } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
-                const db = getFirestore(window.firebaseApp);
-                const user = window.firebaseAuth.currentUser;
-
-                await setDoc(doc(db, 'referralCodes', code), {
+                await db.collection('referralCodes').doc(code).set({
                     code: code,
-                    userId: user?.uid || 'admin',
-                    userEmail: user?.email || 'admin@coursecorner.com',
+                    userId: auth.currentUser?.uid || 'admin',
+                    userEmail: auth.currentUser?.email || 'admin@coursecorner.com',
                     userName: 'Admin Generated',
                     phoneNumber: '',
                     createdAt: new Date().toISOString(),

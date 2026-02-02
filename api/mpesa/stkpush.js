@@ -14,12 +14,12 @@ const STK_PUSH_URL = 'https://api.safaricom.co.ke/mpesa/stkpush/v1/processreques
 
 // Payment amounts for each category
 const PAYMENT_AMOUNTS = {
-  'calculate-cluster-points': 100,
-  'courses-only': 200,
-  'point-and-courses': 300,
-  'bronze': 400,
-  'silver': 500,
-  'gold': 600
+  'calculate-cluster-points': 1,
+  'courses-only': 1,
+  'point-and-courses': 1,
+  'bronze': 1,
+  'silver': 1,
+  'gold': 1
 };
 
 // Get M-Pesa Access Token

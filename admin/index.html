@@ -281,7 +281,7 @@
                     </div>
 
                     <!-- Quick Actions -->
-                    <div class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+                    <div class="grid grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
                         <button onclick="syncPendingTransactions()" class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-all group">
                             <div class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
                                 <i class="fas fa-cloud-download-alt text-yellow-600 dark:text-yellow-400 text-xl"></i>
@@ -299,6 +299,16 @@
                             <div class="text-left">
                                 <p class="font-semibold text-gray-900 dark:text-white">Sync</p>
                                 <p class="text-xs text-gray-500 dark:text-gray-400">M-Pesa Receipts</p>
+                            </div>
+                        </button>
+
+                        <button onclick="testFirebaseConnection()" class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-orange-500 dark:hover:border-orange-500 transition-all group">
+                            <div class="w-12 h-12 bg-orange-100 dark:bg-orange-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-database text-orange-600 dark:text-orange-400 text-xl"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="font-semibold text-gray-900 dark:text-white">Test DB</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Check Firebase</p>
                             </div>
                         </button>
 
@@ -492,10 +502,12 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // IMPORTANT: Always use live server for admin - callbacks are sent to live server only
-        // Transactions are saved to live server, so admin must read from live server
-        const API_BASE = 'https://course-corner-server.vercel.app';
-        console.log('🌐 API_BASE:', API_BASE, '(Using live server for transaction callbacks)');
+        // API endpoints - Primary (Express server) and Fallback (Vercel serverless)
+        const API_PRIMARY = 'https://course-corner-server.vercel.app';
+        const API_FALLBACK = window.location.origin; // Same origin for Vercel API functions
+        let API_BASE = API_PRIMARY; // Will switch to fallback if primary fails
+        console.log('🌐 API_PRIMARY:', API_PRIMARY);
+        console.log('🌐 API_FALLBACK:', API_FALLBACK);
         let allTransactions = [], filteredTransactions = [], currentTransactionId = null;
 
         // Theme
@@ -570,14 +582,44 @@
         async function loadData() { await loadTransactions(); }
         async function loadTransactions() {
             try {
-                // Modified: Added debugging logs
-                console.log(`🚀 [Admin] Fetching transactions from: ${API_BASE}/api/mpesa/admin/transactions?limit=200`);
+                // Try primary API first (Express server)
+                console.log(`🚀 [Admin] Trying PRIMARY: ${API_PRIMARY}/api/mpesa/admin/transactions?limit=200`);
                 
-                const res = await fetch(`${API_BASE}/api/mpesa/admin/transactions?limit=200`);
-                console.log(`📡 [Admin] Response status: ${res.status}`);
+                let res, data;
+                let usedFallback = false;
                 
-                const data = await res.json();
-                console.log('📦 [Admin] Data received:', data);
+                try {
+                    res = await fetch(`${API_PRIMARY}/api/mpesa/admin/transactions?limit=200`, { 
+                        signal: AbortSignal.timeout(10000) // 10 second timeout
+                    });
+                    data = await res.json();
+                    console.log(`📡 [Admin] PRIMARY response:`, data);
+                } catch (primaryError) {
+                    console.warn('⚠️ PRIMARY API failed, trying FALLBACK:', primaryError.message);
+                    usedFallback = true;
+                }
+                
+                // If primary failed or returned no data, try fallback
+                if (usedFallback || !data?.success || (data?.data?.length === 0)) {
+                    console.log(`🔄 [Admin] Trying FALLBACK: ${API_FALLBACK}/api/admin/transactions?limit=200`);
+                    try {
+                        res = await fetch(`${API_FALLBACK}/api/admin/transactions?limit=200`);
+                        data = await res.json();
+                        console.log(`📡 [Admin] FALLBACK response:`, data);
+                        if (data.success) {
+                            API_BASE = API_FALLBACK;
+                            usedFallback = true;
+                        }
+                    } catch (fallbackError) {
+                        console.error('❌ FALLBACK also failed:', fallbackError.message);
+                    }
+                }
+                
+                if (usedFallback) {
+                    showToast('Using fallback API', 'warning');
+                }
+                
+                console.log('📦 [Admin] Final data:', data);
                 
                 if (data.success) {
                     allTransactions = data.data || [];
@@ -872,6 +914,36 @@
 
         // Actions
         async function syncPendingTransactions() { showToast('Refreshing...', 'info'); await loadTransactions(); showToast('Refreshed!', 'success'); }
+        
+        async function testFirebaseConnection() {
+            showToast('Testing Firebase connection...', 'info');
+            try {
+                // Try the Vercel API endpoint first
+                const res = await fetch(`${API_FALLBACK}/api/admin/firebase-test`);
+                const data = await res.json();
+                
+                console.log('🔥 Firebase Test Results:', data);
+                
+                if (data.success) {
+                    const failedChecks = data.checks.filter(c => c.status === 'fail');
+                    if (failedChecks.length === 0) {
+                        showToast(`✅ Firebase OK! Found ${data.checks.find(c => c.name === 'Firestore Read Test')?.details?.documentsFound || 0} transactions`, 'success');
+                    } else {
+                        showToast(`⚠️ Firebase issues: ${failedChecks.map(c => c.name).join(', ')}`, 'warning');
+                    }
+                    
+                    // Log detailed results
+                    data.checks.forEach(check => {
+                        console.log(`${check.status === 'pass' ? '✅' : '❌'} ${check.name}:`, check.details || check.error);
+                    });
+                } else {
+                    showToast('Firebase test failed: ' + data.error, 'error');
+                }
+            } catch (e) {
+                console.error('Firebase test error:', e);
+                showToast('Test error: ' + e.message, 'error');
+            }
+        }
         
         async function syncMissingReceipts() {
             showToast('Syncing payments status...', 'info');

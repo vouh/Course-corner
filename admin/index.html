@@ -570,8 +570,15 @@
         async function loadData() { await loadTransactions(); }
         async function loadTransactions() {
             try {
+                // Modified: Added debugging logs
+                console.log(`🚀 [Admin] Fetching transactions from: ${API_BASE}/api/mpesa/admin/transactions?limit=200`);
+                
                 const res = await fetch(`${API_BASE}/api/mpesa/admin/transactions?limit=200`);
+                console.log(`📡 [Admin] Response status: ${res.status}`);
+                
                 const data = await res.json();
+                console.log('📦 [Admin] Data received:', data);
+                
                 if (data.success) {
                     allTransactions = data.data || [];
                     filteredTransactions = [...allTransactions];

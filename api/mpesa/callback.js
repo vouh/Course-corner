@@ -101,9 +101,31 @@ module.exports = async (req, res) => {
         }
       }
       
+      
       if (!paymentData) {
-        console.error('❌ Payment data not found in memory for checkoutRequestID:', checkoutRequestID);
-        return res.json({ ResultCode: 1, ResultDesc: 'Payment record not found' });
+        console.warn('⚠️ Payment data not found in memory for checkoutRequestID:', checkoutRequestID);
+        console.log('🔄 Attempting to recover transaction details from Callback Metadata...');
+
+        // Recovery Mode: Extract details directly from metadata
+        const extractedAmount = metadataObj['Amount'];
+        const extractedPhone = metadataObj['PhoneNumber'];
+
+        if (extractedAmount && extractedPhone) {
+             console.log('✅ Recovered details from metadata:', { amount: extractedAmount, phone: extractedPhone });
+             
+             paymentData = {
+                 sessionId: `recovered-${checkoutRequestID}`,
+                 phoneNumber: extractedPhone,
+                 amount: Number(extractedAmount),
+                 category: 'general', // Default category since we can't know the original
+                 merchantRequestId: null,
+                 status: 'pending'
+             };
+        } else {
+             console.error('❌ Critical: Could not recover Amount or PhoneNumber from metadata.');
+             console.error('❌ Payment data lost and unrecoverable.');
+             return res.json({ ResultCode: 1, ResultDesc: 'Payment record not found and unrecoverable' });
+        }
       }
       
       // CREATE transaction in Firebase (not UPDATE - since we didn't save on STK Push)

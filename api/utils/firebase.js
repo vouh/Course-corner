@@ -104,7 +104,18 @@ const saveTransaction = async (paymentData) => {
     };
 
     console.log('📤 Writing to Firestore...');
-    await transactionRef.set(transaction);
+    console.log('📊 Transaction keys:', Object.keys(transaction).join(', '));
+    console.log('📊 Status:', transaction.status);
+
+    try {
+      await transactionRef.set(transaction);
+      console.log('✅ Firestore write completed successfully');
+    } catch (firestoreErr) {
+      console.error('❌ FIRESTORE WRITE FAILED:');
+      console.error('   Code:', firestoreErr.code);
+      console.error('   Message:', firestoreErr.message);
+      throw firestoreErr;
+    }
     console.log('💾✅ Transaction SUCCESSFULLY saved to Firebase:', transactionRef.id);
     console.log('   Status:', transaction.status);
     console.log('   Amount:', transaction.amount);
@@ -117,8 +128,10 @@ const saveTransaction = async (paymentData) => {
     return transactionRef.id;
   } catch (error) {
     console.error('❌ FIREBASE SAVE ERROR:', error.message);
+    console.error('   Error code:', error.code);
     console.error('   Error stack:', error.stack);
     console.error('   Transaction status:', paymentData.status);
+    console.error('   Error name:', error.name);
 
     const memId = saveToMemory(paymentData);
     console.warn('⚠️ Transaction saved to MEMORY as fallback:', memId);

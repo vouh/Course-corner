@@ -159,25 +159,25 @@ module.exports = async (req, res) => {
 
       // CREATE transaction in Firebase (not UPDATE - since we didn't save on STK Push)
       const transactionData = {
-        sessionId: paymentData.sessionId,
-        phoneNumber: paymentData.phoneNumber,
-        amount: paymentData.amount,
-        category: paymentData.category,
+        sessionId: paymentData?.sessionId || `success-${checkoutRequestID}`,
+        phoneNumber: paymentData?.phoneNumber || 'unknown',
+        amount: paymentData?.amount || 0,
+        category: paymentData?.category || 'unknown',
         status: 'completed',
         checkoutRequestId: checkoutRequestID,
-        merchantRequestId: paymentData.merchantRequestId || null,
-        mpesaReceiptNumber: mpesaReceiptNumber,
-        transactionCode: mpesaReceiptNumber,
+        merchantRequestId: paymentData?.merchantRequestId || null,
+        mpesaReceiptNumber: mpesaReceiptNumber || null,
+        transactionCode: mpesaReceiptNumber || null,
         resultDesc: resultDesc,
-        // REMOVED metadata: metadataObj - causes Firestore write failures
+        resultCode: 0,
         completedAt: new Date().toISOString(),
         callbackReceivedAt: new Date().toISOString()
       };
 
-      console.log('💾 Attempting to save transaction to Firebase...');
+      console.log('💾 Saving SUCCESSFUL transaction to Firebase...');
       console.log('📋 Transaction data:', JSON.stringify(transactionData, null, 2));
 
-      callbackLog.steps.push({ step: 'Calling saveTransaction', transactionData: { ...transactionData, metadata: 'omitted' } });
+      callbackLog.steps.push({ step: 'Calling saveTransaction for SUCCESS', transactionData });
 
       const transactionId = await saveTransaction(transactionData);
 

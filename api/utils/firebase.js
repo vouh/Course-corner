@@ -37,7 +37,15 @@ const initializeFirebase = async () => {
         admin.initializeApp({
           credential: admin.credential.cert(serviceAccount)
         });
+
+        // Configure Firestore to ignore undefined values (fixes M-Pesa Balance field issue)
+        const firestore = admin.firestore();
+        firestore.settings({
+          ignoreUndefinedProperties: true
+        });
+
         console.log('🔥 Firebase Admin initialized for serverless');
+        console.log('✅ Firestore configured to ignore undefined properties');
       } else {
         admin.initializeApp({
           projectId: process.env.FIREBASE_PROJECT_ID || 'course-corner'

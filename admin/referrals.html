@@ -276,11 +276,23 @@
                                 class="w-full pl-12 pr-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white"
                                 onkeyup="filterReferrals()">
                         </div>
-                        <button onclick="openCodeGenerator()"
-                            class="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold hover:from-primary-600 hover:to-primary-700 transition-all">
-                            <i class="fas fa-plus"></i>
-                            <span>Generate Code</span>
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <div id="bulk-actions"
+                                class="hidden flex items-center gap-2 px-4 py-1 bg-primary-50 dark:bg-primary-900/20 border border-primary-100 dark:border-primary-800 rounded-xl animate-slide-in">
+                                <span id="selected-count"
+                                    class="text-sm font-bold text-primary-700 dark:text-primary-300">0</span>
+                                <button onclick="deleteSelectedReferrers()"
+                                    class="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                                    title="Delete Selected">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                            <button onclick="openCodeGenerator()"
+                                class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl font-semibold hover:from-primary-600 hover:to-primary-700 transition-all">
+                                <i class="fas fa-plus"></i>
+                                <span>Generate Code</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -291,6 +303,11 @@
                         <table class="w-full">
                             <thead class="bg-gray-50 dark:bg-gray-700/50">
                                 <tr>
+                                    <th class="px-6 py-4 text-left">
+                                        <input type="checkbox" id="select-all-referrers"
+                                            onchange="toggleSelectAllReferrers()"
+                                            class="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                                    </th>
                                     <th
                                         class="px-6 py-4 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">
                                         Referrer</th>
@@ -316,7 +333,7 @@
                             </thead>
                             <tbody id="referrals-body" class="divide-y divide-gray-100 dark:divide-gray-700">
                                 <tr>
-                                    <td colspan="7" class="px-6 py-12 text-center">
+                                    <td colspan="8" class="px-6 py-12 text-center">
                                         <div class="loader mx-auto mb-4"></div>
                                         <p class="text-gray-500 dark:text-gray-400">Loading referrals...</p>
                                     </td>
@@ -482,6 +499,9 @@
             tbody.innerHTML = filteredReferrers.map(r => `
                 <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                     <td class="px-6 py-4">
+                        <input type="checkbox" class="referrer-checkbox w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500" value="${r.id}" onchange="updateBulkActions()">
+                    </td>
+                    <td class="px-6 py-4">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center">
                                 <span class="text-white font-semibold">${(r.phoneNumber || r.displayName || r.email || 'U')[0].toUpperCase()}</span>
@@ -495,7 +515,7 @@
                     <td class="px-6 py-4">
                         <span class="px-3 py-1 bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 rounded-lg font-mono font-bold">${r.referralCode || '-'}</span>
                     </td>
-                    <td class="px-6 py-4">
+                    <td class="px-6 py-4 text-center">
                         <span class="text-2xl font-bold text-gray-900 dark:text-white">${r.referralCount || 0}</span>
                     </td>
                     <td class="px-6 py-4">
@@ -507,18 +527,25 @@
                     <td class="px-6 py-4">
                         ${(r.referralPending || 0) > 0 ? '<span class="px-3 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">Pending</span>' : '<span class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300">Paid</span>'}
                     </td>
-                    <td class="px-6 py-4 flex items-center gap-2">
-                        <button onclick="showDetail('${r.id}')" class="p-2 text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors" title="View Details">
-                            <i class="fas fa-eye text-lg"></i>
-                        </button>
-                        <button onclick="markAsPaid('${r.id}', ${r.referralPending || 0}, '${r.phoneNumber || r.displayName || r.email || ''}')" 
-                            class="p-2 ${(r.referralPending || 0) > 0 ? 'text-amber-500 hover:text-green-600' : 'text-gray-300 cursor-not-allowed'}" 
-                            title="Mark as Paid" ${(r.referralPending || 0) === 0 ? 'disabled' : ''}>
-                            <i class="fas fa-money-bill-wave text-lg"></i>
-                        </button>
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-2">
+                            <button onclick="showDetail('${r.id}')" class="p-2 text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors" title="View Details">
+                                <i class="fas fa-eye text-lg"></i>
+                            </button>
+                            <button onclick="markAsPaid('${r.id}', ${r.referralPending || 0}, '${r.phoneNumber || r.displayName || r.email || ''}')" 
+                                class="p-2 ${(r.referralPending || 0) > 0 ? 'text-amber-500 hover:text-green-600' : 'text-gray-300 cursor-not-allowed'}" 
+                                title="Mark as Paid" ${(r.referralPending || 0) === 0 ? 'disabled' : ''}>
+                                <i class="fas fa-money-bill-wave text-lg"></i>
+                            </button>
+                            <button onclick="deleteReferrer('${r.id}')" class="p-2 text-gray-400 hover:text-red-500 transition-colors" title="Delete">
+                                <i class="fas fa-trash-alt text-lg"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `).join('');
+            document.getElementById('select-all-referrers').checked = false;
+            updateBulkActions();
         }
 
         function filterReferrals() {
@@ -682,10 +709,70 @@
             setTimeout(() => t.remove(), 3000);
         }
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDetailModal(); closeCodeGenerator(); } });
-        document.getElementById('detail-modal').addEventListener('click', function (e) { if (e.target === this) closeDetailModal(); });
-        document.getElementById('code-modal').addEventListener('click', function (e) { if (e.target === this) closeCodeGenerator(); });
+        // Selection & Delete
+        function toggleSelectAllReferrers() {
+            const checked = document.getElementById('select-all-referrers').checked;
+            document.querySelectorAll('.referrer-checkbox').forEach(cb => cb.checked = checked);
+            updateBulkActions();
+        }
+
+        function updateBulkActions() {
+            const selected = document.querySelectorAll('.referrer-checkbox:checked');
+            const bar = document.getElementById('bulk-actions');
+            const count = document.getElementById('selected-count');
+            if (selected.length > 0) {
+                bar.classList.remove('hidden');
+                count.textContent = `${selected.length} selected`;
+            } else {
+                bar.classList.add('hidden');
+            }
+        }
+
+        async function deleteReferrer(id) {
+            if (!confirm('Are you sure you want to delete this referrer? This will NOT delete their user account, but it will clear their referral code and earnings data. This cannot be undone.')) return;
+            try {
+                const { doc, updateDoc, deleteField } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
+                await updateDoc(doc(db, 'users', id), {
+                    referralCode: deleteField(),
+                    referralCount: deleteField(),
+                    referralEarnings: deleteField(),
+                    referralPending: deleteField(),
+                    referralCreatedAt: deleteField()
+                });
+                showToast('Referrer data cleared', 'success');
+                loadReferrals();
+            } catch (e) {
+                console.error(e);
+                showToast('Error deleting referrer', 'error');
+            }
+        }
+
+        async function deleteSelectedReferrers() {
+            const selected = Array.from(document.querySelectorAll('.referrer-checkbox:checked')).map(cb => cb.value);
+            if (!selected.length) return;
+            if (!confirm(`Are you sure you want to delete ${selected.length} referrers? This will clear their referral data. This cannot be undone.`)) return;
+
+            showToast(`Deleting ${selected.length} items...`, 'info');
+            try {
+                const { doc, writeBatch, deleteField } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
+                const batch = writeBatch(db);
+                selected.forEach(id => {
+                    batch.update(doc(db, 'users', id), {
+                        referralCode: deleteField(),
+                        referralCount: deleteField(),
+                        referralEarnings: deleteField(),
+                        referralPending: deleteField(),
+                        referralCreatedAt: deleteField()
+                    });
+                });
+                await batch.commit();
+                showToast(`Successfully deleted ${selected.length} items`, 'success');
+                loadReferrals();
+            } catch (e) {
+                console.error(e);
+                showToast('Error in bulk delete', 'error');
+            }
+        }
     </script>
 </body>
 

@@ -186,6 +186,16 @@
                     </div>
                 </div>
                 <div class="flex gap-2">
+                    <div id="bulkActions"
+                        class="hidden flex items-center gap-2 px-4 py-2 bg-purple-900/40 border border-purple-500/30 rounded-lg animate-slide-in">
+                        <span id="selectedCount" class="text-sm font-bold text-purple-200">0 selected</span>
+                        <div class="h-4 w-px bg-purple-500/30 mx-1"></div>
+                        <button onclick="deleteSelectedCodes()"
+                            class="p-2 text-red-400 hover:bg-red-400/20 rounded-lg transition-colors"
+                            title="Delete Selected">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
                     <select id="statusFilter" class="search-input px-4 py-3 rounded-lg text-white cursor-pointer">
                         <option value="all">All Status</option>
                         <option value="active">Active Only</option>
@@ -206,8 +216,11 @@
             <div class="table-container max-h-[600px] overflow-y-auto">
                 <table class="w-full">
                     <thead>
-                        <tr class="text-left text-gray-300 text-sm">
-                            <th class="px-6 py-4 font-medium">#</th>
+                        <tr class="text-left text-gray-300 text-sm border-b border-white/5">
+                            <th class="px-6 py-4 font-medium">
+                                <input type="checkbox" id="selectAllCodes" onchange="toggleSelectAllCodes()"
+                                    class="w-5 h-5 rounded border-white/10 bg-white/5 text-primary-500 focus:ring-primary-500">
+                            </th>
                             <th class="px-6 py-4 font-medium">Code</th>
                             <th class="px-6 py-4 font-medium">User</th>
                             <th class="px-6 py-4 font-medium">Phone</th>
@@ -450,8 +463,10 @@
             emptyState.classList.add('hidden');
 
             tableBody.innerHTML = codes.map((code, index) => `
-                <tr class="border-t border-gray-700/50">
-                    <td class="px-6 py-4 text-gray-400">${index + 1}</td>
+                <tr class="border-t border-gray-700/50 hover:bg-white/5 transition-colors">
+                    <td class="px-6 py-4">
+                        <input type="checkbox" class="code-checkbox w-5 h-5 rounded border-white/10 bg-white/5 text-primary-500 focus:ring-primary-500" value="${code.id}" onchange="updateBulkActions()">
+                    </td>
                     <td class="px-6 py-4">
                         <div class="flex items-center gap-2">
                             <span class="font-mono font-bold text-blue-400">${code.code || 'N/A'}</span>
@@ -462,18 +477,18 @@
                     </td>
                     <td class="px-6 py-4">
                         <div>
-                            <p class="font-medium">${code.userName || 'Unknown'}</p>
+                            <p class="font-medium text-white">${code.userName || 'Unknown'}</p>
                             <p class="text-gray-400 text-xs">${code.userEmail || 'N/A'}</p>
                         </div>
                     </td>
                     <td class="px-6 py-4">
                         <span class="${code.phoneNumber ? 'text-white' : 'text-red-400'}">${formatPhone(code.phoneNumber) || 'Not set'}</span>
                     </td>
-                    <td class="px-6 py-4 text-center">
+                    <td class="px-6 py-4 text-center text-white">
                         <span class="font-bold">${code.totalReferrals || 0}</span>
                     </td>
                     <td class="px-6 py-4 text-center">
-                        <span class="text-green-400">${code.paidReferrals || 0}</span>
+                        <span class="text-green-400 font-bold">${code.paidReferrals || 0}</span>
                     </td>
                     <td class="px-6 py-4">
                         <span class="font-medium text-green-400">KES ${(code.totalEarnings || 0).toLocaleString()}</span>
@@ -486,11 +501,11 @@
                             ${code.isActive !== false ? 'Active' : 'Inactive'}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-gray-400">
+                    <td class="px-6 py-4 text-gray-400 text-xs">
                         ${formatDate(code.createdAt)}
                     </td>
                     <td class="px-6 py-4">
-                        <div class="flex gap-2">
+                        <div class="flex items-center gap-2">
                             <button onclick="toggleCodeStatus('${code.code}', ${code.isActive !== false})" 
                                     class="p-2 rounded-lg ${code.isActive !== false ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30' : 'bg-green-500/20 text-green-400 hover:bg-green-500/30'} transition"
                                     title="${code.isActive !== false ? 'Deactivate' : 'Activate'}">
@@ -501,10 +516,16 @@
                                     title="View Details">
                                 <i class="fas fa-eye"></i>
                             </button>
+                            <button onclick="deleteCode('${code.id}')" class="p-2 bg-red-400/10 text-red-400 hover:bg-red-400/20 rounded-lg transition" title="Delete Code">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
                         </div>
                     </td>
                 </tr>
             `).join('');
+
+            document.getElementById('selectAllCodes').checked = false;
+            updateBulkActions();
         }
 
         // Format phone number
@@ -720,9 +741,124 @@
         };
 
         // Event listeners for filters
-        document.getElementById('searchInput').addEventListener('input', filterAndDisplayCodes);
-        document.getElementById('statusFilter').addEventListener('change', filterAndDisplayCodes);
         document.getElementById('sortBy').addEventListener('change', filterAndDisplayCodes);
+
+        // Helper to format date
+        function formatDate(d) {
+            if (!d) return 'N/A';
+            const date = new Date(d);
+            return date.toLocaleDateString('en-KE', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        // Selection & Delete
+        window.toggleSelectAllCodes = function () {
+            const checked = document.getElementById('selectAllCodes').checked;
+            document.querySelectorAll('.code-checkbox').forEach(cb => cb.checked = checked);
+            window.updateBulkActions();
+        }
+
+        window.updateBulkActions = function () {
+            const selected = document.querySelectorAll('.code-checkbox:checked');
+            const bar = document.getElementById('bulkActions');
+            const count = document.getElementById('selectedCount');
+            if (selected.length > 0) {
+                bar.classList.remove('hidden');
+                count.textContent = `${selected.length} selected`;
+            } else {
+                bar.classList.add('hidden');
+            }
+        }
+
+        window.deleteCode = async function (id) {
+            const { value: confirmed } = await Swal.fire({
+                title: 'Are you sure?',
+                text: "This will permanently delete this referral code. Users using this code will no longer earn referrals.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#3b82f6',
+                confirmButtonText: 'Yes, delete it!'
+            });
+
+            if (!confirmed) return;
+
+            try {
+                // Determine if code is in referralCodes or a user document
+                const codeObj = allCodes.find(c => c.id === id);
+                if (!codeObj) throw new Error('Code not found in list');
+
+                const { deleteDoc, doc, updateDoc, deleteField } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
+
+                if (codeObj.source === 'referralCodes') {
+                    await deleteDoc(doc(db, 'referralCodes', id));
+                } else if (codeObj.source === 'users') {
+                    // It's a code tied to a user, we should probably just clear the referralCode fields in the user doc
+                    await updateDoc(doc(db, 'users', codeObj.userId), {
+                        referralCode: deleteField(),
+                        referralCreatedAt: deleteField(),
+                        referralCount: deleteField(),
+                        referralPaidCount: deleteField(),
+                        referralEarnings: deleteField(),
+                        referralPending: deleteField()
+                    });
+                }
+
+                Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Code has been deleted.', timer: 1500, showConfirmButton: false });
+                loadReferralCodes();
+            } catch (error) {
+                console.error('Delete error:', error);
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to delete: ' + error.message });
+            }
+        }
+
+        window.deleteSelectedCodes = async function () {
+            const selected = Array.from(document.querySelectorAll('.code-checkbox:checked')).map(cb => cb.value);
+            if (!selected.length) return;
+
+            const { value: confirmed } = await Swal.fire({
+                title: `Delete ${selected.length} codes?`,
+                text: "This action cannot be undone!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#3b82f6',
+                confirmButtonText: 'Yes, delete them!'
+            });
+
+            if (!confirmed) return;
+
+            Swal.fire({ title: 'Deleting...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+
+            try {
+                const { writeBatch, doc, updateDoc, deleteField } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
+                const batch = writeBatch(db);
+
+                selected.forEach(id => {
+                    const codeObj = allCodes.find(c => c.id === id);
+                    if (codeObj) {
+                        if (codeObj.source === 'referralCodes') {
+                            batch.delete(doc(db, 'referralCodes', id));
+                        } else if (codeObj.source === 'users') {
+                            batch.update(doc(db, 'users', codeObj.userId), {
+                                referralCode: deleteField(),
+                                referralCreatedAt: deleteField(),
+                                referralCount: deleteField(),
+                                referralPaidCount: deleteField(),
+                                referralEarnings: deleteField(),
+                                referralPending: deleteField()
+                            });
+                        }
+                    }
+                });
+                await batch.commit();
+
+                Swal.fire({ icon: 'success', title: 'Success!', text: `Deleted ${selected.length} codes.`, timer: 1500, showConfirmButton: false });
+                loadReferralCodes();
+            } catch (error) {
+                console.error('Bulk delete error:', error);
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Bulk delete failed: ' + error.message });
+            }
+        }
     </script>
 </body>
 

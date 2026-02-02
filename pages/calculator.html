@@ -104,7 +104,7 @@
             margin-top: 2rem;
             text-align: center;
         }
-        
+
         .cc-btn-get-results {
             width: 100%;
             background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
@@ -117,7 +117,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .cc-btn-get-results::before {
             content: '';
             position: absolute;
@@ -125,56 +125,56 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
             transition: left 0.5s ease;
         }
-        
+
         .cc-btn-get-results:hover::before {
             left: 100%;
         }
-        
+
         .cc-btn-get-results:hover:not(:disabled) {
             transform: translateY(-3px);
             box-shadow: 0 15px 50px rgba(16, 185, 129, 0.5);
         }
-        
+
         .cc-btn-get-results:disabled {
             background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%);
             cursor: not-allowed;
             box-shadow: none;
             transform: none;
         }
-        
+
         .cc-btn-get-results:disabled::before {
             display: none;
         }
-        
+
         .cc-btn-content {
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 1rem;
         }
-        
+
         .cc-btn-icon {
             width: 50px;
             height: 50px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        
+
         .cc-btn-icon i {
             font-size: 1.5rem;
             color: white;
         }
-        
+
         .cc-btn-text {
             text-align: left;
         }
-        
+
         .cc-btn-main {
             display: block;
             font-size: 1.25rem;
@@ -182,35 +182,35 @@
             color: white;
             letter-spacing: -0.02em;
         }
-        
+
         .cc-btn-sub {
             display: block;
             font-size: 0.8rem;
-            color: rgba(255,255,255,0.8);
+            color: rgba(255, 255, 255, 0.8);
             margin-top: 2px;
         }
-        
+
         .cc-btn-arrow {
             font-size: 1.25rem;
             color: white;
             transition: transform 0.3s ease;
         }
-        
+
         .cc-btn-get-results:hover:not(:disabled) .cc-btn-arrow {
             transform: translateX(5px);
         }
-        
+
         .cc-results-message {
             margin-top: 0.5rem;
             font-size: 0.8rem;
             color: #6b7280;
         }
-        
+
         /* Teaser Results Styles - COMPACT */
         .cc-teaser-section {
             margin-top: 1rem;
         }
-        
+
         .cc-teaser-score-card {
             background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
             border: 2px solid #86efac;
@@ -222,12 +222,12 @@
             align-items: center;
             gap: 1rem;
         }
-        
+
         .cc-teaser-score-card.below-cplus {
             background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
             border-color: #fbbf24;
         }
-        
+
         .cc-teaser-grade {
             font-size: 2.5rem;
             font-weight: 900;
@@ -235,36 +235,36 @@
             line-height: 1;
             min-width: 70px;
         }
-        
+
         .cc-teaser-score-card.below-cplus .cc-teaser-grade {
             color: #d97706;
         }
-        
+
         .cc-teaser-info {
             flex: 1;
             text-align: left;
         }
-        
+
         .cc-teaser-points {
             font-size: 0.9rem;
             color: #065f46;
             font-weight: 600;
         }
-        
+
         .cc-teaser-score-card.below-cplus .cc-teaser-points {
             color: #92400e;
         }
-        
+
         .cc-teaser-message {
             font-size: 0.75rem;
             color: #047857;
             margin-top: 0.25rem;
         }
-        
+
         .cc-teaser-score-card.below-cplus .cc-teaser-message {
             color: #b45309;
         }
-        
+
         .cc-eligibility-badge {
             display: inline-flex;
             align-items: center;
@@ -277,18 +277,18 @@
             font-size: 0.7rem;
             margin-top: 0.5rem;
         }
-        
+
         .cc-eligibility-badge.diploma {
             background: linear-gradient(135deg, #f59e0b, #d97706);
         }
-        
+
         /* University Teaser Cards - COMPACT */
         .cc-teaser-unis {
             display: grid;
             gap: 0.5rem;
             margin: 0.75rem 0;
         }
-        
+
         .cc-teaser-uni-card {
             background: white;
             border: 1px solid #e5e7eb;
@@ -298,11 +298,11 @@
             align-items: center;
             gap: 0.75rem;
         }
-        
+
         .cc-teaser-uni-card:hover {
             border-color: #10b981;
         }
-        
+
         .cc-teaser-uni-icon {
             width: 36px;
             height: 36px;
@@ -313,17 +313,17 @@
             justify-content: center;
             flex-shrink: 0;
         }
-        
+
         .cc-teaser-uni-icon i {
             font-size: 1rem;
             color: #6b7280;
         }
-        
+
         .cc-teaser-uni-info {
             flex: 1;
             min-width: 0;
         }
-        
+
         .cc-teaser-uni-name {
             font-size: 0.85rem;
             font-weight: 600;
@@ -332,17 +332,17 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         .cc-teaser-uni-count {
             font-size: 0.7rem;
             color: #10b981;
             font-weight: 600;
         }
-        
+
         .cc-teaser-uni-count span {
             font-weight: 700;
         }
-        
+
         .cc-teaser-lock {
             width: 28px;
             height: 28px;
@@ -353,12 +353,12 @@
             justify-content: center;
             flex-shrink: 0;
         }
-        
+
         .cc-teaser-lock i {
             color: #d97706;
             font-size: 0.7rem;
         }
-        
+
         /* Stats Summary - COMPACT INLINE */
         .cc-teaser-stats {
             display: flex;
@@ -369,32 +369,32 @@
             background: linear-gradient(135deg, #f9fafb, #f3f4f6);
             border-radius: 0.75rem;
         }
-        
+
         .cc-teaser-stat {
             text-align: center;
             flex: 1;
         }
-        
+
         .cc-teaser-stat-value {
             font-size: 1.25rem;
             font-weight: 800;
             color: #111827;
         }
-        
+
         .cc-teaser-stat-label {
             font-size: 0.6rem;
             color: #6b7280;
             text-transform: uppercase;
             letter-spacing: 0.02em;
         }
-        
+
         /* Top Courses Teaser - COMPACT */
         .cc-teaser-courses {
             display: grid;
             gap: 0.4rem;
             margin: 0.75rem 0;
         }
-        
+
         .cc-teaser-course-card {
             background: white;
             border: 1px solid #e5e7eb;
@@ -405,16 +405,16 @@
             justify-content: space-between;
             transition: all 0.3s ease;
         }
-        
+
         .cc-teaser-course-card:hover {
             border-color: #fbbf24;
         }
-        
+
         .cc-course-info {
             flex: 1;
             min-width: 0;
         }
-        
+
         .cc-course-name {
             font-weight: 600;
             color: #111827;
@@ -423,7 +423,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         .cc-course-uni {
             font-size: 0.65rem;
             color: #6b7280;
@@ -431,7 +431,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         .cc-course-cutoff {
             text-align: center;
             padding: 0.3rem 0.6rem;
@@ -440,7 +440,7 @@
             margin-left: 0.5rem;
             flex-shrink: 0;
         }
-        
+
         .cc-cutoff-label {
             display: block;
             font-size: 0.5rem;
@@ -448,14 +448,14 @@
             text-transform: uppercase;
             font-weight: 600;
         }
-        
+
         .cc-cutoff-value {
             display: block;
             font-size: 0.9rem;
             font-weight: 800;
             color: #d97706;
         }
-        
+
         /* Unlock Section - COMPACT */
         .cc-unlock-section {
             background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
@@ -465,11 +465,11 @@
             text-align: center;
             margin-top: 1rem;
         }
-        
+
         .cc-unlock-header {
             margin-bottom: 0.75rem;
         }
-        
+
         .cc-unlock-icon {
             width: 45px;
             height: 45px;
@@ -480,24 +480,24 @@
             justify-content: center;
             margin: 0 auto 0.5rem;
         }
-        
+
         .cc-unlock-icon i {
             font-size: 1.25rem;
             color: white;
         }
-        
+
         .cc-unlock-title {
             font-size: 1rem;
             font-weight: 800;
             color: #1e40af;
             margin-bottom: 0.25rem;
         }
-        
+
         .cc-unlock-subtitle {
             color: #3b82f6;
             font-size: 0.75rem;
         }
-        
+
         /* View All Results Button - COMPACT */
         .cc-view-all-btn {
             width: 100%;
@@ -513,17 +513,17 @@
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
-        
+
         .cc-view-all-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
         }
-        
+
         /* Package selector inside unlock */
         .cc-unlock-packages {
             margin-top: 1rem;
         }
-        
+
         .cc-package-option {
             background: white;
             border: 2px solid #e5e7eb;
@@ -536,41 +536,41 @@
             align-items: center;
             justify-content: space-between;
         }
-        
+
         .cc-package-option:hover {
             border-color: #3b82f6;
             background: #f0f9ff;
         }
-        
+
         .cc-package-option.selected {
             border-color: #10b981;
             background: #f0fdf4;
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
         }
-        
+
         .cc-package-option-info {
             text-align: left;
         }
-        
+
         .cc-package-option-name {
             font-weight: 700;
             color: #111827;
             font-size: 1rem;
         }
-        
+
         .cc-package-option-desc {
             font-size: 0.8rem;
             color: #6b7280;
             margin-top: 0.25rem;
         }
-        
+
         .cc-package-option-price {
             font-weight: 800;
             color: #059669;
             font-size: 1.1rem;
             white-space: nowrap;
         }
-        
+
         .cc-unlock-pay-btn {
             width: 100%;
             background: linear-gradient(135deg, #10b981, #059669);
@@ -585,19 +585,19 @@
             transition: all 0.3s ease;
             box-shadow: 0 8px 30px rgba(16, 185, 129, 0.4);
         }
-        
+
         .cc-unlock-pay-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 12px 40px rgba(16, 185, 129, 0.5);
         }
-        
+
         .cc-unlock-pay-btn:disabled {
             background: #9ca3af;
             cursor: not-allowed;
             box-shadow: none;
             transform: none;
         }
-        
+
         .cc-trust-badge {
             display: flex;
             align-items: center;
@@ -607,17 +607,17 @@
             color: #6b7280;
             font-size: 0.85rem;
         }
-        
+
         .cc-trust-badge i {
             color: #10b981;
         }
-        
+
         /* Hidden original package selector */
         .cc-package-selector-hidden {
             display: none !important;
         }
     </style>
-    
+
     <!-- Calculator Section -->
     <section class="cc-calculator-section">
         <div class="cc-container">
@@ -1176,21 +1176,36 @@
                                     <i class="fas fa-arrow-right cc-btn-arrow"></i>
                                 </div>
                             </button>
-                            <p id="getResultsMessage" class="cc-results-message">Enter at least 7 subjects to see your results</p>
+                            <p id="getResultsMessage" class="cc-results-message">Enter at least 7 subjects to see your
+                                results</p>
                         </div>
-                        
+
                         <!-- Hidden original package selector (kept for payment processing) -->
                         <div class="cc-package-selector-hidden">
                             <select id="packageSelect" class="cc-package-select">
                                 <option value="" data-amount="0" data-description="">-- Choose a package --</option>
-                                <option value="gold" data-amount="1" data-description="Universities + Courses + Cluster Points + FREE Expert Guidance">⭐ Gold Package - KES 1 (Test) - Expert Consultation</option>
-                                <option value="silver" data-amount="1" data-description="Universities + Courses + All 20 Cluster Points">🥈 Silver Package - KES 1 (Test) - Cluster Points</option>
-                                <option value="bronze" data-amount="1" data-description="Universities & Courses You Qualify For">🥉 Bronze Package - KES 1 (Test) - Universities & Courses</option>
-                                <option value="point-and-courses" data-amount="1" data-description="Cluster Points & Eligible Courses">📊 Premium - Points & Courses - KES 1 (Test)</option>
-                                <option value="courses-only" data-amount="1" data-description="View Eligible Courses Only">📚 Standard - Courses Only - KES 1 (Test)</option>
-                                <option value="calculate-cluster-points" data-amount="1" data-description="Calculate Your Cluster Points">📈 Starter - Cluster Points - KES 1 (Test)</option>
+                                <option value="gold" data-amount="600"
+                                    data-description="Universities + Courses + Cluster Points + FREE Expert Guidance">⭐
+                                    Gold Package - KES 600 - Expert Consultation</option>
+                                <option value="silver" data-amount="500"
+                                    data-description="Universities + Courses + All 20 Cluster Points">🥈 Silver Package
+                                    - KES 500 - Cluster Points</option>
+                                <option value="bronze" data-amount="400"
+                                    data-description="Universities & Courses You Qualify For">🥉 Bronze Package - KES
+                                    400
+                                    - Universities & Courses</option>
+                                <option value="point-and-courses" data-amount="300"
+                                    data-description="Cluster Points & Eligible Courses">📊 Premium - Points & Courses -
+                                    KES 300</option>
+                                <option value="courses-only" data-amount="200"
+                                    data-description="View Eligible Courses Only">📚 Standard - Courses Only - KES 200
+                                </option>
+                                <option value="calculate-cluster-points" data-amount="100"
+                                    data-description="Calculate Your Cluster Points">📈 Starter - Cluster Points - KES
+                                    100</option>
                             </select>
-                            <button id="payButton" class="cc-btn-pay payment-btn" disabled data-category="" data-amount="0">
+                            <button id="payButton" class="cc-btn-pay payment-btn" disabled data-category=""
+                                data-amount="0">
                                 <i class="fas fa-credit-card"></i>
                                 <span>Click to Pay</span>
                             </button>
@@ -1823,7 +1838,7 @@
 
             // REAL MODE: Use payment handler to process actual M-Pesa payment
             console.log('--- REAL MODE: Processing M-Pesa Payment ---');
-            
+
             try {
                 await window.paymentHandler.processPayment(
                     category,
@@ -1833,7 +1848,7 @@
                         showResultsAfterPayment(category);
                     }
                 );
-                
+
                 // Return false because showResultsAfterPayment is handled by the callback
                 return false;
             } catch (error) {
@@ -1850,7 +1865,7 @@
                 element.innerHTML = '<i class="fas fa-check text-[8px] mr-1"></i>COPIED!';
                 element.classList.add('bg-green-100', 'text-green-700', 'border-green-300');
                 element.classList.remove('bg-gray-100', 'text-gray-400', 'border-gray-200', 'hover:bg-gray-200');
-                
+
                 // Restore after 2 seconds
                 setTimeout(() => {
                     element.innerHTML = originalHTML;
@@ -1863,7 +1878,7 @@
         // Attach copy handlers to all code buttons after rendering
         function attachCopyHandlers() {
             document.querySelectorAll('.copy-code-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const code = this.getAttribute('data-code');
                     copyCode(code, this);
                 });
@@ -1872,15 +1887,15 @@
 
         // Store teaser data globally for use after payment
         window.teaserData = null;
-        
+
         // Update Get Results button state
         function updateGetResultsButtonState() {
             const validation = validateSubjects();
             const getResultsBtn = document.getElementById('getResultsBtn');
             const messageEl = document.getElementById('getResultsMessage');
-            
+
             const subjectsPopulated = validation.totalSubjects >= 7;
-            
+
             if (getResultsBtn) {
                 if (subjectsPopulated) {
                     getResultsBtn.disabled = false;
@@ -1896,14 +1911,14 @@
                 }
             }
         }
-        
+
         // Show teaser results (freemium flow)
         async function showTeaserResults() {
             console.log('--- showTeaserResults ---');
-            
+
             const resultsDiv = document.getElementById('results');
             if (!resultsDiv) return;
-            
+
             // Show loading state
             resultsDiv.classList.remove('hidden');
             resultsDiv.style.display = 'block';
@@ -1917,22 +1932,22 @@
                     </div>
                 </div>
             `;
-            
+
             // Scroll to results
             setTimeout(() => {
                 resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }, 100);
-            
+
             try {
                 // Calculate total points
                 if (typeof calculateTotalPoints === 'function') {
                     calculateTotalPoints();
                 }
-                
+
                 const overallPoints = parseInt(document.getElementById('overallGrade')?.value) || 0;
                 const gradeDisplay = document.getElementById('mainGradeDisplay')?.textContent || '-';
                 const isBelowCPlus = overallPoints < 46;
-                
+
                 // Get grade message
                 function getGradeMessage(points) {
                     if (points >= 81) return "Outstanding! Top universities await you!";
@@ -1944,13 +1959,13 @@
                     if (points >= 39) return "Consider diploma & KMTC programs.";
                     return "Technical courses may be your best path.";
                 }
-                
+
                 // Calculate cluster points
                 let points = {};
                 if (typeof window.calculateClusterPoints === 'function') {
                     points = window.calculateClusterPoints();
                 }
-                
+
                 // Get highest cluster
                 let highestCluster = { name: 'N/A', points: 0 };
                 if (points && Object.keys(points).length > 0) {
@@ -1959,31 +1974,31 @@
                         highestCluster = { name: sorted[0][0], points: sorted[0][1] };
                     }
                 }
-                
+
                 // Get qualified universities using placement engine
                 let universities = [];
                 let totalPrograms = 0;
-                
+
                 if (!isBelowCPlus && typeof window.CampusPlacementEngine !== 'undefined') {
                     // Initialize the placement engine (it's an object, not a class)
                     await window.CampusPlacementEngine.init();
-                    
+
                     // Get student grades for subject requirement checks
-                    const grades = typeof window.getStudentGrades === 'function' 
-                        ? window.getStudentGrades() 
+                    const grades = typeof window.getStudentGrades === 'function'
+                        ? window.getStudentGrades()
                         : {};
-                    
+
                     universities = window.CampusPlacementEngine.getQualifiedUniversities(points, grades);
                     totalPrograms = universities.reduce((sum, u) => sum + u.courses.length, 0);
                 }
-                
+
                 // Priority universities by exact name matching
                 const priorityNames = [
                     'University of Nairobi',
-                    'Kenyatta University', 
+                    'Kenyatta University',
                     'Jomo Kenyatta University of Agriculture and Technology'
                 ];
-                
+
                 // Find priority universities in results (exact name match)
                 let topUnis = [];
                 for (const priorityName of priorityNames) {
@@ -1992,7 +2007,7 @@
                         topUnis.push(found);
                     }
                 }
-                
+
                 // If we don't have 3, fill with top universities by program count (excluding already added)
                 if (topUnis.length < 3) {
                     const remaining = universities
@@ -2001,7 +2016,7 @@
                         .slice(0, 3 - topUnis.length);
                     topUnis = [...topUnis, ...remaining];
                 }
-                
+
                 // Get top courses with highest cutoffs from all universities
                 let topCourses = [];
                 universities.forEach(uni => {
@@ -2016,7 +2031,7 @@
                 topCourses = topCourses
                     .sort((a, b) => b.cutoff - a.cutoff)
                     .slice(0, 3);
-                
+
                 // Store teaser data for later use
                 window.teaserData = {
                     points,
@@ -2026,7 +2041,7 @@
                     gradeDisplay,
                     isBelowCPlus
                 };
-                
+
                 // Build teaser HTML
                 let html = `
                     <div class="cc-teaser-section">
@@ -2036,14 +2051,14 @@
                             <div class="cc-teaser-points">You scored <strong>${overallPoints}</strong> out of 84 points</div>
                             <div class="cc-teaser-message">${getGradeMessage(overallPoints)}</div>
                             <div class="cc-eligibility-badge ${isBelowCPlus ? 'diploma' : ''}">
-                                ${isBelowCPlus 
-                                    ? '<i class="fas fa-book"></i> Diploma & KMTC Programs Available'
-                                    : '<i class="fas fa-graduation-cap"></i> You Qualify for Degree Programs!'
-                                }
+                                ${isBelowCPlus
+                        ? '<i class="fas fa-book"></i> Diploma & KMTC Programs Available'
+                        : '<i class="fas fa-graduation-cap"></i> You Qualify for Degree Programs!'
+                    }
                             </div>
                         </div>
                 `;
-                
+
                 if (!isBelowCPlus && topUnis.length > 0) {
                     // University teaser cards
                     html += `
@@ -2052,7 +2067,7 @@
                         </h3>
                         <div class="cc-teaser-unis">
                     `;
-                    
+
                     topUnis.forEach(uni => {
                         html += `
                             <div class="cc-teaser-uni-card">
@@ -2069,9 +2084,9 @@
                             </div>
                         `;
                     });
-                    
+
                     html += `</div>`;
-                    
+
                     // Top Courses with Highest Cutoffs
                     if (topCourses.length > 0) {
                         html += `
@@ -2080,7 +2095,7 @@
                             </h3>
                             <div class="cc-teaser-courses">
                         `;
-                        
+
                         topCourses.forEach(course => {
                             html += `
                                 <div class="cc-teaser-course-card">
@@ -2095,14 +2110,14 @@
                                 </div>
                             `;
                         });
-                        
+
                         html += `</div>`;
                     }
-                    
+
                     // Stats summary - show approximate numbers
                     const uniDisplay = universities.length > 50 ? '50+' : (universities.length > 20 ? '20+' : universities.length);
                     const programDisplay = totalPrograms > 500 ? '500+' : (totalPrograms > 200 ? '200+' : (totalPrograms > 100 ? '100+' : totalPrograms));
-                    
+
                     html += `
                         <div class="cc-teaser-stats">
                             <div class="cc-teaser-stat">
@@ -2139,11 +2154,11 @@
                         <p class="text-center text-gray-600 mb-4">Unlock to see all KMTC, Diploma & Certificate programs available for your grades!</p>
                     `;
                 }
-                
+
                 // Unlock Section - View All Results Button
                 const unlockUniDisplay = universities.length > 50 ? '50+' : (universities.length > 20 ? '20+' : universities.length);
                 const unlockProgramDisplay = totalPrograms > 500 ? '500+' : (totalPrograms > 200 ? '200+' : (totalPrograms > 100 ? '100+' : totalPrograms));
-                
+
                 html += `
                     <div class="cc-unlock-section">
                         <div class="cc-unlock-header">
@@ -2166,12 +2181,12 @@
                     </div>
                 </div>
                 `;
-                
+
                 resultsDiv.innerHTML = html;
-                
+
                 // Initialize View All Results button
                 initializeViewAllButton();
-                
+
             } catch (error) {
                 console.error('Error in showTeaserResults:', error);
                 resultsDiv.innerHTML = `
@@ -2182,23 +2197,23 @@
                 `;
             }
         }
-        
+
         // Initialize View All Results button to show package modal
         function initializeViewAllButton() {
             const viewAllBtn = document.getElementById('viewAllResultsBtn');
-            
+
             if (viewAllBtn) {
-                viewAllBtn.addEventListener('click', function() {
+                viewAllBtn.addEventListener('click', function () {
                     showPackageModal();
                 });
             }
         }
-        
+
         // Show package selection modal
         function showPackageModal() {
             // Ensure scroll is not locked
             document.body.style.overflow = 'auto';
-            
+
             Swal.fire({
                 title: '🎓 Choose Your Package',
                 width: '500px',
@@ -2215,12 +2230,12 @@
                             </label>
                             <select id="modalPackageSelect" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 0.75rem; font-size: 1rem; cursor: pointer;">
                                 <option value="" data-amount="0">-- Choose a package --</option>
-                                <option value="gold" data-amount="1">⭐ Gold Package - KES 1 (Test)</option>
-                                <option value="silver" data-amount="1">🥈 Silver Package - KES 1 (Test)</option>
-                                <option value="bronze" data-amount="1">🥉 Bronze Package - KES 1 (Test)</option>
-                                <option value="point-and-courses" data-amount="1">📊 Premium - Points & Courses - KES 1 (Test)</option>
-                                <option value="courses-only" data-amount="1">📚 Standard - Courses Only - KES 1 (Test)</option>
-                                <option value="calculate-cluster-points" data-amount="1">📈 Starter - Cluster Points - KES 1 (Test)</option>
+                                <option value="gold" data-amount="600">⭐ Gold Package - KES 600</option>
+                                <option value="silver" data-amount="500">🥈 Silver Package - KES 500</option>
+                                <option value="bronze" data-amount="400">🥉 Bronze Package - KES 400</option>
+                                <option value="point-and-courses" data-amount="300">📊 Premium - Points & Courses - KES 300</option>
+                                <option value="courses-only" data-amount="200">📚 Standard - Courses Only - KES 200</option>
+                                <option value="calculate-cluster-points" data-amount="100">📈 Starter - Cluster Points - KES 100</option>
                             </select>
                         </div>
                         
@@ -2252,7 +2267,7 @@
                     const titleEl = document.getElementById('packageTitle');
                     const descEl = document.getElementById('packageDesc');
                     const featuresEl = document.getElementById('packageFeatures');
-                    
+
                     const packageInfo = {
                         'gold': {
                             title: '⭐ Gold Package',
@@ -2315,14 +2330,14 @@
                             ]
                         }
                     };
-                    
-                    select.addEventListener('change', function() {
+
+                    select.addEventListener('change', function () {
                         const pkg = this.value;
                         if (pkg && packageInfo[pkg]) {
                             detailsDiv.style.display = 'block';
                             titleEl.textContent = packageInfo[pkg].title;
                             descEl.textContent = packageInfo[pkg].desc;
-                            featuresEl.innerHTML = packageInfo[pkg].features.map(f => 
+                            featuresEl.innerHTML = packageInfo[pkg].features.map(f =>
                                 `<li style="padding: 0.25rem 0; font-size: 0.85rem; color: ${f.startsWith('✅') ? '#059669' : '#9ca3af'};">${f}</li>`
                             ).join('');
                         } else {
@@ -2334,18 +2349,18 @@
                     const select = document.getElementById('modalPackageSelect');
                     const pkg = select.value;
                     const amount = select.options[select.selectedIndex].getAttribute('data-amount');
-                    
+
                     if (!pkg) {
                         Swal.showValidationMessage('Please select a package');
                         return false;
                     }
-                    
+
                     return { package: pkg, amount: parseInt(amount) };
                 }
             }).then((result) => {
                 if (result.isConfirmed && result.value) {
                     const { package: pkg, amount } = result.value;
-                    
+
                     // Process payment
                     window.paymentHandler.processPayment(
                         pkg,
@@ -2362,23 +2377,23 @@
                 }
             });
         }
-        
+
         // Keep old function for backwards compatibility
         function initializePackageSelection() {
             const packageOptions = document.querySelectorAll('.cc-package-option');
             const unlockBtn = document.getElementById('unlockPayBtn');
-            
+
             packageOptions.forEach(option => {
-                option.addEventListener('click', function() {
+                option.addEventListener('click', function () {
                     // Remove selected from all
                     packageOptions.forEach(o => o.classList.remove('selected'));
                     // Add selected to this one
                     this.classList.add('selected');
-                    
+
                     const pkg = this.getAttribute('data-package');
                     const amount = this.getAttribute('data-amount');
                     const name = this.querySelector('.cc-package-option-name').textContent;
-                    
+
                     if (unlockBtn) {
                         unlockBtn.disabled = false;
                         unlockBtn.setAttribute('data-category', pkg);
@@ -2387,17 +2402,17 @@
                     }
                 });
             });
-            
+
             // Unlock button click handler
             if (unlockBtn) {
-                unlockBtn.addEventListener('click', async function() {
+                unlockBtn.addEventListener('click', async function () {
                     if (this.disabled) return;
-                    
+
                     const category = this.getAttribute('data-category');
                     const amount = this.getAttribute('data-amount');
-                    
+
                     if (!category || !amount) return;
-                    
+
                     // Trigger payment using existing payment handler
                     try {
                         await window.paymentHandler.processPayment(
@@ -2416,7 +2431,7 @@
                 });
             }
         }
-        
+
         // Show results after successful payment
         async function showResultsAfterPayment(category) {
             console.log('--- showResultsAfterPayment ---');
@@ -2490,18 +2505,18 @@
                     }
                 } else if (category === 'bronze' || category === 'silver' || category === 'gold') {
                     console.log('Branch: bronze/silver/gold (Placement Engine)');
-                    
+
                     // Helper function to initialize collapsible sections
                     function initializeNewCollapsibles() {
                         document.querySelectorAll('.collapsible-header').forEach(button => {
                             // Remove existing listeners to prevent duplicates
                             const newButton = button.cloneNode(true);
                             button.parentNode.replaceChild(newButton, button);
-                            
-                            newButton.addEventListener('click', function() {
+
+                            newButton.addEventListener('click', function () {
                                 const content = this.nextElementSibling;
                                 const icon = this.querySelector('.collapse-icon');
-                                
+
                                 if (content && content.classList.contains('collapsible-content')) {
                                     content.classList.toggle('hidden');
                                     if (icon) {
@@ -2511,7 +2526,7 @@
                             });
                         });
                     }
-                    
+
                     if (typeof window.CampusPlacementEngine !== 'undefined' && typeof window.PlacementRules !== 'undefined') {
                         // Show quick loading progress
                         if (resultsDiv) {
@@ -2532,7 +2547,7 @@
                                 </div>
                             `;
                         }
-                        
+
                         // 1. Initialize engine (loads JSON files) - uses cache if already loaded
                         const startTime = performance.now();
                         await window.CampusPlacementEngine.init();
@@ -2541,7 +2556,7 @@
                         // 2. Get Grades and calculate cluster points (1-20)
                         const grades = window.getStudentGrades();
                         const points = window.calculateClusterPoints();
-                        
+
                         // Store for PDF generation
                         window.lastClusterPoints = points;
                         window.lastPackageType = category;
@@ -2550,22 +2565,22 @@
                         const matchStartTime = performance.now();
                         const universities = window.CampusPlacementEngine.getQualifiedUniversities(points, grades);
                         const matchTime = performance.now() - matchStartTime;
-                        
+
                         // Store for PDF generation
                         window.lastUniversities = universities;
-                        
+
                         console.log(`⚡ Performance: Init ${initTime.toFixed(0)}ms | Match ${matchTime.toFixed(0)}ms`);
                         console.log('Found universities:', universities.length);
 
                         // 4. Display main results (Banner Only for Bronze/Silver/Gold)
                         // This removes KMTC, Degree, etc. sections for these packages
                         window.displayResultsUnified('placement-only', null);
-                        
+
                         // 4b. Override download button to use placement PDF for bronze/silver/gold
                         setTimeout(() => {
                             const downloadBtn = document.getElementById('downloadBtn');
                             if (downloadBtn) {
-                                downloadBtn.onclick = function() {
+                                downloadBtn.onclick = function () {
                                     if (typeof window.generatePlacementPDF === 'function') {
                                         window.generatePlacementPDF(category);
                                     } else {
@@ -2578,7 +2593,7 @@
 
                         // 5. Display results based on package type
                         const resultsContent = document.getElementById('results');
-                        
+
                         // ============================================
                         // SILVER & GOLD: Show Cluster Points Section (COLLAPSIBLE)
                         // ============================================
@@ -2587,11 +2602,11 @@
                             let clusterInnerContent = `
                                 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                             `;
-                            
+
                             // Get sorted cluster points
                             const sortedClusters = Object.entries(points)
                                 .sort((a, b) => b[1] - a[1]);
-                            
+
                             sortedClusters.forEach(([clusterName, clusterPoints]) => {
                                 const clusterNum = clusterName.replace('Cluster ', '');
                                 const pointsValue = typeof clusterPoints === 'number' ? clusterPoints.toFixed(2) : clusterPoints;
@@ -2602,7 +2617,7 @@
                                     </div>
                                 `;
                             });
-                            
+
                             clusterInnerContent += `
                                 </div>
                                 <div class="mt-4 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-xl p-4 text-center">
@@ -2611,7 +2626,7 @@
                                     <p class="text-white/60 text-xs mt-1">${sortedClusters[0] ? sortedClusters[0][0] : ''}</p>
                                 </div>
                             `;
-                            
+
                             // Wrap in collapsible section
                             let clusterPointsHtml = `
                                 <div class="mb-6 overflow-hidden rounded-xl shadow-lg border border-gray-100 bg-white">
@@ -2635,10 +2650,10 @@
                                     </div>
                                 </div>
                             `;
-                            
+
                             resultsContent.innerHTML += clusterPointsHtml;
                         }
-                        
+
                         // ============================================
                         // GOLD ONLY: Expert Access Section (COLLAPSIBLE - STARTS EXPANDED)
                         // ============================================
@@ -2702,7 +2717,7 @@
                                     </div>
                                 </div>
                             `;
-                            
+
                             // Wrap in collapsible section with gold gradient border - STARTS EXPANDED for visibility
                             let expertHtml = `
                                 <div class="mb-6 overflow-hidden rounded-xl shadow-lg border-2 border-amber-300 bg-white">
@@ -2726,7 +2741,7 @@
                                     </div>
                                 </div>
                             `;
-                            
+
                             resultsContent.innerHTML += expertHtml;
                         }
 
@@ -2814,7 +2829,7 @@
                             });
 
                             placementHtml += `</div></div>`;
-                            
+
                             // Add Download PDF Button for Bronze/Silver/Gold
                             placementHtml += `
                                 <div class="mt-8 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-2xl p-6 shadow-lg">
@@ -2836,7 +2851,7 @@
                                     </div>
                                 </div>
                             `;
-                            
+
                             // Add KUCCPS disclaimer
                             placementHtml += `
                                 <div class="mt-8 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6 shadow-sm">
@@ -2874,12 +2889,12 @@
                                     </div>
                                 </div>
                             `;
-                            
+
                             resultsContent.innerHTML += placementHtml;
-                            
+
                             // Attach copy handlers to code buttons
                             attachCopyHandlers();
-                            
+
                             // Initialize collapsible sections for cluster points and expert access
                             initializeNewCollapsibles();
                         } else if (resultsContent && universities.length === 0) {
@@ -3024,7 +3039,7 @@
                 pdf.setTextColor(...THEME.dark);
                 pdf.text('Student: ' + studentName, 105, y, { align: 'center' });
                 y += 7;
-                
+
                 const overallGrade = document.getElementById('overallGrade')?.value || 'N/A';
                 pdf.setFontSize(11);
                 pdf.setTextColor(...THEME.gray);
@@ -3038,13 +3053,13 @@
                     pdf.setLineWidth(2);
                     pdf.setFillColor(255, 251, 235); // Light amber background
                     pdf.roundedRect(12, y, 186, 75, 4, 4, 'FD');
-                    
+
                     y += 10;
                     pdf.setFontSize(16);
                     pdf.setTextColor(...THEME.gold);
                     pdf.setFont(undefined, 'bold');
                     pdf.text('GOLD PACKAGE - FREE EXPERT CONSULTATION', 105, y, { align: 'center' });
-                    
+
                     y += 8;
                     pdf.setFontSize(11);
                     pdf.setTextColor(...THEME.dark);
@@ -3052,7 +3067,7 @@
                     pdf.text('Congratulations! As a Gold member, you get FREE personalized', 105, y, { align: 'center' });
                     y += 5;
                     pdf.text('guidance from our education experts within 24 hours!', 105, y, { align: 'center' });
-                    
+
                     y += 10;
                     pdf.setFillColor(220, 38, 38); // Red background for urgency
                     pdf.roundedRect(25, y - 3, 160, 10, 2, 2, 'F');
@@ -3060,18 +3075,18 @@
                     pdf.setTextColor(255, 255, 255);
                     pdf.setFont(undefined, 'bold');
                     pdf.text('ACTION REQUIRED: FILL THE FORM BELOW!', 105, y + 4, { align: 'center' });
-                    
+
                     y += 15;
                     pdf.setFontSize(11);
                     pdf.setTextColor(...THEME.blue);
                     pdf.setFont(undefined, 'bold');
                     pdf.text('https://forms.gle/5B3CzWgWVhTCYyGe8', 105, y, { align: 'center' });
-                    
+
                     y += 8;
                     pdf.setFontSize(9);
                     pdf.setTextColor(...THEME.gray);
                     pdf.text('Or WhatsApp/Call: 0718 744780 | 0741 739262', 105, y, { align: 'center' });
-                    
+
                     y += 18;
                 }
 
@@ -3080,7 +3095,7 @@
                 pdf.setLineWidth(0.5);
                 pdf.setFillColor(240, 253, 244); // Light green background
                 pdf.roundedRect(15, y, 180, 22, 3, 3, 'FD');
-                
+
                 y += 7;
                 pdf.setFontSize(10);
                 pdf.setTextColor(...THEME.dark);
@@ -3090,7 +3105,7 @@
                 pdf.setFontSize(11);
                 pdf.setTextColor(...THEME.primary);
                 pdf.text('0718 744780  |  0741 739262', 105, y, { align: 'center' });
-                
+
                 y += 12;
 
                 // ===== YOUR SUBJECT GRADES (All packages - matching courses-eligibility.js style) =====
@@ -3142,7 +3157,7 @@
                         y = checkNewPage(y);
                         const [c1, p1] = entries[i];
                         pdf.text(c1 + ': ' + p1.toFixed(3), 20, y);
-                        
+
                         if (entries[i + 1]) {
                             const [c2, p2] = entries[i + 1];
                             pdf.text(c2 + ': ' + p2.toFixed(3), 110, y);
@@ -3155,7 +3170,7 @@
                 // ===== QUALIFIED UNIVERSITIES =====
                 const grades = window.getStudentGrades ? window.getStudentGrades() : {};
                 const points = window.lastClusterPoints || (window.calculateClusterPoints ? window.calculateClusterPoints() : {});
-                
+
                 let universities = window.lastUniversities || [];
                 if (universities.length === 0 && window.CampusPlacementEngine && window.CampusPlacementEngine._initialized) {
                     universities = window.CampusPlacementEngine.getQualifiedUniversities(points, grades);
@@ -3171,14 +3186,14 @@
 
                     universities.forEach((uni, uniIndex) => {
                         y = checkNewPage(y, 20);
-                        
+
                         // University name
                         pdf.setFontSize(11);
                         pdf.setTextColor(...THEME.blue);
                         pdf.setFont(undefined, 'bold');
                         pdf.text((uniIndex + 1) + '. ' + uni.name + ' (' + uni.type + ')', 15, y);
                         y += 5;
-                        
+
                         pdf.setFontSize(8);
                         pdf.setTextColor(...THEME.gray);
                         pdf.setFont(undefined, 'normal');
@@ -3188,21 +3203,21 @@
                         // Courses
                         pdf.setFontSize(9);
                         pdf.setTextColor(...THEME.dark);
-                        
+
                         uni.courses.forEach((course) => {
                             y = checkNewPage(y, 8);
-                            
+
                             // Course name (truncate if needed)
                             let courseName = course.name;
                             if (courseName.length > 45) {
                                 courseName = courseName.substring(0, 42) + '...';
                             }
-                            
+
                             pdf.setTextColor(...THEME.primary);
                             pdf.text('*', 20, y);
                             pdf.setTextColor(...THEME.dark);
                             pdf.text(courseName, 24, y);
-                            
+
                             // Cutoff info on same line
                             pdf.setFontSize(8);
                             pdf.setTextColor(...THEME.gray);
@@ -3227,7 +3242,7 @@
                 pdf.setLineWidth(0.2);
                 pdf.line(15, y, 195, y);
                 y += 6;
-                
+
                 pdf.setFontSize(8);
                 pdf.setTextColor(...THEME.gray);
                 pdf.text('DISCLAIMER: This data is sourced from KUCCPS. Use as a guide only.', 105, y, { align: 'center' });
@@ -3265,23 +3280,23 @@
             // Get Results button handler (Freemium flow)
             const getResultsBtn = document.getElementById('getResultsBtn');
             if (getResultsBtn) {
-                getResultsBtn.addEventListener('click', function() {
+                getResultsBtn.addEventListener('click', function () {
                     if (!this.disabled) {
                         showTeaserResults();
                     }
                 });
             }
-            
+
             // Update Get Results button state on grade changes
             document.querySelectorAll('.grade-select').forEach(select => {
-                select.addEventListener('change', function() {
+                select.addEventListener('change', function () {
                     updateGetResultsButtonState();
                 });
             });
-            
+
             // Initial state update
             setTimeout(updateGetResultsButtonState, 100);
-            
+
             // Package selector handler (kept for backwards compatibility)
             const packageSelect = document.getElementById('packageSelect');
             const serviceName = document.getElementById('serviceName');
@@ -3405,7 +3420,8 @@
                         <input type="email" id="signupEmail" class="form-input" placeholder="Enter your email" required>
                     </div>
                     <div class="form-group">
-                        <label for="signupPhone">M-Pesa Phone Number <span class="text-xs text-gray-500">(for referral payouts)</span></label>
+                        <label for="signupPhone">M-Pesa Phone Number <span class="text-xs text-gray-500">(for referral
+                                payouts)</span></label>
                         <input type="tel" id="signupPhone" class="form-input" placeholder="07XXXXXXXX or 01XXXXXXXX"
                             required pattern="^(0|254|\+254)?[17]\d{8}$">
                     </div>

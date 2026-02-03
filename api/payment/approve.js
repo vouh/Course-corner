@@ -20,17 +20,17 @@ module.exports = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Session ID is required' });
     }
 
-    global.payments = global.payments || {};
-    const payment = global.payments[sessionId];
+    const { getTransactionBySessionId } = require('../utils/firebase');
+    const payment = await getTransactionBySessionId(sessionId);
 
     if (!payment) {
-      return res.status(404).json({ success: false, message: 'Payment session not found' });
+      return res.status(404).json({ success: false, message: 'Payment session not found or expired' });
     }
 
     if (payment.status !== 'completed') {
       return res.status(403).json({
         success: false,
-        message: `Cannot approve. Payment status is: ${payment.status}`,
+        message: `Payment is not completed. Current status: ${payment.status}`,
         status: payment.status
       });
     }

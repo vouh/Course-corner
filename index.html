@@ -2,11 +2,11 @@
 <html lang="en">
 
 <head>
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="manifest" href="/site.webmanifest">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="manifest" href="/site.webmanifest">
 
     <script src="assets/js/init-swiper.js" defer></script>
     <!-- Swiper.js CSS -->
@@ -287,7 +287,8 @@
                 <a href="pages/contact.html" class="mobile-nav-link">Contact</a>
             </nav>
             <div class="mobile-auth-buttons">
-                <a href="pages/referral.html" id="profileBtnMobile" class="btn-nav-profile hidden" style="width:100%; justify-content:center; text-decoration:none;">
+                <a href="pages/referral.html" id="profileBtnMobile" class="btn-nav-profile hidden"
+                    style="width:100%; justify-content:center; text-decoration:none;">
                     <i class="fas fa-gift"></i>
                     My Dashboard
                 </a>
@@ -659,10 +660,10 @@
         // ========================================
         // REFERRAL CODE CAPTURE (supports both ?ref= and #ref=)
         // ========================================
-        (function() {
+        (function () {
             // Check query params first
             let refCode = new URLSearchParams(window.location.search).get('ref');
-            
+
             // If not in query, check hash (e.g., #ref=XXXXX)
             if (!refCode && window.location.hash) {
                 const hashParams = window.location.hash.substring(1); // Remove #
@@ -670,11 +671,11 @@
                     refCode = hashParams.split('=')[1];
                 }
             }
-            
+
             if (refCode) {
                 localStorage.setItem('pendingReferralCode', refCode.toUpperCase());
                 console.log('📌 Referral code captured:', refCode);
-                
+
                 // Optional: Show referral banner
                 setTimeout(() => {
                     const banner = document.createElement('div');
@@ -687,7 +688,7 @@
                         </button>
                     `;
                     document.body.prepend(banner);
-                    
+
                     // Auto-hide after 10 seconds
                     setTimeout(() => {
                         const b = document.getElementById('referralBanner');
@@ -2024,7 +2025,7 @@
                 if (referralCode) {
                     console.log('📌 Applying referral code from storage:', referralCode);
                 }
-                
+
                 await window.paymentHandler.initiatePayment(phoneNumber, category, amount, referralCode);
 
                 // Show payment status and start polling immediately
@@ -2070,7 +2071,7 @@
                 });
 
                 // Wait for payment with status callback (starts immediately, no button click needed)
-                await window.paymentHandler.pollPaymentStatus(40, 3000, (status, attempt, maxAttempts) => {
+                const pollResult = await window.paymentHandler.pollPaymentStatus(40, 3000, (status, attempt, maxAttempts) => {
                     const statusText = document.getElementById('swal-status-text');
                     const attemptText = document.getElementById('swal-attempt-text');
                     if (statusText) {
@@ -2088,10 +2089,18 @@
                     }
                 });
 
-                // Check if cancelled
+                // Check if cancelled or failed
                 if (paymentCancelled) {
                     window.paymentHandler.clearSession();
                     return false;
+                }
+
+                if (!pollResult.success) {
+                    if (pollResult.timedOut) {
+                        throw new Error('Payment confirmation timed out. If you have paid, please use the "I Already Paid" button to verify your code.');
+                    } else {
+                        throw new Error(pollResult.status === 'failed' ? 'Payment failed. Please try again.' : 'An error occurred during payment verification.');
+                    }
                 }
 
                 // Payment successful - approve access
@@ -2106,7 +2115,7 @@
                     title: 'Payment Successful! ✅',
                     html: `<p class="text-green-600 mb-2">Your payment has been confirmed!</p>`,
                     showConfirmButton: false,
-                    timer: 1500,
+                    timer: 2000,
                     timerProgressBar: true,
                     willClose: () => {
                         document.body.classList.remove('swal2-shown');
@@ -2317,7 +2326,8 @@
                         <input type="email" id="signupEmail" class="form-input" placeholder="Enter your email" required>
                     </div>
                     <div class="form-group">
-                        <label for="signupPhone">M-Pesa Phone Number <span class="text-xs text-gray-500">(for referral payouts)</span></label>
+                        <label for="signupPhone">M-Pesa Phone Number <span class="text-xs text-gray-500">(for referral
+                                payouts)</span></label>
                         <input type="tel" id="signupPhone" class="form-input" placeholder="07XXXXXXXX or 01XXXXXXXX"
                             required pattern="^(0|254|\+254)?[17]\d{8}$">
                     </div>

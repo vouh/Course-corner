@@ -111,6 +111,17 @@ module.exports = async (req, res) => {
     const timestamp = getTimestamp();
     const password = generatePassword(timestamp);
 
+    // Determine best callback URL
+    let finalCallbackUrl = CALLBACK_URL;
+    if (!finalCallbackUrl || finalCallbackUrl.includes('course-corner.vercel.app')) {
+      const host = req.headers.host;
+      if (host) {
+        const protocol = req.headers['x-forwarded-proto'] || 'https';
+        finalCallbackUrl = `${protocol}://${host}/api/mpesa/callback`;
+        console.log('🔄 Construction dynamic callback URL:', finalCallbackUrl);
+      }
+    }
+
     const stkPushRequest = {
       BusinessShortCode: BUSINESS_SHORT_CODE,
       Password: password,
@@ -120,7 +131,7 @@ module.exports = async (req, res) => {
       PartyA: formattedPhone,
       PartyB: BUSINESS_SHORT_CODE,
       PhoneNumber: formattedPhone,
-      CallBackURL: CALLBACK_URL || `https://course-corner.vercel.app/api/mpesa/callback`,
+      CallBackURL: finalCallbackUrl,
       AccountReference: `CC-${category.substring(0, 10)}-${sessionId.substring(0, 10)}`,
       TransactionDesc: `Course Corner - ${category}`
     };

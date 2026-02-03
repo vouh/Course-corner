@@ -766,6 +766,7 @@
                 // Save to referralCodes collection
                 await db.collection('referralCodes').doc(code).set({
                     code: code,
+                    userName: name,
                     displayName: name,
                     phoneNumber: cleanPhone,
                     isActive: true,

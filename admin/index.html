@@ -599,29 +599,41 @@
                     <img src="../assets/images/logo.png" alt="Course Corner" class="w-12 h-12">
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Referral Code Generator</h3>
-                <p class="text-gray-500 dark:text-gray-400 mt-2">Generate unique 5-character codes</p>
+                <p class="text-gray-500 dark:text-gray-400 mt-2">Create custom referral codes with payout info</p>
             </div>
-            <div class="mb-6">
-                <input type="text" id="generated-code" readonly
-                    class="w-full text-center text-4xl font-mono font-bold py-6 bg-gray-50 dark:bg-gray-700 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl text-primary-600 dark:text-primary-400"
-                    placeholder="XXXXX" value="XXXXX">
+
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Referrer Name</label>
+                    <input type="text" id="admin-ref-name" placeholder="Enter Full Name"
+                        class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">M-Pesa Phone Number</label>
+                    <input type="tel" id="admin-ref-phone" placeholder="0712345678"
+                        class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Referral Code</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="generated-code" readonly
+                            class="flex-1 px-4 py-3 bg-gray-50 dark:bg-gray-700 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-primary-600 dark:text-primary-400 font-mono font-bold text-center"
+                            placeholder="XXXXX" value="XXXXX">
+                        <button onclick="generateAdminReferralCode()" class="p-3 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
-            <div class="flex gap-3 mb-6">
-                <button onclick="generateAdminReferralCode()"
-                    class="flex-1 bg-gradient-to-r from-primary-500 to-primary-600 text-white py-4 rounded-xl font-bold hover:from-primary-600 hover:to-primary-700 transition-all">
-                    <i class="fas fa-sync-alt mr-2"></i>Generate
+
+            <div class="flex flex-col gap-3">
+                <button onclick="saveAndGenerateAdminCode()" id="save-gen-btn"
+                    class="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white py-4 rounded-xl font-bold hover:from-primary-600 hover:to-primary-700 transition-all shadow-lg shadow-primary-500/20">
+                    <i class="fas fa-save mr-2"></i>Save & Copy Link
                 </button>
-                <button onclick="copyGeneratedCode()"
-                    class="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 py-4 rounded-xl font-bold hover:bg-gray-200 dark:hover:bg-gray-600 transition-all">
-                    <i class="fas fa-copy mr-2"></i>Copy Link
-                </button>
+                <button onclick="closeCodeGenerator()"
+                    class="w-full py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 font-medium">Cancel</button>
             </div>
-            <div id="codes-history" class="border-t border-gray-200 dark:border-gray-700 pt-4 hidden">
-                <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase mb-3">Recent Codes</p>
-                <div id="codes-list" class="flex flex-wrap gap-2"></div>
-            </div>
-            <button onclick="closeCodeGenerator()"
-                class="w-full mt-4 py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 font-medium">Close</button>
         </div>
     </div>
 
@@ -1053,57 +1065,110 @@
         let generatedCodes = JSON.parse(localStorage.getItem('adminCodes') || '[]');
 
         function openCodeGenerator() {
+            document.getElementById('admin-ref-name').value = '';
+            document.getElementById('admin-ref-phone').value = '';
+            document.getElementById('generated-code').value = 'XXXXX';
             document.getElementById('code-modal').classList.remove('hidden');
             document.getElementById('code-modal').classList.add('flex');
-            updateCodesHistory();
         }
         function closeCodeGenerator() { document.getElementById('code-modal').classList.add('hidden'); document.getElementById('code-modal').classList.remove('flex'); }
 
-        async function generateAdminReferralCode() {
+        function generateAdminReferralCode() {
             const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
             let code = '';
-            // Generate 5-char code
             for (let i = 0; i < 5; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
-
-            // Check for duplicates, regenerate if needed
-            let attempts = 0;
-            while (generatedCodes.includes(code) && attempts < 10) {
-                code = '';
-                for (let i = 0; i < 5; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
-                attempts++;
-            }
-
             document.getElementById('generated-code').value = code;
+            return code;
+        }
 
-            // Add to local codes list (no limit)
-            if (!generatedCodes.includes(code)) {
-                generatedCodes.unshift(code);
-                localStorage.setItem('adminCodes', JSON.stringify(generatedCodes));
-                updateCodesHistory();
+        async function saveAndGenerateAdminCode() {
+            const name = document.getElementById('admin-ref-name').value.trim();
+            const phone = document.getElementById('admin-ref-phone').value.trim();
+            let code = document.getElementById('generated-code').value;
+
+            if (!name || !phone) {
+                showToast('Please enter name and phone number', 'warning');
+                return;
             }
 
-            // Save to Firestore referralCodes collection
+            if (code === 'XXXXX') {
+                code = generateAdminReferralCode();
+            }
+
+            const btn = document.getElementById('save-gen-btn');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+
             try {
+                // Formatting phone
+                let cleanPhone = phone.replace(/[^0-9]/g, '');
+                if (cleanPhone.startsWith('0')) cleanPhone = '254' + cleanPhone.substring(1);
+                else if (cleanPhone.startsWith('+')) cleanPhone = cleanPhone.substring(1);
+                else if (!cleanPhone.startsWith('254') && cleanPhone.length === 9) cleanPhone = '254' + cleanPhone;
+
+                // Save to referralCodes collection
                 await db.collection('referralCodes').doc(code).set({
                     code: code,
                     userId: auth.currentUser?.uid || 'admin',
                     userEmail: auth.currentUser?.email || 'admin@coursecorner.com',
-                    userName: 'Admin Generated',
-                    phoneNumber: '',
+                    userName: name,
+                    displayName: name,
+                    phoneNumber: cleanPhone,
                     createdAt: new Date().toISOString(),
                     totalReferrals: 0,
                     paidReferrals: 0,
                     totalEarnings: 0,
                     pendingPayout: 0,
                     isActive: true,
-                    isAdminGenerated: true
+                    isAdminGenerated: true,
+                    source: 'admin-manual'
                 });
-                showToast('Code generated and saved: ' + code, 'success');
+
+                // Check if user exists with this phone (to link it)
+                const userSnapshot = await db.collection('users')
+                    .where('phoneNumber', '==', cleanPhone)
+                    .limit(1)
+                    .get();
+
+                if (!userSnapshot.empty) {
+                    await userSnapshot.docs[0].ref.update({
+                        referralCode: code,
+                        displayName: name // Update name to match record
+                    });
+                } else {
+                    // Create a placeholder user doc so it shows up in the referrals table
+                    await db.collection('users').add({
+                        displayName: name,
+                        phoneNumber: cleanPhone,
+                        referralCode: code,
+                        referralCount: 0,
+                        referralEarnings: 0,
+                        referralPending: 0,
+                        referralPaidCount: 0,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                        isAdminAdded: true
+                    });
+                }
+
+                // Copy to clipboard
+                await navigator.clipboard.writeText('https://coursecornerkenya.com/#ref=' + code);
+                showToast('Code saved & Link copied!', 'success');
+                closeCodeGenerator();
+                
+                // Add to local history for convenience
+                if (!generatedCodes.includes(code)) {
+                    generatedCodes.unshift(code);
+                    localStorage.setItem('adminCodes', JSON.stringify(generatedCodes));
+                }
             } catch (error) {
-                console.error('Error saving code to Firestore:', error);
-                showToast('Code generated (local only): ' + code, 'warning');
+                console.error('Error saving code:', error);
+                showToast('Failed to save code: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-save mr-2"></i>Save & Copy Link';
             }
         }
+
         function copyGeneratedCode() {
             const code = document.getElementById('generated-code').value;
             if (!code || code === 'XXXXX') { showToast('Generate first', 'warning'); return; }

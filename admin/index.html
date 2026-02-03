@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Course Corner</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+    <link rel="icon" href="../favicon.ico" sizes="any">
+    <link rel="manifest" href="../site.webmanifest">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -595,8 +600,8 @@
         <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-md w-full p-8">
             <div class="text-center mb-6">
                 <div
-                    class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <i class="fas fa-magic text-white text-2xl"></i>
+                    class="w-16 h-16 bg-white dark:bg-gray-700 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg overflow-hidden">
+                    <img src="../assets/images/logo.png" alt="Course Corner" class="w-12 h-12">
                 </div>
                 <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Referral Code Generator</h3>
                 <p class="text-gray-500 dark:text-gray-400 mt-2">Generate unique 5-character codes</p>
@@ -631,7 +636,10 @@
         <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
             <div
                 class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between sticky top-0 bg-white dark:bg-gray-800">
-                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Transaction Details</h3>
+                <div class="flex items-center gap-3">
+                    <img src="../assets/images/logo.png" alt="Course Corner" class="w-8 h-8 rounded-lg">
+                    <h3 class="text-xl font-bold text-gray-900 dark:text-white">Transaction Details</h3>
+                </div>
                 <button onclick="closeModal()"
                     class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-gray-400"><i
                         class="fas fa-times text-xl"></i></button>

@@ -101,15 +101,6 @@
                             </button>
                         </form>
                     </div>
-
-                    <!-- Verify Code Link -->
-                    <div class="mt-6 pt-6 border-t border-gray-100 text-center">
-                        <p class="text-gray-600 text-sm mb-3">Have an M-Pesa transaction code?</p>
-                        <a href="verify-payment.html" class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 font-semibold">
-                            <i class="fas fa-receipt"></i>
-                            Verify Payment Code
-                        </a>
-                    </div>
                 </div>
             </div>
         </div>
@@ -514,10 +505,6 @@
                     showConfirmButton: false
                 });
             }
-        };
-
-        window.verifyCode = function(code) {
-            window.location.href = `verify-payment.html?code=${code}`;
         };
 
         window.requestWithdrawal = async function() {

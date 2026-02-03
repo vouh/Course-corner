@@ -581,7 +581,7 @@ class PaymentHandler {
                     <div style="text-align: left;">
                         <div style="margin-bottom: 1rem;">
                             <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem; font-size: 0.9rem;">
-                                Phone Number <span style="color: #ef4444;">*</span>
+                                M-Pesa Number <span style="color: #ef4444;">*</span>
                             </label>
                             <input type="tel" id="swal-phone" class="swal2-input" placeholder="07XXXXXXXX" 
                                 style="margin: 0; width: 100%; box-sizing: border-box;">
@@ -614,13 +614,13 @@ class PaymentHandler {
                     const referral = document.getElementById('swal-referral').value.trim().toUpperCase();
 
                     if (!phone) {
-                        Swal.showValidationMessage('Please enter your phone number');
+                        Swal.showValidationMessage('Please enter your M-Pesa number');
                         return false;
                     }
 
                     const cleaned = phone.replace(/\s/g, '');
                     if (!/^(0|254|\+254)?[17]\d{8}$/.test(cleaned)) {
-                        Swal.showValidationMessage('Please enter a valid Kenyan phone number');
+                        Swal.showValidationMessage('Please enter a valid M-Pesa number');
                         return false;
                     }
 
@@ -631,7 +631,7 @@ class PaymentHandler {
                     const referral = document.getElementById('swal-referral').value.trim().toUpperCase();
 
                     if (!phone) {
-                        Swal.showValidationMessage('Please enter your phone number to verify payment');
+                        Swal.showValidationMessage('Please enter your M-Pesa number to verify payment');
                         return false;
                     }
 

@@ -246,21 +246,6 @@ class FirebaseAuthHandler {
                 displayName: additionalData.displayName || user.displayName || '',
                 photoURL: additionalData.photoURL || user.photoURL || '',
                 phoneNumber: additionalData.phoneNumber || '',
-                kcseYear: '',
-                kcseGrades: {
-                    mathematics: '',
-                    english: '',
-                    kiswahili: '',
-                    biology: '',
-                    chemistry: '',
-                    physics: '',
-                    history: '',
-                    geography: '',
-                    cre: '',
-                    agriculture: '',
-                    business: '',
-                    computer: ''
-                },
                 // Referral system fields
                 referralCode: '',
                 referralCreatedAt: null,
@@ -357,31 +342,10 @@ class FirebaseAuthHandler {
     }
 
     /**
-     * Update KCSE grades
-     */
-    async updateKCSEGrades(grades) {
-        return await this.updateUserProfile({ kcseGrades: grades });
-    }
-
-    /**
      * Update phone number
      */
     async updatePhoneNumber(phoneNumber) {
         return await this.updateUserProfile({ phoneNumber });
-    }
-
-    /**
-     * Update KCSE year
-     */
-    async updateKCSEYear(kcseYear) {
-        return await this.updateUserProfile({ kcseYear });
-    }
-
-    /**
-     * Get user's KCSE grades
-     */
-    getKCSEGrades() {
-        return this.userProfile?.kcseGrades || null;
     }
 
     /**
@@ -442,11 +406,6 @@ class FirebaseAuthHandler {
             }
             userAvatar.classList.remove('hidden');
         }
-
-        // Pre-fill calculator with saved grades if available
-        if (this.userProfile?.kcseGrades) {
-            this.prefillCalculatorGrades();
-        }
     }
 
     /**
@@ -480,39 +439,6 @@ class FirebaseAuthHandler {
         if (userAvatar) {
             userAvatar.classList.add('hidden');
         }
-    }
-
-    /**
-     * Pre-fill calculator with saved grades
-     */
-    prefillCalculatorGrades() {
-        const grades = this.userProfile?.kcseGrades;
-        if (!grades) return;
-
-        const gradeMap = {
-            'mathematics': 'math',
-            'english': 'eng',
-            'kiswahili': 'kis',
-            'biology': 'bio',
-            'chemistry': 'chem',
-            'physics': 'phy',
-            'history': 'hist',
-            'geography': 'geo',
-            'cre': 'cre',
-            'agriculture': 'agri',
-            'business': 'bus',
-            'computer': 'comp'
-        };
-
-        Object.entries(grades).forEach(([subject, grade]) => {
-            const selectId = gradeMap[subject];
-            if (selectId && grade) {
-                const select = document.getElementById(selectId);
-                if (select) {
-                    select.value = grade;
-                }
-            }
-        });
     }
 
     /**
@@ -600,59 +526,53 @@ class FirebaseAuthHandler {
         const profileEmail = document.getElementById('profileEmail');
         const profileName = document.getElementById('profileName');
         const profilePhone = document.getElementById('profilePhone');
-        const profileKcseYear = document.getElementById('profileKcseYear');
 
         if (profileEmail) profileEmail.value = this.userProfile.email || '';
         if (profileName) profileName.value = this.userProfile.displayName || '';
         if (profilePhone) profilePhone.value = this.userProfile.phoneNumber || '';
-        if (profileKcseYear) profileKcseYear.value = this.userProfile.kcseYear || '';
-
-        // KCSE Grades
-        const grades = this.userProfile.kcseGrades || {};
-        const gradeFields = ['mathematics', 'english', 'kiswahili', 'biology', 'chemistry',
-            'physics', 'history', 'geography', 'cre', 'agriculture',
-            'business', 'computer'];
-
-        gradeFields.forEach(field => {
-            const select = document.getElementById(`profile_${field}`);
-            if (select && grades[field]) {
-                select.value = grades[field];
-            }
-        });
     }
 
     /**
      * Save profile from form
      */
     async saveProfile() {
+        const displayName = document.getElementById('profileName')?.value || '';
         const phoneNumber = document.getElementById('profilePhone')?.value || '';
-        const kcseYear = document.getElementById('profileKcseYear')?.value || '';
+        const email = document.getElementById('profileEmail')?.value || '';
 
-        const gradeFields = ['mathematics', 'english', 'kiswahili', 'biology', 'chemistry',
-            'physics', 'history', 'geography', 'cre', 'agriculture',
-            'business', 'computer'];
+        this.showLoadingOverlay('Saving profile...', 'Updating your information');
 
-        const kcseGrades = {};
-        gradeFields.forEach(field => {
-            const select = document.getElementById(`profile_${field}`);
-            if (select) {
-                kcseGrades[field] = select.value;
+        try {
+            const { updateProfile } = this.firebaseFunctions;
+
+            // 1. Update Firebase Auth Profile (DisplayName)
+            if (this.currentUser && displayName !== this.currentUser.displayName) {
+                await updateProfile(this.currentUser, { displayName });
             }
-        });
 
-        const result = await this.updateUserProfile({
-            phoneNumber,
-            kcseYear,
-            kcseGrades
-        });
+            // 2. Update Firestore Profile
+            const result = await this.updateUserProfile({
+                displayName,
+                phoneNumber,
+                email
+            });
 
-        if (result.success) {
-            this.closeProfileModal();
-            // Update calculator with new grades
-            this.prefillCalculatorGrades();
+            if (result.success) {
+                // Update header display name if it exists
+                const userDisplayName = document.getElementById('userDisplayName');
+                if (userDisplayName) userDisplayName.textContent = displayName;
+                
+                this.closeProfileModal();
+                this.showSuccessOverlay('Profile Updated', 'Your changes have been saved', 1500);
+            }
+            return result;
+
+        } catch (error) {
+            console.error('Error saving profile:', error);
+            this.hideLoadingOverlay();
+            this.showToast('Error saving profile', 'error');
+            return { success: false, error: error.message };
         }
-
-        return result;
     }
 
     /**

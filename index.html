@@ -483,15 +483,11 @@
     </div>
 
 
-    <!-- Modern Two Column Buttons Section (Packages & Calculator) -->
-    <section class="modern-cta-buttons">
+    <!-- Modern Two Column Buttons Section (Packages) -->
+    <section class="modern-cta-buttons" style="grid-template-columns: 1fr; max-width: 400px; margin: 0 auto;">
         <a href="pages/packages.html" class="modern-cta-btn btn-packages">
             <i class="fas fa-box-open"></i>
             <span>Our Packages</span>
-        </a>
-        <a href="pages/calculator.html" class="modern-cta-btn btn-calculator">
-            <i class="fas fa-calculator"></i>
-            <span>Calculator</span>
         </a>
     </section>
 
@@ -507,23 +503,14 @@
             <!-- Desktop grid layout -->
             <div class="features-grid">
                 <!-- Feature Card 1 -->
-                <div class="modern-feature-card" onclick="window.location.href='pages/calculator.html'">
-                    <div class="feature-icon-wrapper">
-                        <i class="fas fa-calculator"></i>
-                    </div>
-                    <h3 class="feature-title">Assess Grades</h3>
-                    <p class="feature-description">Input your KCSE grades and calculate your cluster points accurately
-                    </p>
-                </div>
-                <!-- Feature Card 2 -->
                 <div class="modern-feature-card">
                     <div class="feature-icon-wrapper">
                         <i class="fas fa-compass"></i>
                     </div>
                     <h3 class="feature-title">Explore Courses</h3>
-                    <p class="feature-description">Discover courses that match your cluster points and interests</p>
+                    <p class="feature-description">Discover courses that match your interests and goals</p>
                 </div>
-                <!-- Feature Card 3 -->
+                <!-- Feature Card 2 -->
                 <div class="modern-feature-card">
                     <div class="feature-icon-wrapper">
                         <i class="fas fa-university"></i>
@@ -531,7 +518,7 @@
                     <h3 class="feature-title">Find Universities</h3>
                     <p class="feature-description">Compare universities offering your chosen courses</p>
                 </div>
-                <!-- Feature Card 4 -->
+                <!-- Feature Card 3 -->
                 <div class="modern-feature-card">
                     <div class="feature-icon-wrapper">
                         <i class="fas fa-check-circle"></i>
@@ -548,27 +535,15 @@
                     <div class="swiper-wrapper">
                         <!-- Feature Card 1 -->
                         <div class="swiper-slide">
-                            <div class="modern-feature-card" onclick="window.location.href='pages/calculator.html'">
-                                <div class="feature-icon-wrapper">
-                                    <i class="fas fa-calculator"></i>
-                                </div>
-                                <h3 class="feature-title">Assess Grades</h3>
-                                <p class="feature-description">Input your KCSE grades and calculate your cluster points
-                                    accurately</p>
-                            </div>
-                        </div>
-                        <!-- Feature Card 2 -->
-                        <div class="swiper-slide">
                             <div class="modern-feature-card">
                                 <div class="feature-icon-wrapper">
                                     <i class="fas fa-compass"></i>
                                 </div>
                                 <h3 class="feature-title">Explore Courses</h3>
-                                <p class="feature-description">Discover courses that match your cluster points and
-                                    interests</p>
+                                <p class="feature-description">Discover courses that match your interests</p>
                             </div>
                         </div>
-                        <!-- Feature Card 3 -->
+                        <!-- Feature Card 2 -->
                         <div class="swiper-slide">
                             <div class="modern-feature-card">
                                 <div class="feature-icon-wrapper">
@@ -578,7 +553,7 @@
                                 <p class="feature-description">Compare universities offering your chosen courses</p>
                             </div>
                         </div>
-                        <!-- Feature Card 4 -->
+                        <!-- Feature Card 3 -->
                         <div class="swiper-slide">
                             <div class="modern-feature-card">
                                 <div class="feature-icon-wrapper">
@@ -1188,7 +1163,7 @@
                         <li><a href="pages/calculator.html">Calculator</a></li>
                         <li><a href="pages/cluster-points.html">Cluster Points Guide</a></li>
                         <li><a href="pages/application-process.html">Application Process</a></li>
-                        <li><a href="pages/my-results.html">My Dashboard</a></li>
+                        <li><a href="pages/referral.html">Dashboard</a></li>
                         <li><a href="pages/referral.html">Referral Program</a></li>
                     </ul>
                 </div>
@@ -2409,327 +2384,77 @@
     </div>
 
     <!-- Profile Modal -->
-    <div id="profileModal" class="auth-modal-overlay hidden">
-        <div class="auth-modal profile-modal">
-            <div class="modal-header">
-                <h2>My Profile</h2>
-                <button class="modal-close-btn" onclick="window.firebaseAuth.closeProfileModal()">
-                    <i class="fas fa-times text-xl"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <!-- User Info Display -->
-                <div id="userInfoDisplay" class="user-info-display">
-                    <div id="userAvatarLarge" class="user-avatar-large">
-                        <i class="fas fa-user"></i>
-                    </div>
-                    <div class="user-details">
-                        <h3 id="userDisplayName">User</h3>
-                    </div>
-                </div>
+    <!-- Profile Modal Redesigned -->
+    <div id="profileModal" class="fixed inset-0 z-[100] hidden overflow-y-auto">
+        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+            <!-- Backdrop -->
+            <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" onclick="window.firebaseAuth.closeProfileModal()"></div>
 
-                <!-- Personal Information Section -->
-                <div class="profile-section">
-                    <h3 class="profile-section-title">
-                        <i class="fas fa-user mr-2"></i>Personal Information
-                    </h3>
-                    <div class="form-group mb-3">
-                        <label for="profileEmail">Email Address</label>
-                        <input type="email" id="profileEmail" class="form-input bg-gray-100" readonly>
-                    </div>
-                    <div class="form-group mb-3">
-                        <label for="profilePhone">Phone Number</label>
-                        <input type="tel" id="profilePhone" class="form-input" placeholder="e.g., 0712345678">
-                    </div>
-                </div>
-
-                <!-- KCSE Information Section -->
-                <div class="profile-section">
-                    <h3 class="profile-section-title">
-                        <i class="fas fa-graduation-cap mr-2"></i>KCSE Information
-                    </h3>
-                    <div class="form-group mb-4">
-                        <label for="profileKcseYear">KCSE Year</label>
-                        <select id="profileKcseYear" class="form-select">
-                            <option value="">Select Year</option>
-                            <option value="2024">2024</option>
-                            <option value="2023">2023</option>
-                            <option value="2022">2022</option>
-                            <option value="2021">2021</option>
-                            <option value="2020">2020</option>
-                            <option value="2019">2019</option>
-                            <option value="2018">2018</option>
-                            <option value="2017">2017</option>
-                            <option value="2016">2016</option>
-                            <option value="2015">2015</option>
-                            <option value="other">Other</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- KCSE Grades Section -->
-                <div class="profile-section">
-                    <h3 class="profile-section-title">
-                        <i class="fas fa-chart-bar mr-2"></i>KCSE Grades
-                    </h3>
-                    <p class="text-sm text-gray-600 mb-3">Save your grades to auto-fill the cluster calculator</p>
-                    <div class="grades-grid">
-                        <!-- Core Subjects -->
-                        <div class="form-group">
-                            <label for="profile_mathematics">Mathematics</label>
-                            <select id="profile_mathematics" class="form-select">
-                                <option value="">Select</option>
-                                <option value="A">A</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B">B</option>
-                                <option value="B-">B-</option>
-                                <option value="C+">C+</option>
-                                <option value="C">C</option>
-                                <option value="C-">C-</option>
-                                <option value="D+">D+</option>
-                                <option value="D">D</option>
-                                <option value="D-">D-</option>
-                                <option value="E">E</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile_english">English</label>
-                            <select id="profile_english" class="form-select">
-                                <option value="">Select</option>
-                                <option value="A">A</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B">B</option>
-                                <option value="B-">B-</option>
-                                <option value="C+">C+</option>
-                                <option value="C">C</option>
-                                <option value="C-">C-</option>
-                                <option value="D+">D+</option>
-                                <option value="D">D</option>
-                                <option value="D-">D-</option>
-                                <option value="E">E</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile_kiswahili">Kiswahili</label>
-                            <select id="profile_kiswahili" class="form-select">
-                                <option value="">Select</option>
-                                <option value="A">A</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B">B</option>
-                                <option value="B-">B-</option>
-                                <option value="C+">C+</option>
-                                <option value="C">C</option>
-                                <option value="C-">C-</option>
-                                <option value="D+">D+</option>
-                                <option value="D">D</option>
-                                <option value="D-">D-</option>
-                                <option value="E">E</option>
-                            </select>
-                        </div>
-                        <!-- Sciences -->
-                        <div class="form-group">
-                            <label for="profile_biology">Biology</label>
-                            <select id="profile_biology" class="form-select">
-                                <option value="">Select</option>
-                                <option value="A">A</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B">B</option>
-                                <option value="B-">B-</option>
-                                <option value="C+">C+</option>
-                                <option value="C">C</option>
-                                <option value="C-">C-</option>
-                                <option value="D+">D+</option>
-                                <option value="D">D</option>
-                                <option value="D-">D-</option>
-                                <option value="E">E</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile_chemistry">Chemistry</label>
-                            <select id="profile_chemistry" class="form-select">
-                                <option value="">Select</option>
-                                <option value="A">A</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B">B</option>
-                                <option value="B-">B-</option>
-                                <option value="C+">C+</option>
-                                <option value="C">C</option>
-                                <option value="C-">C-</option>
-                                <option value="D+">D+</option>
-                                <option value="D">D</option>
-                                <option value="D-">D-</option>
-                                <option value="E">E</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile_physics">Physics</label>
-                            <select id="profile_physics" class="form-select">
-                                <option value="">Select</option>
-                                <option value="A">A</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B">B</option>
-                                <option value="B-">B-</option>
-                                <option value="C+">C+</option>
-                                <option value="C">C</option>
-                                <option value="C-">C-</option>
-                                <option value="D+">D+</option>
-                                <option value="D">D</option>
-                                <option value="D-">D-</option>
-                                <option value="E">E</option>
-                            </select>
-                        </div>
-                        <!-- Humanities -->
-                        <div class="form-group">
-                            <label for="profile_history">History</label>
-                            <select id="profile_history" class="form-select">
-                                <option value="">Select</option>
-                                <option value="A">A</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B">B</option>
-                                <option value="B-">B-</option>
-                                <option value="C+">C+</option>
-                                <option value="C">C</option>
-                                <option value="C-">C-</option>
-                                <option value="D+">D+</option>
-                                <option value="D">D</option>
-                                <option value="D-">D-</option>
-                                <option value="E">E</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile_geography">Geography</label>
-                            <select id="profile_geography" class="form-select">
-                                <option value="">Select</option>
-                                <option value="A">A</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B">B</option>
-                                <option value="B-">B-</option>
-                                <option value="C+">C+</option>
-                                <option value="C">C</option>
-                                <option value="C-">C-</option>
-                                <option value="D+">D+</option>
-                                <option value="D">D</option>
-                                <option value="D-">D-</option>
-                                <option value="E">E</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile_cre">CRE/IRE/HRE</label>
-                            <select id="profile_cre" class="form-select">
-                                <option value="">Select</option>
-                                <option value="A">A</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B">B</option>
-                                <option value="B-">B-</option>
-                                <option value="C+">C+</option>
-                                <option value="C">C</option>
-                                <option value="C-">C-</option>
-                                <option value="D+">D+</option>
-                                <option value="D">D</option>
-                                <option value="D-">D-</option>
-                                <option value="E">E</option>
-                            </select>
-                        </div>
-                        <!-- Technical/Applied -->
-                        <div class="form-group">
-                            <label for="profile_agriculture">Agriculture</label>
-                            <select id="profile_agriculture" class="form-select">
-                                <option value="">Select</option>
-                                <option value="A">A</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B">B</option>
-                                <option value="B-">B-</option>
-                                <option value="C+">C+</option>
-                                <option value="C">C</option>
-                                <option value="C-">C-</option>
-                                <option value="D+">D+</option>
-                                <option value="D">D</option>
-                                <option value="D-">D-</option>
-                                <option value="E">E</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile_business">Business Studies</label>
-                            <select id="profile_business" class="form-select">
-                                <option value="">Select</option>
-                                <option value="A">A</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B">B</option>
-                                <option value="B-">B-</option>
-                                <option value="C+">C+</option>
-                                <option value="C">C</option>
-                                <option value="C-">C-</option>
-                                <option value="D+">D+</option>
-                                <option value="D">D</option>
-                                <option value="D-">D-</option>
-                                <option value="E">E</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="profile_computer">Computer Studies</label>
-                            <select id="profile_computer" class="form-select">
-                                <option value="">Select</option>
-                                <option value="A">A</option>
-                                <option value="A-">A-</option>
-                                <option value="B+">B+</option>
-                                <option value="B">B</option>
-                                <option value="B-">B-</option>
-                                <option value="C+">C+</option>
-                                <option value="C">C</option>
-                                <option value="C-">C-</option>
-                                <option value="D+">D+</option>
-                                <option value="D">D</option>
-                                <option value="D-">D-</option>
-                                <option value="E">E</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Save Button -->
-                <div class="flex gap-3 mt-6">
-                    <button type="button" onclick="window.firebaseAuth.closeProfileModal()"
-                        class="btn-secondary flex-1">
-                        Cancel
-                    </button>
-                    <button type="button" onclick="handleSaveProfile()" id="saveProfileBtn" class="btn-primary flex-1">
-                        <i class="fas fa-save mr-2"></i>
-                        Save Changes
+            <!-- Modal Content -->
+            <div class="relative transform overflow-hidden rounded-2xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-xs border border-gray-100">
+                <div class="absolute right-3 top-3">
+                    <button type="button" class="rounded-full p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-500 transition-colors" onclick="window.firebaseAuth.closeProfileModal()">
+                        <i class="fas fa-times text-base"></i>
                     </button>
                 </div>
 
-                <!-- Referral Program Button -->
-                <div class="mt-4 pt-4 border-t">
-                    <a href="pages/referral.html" class="btn-referral w-full"
-                        style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding: 0.75rem 1rem; border-radius: 0.5rem; font-weight: 600; text-decoration: none; transition: all 0.2s ease;">
-                        <i class="fas fa-gift"></i>
-                        My Referral Dashboard
-                        <span
-                            style="background: rgba(255,255,255,0.2); padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.75rem; margin-left: 0.25rem;">Earn
-                            10%</span>
-                    </a>
-                </div>
+                <div class="p-5 sm:p-6">
+                    <div class="space-y-4">
+                        <!-- Full Name -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 px-1">Full Name</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fas fa-user-circle text-sm"></i>
+                                </div>
+                                <input type="text" id="profileName" class="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-sm text-gray-700" placeholder="Your name">
+                            </div>
+                        </div>
 
-                <!-- Logout Button -->
-                <div class="mt-4 pt-4 border-t">
-                    <button type="button" onclick="handleLogout()"
-                        class="btn-secondary w-full text-red-600 border-red-200 hover:bg-red-50">
-                        <i class="fas fa-sign-out-alt mr-2"></i>
-                        Logout
-                    </button>
+                        <!-- Email -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 px-1">Email Address</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fas fa-envelope text-sm"></i>
+                                </div>
+                                <input type="email" id="profileEmail" class="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-sm text-gray-700" placeholder="Email">
+                            </div>
+                        </div>
+
+                        <!-- Phone -->
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 px-1">M-Pesa Number</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                                    <i class="fas fa-phone text-sm"></i>
+                                </div>
+                                <input type="tel" id="profilePhone" class="w-full pl-9 pr-3 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500/20 focus:border-green-500 transition-all outline-none text-sm text-gray-700" placeholder="e.g. 0712345678">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 space-y-2.5">
+                        <button type="button" onclick="handleSaveProfile()" id="saveProfileBtn" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2 text-sm">
+                            <i class="fas fa-save"></i>
+                            Save Changes
+                        </button>
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <a href="pages/referral.html" class="flex items-center justify-center gap-1.5 bg-blue-50 text-blue-600 hover:bg-blue-100 font-semibold py-2.5 rounded-xl transition-colors text-xs">
+                                <i class="fas fa-gift"></i>
+                                Referrals
+                            </a>
+                            <button type="button" onclick="handleLogout()" class="flex items-center justify-center gap-1.5 bg-red-50 text-red-600 hover:bg-red-100 font-semibold py-2.5 rounded-xl transition-colors text-xs">
+                                <i class="fas fa-sign-out-alt"></i>
+                                Logout
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
+    </div>
         </div>
     </div>
 
@@ -2836,13 +2561,16 @@
         // Save profile handler
         async function handleSaveProfile() {
             const btn = document.getElementById('saveProfileBtn');
-            btn.classList.add('btn-loading');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
             btn.disabled = true;
 
-            await window.firebaseAuth.saveProfile();
-
-            btn.classList.remove('btn-loading');
-            btn.disabled = false;
+            try {
+                await window.firebaseAuth.saveProfile();
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
         }
 
         // Logout handler

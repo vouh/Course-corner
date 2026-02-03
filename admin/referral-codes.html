@@ -183,12 +183,16 @@
         <!-- Search and Filters -->
         <div class="glass-card rounded-xl p-4 mb-6">
             <div class="flex flex-col md:flex-row gap-4">
-                <div class="flex-1">
-                    <div class="relative">
+                <div class="flex-1 flex gap-2">
+                    <div class="relative flex-1">
                         <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                        <input type="text" id="searchInput" placeholder="Search by code, email, phone, or name..."
-                            class="search-input w-full pl-12 pr-4 py-3 rounded-lg text-white placeholder-gray-400">
+                        <input type="text" id="searchInput" placeholder="Search by code, phone, name, or email..."
+                            class="search-input w-full pl-12 pr-4 py-3 rounded-lg text-white placeholder-gray-400"
+                            onkeyup="filterAndDisplayCodes()">
                     </div>
+                    <button onclick="filterAndDisplayCodes()" class="px-5 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all shadow-lg shadow-blue-500/20">
+                        <i class="fas fa-search"></i>
+                    </button>
                 </div>
                 <div class="flex gap-2">
                     <div id="bulkActions"
@@ -358,6 +362,7 @@
                             // Merge data from users collection if referralCodes entry exists
                             allCodes[existingIndex] = {
                                 ...allCodes[existingIndex],
+                                userId: userDoc.id, // Store user ID for deletion cleanup
                                 totalReferrals: userData.referralCount || allCodes[existingIndex].totalReferrals || 0,
                                 paidReferrals: userData.referralPaidCount || allCodes[existingIndex].paidReferrals || 0,
                                 totalEarnings: userData.referralEarnings || allCodes[existingIndex].totalEarnings || 0,
@@ -759,17 +764,13 @@
         window.deleteCode = async function (id) {
             const { value: confirmed } = await Swal.fire({
                 title: 'Delete Code?',
-                text: "Permanently delete this code? Users using it will no longer earn rewards.",
+                text: "Permanently delete this code from all records? Users will no longer earn rewards.",
                 icon: 'warning',
                 width: '320px',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
                 cancelButtonColor: '#1e293b',
-                confirmButtonText: 'Yes, delete',
-                customClass: {
-                    title: 'text-lg font-bold',
-                    htmlContainer: 'text-sm'
-                }
+                confirmButtonText: 'Yes, delete'
             });
 
             if (!confirmed) return;
@@ -778,9 +779,14 @@
                 const codeObj = allCodes.find(c => c.id === id);
                 if (!codeObj) throw new Error('Code not found');
 
-                if (codeObj.source === 'referralCodes') {
-                    await deleteDoc(doc(db, 'referralCodes', id));
-                } else if (codeObj.source === 'users') {
+                const codeValue = codeObj.code;
+
+                // 1. Delete from referralCodes collection if it exists
+                await deleteDoc(doc(db, 'referralCodes', codeValue));
+
+                // 2. Clear from users collection
+                // If we have a userId from merge/users source, use it directly
+                if (codeObj.userId) {
                     await updateDoc(doc(db, 'users', codeObj.userId), {
                         referralCode: deleteField(),
                         referralCreatedAt: deleteField(),
@@ -789,6 +795,22 @@
                         referralEarnings: deleteField(),
                         referralPending: deleteField()
                     });
+                } else {
+                    // Otherwise, find users with this code as a safety measure
+                    const q = query(collection(db, 'users'), where('referralCode', '==', codeValue));
+                    const snapshot = await getDocs(q);
+                    const batch = writeBatch(db);
+                    snapshot.forEach(userDoc => {
+                        batch.update(userDoc.ref, {
+                            referralCode: deleteField(),
+                            referralCreatedAt: deleteField(),
+                            referralCount: deleteField(),
+                            referralPaidCount: deleteField(),
+                            referralEarnings: deleteField(),
+                            referralPending: deleteField()
+                        });
+                    });
+                    await batch.commit();
                 }
 
                 Swal.fire({ 
@@ -804,7 +826,7 @@
                 Swal.fire({ 
                     icon: 'error', 
                     title: 'Error', 
-                    text: error.message,
+                    text: 'Action failed. Please refresh.',
                     width: '320px'
                 });
             }
@@ -837,12 +859,16 @@
             try {
                 const batch = writeBatch(db);
 
-                selected.forEach(id => {
+                for (const id of selected) {
                     const codeObj = allCodes.find(c => c.id === id);
                     if (codeObj) {
-                        if (codeObj.source === 'referralCodes') {
-                            batch.delete(doc(db, 'referralCodes', id));
-                        } else if (codeObj.source === 'users') {
+                        const codeValue = codeObj.code;
+                        
+                        // Add referralCodes deletion to batch
+                        batch.delete(doc(db, 'referralCodes', codeValue));
+
+                        // If we have userID, update user record in batch
+                        if (codeObj.userId) {
                             batch.update(doc(db, 'users', codeObj.userId), {
                                 referralCode: deleteField(),
                                 referralCreatedAt: deleteField(),
@@ -853,7 +879,8 @@
                             });
                         }
                     }
-                });
+                }
+                
                 await batch.commit();
 
                 Swal.fire({ 
@@ -870,7 +897,7 @@
                 Swal.fire({ 
                     icon: 'error', 
                     title: 'Error', 
-                    text: 'Bulk delete failed',
+                    text: 'Bulk delete failed. Some records might still exist.',
                     width: '320px'
                 });
             }

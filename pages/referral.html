@@ -507,6 +507,9 @@
                 <a href="resources.html" class="nav-link">Resources</a>
                 <a href="guide.html" class="nav-link">Guide</a>
                 <a href="contact.html" class="nav-link">Contact</a>
+                <button id="profileBtn" class="bg-green-600 text-white px-4 py-2 rounded-xl font-medium hidden ml-2 hover:bg-green-700 transition-all flex items-center gap-2" onclick="window.firebaseAuth?.openProfileModal()">
+                    <i class="fas fa-user-circle"></i> Profile
+                </button>
             </nav>
 
             <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
@@ -526,6 +529,9 @@
             <a href="resources.html" class="mobile-nav-link">Resources</a>
             <a href="guide.html" class="mobile-nav-link">Guide</a>
             <a href="contact.html" class="mobile-nav-link">Contact</a>
+            <a href="#" id="profileBtnMobile" class="mobile-nav-link hidden" onclick="window.firebaseAuth?.openProfileModal()">
+                <i class="fas fa-user-circle mr-2"></i>My Profile
+            </a>
         </div>
     </header>
 
@@ -587,163 +593,225 @@
 
         <!-- ========== LOGGED IN DASHBOARD VIEW ========== -->
         <div class="dashboard-view" id="dashboardView">
-            <!-- Modern Dashboard Header -->
-            <div class="bg-gradient-to-r from-green-600 to-green-700 rounded-2xl p-6 mb-6 text-white">
-                <div class="flex items-center gap-4 mb-4">
-                    <div class="w-14 h-14 bg-white/20 rounded-full flex items-center justify-center">
-                        <i class="fas fa-hand-holding-usd text-2xl"></i>
+            
+            <!-- Welcome Section -->
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 md:mb-8">
+                <div>
+                    <h1 class="text-3xl font-extrabold text-gray-900 tracking-tight">Referral Dashboard</h1>
+                    <p class="text-gray-500 mt-1">Welcome back, <span id="userNameDisplay" class="font-semibold text-green-600">User</span></p>
+                </div>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <button onclick="window.firebaseAuth?.openProfileModal()" class="flex items-center gap-2 bg-white border border-gray-200 px-3 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
+                        <i class="fas fa-cog text-gray-400"></i>
+                        Profile Settings
+                    </button>
+                    <button onclick="window.location.reload()" class="p-2.5 bg-white border border-gray-200 rounded-xl text-gray-500 hover:text-green-600 transition-all shadow-sm">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Grid - Improved Design -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
+                <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="fas fa-users text-4xl text-green-600"></i>
                     </div>
-                    <div>
-                        <h1 class="text-2xl font-bold">My Referral Dashboard</h1>
-                        <p class="text-green-100">Share your code and earn 12% commission!</p>
+                    <p class="text-xs md:text-sm font-medium text-gray-500 mb-1">Total Referrals</p>
+                    <div class="text-2xl md:text-3xl font-bold text-gray-900" id="statReferrals">0</div>
+                    <div class="mt-2 text-[10px] md:text-xs text-green-600 font-medium flex items-center gap-1">
+                        <i class="fas fa-arrow-up"></i> All time
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="fas fa-check-double text-4xl text-blue-600"></i>
+                    </div>
+                    <p class="text-xs md:text-sm font-medium text-gray-500 mb-1">Paid Referrals</p>
+                    <div class="text-2xl md:text-3xl font-bold text-gray-900" id="statPaid">0</div>
+                    <div class="mt-2 text-[10px] md:text-xs text-blue-600 font-medium flex items-center gap-1">
+                        <i class="fas fa-award"></i> Successfully paid
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="fas fa-money-bill-wave text-4xl text-emerald-600"></i>
+                    </div>
+                    <p class="text-xs md:text-sm font-medium text-gray-500 mb-1">Total Earnings</p>
+                    <div class="text-2xl md:text-3xl font-bold text-emerald-600" id="statEarnings">KES 0</div>
+                    <div class="mt-2 text-[10px] md:text-xs text-emerald-600 font-medium flex items-center gap-1">
+                        <i class="fas fa-coins"></i> 12% commission
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-amber-100 bg-amber-50/30 relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <i class="fas fa-clock text-4xl text-amber-600"></i>
+                    </div>
+                    <p class="text-xs md:text-sm font-medium text-amber-800/70 mb-1">Pending Payout</p>
+                    <div class="text-2xl md:text-3xl font-bold text-amber-600" id="statPending">KES 0</div>
+                    <div class="mt-2 text-[10px] md:text-xs text-amber-600 font-medium flex items-center gap-1">
+                        <i class="fas fa-hourglass-half"></i> Ready for withdrawal
                     </div>
                 </div>
             </div>
 
-            <!-- Stats Grid -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-white rounded-xl p-4 border border-gray-200 text-center">
-                    <div class="text-2xl font-bold text-green-600" id="statReferrals">0</div>
-                    <div class="text-sm text-gray-500">Total Referrals</div>
-                </div>
-                <div class="bg-white rounded-xl p-4 border border-gray-200 text-center">
-                    <div class="text-2xl font-bold text-green-600" id="statPaid">0</div>
-                    <div class="text-sm text-gray-500">Paid Referrals</div>
-                </div>
-                <div class="bg-white rounded-xl p-4 border border-gray-200 text-center">
-                    <div class="text-2xl font-bold text-green-600" id="statEarnings">KES 0</div>
-                    <div class="text-sm text-gray-500">Total Earnings</div>
-                </div>
-                <div class="bg-white rounded-xl p-4 border border-gray-200 text-center">
-                    <div class="text-2xl font-bold text-amber-600" id="statPending">KES 0</div>
-                    <div class="text-sm text-gray-500">Pending Payout</div>
-                </div>
-            </div>
+            <!-- Main Referral Section -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mb-8">
+                <!-- Left Column: Code and Link -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-sm">
+                        <div class="p-6 md:p-8">
+                            <div class="flex items-center justify-between mb-6">
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900 tracking-tight">Your Referral Code</h3>
+                                    <p class="text-sm text-gray-500 mt-1">Use this code to invite your friends</p>
+                                </div>
+                                <div class="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center">
+                                    <i class="fas fa-gift text-green-600 text-xl"></i>
+                                </div>
+                            </div>
 
-            <!-- Referral Code & Link Card - REDESIGNED -->
-            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden mb-6">
-                <!-- Code Section -->
-                <div class="p-6 border-b border-gray-100">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                            <i class="fas fa-key text-green-600"></i>
-                            Your Referral Code
+                            <!-- Big Code Display -->
+                            <div class="relative group cursor-pointer mb-8" id="codeDisplay" onclick="copyReferralCode()">
+                                <div class="absolute inset-0 bg-green-600/5 rounded-2xl transform group-hover:scale-[1.01] transition-transform duration-200"></div>
+                                <div class="relative flex items-center justify-center p-8 border-2 border-dashed border-green-200 rounded-2xl bg-white/50 backdrop-blur-sm min-h-[140px]">
+                                    <div class="code-placeholder text-gray-400 font-medium text-center" id="codePlaceholder">Click below to generate your unique code</div>
+                                    <div class="code-value hidden text-4xl md:text-5xl font-black text-green-600 tracking-[0.2em] font-mono" id="codeValue">XXXXX</div>
+                                </div>
+                                <div class="absolute bottom-3 right-3 text-[10px] font-bold text-green-600 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity flex items-center gap-1">
+                                    <i class="fas fa-copy"></i> Click to copy
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="flex flex-col sm:flex-row gap-4 mb-4">
+                                <button class="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-2xl transition-all shadow-lg shadow-green-600/20 flex items-center justify-center gap-2" id="generateBtn" onclick="generateReferralCode()">
+                                    <i class="fas fa-magic"></i>
+                                    Generate My Code
+                                </button>
+                                <button class="hidden flex-1 bg-gray-900 hover:bg-black text-white font-bold py-4 px-6 rounded-2xl transition-all shadow-lg shadow-gray-900/20 flex items-center justify-center gap-2" id="copyCodeBtn" onclick="copyReferralCode()">
+                                    <i class="fas fa-copy"></i>
+                                    Copy Code
+                                </button>
+                            </div>
+
+                            <p class="text-center text-[10px] md:text-xs text-gray-400">
+                                <i class="fas fa-info-circle mr-1"></i> Your code can only be generated once and remains permanent.
+                            </p>
+                        </div>
+
+                        <!-- Link Section -->
+                        <div class="bg-gray-50 p-6 md:p-8 border-t border-gray-100" id="linkSection" style="display: none;">
+                            <div class="flex flex-col lg:flex-row lg:items-end gap-4">
+                                <div class="flex-1">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Share your customized referral link</label>
+                                    <div class="relative">
+                                        <input type="text" class="w-full bg-white border border-gray-300 rounded-xl pl-4 pr-12 py-3.5 font-mono text-xs md:text-sm text-gray-700 focus:ring-2 focus:ring-green-500 outline-none transition-all" id="referralLink" readonly>
+                                        <button class="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors" onclick="copyReferralLink()">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <button class="bg-gray-900 hover:bg-black text-white font-bold py-3.5 px-8 rounded-xl transition-all flex items-center justify-center gap-2" id="copyBtn" onclick="copyReferralLink()">
+                                    <i class="fas fa-link text-sm"></i>
+                                    Copy Link
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payouts Section (Moved above share) -->
+                    <div class="bg-white rounded-3xl border border-gray-200 shadow-sm overflow-hidden" id="withdrawalSection">
+                        <div class="p-6 md:p-8">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center border border-emerald-100">
+                                    <i class="fas fa-wallet text-emerald-600"></i>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900 tracking-tight">Payments</h3>
+                            </div>
+
+                            <div class="mb-8">
+                                <div class="text-3xl md:text-4xl font-black text-gray-900 mb-1" id="withdrawableBalance">KES 0</div>
+                                <p class="text-xs md:text-sm text-gray-500">Available for withdrawal to M-Pesa</p>
+                            </div>
+
+                            <!-- Withdrawal Button -->
+                            <button id="withdrawBtn" onclick="requestWithdrawal()" class="w-full py-5 px-6 rounded-2xl font-bold transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed bg-gray-100 text-gray-400 group h-16" disabled>
+                                <i class="fas fa-paper-plane group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
+                                <span id="withdrawBtnText">Minimum KES 1 required</span>
+                            </button>
+                            
+                            <div class="mt-6 flex flex-col gap-3">
+                                <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-start gap-3">
+                                    <i class="fas fa-info-circle text-gray-400 mt-0.5 text-xs"></i>
+                                    <p class="text-[11px] text-gray-500 leading-relaxed" id="withdrawNotice">
+                                        Earnings are sent to your <strong>M-Pesa number</strong>. Payouts are usually processed within 24-48 hours.
+                                    </p>
+                                </div>
+                                
+                                <!-- Edit Phone Quick Access -->
+                                <button onclick="window.firebaseAuth?.openProfileModal()" class="w-full py-3 px-4 rounded-xl border border-gray-200 text-xs font-bold text-gray-600 hover:bg-gray-50 hover:border-gray-300 transition-all flex items-center justify-center gap-2">
+                                    <i class="fas fa-phone-alt text-green-600"></i>
+                                    Change M-Pesa Number
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Share Section -->
+                    <div class="bg-white rounded-3xl border border-gray-200 p-6 md:p-8 shadow-sm" id="shareSection" style="display: none;">
+                        <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2 tracking-tight">
+                             <i class="fas fa-share-alt text-green-600"></i>
+                             Quick Share
                         </h3>
-                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">One-time
-                            generation</span>
-                    </div>
-
-                    <!-- Code Display -->
-                    <div class="code-display mb-4" id="codeDisplay">
-                        <div class="code-placeholder" id="codePlaceholder">Click below to generate your code</div>
-                        <div class="code-value hidden" id="codeValue"></div>
-                    </div>
-
-                    <!-- Generate OR Copy Code Button -->
-                    <div class="flex gap-3">
-                        <button class="generate-btn flex-1" id="generateBtn" onclick="generateReferralCode()">
-                            <i class="fas fa-magic"></i>
-                            Generate My Code
-                        </button>
-                        <button
-                            class="hidden flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-900 text-white px-5 py-3 rounded-xl font-semibold transition-all"
-                            id="copyCodeBtn" onclick="copyReferralCode()">
-                            <i class="fas fa-copy"></i>
-                            Copy Code
-                        </button>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                            <button onclick="shareOnWhatsApp()" class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-green-50 hover:bg-green-100 text-green-600 transition-all border border-green-100 group">
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-green-500 text-white rounded-full flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"><i class="fab fa-whatsapp text-xl md:text-2xl"></i></div>
+                                <span class="text-[10px] md:text-xs font-bold uppercase tracking-tight">WhatsApp</span>
+                            </button>
+                            <button onclick="shareOnTwitter()" class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-sky-50 hover:bg-sky-100 text-sky-600 transition-all border border-sky-100 group">
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-sky-500 text-white rounded-full flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"><i class="fab fa-twitter text-xl md:text-2xl"></i></div>
+                                <span class="text-[10px] md:text-xs font-bold uppercase tracking-tight">Twitter</span>
+                            </button>
+                            <button onclick="shareOnFacebook()" class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-blue-50 hover:bg-blue-100 text-blue-600 transition-all border border-blue-100 group">
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-600 text-white rounded-full flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"><i class="fab fa-facebook-f text-xl md:text-2xl"></i></div>
+                                <span class="text-[10px] md:text-xs font-bold uppercase tracking-tight">Facebook</span>
+                            </button>
+                            <button onclick="shareOnTelegram()" class="flex flex-col items-center gap-2 p-4 rounded-2xl bg-sky-50 hover:bg-sky-100 text-sky-700 transition-all border border-sky-100 group">
+                                <div class="w-10 h-10 md:w-12 md:h-12 bg-sky-600 text-white rounded-full flex items-center justify-center shadow-md group-hover:scale-110 transition-transform"><i class="fab fa-telegram-plane text-xl md:text-2xl"></i></div>
+                                <span class="text-[10px] md:text-xs font-bold uppercase tracking-tight">Telegram</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Link Section -->
-                <div class="p-6 bg-gray-50" id="linkSection" style="display: none;">
-                    <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
-                        <i class="fas fa-link text-green-600"></i>
-                        Your Referral Link
-                    </h3>
-                    <p class="text-sm text-gray-500 mb-3">Share this link with friends. When they sign up, your code is
-                        auto-applied!</p>
-
-                    <div class="flex flex-col sm:flex-row gap-3">
-                        <input type="text"
-                            class="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 font-mono text-sm text-gray-700"
-                            id="referralLink" readonly>
-                        <button
-                            class="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition-all whitespace-nowrap"
-                            id="copyBtn" onclick="copyReferralLink()">
-                            <i class="fas fa-copy"></i>
-                            Copy Link
-                        </button>
+                <!-- Right Column: Rules -->
+                <div class="space-y-6">
+                    <!-- Earnings Info -->
+                    <div class="bg-gradient-to-br from-green-600 to-emerald-700 rounded-3xl p-8 text-white shadow-lg shadow-green-600/20 relative overflow-hidden">
+                        <div class="absolute -bottom-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl"></div>
+                        <div class="relative z-10">
+                            <h4 class="text-lg font-bold mb-4">Commission Rules</h4>
+                            <ul class="space-y-4">
+                                <li class="flex items-start gap-3 text-xs leading-normal">
+                                    <div class="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"><i class="fas fa-percent text-[9px]"></i></div>
+                                    <span>You earn a <strong>12% flat commission</strong> on every single purchase made through your link.</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-xs leading-normal">
+                                    <div class="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"><i class="fas fa-bolt text-[9px]"></i></div>
+                                    <span>Your earnings balance is updated <strong>instantly</strong> once your friend completes their payment.</span>
+                                </li>
+                                <li class="flex items-start gap-3 text-xs leading-normal">
+                                    <div class="w-5 h-5 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5"><i class="fas fa-infinity text-[9px]"></i></div>
+                                    <span>There is <strong>no limit</strong> to how much you can earn. Share more to earn more!</span>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Share Buttons -->
-            <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6" id="shareSection" style="display: none;">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">
-                    <i class="fas fa-share-alt text-green-600 mr-2"></i>
-                    Share on Social Media
-                </h3>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <button onclick="shareOnWhatsApp()"
-                        class="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-xl font-medium transition-all">
-                        <i class="fab fa-whatsapp text-xl"></i>
-                        WhatsApp
-                    </button>
-                    <button onclick="shareOnTwitter()"
-                        class="flex items-center justify-center gap-2 bg-sky-500 hover:bg-sky-600 text-white py-3 px-4 rounded-xl font-medium transition-all">
-                        <i class="fab fa-twitter text-xl"></i>
-                        Twitter
-                    </button>
-                    <button onclick="shareOnFacebook()"
-                        class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-xl font-medium transition-all">
-                        <i class="fab fa-facebook text-xl"></i>
-                        Facebook
-                    </button>
-                    <button onclick="shareOnTelegram()"
-                        class="flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white py-3 px-4 rounded-xl font-medium transition-all">
-                        <i class="fab fa-telegram text-xl"></i>
-                        Telegram
-                    </button>
-                </div>
-            </div>
-
-            <!-- Withdrawal Section -->
-            <div class="bg-white rounded-2xl border border-gray-200 p-6 mb-6" id="withdrawalSection">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                            <i class="fas fa-wallet text-green-600"></i>
-                            Withdraw Earnings
-                        </h3>
-                        <p class="text-sm text-gray-500 mt-1">Request withdrawal to your M-Pesa</p>
-                    </div>
-                    <div class="text-right">
-                        <p class="text-sm text-gray-500">Available Balance</p>
-                        <p class="text-2xl font-bold text-green-600" id="withdrawableBalance">KES 0</p>
-                    </div>
-                </div>
-
-                <!-- Withdrawal Button -->
-                <button id="withdrawBtn" onclick="requestWithdrawal()"
-                    class="w-full py-3 px-6 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed bg-gray-200 text-gray-500"
-                    disabled>
-                    <i class="fas fa-money-bill-wave"></i>
-                    <span id="withdrawBtnText">Minimum KES 100 required</span>
-                </button>
-
-                <!-- Minimum notice -->
-                <p class="text-xs text-gray-400 text-center mt-3" id="withdrawNotice">
-                    <i class="fas fa-info-circle"></i> Withdrawals are processed within 24-48 hours to your registered
-                    M-Pesa number.
-                </p>
-            </div>
-
-            <!-- Info Box -->
-            <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
-                <i class="fas fa-info-circle text-amber-500 mt-0.5"></i>
-                <p class="text-sm text-amber-800">Your referral code can only be generated once and cannot be changed.
-                    When someone makes a payment using your referral link, you'll earn <strong>12%</strong> of their
-                    payment automatically!</p>
             </div>
         </div>
     </div>
@@ -1197,6 +1265,12 @@
                 // Load user's referral data
                 const profile = window.firebaseAuth.getProfile();
                 if (profile) {
+                    // Update user name display
+                    const userNameDisplay = document.getElementById('userNameDisplay');
+                    if (userNameDisplay) {
+                        userNameDisplay.textContent = profile.displayName || user.displayName || 'User';
+                    }
+
                     if (profile.referralCode) {
                         displayReferralCode(profile.referralCode);
                     }
@@ -1223,7 +1297,7 @@
 
             withdrawableBalance.textContent = 'KES ' + pendingAmount.toLocaleString();
 
-            if (pendingAmount >= 10) {
+            if (pendingAmount >= 1) {
                 withdrawBtn.disabled = false;
                 withdrawBtn.classList.remove('bg-gray-200', 'text-gray-500');
                 withdrawBtn.classList.add('bg-green-600', 'hover:bg-green-700', 'text-white');
@@ -1232,7 +1306,7 @@
                 withdrawBtn.disabled = true;
                 withdrawBtn.classList.add('bg-gray-200', 'text-gray-500');
                 withdrawBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'text-white');
-                const remaining = 10 - pendingAmount;
+                const remaining = 1 - pendingAmount;
                 withdrawBtnText.textContent = `KES ${remaining} more to unlock withdrawal`;
             }
         }
@@ -1249,8 +1323,8 @@
 
             const pendingAmount = profile.referralPending || 0;
 
-            if (pendingAmount < 10) {
-                showToast('Minimum withdrawal is KES 10', 'error');
+            if (pendingAmount < 1) {
+                showToast('Minimum withdrawal is KES 1', 'error');
                 return;
             }
 
@@ -1436,6 +1510,289 @@
             <span>WhatsApp Channel</span>
         </a>
     </div>
+    <!-- Profile Modal -->
+    <div id="profileModal" class="auth-modal-overlay hidden">
+        <div class="auth-modal profile-modal">
+            <div class="modal-header">
+                <h2>My Profile</h2>
+                <button class="modal-close-btn" onclick="window.firebaseAuth.closeProfileModal()">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- User Info Display -->
+                <div id="userInfoDisplay" class="user-info-display">
+                    <div id="userAvatarLarge" class="user-avatar-large">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <h3 id="userDisplayName">User</h3>
+                    </div>
+                </div>
+
+                <!-- Personal Information Section -->
+                <div class="profile-section">
+                    <h3 class="profile-section-title">
+                        <i class="fas fa-user mr-2"></i>Personal Information
+                    </h3>
+                    <div class="form-group mb-3">
+                        <label for="profileEmail">Email Address</label>
+                        <input type="email" id="profileEmail" class="form-input bg-gray-100" readonly>
+                    </div>
+                    <div class="form-group mb-3">
+                        <label for="profilePhone">Phone Number</label>
+                        <input type="tel" id="profilePhone" class="form-input" placeholder="e.g., 0712345678">
+                    </div>
+                </div>
+
+                <!-- KCSE Information Section -->
+                <div class="profile-section">
+                    <h3 class="profile-section-title">
+                        <i class="fas fa-graduation-cap mr-2"></i>KCSE Information
+                    </h3>
+                    <div class="form-group mb-4">
+                        <label for="profileKcseYear">KCSE Year</label>
+                        <select id="profileKcseYear" class="form-select">
+                            <option value="">Select Year</option>
+                            <option value="2024">2024</option>
+                            <option value="2023">2023</option>
+                            <option value="2022">2022</option>
+                            <option value="2021">2021</option>
+                            <option value="2020">2020</option>
+                            <option value="2019">2019</option>
+                            <option value="2018">2018</option>
+                            <option value="2017">2017</option>
+                            <option value="2016">2016</option>
+                            <option value="2015">2015</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- KCSE Grades Section -->
+                <div class="profile-section">
+                    <h3 class="profile-section-title">
+                        <i class="fas fa-chart-bar mr-2"></i>KCSE Grades
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-3">Save your grades to auto-fill the cluster calculator</p>
+                    <div class="grades-grid">
+                        <div class="form-group">
+                            <label for="profile_mathematics">Mathematics</label>
+                            <select id="profile_mathematics" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_english">English</label>
+                            <select id="profile_english" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_kiswahili">Kiswahili</label>
+                            <select id="profile_kiswahili" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_biology">Biology</label>
+                            <select id="profile_biology" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_chemistry">Chemistry</label>
+                            <select id="profile_chemistry" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_physics">Physics</label>
+                            <select id="profile_physics" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_history">History</label>
+                            <select id="profile_history" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_geography">Geography</label>
+                            <select id="profile_geography" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="profile_cre">CRE/IRE</label>
+                            <select id="profile_cre" class="form-select">
+                                <option value="">Select</option>
+                                <option value="A">A</option>
+                                <option value="A-">A-</option>
+                                <option value="B+">B+</option>
+                                <option value="B">B</option>
+                                <option value="B-">B-</option>
+                                <option value="C+">C+</option>
+                                <option value="C">C</option>
+                                <option value="C-">C-</option>
+                                <option value="D+">D+</option>
+                                <option value="D">D</option>
+                                <option value="D-">D-</option>
+                                <option value="E">E</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Button -->
+                <div class="flex gap-3 mt-6">
+                    <button type="button" onclick="window.firebaseAuth.closeProfileModal()"
+                        class="btn-secondary flex-1">
+                        Cancel
+                    </button>
+                    <button type="button" onclick="handleSaveProfile()" id="saveProfileBtn" class="btn-primary flex-1">
+                        <i class="fas fa-save mr-2"></i>
+                        Save Changes
+                    </button>
+                </div>
+
+                <!-- Logout Button -->
+                <div class="mt-4 pt-4 border-t">
+                    <button type="button" onclick="handleLogout()"
+                        class="btn-secondary w-full text-red-600 border-red-200 hover:bg-red-50">
+                        <i class="fas fa-sign-out-alt mr-2"></i>
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Handlers -->
+    <script>
+        async function handleSaveProfile() {
+            const btn = document.getElementById('saveProfileBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
+            btn.disabled = true;
+
+            try {
+                await window.firebaseAuth.saveProfile();
+                // Profile modal handles its own success message
+            } catch (error) {
+                console.error(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Update Failed',
+                    text: 'Could not save profile changes'
+                });
+            } finally {
+                btn.innerHTML = '<i class="fas fa-save mr-2"></i>Save Changes';
+                btn.disabled = false;
+            }
+        }
+
+        async function handleLogout() {
+            await window.firebaseAuth.logout();
+            window.location.href = '../index.html';
+        }
+    </script>
 </body>
 
 </html>

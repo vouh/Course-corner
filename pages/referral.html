@@ -1299,7 +1299,9 @@
                     userId: user.uid,
                     userEmail: user.email,
                     userName: profile.displayName || user.displayName || '',
-                    phoneNumber: profile.phoneNumber,
+                    phoneNumber: profile.phoneNumber, // M-Pesa number
+                    phone: profile.phoneNumber,       // Admin dashboard compat
+                    referrerPhone: profile.phoneNumber, // Admin dashboard compat
                     amount: pendingAmount,
                     status: 'pending',
                     createdAt: serverTimestamp(),

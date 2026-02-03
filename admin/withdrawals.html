@@ -466,8 +466,8 @@
                     <td class="px-6 py-4 text-sm text-gray-600 dark:text-gray-300">${formatDate(w.createdAt)}</td>
                     <td class="px-6 py-4">
                         <div>
-                            <p class="font-semibold text-gray-900 dark:text-white">${w.referralCode || '-'}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400">${w.referrerPhone || w.phone || '-'}</p>
+                            <p class="font-semibold text-gray-900 dark:text-white">${w.userName || w.referralCode || '-'}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">${w.userEmail || w.referrerPhone || w.phone || '-'}</p>
                         </div>
                     </td>
                     <td class="px-6 py-4">
@@ -519,6 +519,8 @@
                 if (status && w.status !== status) return false;
                 if (search && !(
                     (w.referralCode && w.referralCode.toLowerCase().includes(search)) ||
+                    (w.userName && w.userName.toLowerCase().includes(search)) ||
+                    (w.userEmail && w.userEmail.toLowerCase().includes(search)) ||
                     (w.phone && w.phone.includes(search)) ||
                     (w.mpesaPhone && w.mpesaPhone.includes(search)) ||
                     (w.referrerPhone && w.referrerPhone.includes(search))

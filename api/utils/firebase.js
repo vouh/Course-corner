@@ -858,7 +858,7 @@ const syncReferralStats = async () => {
     console.log(`🔄 [Sync] Processing ${Object.keys(referralData).length} referral codes...`);
 
     // 2. Update users and referralCodes collections
-    const results = { updated: 0, failed: 0 };
+    const results = { updated: 0, failed: 0, withdrawalsSynced: 0 };
 
     for (const code in referralData) {
       const stats = referralData[code];
@@ -872,10 +872,6 @@ const syncReferralStats = async () => {
       if (!userSnapshot.empty) {
         const userRef = userSnapshot.docs[0].ref;
         const userData = userSnapshot.docs[0].data();
-
-        // Calculate pending: Total Earnings - (Previous Total Earnings - Current Pending)
-        // OR better: if we are syncing, we might want to be careful.
-        // The user wants the referrals page to reflect payment details and 12% earnings.
 
         await userRef.update({
           referralCount: stats.count,
@@ -902,15 +898,49 @@ const syncReferralStats = async () => {
 
         results.updated++;
       } else {
-        console.warn(`⚠️ [Sync] No user found for code: ${code}`);
+        console.warn(`\u26a0\ufe0f [Sync] No user found for code: ${code}`);
         results.failed++;
       }
     }
 
-    console.log(`✅ [Sync] Finished! Updated: ${results.updated}, Failed: ${results.failed}`);
+    // 3. Sync Withdrawal metadata (Backfill missing names/emails/phones)
+    console.log('\ud83d\udd04 [Sync] Syncing withdrawal metadata...');
+    const withdrawalSnapshot = await db.collection('withdrawals')
+      .where('status', '==', 'pending')
+      .get();
+
+    for (const wDoc of withdrawalSnapshot.docs) {
+      const wData = wDoc.data();
+      if (!wData.userId) continue;
+
+      try {
+        const userDoc = await db.collection('users').doc(wData.userId).get();
+        if (userDoc.exists) {
+          const u = userDoc.data();
+          const updates = {};
+
+          if (!wData.userEmail && u.email) updates.userEmail = u.email;
+          if (!wData.userName && u.displayName) updates.userName = u.displayName;
+          if (!wData.phoneNumber && u.phoneNumber) updates.phoneNumber = u.phoneNumber;
+
+          // Compat fields for admin dashboard
+          if (!wData.phone && (wData.phoneNumber || u.phoneNumber)) updates.phone = wData.phoneNumber || u.phoneNumber;
+          if (!wData.referrerPhone && u.phoneNumber) updates.referrerPhone = u.phoneNumber;
+
+          if (Object.keys(updates).length > 0) {
+            await wDoc.ref.update(updates);
+            results.withdrawalsSynced++;
+          }
+        }
+      } catch (e) {
+        console.error(`Error syncing withdrawal ${wDoc.id}:`, e.message);
+      }
+    }
+
+    console.log(`\u2705 [Sync] Finished! Updated: ${results.updated}, Sync Withdrawals: ${results.withdrawalsSynced}`);
     return { success: true, ...results };
   } catch (error) {
-    console.error('❌ [Sync] Error syncing referrals:', error);
+    console.error('\u274c [Sync] Error syncing referrals:', error);
     return { success: false, error: error.message };
   }
 };

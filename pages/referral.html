@@ -28,6 +28,15 @@
             color: #111827;
         }
 
+        /* Prevent flicker - hide both views initially */
+        .guest-view, .dashboard-view {
+            display: none;
+        }
+
+        .guest-view.active, .dashboard-view.active {
+            display: block;
+        }
+
         .referral-container {
             max-width: 1100px;
             margin: 0 auto;
@@ -535,6 +544,12 @@
 
     <!-- Main Content -->
     <div class="referral-container" style="padding-top: 7rem;">
+
+        <!-- Loading State -->
+        <div id="pageLoader" class="flex flex-col items-center justify-center py-20">
+            <div class="w-12 h-12 border-4 border-green-200 border-t-green-600 rounded-full animate-spin mb-4"></div>
+            <p class="text-gray-500 font-medium">Loading your dashboard...</p>
+        </div>
 
         <!-- ========== GUEST VIEW ========== -->
         <div class="guest-view" id="guestView">
@@ -1255,8 +1270,12 @@
         function updateViewForUser(user) {
             const guestView = document.getElementById('guestView');
             const dashboardView = document.getElementById('dashboardView');
+            const loader = document.getElementById('pageLoader');
+
+            if (loader) loader.style.display = 'none';
 
             if (user) {
+                guestView.classList.remove('active');
                 guestView.classList.add('hidden');
                 dashboardView.classList.add('active');
 
@@ -1282,6 +1301,7 @@
                     updateWithdrawalButton(profile.referralPending || 0, profile.phoneNumber);
                 }
             } else {
+                guestView.classList.add('active');
                 guestView.classList.remove('hidden');
                 dashboardView.classList.remove('active');
             }

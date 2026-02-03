@@ -378,15 +378,32 @@ class FirebaseAuthHandler {
         const userAvatar = document.getElementById('userAvatar');
         const authBtnMobile = document.getElementById('authBtnMobile');
         const profileBtnMobile = document.getElementById('profileBtnMobile');
+        const homeReferralCta = document.querySelector('.referral-cta-button');
 
         if (authBtn) {
-            authBtn.innerHTML = '<i class="fas fa-sign-out-alt mr-2"></i>Logout';
-            authBtn.onclick = () => this.logout();
+            authBtn.innerHTML = '<i class="fas fa-th-large mr-2"></i>Dashboard';
+            authBtn.classList.remove('btn-nav-login');
+            authBtn.classList.add('bg-green-600', 'text-white', 'px-4', 'py-2', 'rounded-lg', 'font-semibold', 'hover:bg-green-700', 'transition-colors');
+            authBtn.onclick = () => {
+                const prefix = window.location.pathname.includes('/pages/') ? '' : 'pages/';
+                window.location.href = prefix + 'referral.html';
+            };
         }
 
         if (authBtnMobile) {
-            authBtnMobile.innerHTML = '<i class="fas fa-sign-out-alt mr-2"></i>Logout';
-            authBtnMobile.onclick = () => this.logout();
+            authBtnMobile.innerHTML = '<i class="fas fa-th-large mr-2"></i>Dashboard';
+            authBtnMobile.onclick = () => {
+                const prefix = window.location.pathname.includes('/pages/') ? '' : 'pages/';
+                window.location.href = prefix + 'referral.html';
+            };
+        }
+
+        if (homeReferralCta) {
+            homeReferralCta.innerHTML = '<i class="fas fa-chart-line mr-2"></i>View My Dashboard <i class="fas fa-arrow-right ml-2"></i>';
+            homeReferralCta.onclick = (e) => {
+                const prefix = window.location.pathname.includes('/pages/') ? '' : 'pages/';
+                window.location.href = prefix + 'referral.html';
+            };
         }
 
         if (profileBtn) {
@@ -417,6 +434,7 @@ class FirebaseAuthHandler {
         const userAvatar = document.getElementById('userAvatar');
         const authBtnMobile = document.getElementById('authBtnMobile');
         const profileBtnMobile = document.getElementById('profileBtnMobile');
+        const homeReferralCta = document.querySelector('.referral-cta-button');
 
         if (authBtn) {
             authBtn.innerHTML = '<i class="fas fa-user mr-2"></i>Login';
@@ -426,6 +444,13 @@ class FirebaseAuthHandler {
         if (authBtnMobile) {
             authBtnMobile.innerHTML = '<i class="fas fa-user mr-2"></i>Login';
             authBtnMobile.onclick = () => this.openAuthModal();
+        }
+
+        if (homeReferralCta) {
+            homeReferralCta.onclick = (e) => {
+                e.preventDefault();
+                this.openAuthModal();
+            };
         }
 
         if (profileBtn) {

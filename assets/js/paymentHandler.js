@@ -166,28 +166,35 @@ class PaymentHandler {
                     onStatusUpdate(status, attempts, maxAttempts);
                 }
 
-                if (!response.ok || data?.success === false) {
-                    // Server error — keep polling for a few attempts, then return pending
-                    if (attempts >= maxAttempts) {
-                        return { success: false, status: 'pending', timedOut: true, data: payload };
-                    }
-                } else if (status === 'completed') {
+                if (status === 'completed') {
                     this.isPaymentCompleted = true;
                     console.log('Payment completed!');
                     return { success: true, status: 'completed', data: payload };
-                } else if (status === 'failed') {
-                    // Sometimes M-Pesa returns a temporary state that looks like failure; treat "processing" as pending
-                    if (String(resultDesc).toLowerCase().includes('processing')) {
-                        console.log('Still processing, continuing to poll...');
-                    } else {
-                        console.log('Payment failed!');
-                        throw new Error(this.getMpesaErrorMessage(resultDesc));
+                } else if (status === 'failed' || status === 'cancelled') {
+                    // Immediate exit for terminal failure states
+                    console.log(`Payment ${status}! Reason:`, resultDesc);
+                    const errorMsg = status === 'cancelled'
+                        ? 'You cancelled the M-Pesa payment request'
+                        : this.getMpesaErrorMessage(resultDesc);
+
+                    this.isPaymentCompleted = false;
+                    // We throw outside this try/catch or handle it specifically
+                    const terminalError = new Error(errorMsg);
+                    terminalError.isTerminal = true;
+                    throw terminalError;
+                }
+
+                // If response was not ok but not a terminal status, it might be a server error
+                if (!response.ok || data?.success === false) {
+                    if (attempts >= maxAttempts) {
+                        return { success: false, status: 'pending', timedOut: true, data: payload };
                     }
-                } else if (status === 'cancelled') {
-                    throw new Error('You cancelled the M-Pesa payment request');
                 }
             } catch (error) {
-                // Network/timeouts: keep trying until attempts exhausted
+                // If it's a terminal error we explicitly threw, re-throw it to exit the loop
+                if (error.isTerminal) throw error;
+
+                // Otherwise it's a network/timeout: keep trying until attempts exhausted
                 console.error('Poll error:', error);
                 if (attempts >= maxAttempts) {
                     return { success: false, status: 'pending', timedOut: true };
@@ -295,7 +302,10 @@ class PaymentHandler {
             '2001': '🔐 Wrong M-Pesa PIN entered! Please try again with the correct PIN.',
             '1025': '🔐 Wrong M-Pesa PIN entered! Please try again with the correct PIN.',
             '1037': 'M-Pesa request timed out. No response received.',
-            '1019': 'Transaction expired. Please try again.'
+            '1019': 'Transaction expired. Please try again.',
+            '17': 'User cannot be billed. Please ensure your phone is M-Pesa active.',
+            '4': 'Payment system is currently busy. Please try again in 1 minute.',
+            '8': 'Payment request already in progress for this phone.'
         };
 
         // Check for matching error
@@ -377,9 +387,26 @@ class PaymentHandler {
         this.sessionId = null;
         this.isPaymentCompleted = false;
         localStorage.removeItem('paymentSessionId');
+        localStorage.removeItem('paymentCheckoutRequestId'); // Also clear checkout ID
         localStorage.removeItem('accessToken');
         localStorage.removeItem('accessExpires');
         console.log('Session cleared');
+    }
+
+    // Register timeout with backend
+    async registerTimeout() {
+        if (!this.sessionId) return;
+
+        console.log('⏰ Registering timeout for session:', this.sessionId);
+        try {
+            await fetch(`${this.serverUrl}/mpesa/timeout`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ sessionId: this.sessionId })
+            });
+        } catch (error) {
+            console.error('Failed to register timeout:', error);
+        }
     }
 
     // Verify existing payment using M-Pesa transaction code (one-time use)

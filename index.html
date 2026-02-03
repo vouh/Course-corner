@@ -2071,7 +2071,8 @@
                 });
 
                 // Wait for payment with status callback (starts immediately, no button click needed)
-                const pollResult = await window.paymentHandler.pollPaymentStatus(40, 3000, (status, attempt, maxAttempts) => {
+                // REDUCED: 5 attempts * 3s = 15s timeout for faster feedback
+                const pollResult = await window.paymentHandler.pollPaymentStatus(5, 3000, (status, attempt, maxAttempts) => {
                     const statusText = document.getElementById('swal-status-text');
                     const attemptText = document.getElementById('swal-attempt-text');
                     if (statusText) {
@@ -2097,6 +2098,8 @@
 
                 if (!pollResult.success) {
                     if (pollResult.timedOut) {
+                        // Register timeout in the backend
+                        await window.paymentHandler.registerTimeout();
                         throw new Error('Payment confirmation timed out. If you have paid, please use the "I Already Paid" button to verify your code.');
                     } else {
                         throw new Error(pollResult.status === 'failed' ? 'Payment failed. Please try again.' : 'An error occurred during payment verification.');
@@ -2141,6 +2144,33 @@
                 let title = 'Payment Failed';
                 const errorMsg = error.message || 'An error occurred during payment verification';
 
+                if (errorMsg.toLowerCase().includes('timeout') || errorMsg.toLowerCase().includes('timed out')) {
+                    // Specific timeout handling as requested
+                    await Swal.fire({
+                        icon: 'info',
+                        title: 'Payment Still Processing',
+                        html: `
+                            <p class="mb-3">We didn't receive confirmation in time.</p>
+                            <p class="text-sm text-gray-600 mb-4">If you entered your PIN and saw a success message on your phone, click <strong>Verify Payment</strong> to check again.</p>
+                        `,
+                        showCancelButton: true,
+                        confirmButtonText: 'Verify Payment',
+                        cancelButtonText: 'Try Again',
+                        confirmButtonColor: '#3b82f6',
+                        cancelButtonColor: '#16a34a'
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            // Call verifyExistingPayment directly
+                            await window.paymentHandler.verifyExistingPayment(phoneNumber, category, () => showResultsAfterPayment(category));
+                        } else if (result.dismiss === Swal.DismissReason.cancel) {
+                            // User wants to try again - just re-trigger processPayment
+                            processPayment(category, amount);
+                        }
+                    });
+                    return false;
+                }
+
+                // Determine icon and title for other errors
                 if (errorMsg.toLowerCase().includes('cancel')) {
                     icon = 'warning';
                     title = 'Payment Cancelled';
@@ -2150,9 +2180,6 @@
                 } else if (errorMsg.toLowerCase().includes('insufficient') || errorMsg.toLowerCase().includes('balance')) {
                     icon = 'warning';
                     title = 'Insufficient Balance';
-                } else if (errorMsg.toLowerCase().includes('timeout') || errorMsg.toLowerCase().includes('timed out')) {
-                    icon = 'info';
-                    title = 'Request Timed Out';
                 }
 
                 await Swal.fire({

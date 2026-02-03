@@ -1288,8 +1288,12 @@
                 window.firebaseAuth.showLoadingOverlay('Processing...', 'Submitting withdrawal request');
 
                 // Create withdrawal request in Firestore
-                const { addDoc, collection, serverTimestamp, doc, updateDoc, increment } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
-                const db = window.firebaseAuth.db;
+                const { addDoc, collection, serverTimestamp, doc, updateDoc } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js');
+                const db = window.firebaseDb;
+
+                if (!db) {
+                    throw new Error('Firestore database not initialized. Please refresh the page.');
+                }
 
                 await addDoc(collection(db, 'withdrawals'), {
                     userId: user.uid,

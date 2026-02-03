@@ -539,13 +539,13 @@
                     <i class="fas fa-gift"></i>
                 </div>
                 <h1>Earn Money by Referring Friends</h1>
-                <p>Share Course Corner with friends and earn 10% commission on every payment they make!</p>
+                <p>Share Course Corner with friends and earn 12% commission on every payment they make!</p>
             </div>
 
             <!-- Earnings Highlight -->
             <div class="earnings-card">
                 <h2>Your Commission Rate</h2>
-                <div class="earnings-amount">10%</div>
+                <div class="earnings-amount">12%</div>
                 <p>of every payment made by your referrals</p>
             </div>
 
@@ -568,7 +568,7 @@
                     <div class="step-card">
                         <div class="step-number">3</div>
                         <h3>Earn Rewards</h3>
-                        <p>When someone uses your code and pays for any service, you automatically earn 10% of their
+                        <p>When someone uses your code and pays for any service, you automatically earn 12% of their
                             payment. It's that simple!</p>
                     </div>
                 </div>
@@ -595,7 +595,7 @@
                     </div>
                     <div>
                         <h1 class="text-2xl font-bold">My Referral Dashboard</h1>
-                        <p class="text-green-100">Share your code and earn 10% commission!</p>
+                        <p class="text-green-100">Share your code and earn 12% commission!</p>
                     </div>
                 </div>
             </div>
@@ -629,39 +629,47 @@
                             <i class="fas fa-key text-green-600"></i>
                             Your Referral Code
                         </h3>
-                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">One-time generation</span>
+                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-medium">One-time
+                            generation</span>
                     </div>
-                    
+
                     <!-- Code Display -->
                     <div class="code-display mb-4" id="codeDisplay">
                         <div class="code-placeholder" id="codePlaceholder">Click below to generate your code</div>
                         <div class="code-value hidden" id="codeValue"></div>
                     </div>
-                    
+
                     <!-- Generate OR Copy Code Button -->
                     <div class="flex gap-3">
                         <button class="generate-btn flex-1" id="generateBtn" onclick="generateReferralCode()">
                             <i class="fas fa-magic"></i>
                             Generate My Code
                         </button>
-                        <button class="hidden flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-900 text-white px-5 py-3 rounded-xl font-semibold transition-all" id="copyCodeBtn" onclick="copyReferralCode()">
+                        <button
+                            class="hidden flex items-center justify-center gap-2 bg-gray-800 hover:bg-gray-900 text-white px-5 py-3 rounded-xl font-semibold transition-all"
+                            id="copyCodeBtn" onclick="copyReferralCode()">
                             <i class="fas fa-copy"></i>
                             Copy Code
                         </button>
                     </div>
                 </div>
-                
+
                 <!-- Link Section -->
                 <div class="p-6 bg-gray-50" id="linkSection" style="display: none;">
                     <h3 class="text-lg font-semibold text-gray-900 flex items-center gap-2 mb-4">
                         <i class="fas fa-link text-green-600"></i>
                         Your Referral Link
                     </h3>
-                    <p class="text-sm text-gray-500 mb-3">Share this link with friends. When they sign up, your code is auto-applied!</p>
-                    
+                    <p class="text-sm text-gray-500 mb-3">Share this link with friends. When they sign up, your code is
+                        auto-applied!</p>
+
                     <div class="flex flex-col sm:flex-row gap-3">
-                        <input type="text" class="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 font-mono text-sm text-gray-700" id="referralLink" readonly>
-                        <button class="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition-all whitespace-nowrap" id="copyBtn" onclick="copyReferralLink()">
+                        <input type="text"
+                            class="flex-1 bg-white border border-gray-300 rounded-xl px-4 py-3 font-mono text-sm text-gray-700"
+                            id="referralLink" readonly>
+                        <button
+                            class="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-semibold transition-all whitespace-nowrap"
+                            id="copyBtn" onclick="copyReferralLink()">
                             <i class="fas fa-copy"></i>
                             Copy Link
                         </button>
@@ -676,19 +684,23 @@
                     Share on Social Media
                 </h3>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <button onclick="shareOnWhatsApp()" class="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-xl font-medium transition-all">
+                    <button onclick="shareOnWhatsApp()"
+                        class="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 px-4 rounded-xl font-medium transition-all">
                         <i class="fab fa-whatsapp text-xl"></i>
                         WhatsApp
                     </button>
-                    <button onclick="shareOnTwitter()" class="flex items-center justify-center gap-2 bg-sky-500 hover:bg-sky-600 text-white py-3 px-4 rounded-xl font-medium transition-all">
+                    <button onclick="shareOnTwitter()"
+                        class="flex items-center justify-center gap-2 bg-sky-500 hover:bg-sky-600 text-white py-3 px-4 rounded-xl font-medium transition-all">
                         <i class="fab fa-twitter text-xl"></i>
                         Twitter
                     </button>
-                    <button onclick="shareOnFacebook()" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-xl font-medium transition-all">
+                    <button onclick="shareOnFacebook()"
+                        class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-xl font-medium transition-all">
                         <i class="fab fa-facebook text-xl"></i>
                         Facebook
                     </button>
-                    <button onclick="shareOnTelegram()" class="flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white py-3 px-4 rounded-xl font-medium transition-all">
+                    <button onclick="shareOnTelegram()"
+                        class="flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white py-3 px-4 rounded-xl font-medium transition-all">
                         <i class="fab fa-telegram text-xl"></i>
                         Telegram
                     </button>
@@ -710,25 +722,28 @@
                         <p class="text-2xl font-bold text-green-600" id="withdrawableBalance">KES 0</p>
                     </div>
                 </div>
-                
+
                 <!-- Withdrawal Button -->
-                <button id="withdrawBtn" onclick="requestWithdrawal()" 
+                <button id="withdrawBtn" onclick="requestWithdrawal()"
                     class="w-full py-3 px-6 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed bg-gray-200 text-gray-500"
                     disabled>
                     <i class="fas fa-money-bill-wave"></i>
                     <span id="withdrawBtnText">Minimum KES 100 required</span>
                 </button>
-                
+
                 <!-- Minimum notice -->
                 <p class="text-xs text-gray-400 text-center mt-3" id="withdrawNotice">
-                    <i class="fas fa-info-circle"></i> Withdrawals are processed within 24-48 hours to your registered M-Pesa number.
+                    <i class="fas fa-info-circle"></i> Withdrawals are processed within 24-48 hours to your registered
+                    M-Pesa number.
                 </p>
             </div>
 
             <!-- Info Box -->
             <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
                 <i class="fas fa-info-circle text-amber-500 mt-0.5"></i>
-                <p class="text-sm text-amber-800">Your referral code can only be generated once and cannot be changed. When someone makes a payment using your referral link, you'll earn <strong>10%</strong> of their payment automatically!</p>
+                <p class="text-sm text-amber-800">Your referral code can only be generated once and cannot be changed.
+                    When someone makes a payment using your referral link, you'll earn <strong>12%</strong> of their
+                    payment automatically!</p>
             </div>
         </div>
     </div>
@@ -860,9 +875,10 @@
                         <input type="email" id="signupEmail" class="form-input" placeholder="Enter your email" required>
                     </div>
                     <div class="form-group">
-                        <label for="signupPhone">M-Pesa Phone <span class="text-xs text-gray-500">(for payouts)</span></label>
-                        <input type="tel" id="signupPhone" class="form-input" placeholder="07XXXXXXXX"
-                            required pattern="^(0|254|\+254)?[17]\d{8}$">
+                        <label for="signupPhone">M-Pesa Phone <span class="text-xs text-gray-500">(for
+                                payouts)</span></label>
+                        <input type="tel" id="signupPhone" class="form-input" placeholder="07XXXXXXXX" required
+                            pattern="^(0|254|\+254)?[17]\d{8}$">
                     </div>
                     <div class="form-group">
                         <label for="signupPassword">Password</label>
@@ -991,7 +1007,7 @@
 
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
-            
+
             // Show loading overlay
             window.firebaseAuth.showLoadingOverlay('Generating Your Code...', 'Creating your unique referral code');
 
@@ -1008,7 +1024,7 @@
                 // Also save to referralCodes collection for admin tracking
                 const { getFirestore, doc, setDoc, serverTimestamp } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
                 const db = getFirestore(window.firebaseApp);
-                
+
                 await setDoc(doc(db, 'referralCodes', newCode), {
                     code: newCode,
                     userId: user.uid,
@@ -1026,7 +1042,7 @@
                 if (result.success) {
                     // Show success overlay
                     window.firebaseAuth.showSuccessOverlay('Code Generated!', `Your code: ${newCode}`, 2500);
-                    
+
                     setTimeout(() => {
                         displayReferralCode(newCode);
                     }, 2500);
@@ -1071,7 +1087,7 @@
                 } else if (formatted.startsWith('+')) {
                     formatted = formatted.substring(1);
                 }
-                
+
                 const result = await window.firebaseAuth.updateUserProfile({ phoneNumber: formatted });
                 if (result.success) {
                     showToast('Phone number saved! You can now generate your code.', 'success');
@@ -1109,7 +1125,7 @@
         function copyReferralCode() {
             const code = document.getElementById('codeValue').textContent;
             const copyBtn = document.getElementById('copyCodeBtn');
-            
+
             navigator.clipboard.writeText(code).then(() => {
                 copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
                 showToast('Code copied: ' + code, 'success');
@@ -1145,24 +1161,24 @@
         function getShareText() {
             return "Check out Course Corner! Use my referral link to get started:";
         }
-        
+
         function shareOnWhatsApp() {
             const link = document.getElementById('referralLink').value;
             const text = encodeURIComponent(getShareText() + "\n" + link);
             window.open(`https://wa.me/?text=${text}`, '_blank');
         }
-        
+
         function shareOnTwitter() {
             const link = document.getElementById('referralLink').value;
             const text = encodeURIComponent(getShareText());
             window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(link)}`, '_blank');
         }
-        
+
         function shareOnFacebook() {
             const link = document.getElementById('referralLink').value;
             window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(link)}`, '_blank');
         }
-        
+
         function shareOnTelegram() {
             const link = document.getElementById('referralLink').value;
             const text = encodeURIComponent(getShareText());
@@ -1189,7 +1205,7 @@
                     document.getElementById('statPaid').textContent = profile.referralPaidCount || 0;
                     document.getElementById('statEarnings').textContent = 'KES ' + (profile.referralEarnings || 0).toLocaleString();
                     document.getElementById('statPending').textContent = 'KES ' + (profile.referralPending || 0).toLocaleString();
-                    
+
                     // Update withdrawal section
                     updateWithdrawalButton(profile.referralPending || 0, profile.phoneNumber);
                 }
@@ -1204,10 +1220,10 @@
             const withdrawBtn = document.getElementById('withdrawBtn');
             const withdrawBtnText = document.getElementById('withdrawBtnText');
             const withdrawableBalance = document.getElementById('withdrawableBalance');
-            
+
             withdrawableBalance.textContent = 'KES ' + pendingAmount.toLocaleString();
-            
-            if (pendingAmount >= 100) {
+
+            if (pendingAmount >= 10) {
                 withdrawBtn.disabled = false;
                 withdrawBtn.classList.remove('bg-gray-200', 'text-gray-500');
                 withdrawBtn.classList.add('bg-green-600', 'hover:bg-green-700', 'text-white');
@@ -1216,7 +1232,7 @@
                 withdrawBtn.disabled = true;
                 withdrawBtn.classList.add('bg-gray-200', 'text-gray-500');
                 withdrawBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'text-white');
-                const remaining = 100 - pendingAmount;
+                const remaining = 10 - pendingAmount;
                 withdrawBtnText.textContent = `KES ${remaining} more to unlock withdrawal`;
             }
         }
@@ -1225,24 +1241,24 @@
         async function requestWithdrawal() {
             const user = window.firebaseAuth.getCurrentUser();
             const profile = window.firebaseAuth.getProfile();
-            
+
             if (!user || !profile) {
                 showToast('Please log in first', 'error');
                 return;
             }
-            
+
             const pendingAmount = profile.referralPending || 0;
-            
-            if (pendingAmount < 100) {
-                showToast('Minimum withdrawal is KES 100', 'error');
+
+            if (pendingAmount < 10) {
+                showToast('Minimum withdrawal is KES 10', 'error');
                 return;
             }
-            
+
             if (!profile.phoneNumber) {
                 await promptForPhoneNumber();
                 return;
             }
-            
+
             // Confirm withdrawal
             const { isConfirmed } = await Swal.fire({
                 title: 'Request Withdrawal',
@@ -1265,16 +1281,16 @@
                 showCancelButton: true,
                 cancelButtonText: 'Cancel'
             });
-            
+
             if (!isConfirmed) return;
-            
+
             try {
                 window.firebaseAuth.showLoadingOverlay('Processing...', 'Submitting withdrawal request');
-                
+
                 // Create withdrawal request in Firestore
                 const { addDoc, collection, serverTimestamp, doc, updateDoc, increment } = await import('https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js');
                 const db = window.firebaseAuth.db;
-                
+
                 await addDoc(collection(db, 'withdrawals'), {
                     userId: user.uid,
                     userEmail: user.email,
@@ -1285,13 +1301,13 @@
                     createdAt: serverTimestamp(),
                     referralCode: profile.referralCode || null
                 });
-                
+
                 // Reset user's pending amount
                 const userRef = doc(db, 'users', user.uid);
                 await updateDoc(userRef, {
                     referralPending: 0
                 });
-                
+
                 // Also update the referralCodes collection if exists
                 if (profile.referralCode) {
                     try {
@@ -1303,16 +1319,16 @@
                         // Code might not exist in collection, ignore
                     }
                 }
-                
+
                 window.firebaseAuth.showSuccessOverlay('Request Submitted!', 'You will receive your funds via M-Pesa within 24-48 hours', 3000);
-                
+
                 // Update local profile and UI
                 profile.referralPending = 0;
                 setTimeout(() => {
                     document.getElementById('statPending').textContent = 'KES 0';
                     updateWithdrawalButton(0, profile.phoneNumber);
                 }, 3000);
-                
+
             } catch (error) {
                 console.error('Withdrawal error:', error);
                 window.firebaseAuth.hideLoadingOverlay();

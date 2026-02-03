@@ -198,6 +198,12 @@
                     <p class="text-sm text-gray-500 dark:text-gray-400">Manage referral codes and earnings</p>
                 </div>
                 <div class="flex items-center gap-3">
+                    <button onclick="syncReferralData()"
+                        class="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl font-semibold transition-all flex items-center gap-2"
+                        title="Sync from Transactions">
+                        <i class="fas fa-sync"></i>
+                        <span class="hidden sm:inline">Sync Data</span>
+                    </button>
                     <button onclick="loadReferrals()"
                         class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                         title="Refresh">
@@ -460,8 +466,8 @@
 
                 snapshot.forEach(doc => {
                     const data = { id: doc.id, ...doc.data() };
-                    // Only include users with a referral code
-                    if (data.referralCode) {
+                    // Only include users with a referral code AND who have actually referred someone or earned
+                    if (data.referralCode && ((data.referralCount || 0) > 0 || (data.referralEarnings || 0) > 0)) {
                         allReferrers.push(data);
                         totalEarnings += data.referralEarnings || 0;
                         totalReferrals += data.referralCount || 0;
@@ -771,6 +777,26 @@
             } catch (e) {
                 console.error(e);
                 showToast('Error in bulk delete', 'error');
+            }
+        }
+        async function syncReferralData() {
+            try {
+                showToast('Syncing referral data...', 'info');
+                const response = await fetch('/api/referral/admin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'sync-referrals' })
+                });
+                const result = await response.json();
+                if (result.success) {
+                    showToast('Sync successful!', 'success');
+                    loadReferrals();
+                } else {
+                    showToast(result.message || 'Sync failed', 'error');
+                }
+            } catch (e) {
+                console.error('Sync error:', e);
+                showToast('Error syncing data', 'error');
             }
         }
     </script>

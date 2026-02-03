@@ -811,13 +811,109 @@ function getFromMemoryByCheckoutId(checkoutRequestId) {
   }
   return null;
 }
-
 function getAllFromMemory() {
   global.payments = global.payments || {};
   return Object.values(global.payments).sort((a, b) =>
     new Date(b.createdAt) - new Date(a.createdAt)
   );
 }
+
+/**
+ * Sync referral statistics from transactions
+ */
+const syncReferralStats = async () => {
+  try {
+    const { admin, db } = await initializeFirebase();
+    if (!db) return { success: false, message: 'DB not initialized' };
+
+    console.log('🔄 [Sync] Starting referral stats sync...');
+
+    // 1. Get all completed transactions with a referral code
+    const txSnapshot = await db.collection('transactions')
+      .where('status', '==', 'completed')
+      .get();
+
+    if (txSnapshot.empty) {
+      console.log('🔄 [Sync] No transactions found.');
+      return { success: true, count: 0 };
+    }
+
+    const referralData = {}; // code -> { count: 0, revenue: 0, earnings: 0 }
+    const COMMISSION_RATE = 0.12;
+
+    txSnapshot.forEach(doc => {
+      const data = doc.data();
+      const code = (data.referralCode || '').toUpperCase().trim();
+      if (!code) return;
+
+      if (!referralData[code]) {
+        referralData[code] = { count: 0, revenue: 0, earnings: 0 };
+      }
+
+      referralData[code].count++;
+      referralData[code].revenue += (data.amount || 0);
+      referralData[code].earnings += Math.round((data.amount || 0) * COMMISSION_RATE);
+    });
+
+    console.log(`🔄 [Sync] Processing ${Object.keys(referralData).length} referral codes...`);
+
+    // 2. Update users and referralCodes collections
+    const results = { updated: 0, failed: 0 };
+
+    for (const code in referralData) {
+      const stats = referralData[code];
+
+      // Find user with this code
+      const userSnapshot = await db.collection('users')
+        .where('referralCode', '==', code)
+        .limit(1)
+        .get();
+
+      if (!userSnapshot.empty) {
+        const userRef = userSnapshot.docs[0].ref;
+        const userData = userSnapshot.docs[0].data();
+
+        // Calculate pending: Total Earnings - (Previous Total Earnings - Current Pending)
+        // OR better: if we are syncing, we might want to be careful.
+        // The user wants the referrals page to reflect payment details and 12% earnings.
+
+        await userRef.update({
+          referralCount: stats.count,
+          referralPaidCount: stats.count,
+          referralEarnings: stats.earnings,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        // Also update referralCodes if it exists
+        try {
+          const codeRef = db.collection('referralCodes').doc(code);
+          const codeDoc = await codeRef.get();
+          if (codeDoc.exists) {
+            await codeRef.update({
+              totalReferrals: stats.count,
+              paidReferrals: stats.count,
+              totalEarnings: stats.earnings,
+              updatedAt: admin.firestore.FieldValue.serverTimestamp()
+            });
+          }
+        } catch (e) {
+          console.error(`Error updating codeDoc ${code}:`, e.message);
+        }
+
+        results.updated++;
+      } else {
+        console.warn(`⚠️ [Sync] No user found for code: ${code}`);
+        results.failed++;
+      }
+    }
+
+    console.log(`✅ [Sync] Finished! Updated: ${results.updated}, Failed: ${results.failed}`);
+    return { success: true, ...results };
+  } catch (error) {
+    console.error('❌ [Sync] Error syncing referrals:', error);
+    return { success: false, error: error.message };
+  }
+};
 
 // ==================== EXPORTS ====================
 
@@ -843,6 +939,7 @@ module.exports = {
   getPendingWithdrawals,
   processWithdrawal,
   getAllReferrers,
+  syncReferralStats,
   // Helpers
   formatPhoneNumber
 };

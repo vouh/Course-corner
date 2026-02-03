@@ -224,10 +224,7 @@
                             <th class="px-6 py-4 font-medium">Code</th>
                             <th class="px-6 py-4 font-medium">User</th>
                             <th class="px-6 py-4 font-medium">Phone</th>
-                            <th class="px-6 py-4 font-medium">Referrals</th>
-                            <th class="px-6 py-4 font-medium">Paid</th>
-                            <th class="px-6 py-4 font-medium">Earnings</th>
-                            <th class="px-6 py-4 font-medium">Pending</th>
+                            <th class="px-6 py-4 font-medium">Total Uses</th>
                             <th class="px-6 py-4 font-medium">Status</th>
                             <th class="px-6 py-4 font-medium">Created</th>
                             <th class="px-6 py-4 font-medium">Actions</th>
@@ -254,14 +251,11 @@
     </main>
 
     <!-- Firebase SDKs -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, updateDoc, query, orderBy, getDoc, where } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
-        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-        // Import shared auth script
-    </script>
     <script src="js/admin-auth.js"></script>
     <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, updateDoc, query, orderBy, deleteDoc, writeBatch, deleteField, getDoc, where } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
@@ -487,21 +481,12 @@
                     <td class="px-6 py-4 text-center text-white">
                         <span class="font-bold">${code.totalReferrals || 0}</span>
                     </td>
-                    <td class="px-6 py-4 text-center">
-                        <span class="text-green-400 font-bold">${code.paidReferrals || 0}</span>
-                    </td>
-                    <td class="px-6 py-4">
-                        <span class="font-medium text-green-400">KES ${(code.totalEarnings || 0).toLocaleString()}</span>
-                    </td>
-                    <td class="px-6 py-4">
-                        <span class="font-medium text-yellow-400">KES ${(code.pendingPayout || 0).toLocaleString()}</span>
-                    </td>
                     <td class="px-6 py-4">
                         <span class="px-2 py-1 rounded-full text-xs ${code.isActive !== false ? 'status-active' : 'status-inactive'}">
                             ${code.isActive !== false ? 'Active' : 'Inactive'}
                         </span>
                     </td>
-                    <td class="px-6 py-4 text-gray-400 text-xs">
+                    <td class="px-6 py-4 text-gray-400 text-xs text-center">
                         ${formatDate(code.createdAt)}
                     </td>
                     <td class="px-6 py-4">
@@ -741,14 +726,10 @@
         };
 
         // Event listeners for filters
+        document.getElementById('searchInput').addEventListener('keyup', filterAndDisplayCodes);
+        document.getElementById('statusFilter').addEventListener('change', filterAndDisplayCodes);
         document.getElementById('sortBy').addEventListener('change', filterAndDisplayCodes);
 
-        // Helper to format date
-        function formatDate(d) {
-            if (!d) return 'N/A';
-            const date = new Date(d);
-            return date.toLocaleDateString('en-KE', { month: 'short', day: 'numeric', year: 'numeric' });
-        }
 
         // Selection & Delete
         window.toggleSelectAllCodes = function () {

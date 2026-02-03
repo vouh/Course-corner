@@ -1,11 +1,4 @@
-/**
- * Admin Referral Endpoints API
- * GET /api/referral/admin - Get all referrers and pending withdrawals
- * GET /api/referral/admin?action=referrers - Get all referrers only
- * GET /api/referral/admin?action=withdrawals - Get pending withdrawals only
- * POST /api/referral/admin - Process withdrawal
- */
-const { getAllReferrers, getPendingWithdrawals, processWithdrawal } = require('../utils/firebase');
+const { getAllReferrers, getPendingWithdrawals, processWithdrawal, syncReferralStats } = require('../utils/firebase');
 
 module.exports = async (req, res) => {
   // Set CORS headers
@@ -54,6 +47,22 @@ module.exports = async (req, res) => {
 
     if (req.method === 'POST') {
       const { action, withdrawalId, adminId, mpesaReference } = req.body;
+
+      if (action === 'sync-referrals' || action === 'syncReferrals') {
+        const result = await syncReferralStats();
+        if (result.success) {
+          return res.json({
+            success: true,
+            message: `Synced ${result.updated} referrers successfully.`,
+            details: result
+          });
+        } else {
+          return res.status(500).json({
+            success: false,
+            message: result.error || 'Failed to sync referrals'
+          });
+        }
+      }
 
       if (action === 'process-withdrawal' || action === 'processWithdrawal') {
         if (!withdrawalId) {

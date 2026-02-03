@@ -782,21 +782,103 @@
         async function syncReferralData() {
             try {
                 showToast('Syncing referral data...', 'info');
-                const response = await fetch('/api/referral/admin', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'sync-referrals' })
-                });
-                const result = await response.json();
-                if (result.success) {
-                    showToast('Sync successful!', 'success');
-                    loadReferrals();
-                } else {
-                    showToast(result.message || 'Sync failed', 'error');
+
+                // 1. Get all completed transactions
+                const txSnapshot = await db.collection('transactions')
+                    .where('status', '==', 'completed')
+                    .get();
+
+                if (txSnapshot.empty) {
+                    showToast('No completed transactions found.', 'info');
+                    return;
                 }
+
+                const referralData = {}; // code -> { count, revenue, earnings }
+                const COMMISSION_RATE = 0.12;
+
+                txSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    const code = (data.referralCode || '').toUpperCase().trim();
+                    if (!code) return;
+
+                    if (!referralData[code]) {
+                        referralData[code] = { count: 0, revenue: 0, earnings: 0 };
+                    }
+
+                    referralData[code].count++;
+                    const amount = parseFloat(data.amount || 0);
+                    referralData[code].revenue += amount;
+                    referralData[code].earnings += Math.round(amount * COMMISSION_RATE);
+                });
+
+                // 2. Update users
+                let updatedCount = 0;
+                for (const code in referralData) {
+                    const stats = referralData[code];
+                    const userSnapshot = await db.collection('users')
+                        .where('referralCode', '==', code)
+                        .limit(1)
+                        .get();
+
+                    if (!userSnapshot.empty) {
+                        const userDoc = userSnapshot.docs[0];
+                        await userDoc.ref.update({
+                            referralCount: stats.count,
+                            referralPaidCount: stats.count,
+                            referralEarnings: stats.earnings,
+                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+
+                        // Sync with referralCodes collection if exists
+                        try {
+                            const codeRef = db.collection('referralCodes').doc(code);
+                            const codeDoc = await codeRef.get();
+                            if (codeDoc.exists) {
+                                await codeRef.update({
+                                    totalReferrals: stats.count,
+                                    paidReferrals: stats.count,
+                                    totalEarnings: stats.earnings,
+                                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                                });
+                            }
+                        } catch (e) { }
+
+                        updatedCount++;
+                    }
+                }
+
+                // 3. Sync Withdrawal metadata (backfill)
+                const withdrawalSnapshot = await db.collection('withdrawals')
+                    .where('status', '==', 'pending')
+                    .get();
+
+                let withdrawalsSynced = 0;
+                for (const wDoc of withdrawalSnapshot.docs) {
+                    const wData = wDoc.data();
+                    if (!wData.userId) continue;
+
+                    const userDoc = await db.collection('users').doc(wData.userId).get();
+                    if (userDoc.exists) {
+                        const u = userDoc.data();
+                        const updates = {};
+                        if (!wData.userEmail && u.email) updates.userEmail = u.email;
+                        if (!wData.userName && u.displayName) updates.userName = u.displayName;
+                        if (!wData.phoneNumber && u.phoneNumber) updates.phoneNumber = u.phoneNumber;
+                        if (!wData.phone && (wData.phoneNumber || u.phoneNumber)) updates.phone = wData.phoneNumber || u.phoneNumber;
+                        if (!wData.referrerPhone && u.phoneNumber) updates.referrerPhone = u.phoneNumber;
+
+                        if (Object.keys(updates).length > 0) {
+                            await wDoc.ref.update(updates);
+                            withdrawalsSynced++;
+                        }
+                    }
+                }
+
+                showToast(`Sync complete! Updated ${updatedCount} referrers and ${withdrawalsSynced} withdrawals.`, 'success');
+                loadReferrals();
             } catch (e) {
                 console.error('Sync error:', e);
-                showToast('Error syncing data', 'error');
+                showToast('Error syncing data: ' + e.message, 'error');
             }
         }
     </script>

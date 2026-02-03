@@ -289,6 +289,7 @@
                     icon: 'warning',
                     title: 'Not Logged In',
                     text: 'Please login first from the admin dashboard',
+                    width: '320px',
                     confirmButtonColor: '#3b82f6'
                 }).then(() => {
                     window.location.href = 'index.html';
@@ -386,6 +387,7 @@
                     icon: 'error',
                     title: 'Error',
                     text: 'Failed to load referral codes: ' + error.message,
+                    width: '320px',
                     confirmButtonColor: '#3b82f6'
                 });
             }
@@ -564,10 +566,11 @@
                 title: `${action.charAt(0).toUpperCase() + action.slice(1)} Code?`,
                 text: `Are you sure you want to ${action} the code "${code}"?`,
                 icon: 'question',
+                width: '320px',
                 showCancelButton: true,
                 confirmButtonColor: currentlyActive ? '#ef4444' : '#22c55e',
                 cancelButtonColor: '#6b7280',
-                confirmButtonText: `Yes, ${action} it`
+                confirmButtonText: `Yes, ${action}`
             });
 
             if (result.isConfirmed) {
@@ -673,14 +676,12 @@
                                 </div>
                             ` : '<p class="text-gray-500">No referral transactions yet</p>'}
                         </div>
-                        <div class="border-t pt-3 mt-3 text-xs text-gray-500">
-                            <p>Created: ${formatDate(codeData.createdAt)}</p>
-                            <p>Source: ${codeData.source || 'Unknown'}</p>
-                            <p>User ID: ${codeData.userId || 'N/A'}</p>
+                        <div class="border-t pt-3 mt-3 text-xs text-gray-500 italic text-center">
+                            <p>Created: ${formatDate(codeData.createdAt)} | Source: ${codeData.source || 'N/A'}</p>
                         </div>
                     </div>
                 `,
-                width: '500px',
+                width: '440px',
                 confirmButtonColor: '#3b82f6'
             });
         };
@@ -757,28 +758,29 @@
 
         window.deleteCode = async function (id) {
             const { value: confirmed } = await Swal.fire({
-                title: 'Are you sure?',
-                text: "This will permanently delete this referral code. Users using this code will no longer earn referrals.",
+                title: 'Delete Code?',
+                text: "Permanently delete this code? Users using it will no longer earn rewards.",
                 icon: 'warning',
+                width: '320px',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#3b82f6',
-                confirmButtonText: 'Yes, delete it!'
+                cancelButtonColor: '#1e293b',
+                confirmButtonText: 'Yes, delete',
+                customClass: {
+                    title: 'text-lg font-bold',
+                    htmlContainer: 'text-sm'
+                }
             });
 
             if (!confirmed) return;
 
             try {
-                // Determine if code is in referralCodes or a user document
                 const codeObj = allCodes.find(c => c.id === id);
-                if (!codeObj) throw new Error('Code not found in list');
-
-                const { deleteDoc, doc, updateDoc, deleteField } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
+                if (!codeObj) throw new Error('Code not found');
 
                 if (codeObj.source === 'referralCodes') {
                     await deleteDoc(doc(db, 'referralCodes', id));
                 } else if (codeObj.source === 'users') {
-                    // It's a code tied to a user, we should probably just clear the referralCode fields in the user doc
                     await updateDoc(doc(db, 'users', codeObj.userId), {
                         referralCode: deleteField(),
                         referralCreatedAt: deleteField(),
@@ -789,11 +791,22 @@
                     });
                 }
 
-                Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Code has been deleted.', timer: 1500, showConfirmButton: false });
+                Swal.fire({ 
+                    icon: 'success', 
+                    title: 'Deleted!', 
+                    width: '320px',
+                    timer: 1500, 
+                    showConfirmButton: false 
+                });
                 loadReferralCodes();
             } catch (error) {
                 console.error('Delete error:', error);
-                Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to delete: ' + error.message });
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: 'Error', 
+                    text: error.message,
+                    width: '320px'
+                });
             }
         }
 
@@ -802,21 +815,26 @@
             if (!selected.length) return;
 
             const { value: confirmed } = await Swal.fire({
-                title: `Delete ${selected.length} codes?`,
-                text: "This action cannot be undone!",
+                title: 'Bulk Delete?',
+                text: `Delete ${selected.length} codes? This cannot be undone!`,
                 icon: 'warning',
+                width: '320px',
                 showCancelButton: true,
                 confirmButtonColor: '#ef4444',
-                cancelButtonColor: '#3b82f6',
-                confirmButtonText: 'Yes, delete them!'
+                cancelButtonColor: '#1e293b',
+                confirmButtonText: 'Yes, delete all'
             });
 
             if (!confirmed) return;
 
-            Swal.fire({ title: 'Deleting...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+            Swal.fire({ 
+                title: 'Deleting...', 
+                width: '280px',
+                allowOutsideClick: false, 
+                didOpen: () => { Swal.showLoading(); } 
+            });
 
             try {
-                const { writeBatch, doc, updateDoc, deleteField } = await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
                 const batch = writeBatch(db);
 
                 selected.forEach(id => {
@@ -838,11 +856,23 @@
                 });
                 await batch.commit();
 
-                Swal.fire({ icon: 'success', title: 'Success!', text: `Deleted ${selected.length} codes.`, timer: 1500, showConfirmButton: false });
+                Swal.fire({ 
+                    icon: 'success', 
+                    title: 'Success!', 
+                    text: `Deleted ${selected.length} codes.`, 
+                    width: '320px',
+                    timer: 1500, 
+                    showConfirmButton: false 
+                });
                 loadReferralCodes();
             } catch (error) {
                 console.error('Bulk delete error:', error);
-                Swal.fire({ icon: 'error', title: 'Error', text: 'Bulk delete failed: ' + error.message });
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: 'Error', 
+                    text: 'Bulk delete failed',
+                    width: '320px'
+                });
             }
         }
     </script>

@@ -317,14 +317,16 @@
         }
 
         .cc-teaser-uni-icon {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-            border-radius: 8px;
+            width: 44px;
+            height: 44px;
+            background: #f8fafc;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            border: 1px solid #e2e8f0;
+            color: #64748b;
         }
 
         .cc-teaser-uni-icon i {
@@ -339,15 +341,14 @@
 
         .cc-teaser-uni-name {
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
             color: #111827;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: normal;
+            line-height: 1.2;
         }
 
         .cc-teaser-uni-count {
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             color: #10b981;
             font-weight: 600;
         }
@@ -1993,14 +1994,14 @@
 
                 // Get grade message
                 function getGradeMessage(points) {
-                    if (points >= 81) return "Outstanding! Top universities await you!";
-                    if (points >= 73) return "Excellent performance! Many doors open for you.";
-                    if (points >= 67) return "Very good! You qualify for many courses.";
-                    if (points >= 60) return "Good performance! Solid opportunities ahead.";
-                    if (points >= 53) return "Above average! You have good options.";
-                    if (points >= 46) return "You meet minimum university requirements.";
-                    if (points >= 39) return "Consider diploma & KMTC programs.";
-                    return "Technical courses may be your best path.";
+                    if (points >= 81) return "Outstanding! Premier universities await.";
+                    if (points >= 73) return "Excellent! Many programs unlocked.";
+                    if (points >= 67) return "Very good! Vast course options.";
+                    if (points >= 60) return "Good! Strong academic prospects.";
+                    if (points >= 53) return "Above average! Good choices.";
+                    if (points >= 46) return "Qualified for Degree programs.";
+                    if (points >= 39) return "Qualified for Diploma & KMTC.";
+                    return "Qualified for TVET & Artisan.";
                 }
 
                 // Calculate cluster points
@@ -2181,19 +2182,49 @@
                     `;
                 } else if (isBelowCPlus) {
                     // Show diploma/KMTC teaser for below C+ students
+                    const samples = [
+                        { name: 'Diploma in Nursing / Clinical Med', uni: 'Kenya Medical Training College', type: 'KMTC' },
+                        { name: 'Diploma in Electrical Engineering', uni: 'Technical University / TVET', type: 'DIP' },
+                        { name: 'Cert. in Information Technology', uni: 'KCA / Zetech / TVET', type: 'CERT' }
+                    ];
+
+                    html += `
+                        <h3 style="font-size: 0.85rem; font-weight: 700; color: #4b5563; margin: 1.25rem 0 0.75rem; display: flex; align-items: center; text-transform: uppercase; letter-spacing: 0.025em;">
+                            <i class="fas fa-check-circle text-blue-500" style="margin-right: 0.5rem;"></i>Qualified Programs
+                        </h3>
+                        <div class="cc-teaser-courses">
+                    `;
+
+                    samples.forEach(sample => {
+                        html += `
+                            <div class="cc-teaser-course-card">
+                                <div class="cc-course-info">
+                                    <div class="cc-course-name">${sample.name}</div>
+                                    <div class="cc-course-uni">${sample.uni}</div>
+                                </div>
+                                <div class="cc-course-cutoff">
+                                    <span class="cc-cutoff-label">TYPE</span>
+                                    <span class="cc-cutoff-value" style="font-size: 0.7rem;">${sample.type}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    html += `</div>`;
+
                     html += `
                         <div class="cc-teaser-stats">
                             <div class="cc-teaser-stat">
-                                <div class="cc-teaser-stat-value"><i class="fas fa-lock text-gray-300"></i></div>
-                                <div class="cc-teaser-stat-label">KMTC</div>
+                                <div class="cc-teaser-stat-value">KMTC</div>
+                                <div class="cc-teaser-stat-label">Qualified</div>
                             </div>
                             <div class="cc-teaser-stat">
-                                <div class="cc-teaser-stat-value"><i class="fas fa-lock text-gray-300"></i></div>
-                                <div class="cc-teaser-stat-label">Diploma</div>
+                                <div class="cc-teaser-stat-value">80+</div>
+                                <div class="cc-teaser-stat-label">TVET / Dip</div>
                             </div>
                             <div class="cc-teaser-stat">
-                                <div class="cc-teaser-stat-value"><i class="fas fa-lock text-gray-300"></i></div>
-                                <div class="cc-teaser-stat-label">Certificate</div>
+                                <div class="cc-teaser-stat-value">Cert</div>
+                                <div class="cc-teaser-stat-label">Available</div>
                             </div>
                         </div>
                     `;

@@ -553,15 +553,6 @@
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
         }
 
-        color: white;
-        font-size: 1rem;
-        font-weight: 700;
-        cursor: pointer;
-        margin-top: 0.75rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
-        }
-
         .cc-view-all-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
@@ -2189,46 +2180,62 @@
                     // Show diploma/KMTC teaser for below C+ students
                     // Get dynamic suggestions for below C+
                     let samples = [];
-                    const grades = window.getStudentGrades ? window.getStudentGrades() : {};
+                    const grades = (window.getStudentGrades && typeof window.getStudentGrades === 'function')
+                        ? window.getStudentGrades()
+                        : {};
 
                     // Try to get KMTC
-                    if (window.getDiplomaCourses) {
-                        const kmtc = window.getDiplomaCourses(grades);
-                        if (kmtc['KMTC Diploma Programs'] && kmtc['KMTC Diploma Programs'].length > 0) {
-                            // Pick one random KMTC course
-                            const kmtcCourse = kmtc['KMTC Diploma Programs'][0];
-                            samples.push({ name: kmtcCourse, uni: 'Kenya Medical Training College', type: 'KMTC' });
+                    try {
+                        if (window.getDiplomaCourses && typeof window.getDiplomaCourses === 'function') {
+                            const kmtc = window.getDiplomaCourses(grades);
+                            if (kmtc && kmtc['KMTC Diploma Programs'] && Array.isArray(kmtc['KMTC Diploma Programs']) && kmtc['KMTC Diploma Programs'].length > 0) {
+                                // Pick one KMTC course
+                                const kmtcCourse = kmtc['KMTC Diploma Programs'][0];
+                                samples.push({ name: kmtcCourse, uni: 'Kenya Medical Training College', type: 'KMTC' });
+                            }
                         }
+                    } catch (e) {
+                        console.error('Error fetching KMTC courses:', e);
                     }
 
                     // Try to get Technical/Diploma/Cert
-                    if (window.getTechnicalCourses) {
-                        const tech = window.getTechnicalCourses(grades);
-                        const techCategories = ['DIPLOMA PROGRAMS', 'CERTIFICATE PROGRAMS', 'ARTISAN PROGRAMS'];
+                    try {
+                        if (window.getTechnicalCourses && typeof window.getTechnicalCourses === 'function') {
+                            const tech = window.getTechnicalCourses(grades);
+                            const techCategories = ['DIPLOMA PROGRAMS', 'CERTIFICATE PROGRAMS', 'ARTISAN PROGRAMS'];
 
-                        techCategories.forEach(cat => {
-                            if (samples.length >= 3) return;
-                            if (tech.courses && tech.courses[cat] && tech.courses[cat].length > 0) {
-                                // Find a program
-                                const group = tech.courses[cat][0];
-                                if (group.programs && group.programs.length > 0) {
-                                    const progName = typeof group.programs[0] === 'string' ? group.programs[0] : group.programs[0].program; // Handle string vs object
-                                    const typeName = cat.split(' ')[0].substring(0, 4); // DIP, CERT, ARTI
+                            if (tech && tech.courses) {
+                                techCategories.forEach(cat => {
+                                    if (samples.length >= 3) return;
+                                    if (tech.courses[cat] && tech.courses[cat].length > 0) {
+                                        // Find a program group
+                                        const group = tech.courses[cat][0];
+                                        if (group && group.programs && group.programs.length > 0) {
+                                            // Handle string vs object program definition
+                                            const progName = (typeof group.programs[0] === 'string')
+                                                ? group.programs[0]
+                                                : group.programs[0].program;
 
-                                    // Avoid duplicates
-                                    if (!samples.some(s => s.name === progName)) {
-                                        samples.push({
-                                            name: progName,
-                                            uni: 'Technical University / TVET',
-                                            type: typeName
-                                        });
+                                            const typeName = cat.split(' ')[0].substring(0, 4); // DIP, CERT, ARTI
+
+                                            // Avoid duplicates
+                                            if (!samples.some(s => s.name === progName)) {
+                                                samples.push({
+                                                    name: progName,
+                                                    uni: 'Technical University / TVET',
+                                                    type: typeName
+                                                });
+                                            }
+                                        }
                                     }
-                                }
+                                });
                             }
-                        });
+                        }
+                    } catch (e) {
+                        console.error('Error fetching Technical courses:', e);
                     }
 
-                    // Fallback to static if absolutely nothing found (e.g. data not loaded)
+                    // Fallback to static if absolutely nothing found
                     if (samples.length === 0) {
                         samples = [
                             { name: 'Diploma in Nursing / Clinical Med', uni: 'Kenya Medical Training College', type: 'KMTC' },

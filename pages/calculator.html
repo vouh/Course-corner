@@ -212,70 +212,83 @@
         }
 
         .cc-teaser-score-card {
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
-            border: 2px solid #86efac;
-            border-radius: 1rem;
-            padding: 1rem;
-            text-align: center;
-            margin-bottom: 1rem;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 1.25rem;
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.25rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
 
         .cc-teaser-score-card.below-cplus {
-            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-            border-color: #fbbf24;
+            border-left: 4px solid #f59e0b;
+        }
+
+        .cc-teaser-score-card:not(.below-cplus) {
+            border-left: 4px solid #10b981;
         }
 
         .cc-teaser-grade {
-            font-size: 2.5rem;
+            font-size: 3rem;
             font-weight: 900;
-            color: #059669;
+            color: #111827;
             line-height: 1;
-            min-width: 70px;
+            min-width: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f9fafb;
+            height: 80px;
+            width: 80px;
+            border-radius: 1rem;
         }
 
         .cc-teaser-score-card.below-cplus .cc-teaser-grade {
             color: #d97706;
+            background: #fffbeb;
         }
 
         .cc-teaser-info {
             flex: 1;
-            text-align: left;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
         }
 
         .cc-teaser-points {
-            font-size: 0.9rem;
-            color: #065f46;
-            font-weight: 600;
-        }
-
-        .cc-teaser-score-card.below-cplus .cc-teaser-points {
-            color: #92400e;
+            font-size: 1.1rem;
+            color: #111827;
+            font-weight: 700;
         }
 
         .cc-teaser-message {
-            font-size: 0.75rem;
-            color: #047857;
-            margin-top: 0.25rem;
-        }
-
-        .cc-teaser-score-card.below-cplus .cc-teaser-message {
-            color: #b45309;
+            font-size: 0.85rem;
+            color: #6b7280;
+            font-weight: 500;
         }
 
         .cc-eligibility-badge {
             display: inline-flex;
             align-items: center;
             gap: 0.35rem;
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            padding: 0.4rem 0.75rem;
-            border-radius: 9999px;
+            background: #f0fdf4;
+            color: #166534;
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.5rem;
             font-weight: 600;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             margin-top: 0.5rem;
+            border: 1px solid #bbf7d0;
+            width: fit-content;
+        }
+
+        .cc-eligibility-badge.diploma {
+            background: #fffbeb;
+            color: #92400e;
+            border-color: #fde68a;
         }
 
         .cc-eligibility-badge.diploma {
@@ -361,31 +374,35 @@
 
         /* Stats Summary - COMPACT INLINE */
         .cc-teaser-stats {
-            display: flex;
-            justify-content: space-around;
-            gap: 0.5rem;
-            margin: 0.75rem 0;
-            padding: 0.75rem;
-            background: linear-gradient(135deg, #f9fafb, #f3f4f6);
-            border-radius: 0.75rem;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin: 1.5rem 0;
         }
 
         .cc-teaser-stat {
             text-align: center;
-            flex: 1;
+            background: white;
+            border: 1px solid #f3f4f6;
+            padding: 1rem 0.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
 
         .cc-teaser-stat-value {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
             font-weight: 800;
             color: #111827;
+            display: block;
+            margin-bottom: 0.25rem;
         }
 
         .cc-teaser-stat-label {
-            font-size: 0.6rem;
-            color: #6b7280;
+            font-size: 0.65rem;
+            color: #9ca3af;
             text-transform: uppercase;
-            letter-spacing: 0.02em;
+            letter-spacing: 0.05em;
+            font-weight: 600;
         }
 
         /* Top Courses Teaser - COMPACT */
@@ -458,53 +475,67 @@
 
         /* Unlock Section - COMPACT */
         .cc-unlock-section {
-            background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-            border: 2px solid #93c5fd;
-            border-radius: 1rem;
-            padding: 1rem;
+            background: #f8fafc;
+            border: 1px dashed #cbd5e1;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
             text-align: center;
-            margin-top: 1rem;
+            margin-top: 1.5rem;
+            position: relative;
         }
 
         .cc-unlock-header {
-            margin-bottom: 0.75rem;
+            margin-bottom: 1rem;
         }
 
         .cc-unlock-icon {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            width: 48px;
+            height: 48px;
+            background: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 0.5rem;
+            margin: 0 auto 0.75rem;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
         }
 
         .cc-unlock-icon i {
             font-size: 1.25rem;
-            color: white;
+            color: #3b82f6;
         }
 
         .cc-unlock-title {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 800;
-            color: #1e40af;
+            color: #1e293b;
             margin-bottom: 0.25rem;
         }
 
         .cc-unlock-subtitle {
-            color: #3b82f6;
-            font-size: 0.75rem;
+            color: #64748b;
+            font-size: 0.8rem;
+            line-height: 1.4;
+            max-width: 280px;
+            margin: 0 auto;
         }
 
         /* View All Results Button - COMPACT */
         .cc-view-all-btn {
             width: 100%;
-            background: linear-gradient(135deg, #10b981, #059669);
+            background: #10b981;
             border: none;
             border-radius: 0.75rem;
-            padding: 0.85rem 1.5rem;
+            padding: 1rem 1.5rem;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 1rem;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+        }
             color: white;
             font-size: 1rem;
             font-weight: 700;
@@ -2047,13 +2078,15 @@
                         <!-- Score Card -->
                         <div class="cc-teaser-score-card ${isBelowCPlus ? 'below-cplus' : ''}">
                             <div class="cc-teaser-grade">${gradeDisplay}</div>
-                            <div class="cc-teaser-points">You scored <strong>${overallPoints}</strong> out of 84 points</div>
-                            <div class="cc-teaser-message">${getGradeMessage(overallPoints)}</div>
-                            <div class="cc-eligibility-badge ${isBelowCPlus ? 'diploma' : ''}">
-                                ${isBelowCPlus
-                        ? '<i class="fas fa-book"></i> Diploma & KMTC Programs Available'
-                        : '<i class="fas fa-graduation-cap"></i> You Qualify for Degree Programs!'
+                            <div class="cc-teaser-info">
+                                <div class="cc-teaser-points">${overallPoints}/84 points</div>
+                                <div class="cc-teaser-message">${getGradeMessage(overallPoints)}</div>
+                                <div class="cc-eligibility-badge ${isBelowCPlus ? 'diploma' : ''}">
+                                    ${isBelowCPlus
+                        ? '<i class="fas fa-book"></i> Diploma & KMTC Available'
+                        : '<i class="fas fa-graduation-cap"></i> Degree Qualified'
                     }
+                                </div>
                             </div>
                         </div>
                 `;
@@ -2089,8 +2122,8 @@
                     // Top Courses with Highest Cutoffs
                     if (topCourses.length > 0) {
                         html += `
-                            <h3 style="font-size: 0.9rem; font-weight: 700; color: #1f2937; margin: 0.75rem 0 0.5rem; display: flex; align-items: center;">
-                                <i class="fas fa-star text-amber-500" style="margin-right: 0.5rem;"></i>Most Competitive Courses
+                            <h3 style="font-size: 0.85rem; font-weight: 700; color: #4b5563; margin: 1.25rem 0 0.75rem; display: flex; align-items: center; text-transform: uppercase; letter-spacing: 0.025em;">
+                                <i class="fas fa-star text-amber-400" style="margin-right: 0.5rem;"></i>Top Competitive Programs
                             </h3>
                             <div class="cc-teaser-courses">
                         `;
@@ -2125,11 +2158,11 @@
                             </div>
                             <div class="cc-teaser-stat">
                                 <div class="cc-teaser-stat-value">${programDisplay}</div>
-                                <div class="cc-teaser-stat-label">Courses</div>
+                                <div class="cc-teaser-stat-label">Programs</div>
                             </div>
                             <div class="cc-teaser-stat">
-                                <div class="cc-teaser-stat-value">${highestCluster.points.toFixed(1)}</div>
-                                <div class="cc-teaser-stat-label">Highest Cluster</div>
+                                <div class="cc-teaser-stat-value">${highestCluster.points.toFixed(0)}</div>
+                                <div class="cc-teaser-stat-label">Cluster</div>
                             </div>
                         </div>
                     `;
@@ -2138,45 +2171,30 @@
                     html += `
                         <div class="cc-teaser-stats">
                             <div class="cc-teaser-stat">
-                                <div class="cc-teaser-stat-value"><i class="fas fa-lock text-amber-500"></i></div>
-                                <div class="cc-teaser-stat-label">KMTC Programs</div>
+                                <div class="cc-teaser-stat-value"><i class="fas fa-lock text-gray-300"></i></div>
+                                <div class="cc-teaser-stat-label">KMTC</div>
                             </div>
                             <div class="cc-teaser-stat">
-                                <div class="cc-teaser-stat-value"><i class="fas fa-lock text-amber-500"></i></div>
-                                <div class="cc-teaser-stat-label">Diploma Courses</div>
+                                <div class="cc-teaser-stat-value"><i class="fas fa-lock text-gray-300"></i></div>
+                                <div class="cc-teaser-stat-label">Diploma</div>
                             </div>
                             <div class="cc-teaser-stat">
-                                <div class="cc-teaser-stat-value"><i class="fas fa-lock text-amber-500"></i></div>
-                                <div class="cc-teaser-stat-label">Certificate Programs</div>
+                                <div class="cc-teaser-stat-value"><i class="fas fa-lock text-gray-300"></i></div>
+                                <div class="cc-teaser-stat-label">Certificate</div>
                             </div>
                         </div>
-                        <p class="text-center text-gray-600 mb-4">Unlock to see all KMTC, Diploma & Certificate programs available for your grades!</p>
                     `;
                 }
 
                 // Unlock Section - View All Results Button
-                const unlockUniDisplay = universities.length > 50 ? '50+' : (universities.length > 20 ? '20+' : universities.length);
-                const unlockProgramDisplay = totalPrograms > 500 ? '500+' : (totalPrograms > 200 ? '200+' : (totalPrograms > 100 ? '100+' : totalPrograms));
-
                 html += `
                     <div class="cc-unlock-section">
-                        <div class="cc-unlock-header">
-                            <div class="cc-unlock-icon">
-                                <i class="fas fa-unlock-alt"></i>
-                            </div>
-                            <h3 class="cc-unlock-title">🔓 View All Results</h3>
-                            <p class="cc-unlock-subtitle">See all ${unlockUniDisplay} institutions, ${unlockProgramDisplay} courses, cutoff points & cluster scores</p>
-                        </div>
+                        <h3 class="cc-unlock-title">Unlock Analysis</h3>
+                        <p class="cc-unlock-subtitle">Access your clusters for all universities and programs.</p>
                         
                         <button id="viewAllResultsBtn" class="cc-view-all-btn">
-                            <i class="fas fa-eye mr-2"></i>
-                            View All My Results
+                            <i class="fas fa-eye" style="margin-right: 8px;"></i>View Results
                         </button>
-                        
-                        <div class="cc-trust-badge">
-                            <i class="fas fa-shield-alt"></i>
-                            <span>Trusted by <strong>100,000+</strong> Kenyan students</span>
-                        </div>
                     </div>
                 </div>
                 `;

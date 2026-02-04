@@ -376,16 +376,16 @@
         .cc-teaser-stats {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 0.75rem;
-            margin: 1.5rem 0;
+            gap: 0.5rem;
+            margin: 1.25rem 0;
         }
 
         .cc-teaser-stat {
             text-align: center;
             background: white;
             border: 1px solid #f3f4f6;
-            padding: 1rem 0.5rem;
-            border-radius: 1rem;
+            padding: 0.75rem 0.25rem;
+            border-radius: 0.75rem;
             box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
 
@@ -398,11 +398,24 @@
         }
 
         .cc-teaser-stat-label {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: #9ca3af;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             font-weight: 600;
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 480px) {
+            .cc-results {
+                margin: 1rem 0.5rem !important;
+            }
+            .cc-teaser-section {
+                padding: 1rem 0.75rem !important;
+            }
+            .cc-teaser-stat-value {
+                font-size: 1.25rem;
+            }
         }
 
         /* Top Courses Teaser - COMPACT */
@@ -436,34 +449,34 @@
             font-weight: 600;
             color: #111827;
             font-size: 0.75rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: normal;
+            line-height: 1.2;
+            margin-bottom: 2px;
         }
 
         .cc-course-uni {
             font-size: 0.65rem;
             color: #6b7280;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            white-space: normal;
+            line-height: 1.2;
         }
 
         .cc-course-cutoff {
             text-align: center;
-            padding: 0.3rem 0.6rem;
+            padding: 0.3rem 0.5rem;
             background: linear-gradient(135deg, #fef3c7, #fde68a);
             border-radius: 0.4rem;
             margin-left: 0.5rem;
             flex-shrink: 0;
+            min-width: 3.5rem;
         }
 
         .cc-cutoff-label {
             display: block;
-            font-size: 0.5rem;
+            font-size: 0.55rem;
             color: #92400e;
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .cc-cutoff-value {
@@ -2136,7 +2149,7 @@
                                         <div class="cc-course-uni">${course.university}</div>
                                     </div>
                                     <div class="cc-course-cutoff">
-                                        <span class="cc-cutoff-label">Cutoff</span>
+                                        <span class="cc-cutoff-label">CL</span>
                                         <span class="cc-cutoff-value">${course.cutoff}</span>
                                     </div>
                                 </div>
@@ -2161,8 +2174,8 @@
                                 <div class="cc-teaser-stat-label">Programs</div>
                             </div>
                             <div class="cc-teaser-stat">
-                                <div class="cc-teaser-stat-value">${highestCluster.points.toFixed(0)}</div>
-                                <div class="cc-teaser-stat-label">Cluster</div>
+                                <div class="cc-teaser-stat-value">20</div>
+                                <div class="cc-teaser-stat-label">Clusters</div>
                             </div>
                         </div>
                     `;

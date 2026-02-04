@@ -17,12 +17,12 @@ const {
 
 // Payment amounts for each category
 const PAYMENT_AMOUNTS = {
-  'calculate-cluster-points': 1,
-  'courses-only': 1,
-  'point-and-courses': 1,
-  'bronze': 1,
-  'silver': 1,
-  'gold': 1
+  'calculate-cluster-points': 99,
+  'courses-only': 199,
+  'point-and-courses': 299,
+  'bronze': 399,
+  'silver': 499,
+  'gold': 599
 };
 
 // Initiate STK Push Payment

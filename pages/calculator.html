@@ -2267,6 +2267,43 @@
                     const descEl = document.getElementById('packageDesc');
                     const featuresEl = document.getElementById('packageFeatures');
 
+                    // RESTRICTION LOGIC: Students below C+ (46 points) can only select Standard Package
+                    const overallPoints = parseInt(document.getElementById('overallGrade')?.value) || 0;
+                    const isBelowCPlus = overallPoints > 0 && overallPoints < 46;
+
+                    if (isBelowCPlus) {
+                        // Create and insert notice above select
+                        const notice = document.createElement('div');
+                        notice.style.background = '#fffbeb';
+                        notice.style.border = '1px solid #fcd34d';
+                        notice.style.borderRadius = '0.75rem';
+                        notice.style.padding = '1rem';
+                        notice.style.marginBottom = '1.25rem';
+                        notice.style.fontSize = '0.85rem';
+                        notice.style.color = '#92400e';
+                        notice.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
+                        notice.innerHTML = `
+                            <div style="font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; color: #b45309;">
+                                <i class="fas fa-exclamation-triangle"></i> SPECIAL NOTICE
+                            </div>
+                            <p style="line-height: 1.5; margin: 0;">Your mean grade is below <strong>C+</strong>. University degree courses and cluster points require a minimum of C+.<br><br>
+                            You have been restricted to the <strong>Standard Package</strong> which focuses on Diploma and Certificate options you qualify for.</p>
+                        `;
+                        select.parentNode.insertBefore(notice, select);
+
+                        // Disable restricted options in the modal dropdown
+                        Array.from(select.options).forEach(option => {
+                            if (option.value && option.value !== 'courses-only') {
+                                option.disabled = true;
+                                option.textContent += ' (Requires C+ or above)';
+                                option.style.color = '#9ca3af';
+                            }
+                        });
+
+                        // Force selection to Standard Package
+                        select.value = 'courses-only';
+                    }
+
                     const packageInfo = {
                         'gold': {
                             title: '⭐ Gold Package',

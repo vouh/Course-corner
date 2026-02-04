@@ -353,17 +353,17 @@
                             class="hover-lift bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
                             <div class="flex items-center justify-between mb-4">
                                 <div
-                                    class="w-14 h-14 stat-gradient-3 rounded-2xl flex items-center justify-center shadow-lg">
-                                    <i class="fas fa-clock text-white text-2xl"></i>
+                                    class="w-14 h-14 stat-gradient-4 rounded-2xl flex items-center justify-center shadow-lg">
+                                    <i class="fas fa-times-circle text-white text-2xl"></i>
                                 </div>
                                 <span class="relative flex h-3 w-3">
                                     <span
-                                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
-                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-yellow-500"></span>
+                                        class="absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
                                 </span>
                             </div>
-                            <p id="stat-pending" class="text-4xl font-bold text-gray-900 dark:text-white mb-1">-</p>
-                            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Pending</p>
+                            <p id="stat-failed" class="text-4xl font-bold text-gray-900 dark:text-white mb-1">-</p>
+                            <p class="text-gray-500 dark:text-gray-400 text-sm font-medium">Failed</p>
                         </div>
 
                         <div
@@ -383,15 +383,15 @@
 
                     <!-- Quick Actions -->
                     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                        <button onclick="syncPendingTransactions()"
-                            class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-all group">
+                        <button onclick="syncFailedTransactions()"
+                            class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-red-500 dark:hover:border-red-500 transition-all group">
                             <div
-                                class="w-12 h-12 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <i class="fas fa-cloud-download-alt text-yellow-600 dark:text-yellow-400 text-xl"></i>
+                                class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-sync-alt text-red-600 dark:text-red-400 text-xl"></i>
                             </div>
                             <div class="text-left">
-                                <p class="font-semibold text-gray-900 dark:text-white">Refresh</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Load Latest</p>
+                                <p class="font-semibold text-gray-900 dark:text-white">Sync Failed</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Fix Statuses</p>
                             </div>
                         </button>
 
@@ -490,7 +490,6 @@
                                     class="px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white">
                                     <option value="">All Status</option>
                                     <option value="completed">Completed</option>
-                                    <option value="pending">Pending</option>
                                     <option value="failed">Failed</option>
                                 </select>
                             </div>
@@ -832,7 +831,7 @@
 
                     document.getElementById('stat-total').textContent = s.total;
                     document.getElementById('stat-completed').textContent = s.completed;
-                    document.getElementById('stat-pending').textContent = s.pending;
+                    document.getElementById('stat-failed').textContent = s.failed;
                     document.getElementById('stat-revenue').textContent = `KSH ${(s.completedAmount || 0).toLocaleString()}`;
                     if (s.total > 0) document.getElementById('stat-completed-pct').textContent = `${Math.round((s.completed / s.total) * 100)}%`;
                     renderRecentTransactions();
@@ -849,7 +848,7 @@
             c.innerHTML = r.map(tx => `
                 <div class="flex items-center gap-4 p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors cursor-pointer" onclick="showDetail('${tx.id}')">
                     <div class="w-12 h-12 rounded-xl flex items-center justify-center ${getStatusBg(tx.status)}"><i class="fas ${getStatusIcon(tx.status)} text-lg"></i></div>
-                    <div class="flex-1 min-w-0"><p class="font-semibold text-gray-900 dark:text-white">${formatPhone(tx.phoneNumber)}</p><p class="text-sm text-gray-500 dark:text-gray-400">${tx.mpesaReceiptNumber || 'Pending...'} ${tx.referralCode ? '<span class="text-purple-500">• ' + tx.referralCode + '</span>' : ''}</p></div>
+                    <div class="flex-1 min-w-0"><p class="font-semibold text-gray-900 dark:text-white">${formatPhone(tx.phoneNumber)}</p><p class="text-sm text-gray-500 dark:text-gray-400">${tx.mpesaReceiptNumber || 'No Receipt'} ${tx.referralCode ? '<span class="text-purple-500">• ' + tx.referralCode + '</span>' : ''}</p></div>
                     <div class="text-right"><p class="font-bold text-gray-900 dark:text-white">KSH ${tx.amount || 0}</p><p class="text-xs text-gray-500 dark:text-gray-400">${formatDate(tx.createdAt)}</p></div>
                 </div>`).join('');
         }
@@ -1027,7 +1026,7 @@
             const tx = allTransactions.find(t => t.id === id);
             if (!tx) return;
             currentTransactionId = id;
-            const showRequeryBtn = (tx.status === 'completed' && !tx.mpesaReceiptNumber) || tx.status === 'pending';
+            const showRequeryBtn = (tx.status === 'completed' && !tx.mpesaReceiptNumber) || tx.status === 'pending' || tx.status === 'failed';
             document.getElementById('modal-content').innerHTML = `
                 <div class="space-y-6">
                     <div class="flex items-center gap-4 p-4 rounded-2xl ${getStatusBg(tx.status)}">
@@ -1199,7 +1198,24 @@
         function selectCode(code) { document.getElementById('generated-code').value = code; copyGeneratedCode(); }
 
         // Actions
-        async function syncPendingTransactions() { showToast('Refreshing...', 'info'); await loadTransactions(); showToast('Refreshed!', 'success'); }
+        async function syncFailedTransactions() { 
+            showToast('Syncing failed transactions...', 'info'); 
+            try {
+                // Call bulk sync endpoint
+                const res = await fetch(`${API_BASE}/api/mpesa/admin/sync-all`, { method: 'POST' });
+                const data = await res.json();
+                
+                if (data.success) {
+                    showToast(`Sync complete! ${data.results?.length || 0} checked.`, 'success');
+                } else {
+                    showToast(data.message || 'Sync failed', 'warning');
+                }
+            } catch (e) {
+                console.error('Sync error:', e);
+                showToast('Error connecting to sync service', 'error');
+            }
+            await loadTransactions(); 
+        }
 
 
 

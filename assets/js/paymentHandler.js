@@ -586,6 +586,8 @@ class PaymentHandler {
                             <input type="tel" id="swal-phone" class="swal2-input" placeholder="07XXXXXXXX" 
                                 style="margin: 0; width: 100%; box-sizing: border-box;">
                         </div>
+                        <!-- Referral Code Removed as per request -->
+                        <!-- 
                         <div style="margin-bottom: 1rem;">
                             <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem; font-size: 0.9rem;">
                                 <i class="fas fa-gift" style="color: #8b5cf6;"></i> Referral Code <span style="color: #9ca3af; font-weight: 400;">(optional)</span>
@@ -593,6 +595,7 @@ class PaymentHandler {
                             <input type="text" id="swal-referral" class="swal2-input" placeholder="Enter code if you have one" 
                                 value="${storedReferralCode}" style="margin: 0; width: 100%; box-sizing: border-box; text-transform: uppercase;">
                         </div>
+                        -->
                         <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.5rem; padding: 0.75rem; margin-top: 1rem;">
                             <p style="color: #166534; font-size: 0.85rem; margin: 0;">
                                 <i class="fas fa-info-circle"></i> You'll receive an M-Pesa prompt on your phone. Enter your PIN to pay <strong>KES ${amount}</strong>.
@@ -627,21 +630,21 @@ class PaymentHandler {
                     return { phone, referral };
                 },
                 preDeny: () => {
-                    const phone = document.getElementById('swal-phone').value;
-                    const referral = document.getElementById('swal-referral').value.trim().toUpperCase();
-
-                    if (!phone) {
-                        Swal.showValidationMessage('Please enter your M-Pesa number to verify payment');
-                        return false;
-                    }
-
-                    return { phone, referral };
+                    // Allow proceeding to verification without phone number
+                    return { verify: true };
                 }
             });
 
             // Handle "I Already Paid" option
-            if (isDenied && formData) {
-                return await this.verifyExistingPayment(formData.phone, category, onSuccess);
+            if (isDenied) {
+                // If verify is true, proceed to verification (no phone needed)
+                if (formData && formData.verify) {
+                    return await this.verifyExistingPayment(null, category, onSuccess);
+                }
+                // Fallback for older behavior if needed
+                if (formData && formData.phone) {
+                    return await this.verifyExistingPayment(formData.phone, category, onSuccess);
+                }
             }
 
             if (!formData) {

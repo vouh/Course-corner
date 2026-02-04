@@ -387,7 +387,7 @@
             border: 1px solid #f3f4f6;
             padding: 0.75rem 0.25rem;
             border-radius: 0.75rem;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         .cc-teaser-stat-value {
@@ -411,9 +411,11 @@
             .cc-results {
                 margin: 1rem 0.5rem !important;
             }
+
             .cc-teaser-section {
                 padding: 1rem 0.75rem !important;
             }
+
             .cc-teaser-stat-value {
                 font-size: 1.25rem;
             }
@@ -550,13 +552,14 @@
             transition: all 0.2s;
             box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
         }
-            color: white;
-            font-size: 1rem;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 0.75rem;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+
+        color: white;
+        font-size: 1rem;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 0.75rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
         }
 
         .cc-view-all-btn:hover {
@@ -1236,7 +1239,8 @@
                                     data-description="Universities + Courses + All 20 Cluster Points">🥈 Silver Package
                                     - KES 499 - Cluster Points</option>
                                 <option value="bronze" data-amount="399"
-                                    data-description="Universities & Courses You Qualify For">🥉 Bronze Package - KES 399
+                                    data-description="Universities & Courses You Qualify For">🥉 Bronze Package - KES
+                                    399
                                     - Universities & Courses</option>
                                 <option value="point-and-courses" data-amount="299"
                                     data-description="Cluster Points & Eligible Courses">📊 Premium - Points & Courses -
@@ -1245,7 +1249,8 @@
                                     data-description="View Eligible Courses Only">📚 Standard - Courses Only - KES 199
                                 </option>
                                 <option value="calculate-cluster-points" data-amount="99"
-                                    data-description="Calculate Your Cluster Points">📈 Starter - Cluster Points - KES 99</option>
+                                    data-description="Calculate Your Cluster Points">📈 Starter - Cluster Points - KES
+                                    99</option>
                             </select>
                             <button id="payButton" class="cc-btn-pay payment-btn" disabled data-category=""
                                 data-amount="0">
@@ -2182,11 +2187,55 @@
                     `;
                 } else if (isBelowCPlus) {
                     // Show diploma/KMTC teaser for below C+ students
-                    const samples = [
-                        { name: 'Diploma in Nursing / Clinical Med', uni: 'Kenya Medical Training College', type: 'KMTC' },
-                        { name: 'Diploma in Electrical Engineering', uni: 'Technical University / TVET', type: 'DIP' },
-                        { name: 'Cert. in Information Technology', uni: 'KCA / Zetech / TVET', type: 'CERT' }
-                    ];
+                    // Get dynamic suggestions for below C+
+                    let samples = [];
+                    const grades = window.getStudentGrades ? window.getStudentGrades() : {};
+
+                    // Try to get KMTC
+                    if (window.getDiplomaCourses) {
+                        const kmtc = window.getDiplomaCourses(grades);
+                        if (kmtc['KMTC Diploma Programs'] && kmtc['KMTC Diploma Programs'].length > 0) {
+                            // Pick one random KMTC course
+                            const kmtcCourse = kmtc['KMTC Diploma Programs'][0];
+                            samples.push({ name: kmtcCourse, uni: 'Kenya Medical Training College', type: 'KMTC' });
+                        }
+                    }
+
+                    // Try to get Technical/Diploma/Cert
+                    if (window.getTechnicalCourses) {
+                        const tech = window.getTechnicalCourses(grades);
+                        const techCategories = ['DIPLOMA PROGRAMS', 'CERTIFICATE PROGRAMS', 'ARTISAN PROGRAMS'];
+
+                        techCategories.forEach(cat => {
+                            if (samples.length >= 3) return;
+                            if (tech.courses && tech.courses[cat] && tech.courses[cat].length > 0) {
+                                // Find a program
+                                const group = tech.courses[cat][0];
+                                if (group.programs && group.programs.length > 0) {
+                                    const progName = typeof group.programs[0] === 'string' ? group.programs[0] : group.programs[0].program; // Handle string vs object
+                                    const typeName = cat.split(' ')[0].substring(0, 4); // DIP, CERT, ARTI
+
+                                    // Avoid duplicates
+                                    if (!samples.some(s => s.name === progName)) {
+                                        samples.push({
+                                            name: progName,
+                                            uni: 'Technical University / TVET',
+                                            type: typeName
+                                        });
+                                    }
+                                }
+                            }
+                        });
+                    }
+
+                    // Fallback to static if absolutely nothing found (e.g. data not loaded)
+                    if (samples.length === 0) {
+                        samples = [
+                            { name: 'Diploma in Nursing / Clinical Med', uni: 'Kenya Medical Training College', type: 'KMTC' },
+                            { name: 'Diploma in Electrical Engineering', uni: 'Technical University / TVET', type: 'DIP' },
+                            { name: 'Cert. in Information Technology', uni: 'KCA / Zetech / TVET', type: 'CERT' }
+                        ];
+                    }
 
                     html += `
                         <h3 style="font-size: 0.85rem; font-weight: 700; color: #4b5563; margin: 1.25rem 0 0.75rem; display: flex; align-items: center; text-transform: uppercase; letter-spacing: 0.025em;">
@@ -2277,10 +2326,10 @@
 
             Swal.fire({
                 title: '🎓 Choose Your Package',
-                width: '500px',
+                width: window.innerWidth > 768 ? '700px' : '95%',
                 html: `
                     <div style="text-align: left; margin-top: 1rem;">
-                        <p style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                        <p class="hidden md:block" style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.9rem;">
                             Select a package to unlock your complete results and make informed decisions about your future.
                         </p>
                         
@@ -2339,17 +2388,18 @@
                         notice.style.background = '#fffbeb';
                         notice.style.border = '1px solid #fcd34d';
                         notice.style.borderRadius = '0.75rem';
-                        notice.style.padding = '1rem';
-                        notice.style.marginBottom = '1.25rem';
+                        notice.style.padding = '0.75rem';
+                        notice.style.marginBottom = '1rem';
                         notice.style.fontSize = '0.85rem';
                         notice.style.color = '#92400e';
                         notice.style.boxShadow = '0 2px 4px rgba(0,0,0,0.05)';
                         notice.innerHTML = `
-                            <div style="font-weight: 800; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; color: #b45309;">
-                                <i class="fas fa-exclamation-triangle"></i> SPECIAL NOTICE
+                            <div style="font-weight: 800; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.5rem; color: #b45309;">
+                                <i class="fas fa-exclamation-triangle"></i> NOTICE: Grade Below C+
                             </div>
-                            <p style="line-height: 1.5; margin: 0;">Your mean grade is below <strong>C+</strong>. University degree courses and cluster points require a minimum of C+.<br><br>
-                            You have been restricted to the <strong>Standard Package</strong> which focuses on Diploma and Certificate options you qualify for.</p>
+                            <p style="line-height: 1.4; margin: 0;">
+                                You are restricted to the <strong>Standard Package</strong> which provides Diploma and Certificate options suitable for your grade.
+                            </p>
                         `;
                         select.parentNode.insertBefore(notice, select);
 
@@ -3607,7 +3657,8 @@
 
                         <!-- Phone Field -->
                         <div>
-                            <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">M-Pesa
+                            <label
+                                class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">M-Pesa
                                 Phone Number</label>
                             <input type="tel" id="profilePhone"
                                 class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"

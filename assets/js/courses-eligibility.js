@@ -66,6 +66,7 @@
         window.displayResultsUnified = displayResultsUnified;
         window.convertGrade = convertGrade;
         window.findSubjectId = findSubjectId;
+        window.getDiplomaCourses = getDiplomaCourses;
         console.log('✅ courses-eligibility.js: Global functions attached to window');
     } catch (e) {
         console.error('❌ Error attaching functions to window:', e);
@@ -489,7 +490,7 @@
         if (type === 'placement-only') {
             resultsDiv.innerHTML = html;
             initializeDownloadButton();
-            
+
             // Trigger Confetti
             if (window.confetti) {
                 confetti({
@@ -787,12 +788,12 @@
             </h4>
             <div class="grid grid-cols-1 gap-2">
                 ${courses.map(course => {
-                    let campusInfo = '';
-                    if (window.PlacementEngine && clusterId && points) {
-                        const qualified = window.PlacementEngine.getQualifiedCampuses(course, clusterId, points);
-                        if (qualified.length > 0) {
-                            const campusId = `campus-${clusterId}-${course.replace(/[^a-zA-Z0-9]/g, '')}`;
-                            campusInfo = `
+            let campusInfo = '';
+            if (window.PlacementEngine && clusterId && points) {
+                const qualified = window.PlacementEngine.getQualifiedCampuses(course, clusterId, points);
+                if (qualified.length > 0) {
+                    const campusId = `campus-${clusterId}-${course.replace(/[^a-zA-Z0-9]/g, '')}`;
+                    campusInfo = `
                             <div class="mt-2 pt-2 border-t border-gray-100">
                                 <button onclick="document.getElementById('${campusId}').classList.toggle('hidden'); this.querySelector('.campus-arrow').classList.toggle('rotate-180')" 
                                     class="flex items-center gap-2 text-[11px] text-gray-500 font-medium hover:text-gray-700 transition-colors cursor-pointer w-full">
@@ -812,10 +813,10 @@
                                     </div>
                                 </div>
                             </div>`;
-                        }
-                    }
-                    
-                    return `
+                }
+            }
+
+            return `
                         <div class="p-3 bg-white rounded-lg border-l-4 border-${color}-400 shadow-sm text-gray-700 text-sm font-medium hover:bg-gray-50 transition-colors">
                             <div class="flex justify-between items-start">
                                 <span>${course}</span>
@@ -823,7 +824,7 @@
                             ${campusInfo}
                         </div>
                     `;
-                }).join('')}
+        }).join('')}
             </div>
         </div>
     `;

@@ -514,14 +514,16 @@ class PaymentHandler {
         // Prompt for M-Pesa code instead
         const { value: mpesaCode } = await Swal.fire({
             title: '📱 Enter M-Pesa Code',
+            width: window.innerWidth > 768 ? '850px' : '98%',
+            padding: window.innerWidth > 768 ? '1.25rem' : '0.5rem',
             html: `
-                <div style="text-align: left;">
-                    <p style="color: #6b7280; margin-bottom: 1rem; font-size: 0.9rem;">
+                <div style="text-align: left; margin-top: 0.5rem;">
+                    <p style="color: #6b7280; margin-bottom: 0.75rem; font-size: 0.9rem;">
                         Enter the M-Pesa transaction code from your SMS confirmation (e.g., <strong>SG722NMVXQ</strong>)
                     </p>
                     <input type="text" id="swal-mpesa-code" class="swal2-input" placeholder="e.g., SG722NMVXQ" 
-                        style="margin: 0; width: 100%; box-sizing: border-box; text-transform: uppercase; font-family: monospace; font-size: 1.1rem; letter-spacing: 1px;">
-                    <p style="margin-top: 0.75rem; font-size: 0.8rem; color: #9ca3af;">
+                        style="margin: 0; width: 100%; box-sizing: border-box; text-transform: uppercase; font-family: monospace; font-size: 1.1rem; letter-spacing: 1px; height: 2.5em;">
+                    <p style="margin-top: 0.5rem; font-size: 0.8rem; color: #9ca3af;">
                         <i class="fas fa-info-circle"></i> Each code can only be used once to view results.
                     </p>
                 </div>
@@ -577,25 +579,27 @@ class PaymentHandler {
             // Prompt for phone number with referral code option
             const { value: formData, isDenied } = await Swal.fire({
                 title: '📱 M-Pesa Payment',
+                width: window.innerWidth > 768 ? '850px' : '98%',
+                padding: window.innerWidth > 768 ? '1.25rem' : '0.5rem',
                 html: `
-                    <div style="text-align: left;">
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                    <div style="text-align: left; margin-top: 0.5rem;">
+                        <div style="margin-bottom: 0.75rem;">
+                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.25rem; font-size: 0.9rem;">
                                 M-Pesa Number <span style="color: #ef4444;">*</span>
                             </label>
                             <input type="tel" id="swal-phone" class="swal2-input" placeholder="07XXXXXXXX" 
-                                style="margin: 0; width: 100%; box-sizing: border-box;">
+                                style="margin: 0; width: 100%; box-sizing: border-box; height: 2.5em;">
                         </div>
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem; font-size: 0.9rem;">
+                        <div style="margin-bottom: 0.75rem;">
+                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.25rem; font-size: 0.9rem;">
                                 <i class="fas fa-gift" style="color: #8b5cf6;"></i> Referral Code <span style="color: #9ca3af; font-weight: 400;">(optional)</span>
                             </label>
-                            <input type="text" id="swal-referral" class="swal2-input" placeholder="Enter code if you have one" 
-                                value="${storedReferralCode}" style="margin: 0; width: 100%; box-sizing: border-box; text-transform: uppercase;">
+                            <input type="text" id="swal-referral" class="swal2-input" placeholder="Code (optional)" 
+                                value="${storedReferralCode}" style="margin: 0; width: 100%; box-sizing: border-box; text-transform: uppercase; height: 2.5em;">
                         </div>
-                        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.5rem; padding: 0.75rem; margin-top: 1rem;">
-                            <p style="color: #166534; font-size: 0.85rem; margin: 0;">
-                                <i class="fas fa-info-circle"></i> You'll receive an M-Pesa prompt on your phone. Enter your PIN to pay <strong>KES ${amount}</strong>.
+                        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.5rem; padding: 0.6rem; margin-top: 0.5rem;">
+                            <p style="color: #166534; font-size: 0.8rem; margin: 0; line-height: 1.3;">
+                                <i class="fas fa-info-circle"></i> Check your phone for M-Pesa PIN prompt. Price: <strong>KES ${amount}</strong>.
                             </p>
                         </div>
                     </div>
@@ -681,22 +685,40 @@ class PaymentHandler {
             // Show waiting for payment - Modern design
             Swal.fire({
                 title: '',
+                width: window.innerWidth > 768 ? '850px' : '98%',
+                padding: window.innerWidth > 768 ? '1.5rem' : '0.5rem',
                 html: `
-                    <div style="text-align: center; padding: 1rem 0;">
-                        <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    <style>
+                        .swal-icon-circle { width: 80px; height: 80px; margin-bottom: 1.5rem; }
+                        .swal-title-text { font-size: 1.5rem; margin-bottom: 0.5rem; }
+                        .swal-body-text { font-size: 1rem; margin-bottom: 1rem; }
+                        .swal-price-box { padding: 1rem; margin-bottom: 1rem; }
+                        .swal-price-text { font-size: 2rem; }
+                        /* Mobile overrides */
+                        @media (max-width: 768px) {
+                            .swal-icon-circle { width: 60px; height: 60px; margin-bottom: 1rem; }
+                            .swal-icon-circle svg { width: 30px; height: 30px; }
+                            .swal-title-text { font-size: 1.2rem; margin-bottom: 0.25rem; }
+                            .swal-body-text { font-size: 0.85rem; margin-bottom: 0.5rem; }
+                            .swal-price-box { padding: 0.75rem; margin-bottom: 0.75rem; }
+                            .swal-price-text { font-size: 1.5rem; }
+                        }
+                    </style>
+                    <div style="text-align: center; padding: 0.5rem 0;">
+                        <div class="swal-icon-circle" style="margin: 0 auto; background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <rect x="2" y="4" width="20" height="16" rx="2"/>
                                 <path d="M7 15h0M2 9h20"/>
                             </svg>
                         </div>
-                        <h2 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin-bottom: 0.5rem;">Check Your Phone</h2>
-                        <p style="color: #6b7280; margin-bottom: 1rem;">An M-Pesa payment request has been sent</p>
-                        <div style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 12px; padding: 1rem; margin-bottom: 1rem;">
-                            <p style="font-size: 2rem; font-weight: 700; color: #16a34a;">KES ${amount}</p>
-                            <p style="font-size: 0.875rem; color: #166534;">Enter your M-Pesa PIN to complete</p>
+                        <h2 class="swal-title-text" style="font-weight: 700; color: #111827;">Check Your Phone</h2>
+                        <p class="swal-body-text" style="color: #6b7280;">An M-Pesa payment request has been sent</p>
+                        <div class="swal-price-box" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 12px;">
+                            <p class="swal-price-text" style="font-weight: 700; color: #16a34a;">KES ${amount}</p>
+                            <p style="font-size: 0.8rem; color: #166534;">Enter your M-Pesa PIN to complete</p>
                         </div>
-                        <div id="paymentStatus" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #f9fafb; border-radius: 8px; color: #6b7280; font-size: 0.875rem;">
-                            <svg class="animate-spin" style="animation: spin 1s linear infinite; width: 16px; height: 16px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <div id="paymentStatus" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #f9fafb; border-radius: 8px; color: #6b7280; font-size: 0.8rem; margin-top: 0.5rem;">
+                            <svg class="animate-spin" style="animation: spin 1s linear infinite; width: 14px; height: 14px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
@@ -785,18 +807,20 @@ class PaymentHandler {
                 // User chose to keep waiting — show waiting modal again and poll again
                 Swal.fire({
                     title: '',
+                    width: window.innerWidth > 768 ? '850px' : '98%',
+                    padding: window.innerWidth > 768 ? '1.5rem' : '0.5rem',
                     html: `
-                        <div style="text-align: center; padding: 1rem 0;">
-                            <div style="width: 80px; height: 80px; margin: 0 auto 1.5rem; background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <div style="text-align: center; padding: 0.5rem 0;">
+                            <div class="swal-icon-circle" style="width: 60px; height: 60px; margin: 0 auto 1rem; background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <rect x="2" y="4" width="20" height="16" rx="2"/>
                                     <path d="M7 15h0M2 9h20"/>
                                 </svg>
                             </div>
-                            <h2 style="font-size: 1.5rem; font-weight: 700; color: #111827; margin-bottom: 0.5rem;">Still Checking…</h2>
-                            <p style="color: #6b7280; margin-bottom: 1rem;">Please complete the prompt on your phone</p>
-                            <div id="paymentStatus" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1rem; background: #f9fafb; border-radius: 8px; color: #6b7280; font-size: 0.875rem;">
-                                <svg class="animate-spin" style="animation: spin 1s linear infinite; width: 16px; height: 16px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <h2 style="font-size: 1.25rem; font-weight: 700; color: #111827; margin-bottom: 0.5rem;">Still Checking…</h2>
+                            <p style="color: #6b7280; margin-bottom: 1rem; font-size: 0.9rem;">Please complete the prompt on your phone</p>
+                            <div id="paymentStatus" style="display: flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.5rem 1rem; background: #f9fafb; border-radius: 8px; color: #6b7280; font-size: 0.8rem;">
+                                <svg class="animate-spin" style="animation: spin 1s linear infinite; width: 14px; height: 14px;" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                     <circle style="opacity: 0.25;" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                     <path style="opacity: 0.75;" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>

@@ -2333,19 +2333,20 @@
 
             Swal.fire({
                 title: '🎓 Choose Your Package',
-                width: window.innerWidth > 768 ? '700px' : '95%',
+                width: window.innerWidth > 768 ? '850px' : '98%',
+                padding: window.innerWidth > 768 ? '1.25rem' : '0.5rem',
                 html: `
-                    <div style="text-align: left; margin-top: 1rem;">
-                        <p class="hidden md:block" style="color: #6b7280; margin-bottom: 1.5rem; font-size: 0.9rem;">
+                    <div style="text-align: left; margin-top: 0.5rem;">
+                        <p class="hidden md:block" style="color: #6b7280; margin-bottom: 1rem; font-size: 0.9rem;">
                             Select a package to unlock your complete results and make informed decisions about your future.
                         </p>
                         
-                        <div style="margin-bottom: 1rem;">
-                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">
+                        <div style="margin-bottom: 0.75rem;">
+                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.25rem; font-size: 0.9rem;">
                                 <i class="fas fa-box-open" style="color: #10b981; margin-right: 0.5rem;"></i>
                                 Select Package:
                             </label>
-                            <select id="modalPackageSelect" style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 0.75rem; font-size: 1rem; cursor: pointer;">
+                            <select id="modalPackageSelect" style="width: 100%; padding: 0.6rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; font-size: 0.95rem; cursor: pointer;">
                                 <option value="" data-amount="0">-- Choose a package --</option>
                                 <option value="gold" data-amount="599">⭐ Gold Package - KES 599</option>
                                 <option value="silver" data-amount="499">🥈 Silver Package - KES 499</option>
@@ -2356,10 +2357,10 @@
                             </select>
                         </div>
                         
-                        <div id="packageDetails" style="background: #f9fafb; border-radius: 0.75rem; padding: 1rem; margin-top: 1rem; display: none;">
-                            <h4 id="packageTitle" style="font-weight: 700; color: #111827; margin-bottom: 0.5rem;"></h4>
-                            <p id="packageDesc" style="color: #6b7280; font-size: 0.85rem; margin-bottom: 0.75rem;"></p>
-                            <ul id="packageFeatures" style="list-style: none; padding: 0; margin: 0;"></ul>
+                        <div id="packageDetails" style="background: #f9fafb; border-radius: 0.75rem; padding: 0.75rem; margin-top: 0.5rem; display: none;">
+                            <h4 id="packageTitle" style="font-weight: 700; color: #111827; margin-bottom: 0.25rem; font-size: 1rem;"></h4>
+                            <p id="packageDesc" style="color: #6b7280; font-size: 0.8rem; margin-bottom: 0.5rem;"></p>
+                            <ul id="packageFeatures" style="list-style: none; padding: 0; margin: 0; font-size: 0.85rem;"></ul>
                         </div>
                     </div>
                 `,

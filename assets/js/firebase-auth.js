@@ -378,24 +378,16 @@ class FirebaseAuthHandler {
         const userAvatar = document.getElementById('userAvatar');
         const authBtnMobile = document.getElementById('authBtnMobile');
         const profileBtnMobile = document.getElementById('profileBtnMobile');
+        const userAvatarMobile = document.getElementById('userAvatarMobile');
         const homeReferralCta = document.querySelector('.referral-cta-button');
 
+        // Hide auth buttons when logged in (we only show avatar now)
         if (authBtn) {
-            authBtn.innerHTML = '<i class="fas fa-th-large mr-2"></i>Dashboard';
-            authBtn.classList.remove('btn-nav-login');
-            authBtn.classList.add('bg-green-600', 'text-white', 'px-4', 'py-2', 'rounded-lg', 'font-semibold', 'hover:bg-green-700', 'transition-colors');
-            authBtn.onclick = () => {
-                const prefix = window.location.pathname.includes('/pages/') ? '' : 'pages/';
-                window.location.href = prefix + 'referral.html';
-            };
+            authBtn.classList.add('hidden');
         }
 
         if (authBtnMobile) {
-            authBtnMobile.innerHTML = '<i class="fas fa-th-large mr-2"></i>Dashboard';
-            authBtnMobile.onclick = () => {
-                const prefix = window.location.pathname.includes('/pages/') ? '' : 'pages/';
-                window.location.href = prefix + 'referral.html';
-            };
+            authBtnMobile.classList.add('hidden');
         }
 
         if (homeReferralCta) {
@@ -406,22 +398,55 @@ class FirebaseAuthHandler {
             };
         }
 
+        // Hide profile buttons (we only show avatar now)
         if (profileBtn) {
-            profileBtn.classList.remove('hidden');
+            profileBtn.classList.add('hidden');
         }
 
         if (profileBtnMobile) {
-            profileBtnMobile.classList.remove('hidden');
+            profileBtnMobile.classList.add('hidden');
         }
 
+        // Desktop Avatar
         if (userAvatar && this.currentUser) {
+            userAvatar.style.cursor = 'pointer';
+            userAvatar.onclick = () => {
+                const prefix = window.location.pathname.includes('/pages/') ? '' : 'pages/';
+                window.location.href = prefix + 'referral.html';
+            };
+            
             if (this.currentUser.photoURL) {
-                userAvatar.innerHTML = `<img src="${this.currentUser.photoURL}" alt="Profile" class="w-8 h-8 rounded-full">`;
+                userAvatar.innerHTML = `<img src="${this.currentUser.photoURL}" alt="Profile" class="w-10 h-10 rounded-full hover:ring-2 hover:ring-green-500 transition-all">`;
             } else {
                 const initial = (this.currentUser.displayName || this.currentUser.email || 'U')[0].toUpperCase();
-                userAvatar.innerHTML = `<div class="w-8 h-8 rounded-full bg-green-600 text-white flex items-center justify-center font-bold">${initial}</div>`;
+                userAvatar.innerHTML = `<div class="w-10 h-10 rounded-full bg-green-600 text-white flex items-center justify-center font-bold hover:bg-green-700 transition-all shadow-md">${initial}</div>`;
             }
             userAvatar.classList.remove('hidden');
+        }
+
+        // Mobile Avatar
+        if (userAvatarMobile && this.currentUser) {
+            userAvatarMobile.style.cursor = 'pointer';
+            userAvatarMobile.onclick = () => {
+                const prefix = window.location.pathname.includes('/pages/') ? '' : 'pages/';
+                window.location.href = prefix + 'referral.html';
+            };
+            
+            if (this.currentUser.photoURL) {
+                userAvatarMobile.innerHTML = `
+                    <div class="flex flex-col items-center">
+                        <img src="${this.currentUser.photoURL}" alt="Profile" class="w-16 h-16 rounded-full mb-2">
+                        <span class="text-gray-700 font-medium">My Dashboard</span>
+                    </div>`;
+            } else {
+                const initial = (this.currentUser.displayName || this.currentUser.email || 'U')[0].toUpperCase();
+                userAvatarMobile.innerHTML = `
+                    <div class="flex flex-col items-center">
+                        <div class="w-16 h-16 rounded-full bg-green-600 text-white flex items-center justify-center font-bold text-xl mb-2">${initial}</div>
+                        <span class="text-gray-700 font-medium">My Dashboard</span>
+                    </div>`;
+            }
+            userAvatarMobile.classList.remove('hidden');
         }
     }
 
@@ -434,15 +459,18 @@ class FirebaseAuthHandler {
         const userAvatar = document.getElementById('userAvatar');
         const authBtnMobile = document.getElementById('authBtnMobile');
         const profileBtnMobile = document.getElementById('profileBtnMobile');
+        const userAvatarMobile = document.getElementById('userAvatarMobile');
         const homeReferralCta = document.querySelector('.referral-cta-button');
 
         if (authBtn) {
             authBtn.innerHTML = '<i class="fas fa-user mr-2"></i>Login';
+            authBtn.classList.remove('hidden');
             authBtn.onclick = () => this.openAuthModal();
         }
 
         if (authBtnMobile) {
             authBtnMobile.innerHTML = '<i class="fas fa-user mr-2"></i>Login';
+            authBtnMobile.classList.remove('hidden');
             authBtnMobile.onclick = () => this.openAuthModal();
         }
 
@@ -463,6 +491,10 @@ class FirebaseAuthHandler {
 
         if (userAvatar) {
             userAvatar.classList.add('hidden');
+        }
+
+        if (userAvatarMobile) {
+            userAvatarMobile.classList.add('hidden');
         }
     }
 

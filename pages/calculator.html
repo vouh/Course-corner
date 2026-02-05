@@ -2442,7 +2442,26 @@
 
                         // Force selection to Standard Package
                         select.value = 'courses-only';
+                        select.dispatchEvent(new Event('change'));
+                        // Also enforce via change guard so users cannot switch using custom UI
+                        select.addEventListener('change', (e) => {
+                            if (select.value !== 'courses-only') {
+                                Swal.showValidationMessage('Grade below C+: Only Standard Package is available.');
+                                select.value = 'courses-only';
+                                // Sync custom select text if present
+                                const wrap = select.closest('.custom-select-wrapper');
+                                if (wrap) {
+                                    const txt = wrap.querySelector('.selected-text');
+                                    if (txt) txt.textContent = select.options[select.selectedIndex].text;
+                                }
+                            } else {
+                                Swal.resetValidationMessage();
+                            }
+                        });
                     }
+
+                    // Ensure native select is hidden inside modal (CustomSelect auto-inits via observer)
+                    select.style.display = 'none';
 
                     const packageInfo = {
                         'gold': {

@@ -3069,6 +3069,19 @@ textarea.cc-form-input {
     }
 }
 
+/* Force hide native select inside the SweetAlert modal to avoid double dropdown */
+.swal-package-modal .custom-select-wrapper select {
+    position: absolute !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    height: 0 !important;
+    overflow: hidden !important;
+}
+
+.swal-package-modal .custom-select-dropdown {
+    z-index: 10000;
+}
+
 /* ============================================
    Floating Referral Bubble
    ============================================ */

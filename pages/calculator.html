@@ -2177,20 +2177,28 @@
                         </div>
                     `;
                 } else if (isBelowCPlus) {
-                    // Show diploma/KMTC teaser for below C+ students
-                    // Get dynamic suggestions for below C+
+                    // Show dynamic suggestions for below C+ - KMTC, Diploma, Cert
                     let samples = [];
                     const grades = (window.getStudentGrades && typeof window.getStudentGrades === 'function')
                         ? window.getStudentGrades()
                         : {};
 
-                    // Try to get KMTC
+                    // 1. KMTC SLOT (High-end Priorities)
                     try {
                         if (window.getDiplomaCourses && typeof window.getDiplomaCourses === 'function') {
                             const kmtc = window.getDiplomaCourses(grades);
-                            if (kmtc && kmtc['KMTC Diploma Programs'] && Array.isArray(kmtc['KMTC Diploma Programs']) && kmtc['KMTC Diploma Programs'].length > 0) {
-                                // Pick one KMTC course
-                                const kmtcCourse = kmtc['KMTC Diploma Programs'][0];
+                            const kmtcList = kmtc['KMTC Diploma Programs'] || [];
+                            if (kmtcList.length > 0) {
+                                // Find a "High-end" Diploma (Search for these specifically)
+                                const highEndKeywords = ['Clinical Medicine', 'Nursing', 'Laboratory', 'Physiotherapy', 'Pharmacy', 'Radiography'];
+                                let kmtcCourse = kmtcList.find(c => highEndKeywords.some(key => c.includes(key)));
+                                
+                                // Fallback to any Diploma if no specific high-end found
+                                if (!kmtcCourse) kmtcCourse = kmtcList.find(c => c.startsWith('Diploma'));
+                                
+                                // Last fallback to first available
+                                if (!kmtcCourse) kmtcCourse = kmtcList[0];
+                                
                                 samples.push({ name: kmtcCourse, uni: 'Kenya Medical Training College', type: 'KMTC' });
                             }
                         }
@@ -2198,37 +2206,49 @@
                         console.error('Error fetching KMTC courses:', e);
                     }
 
-                    // Try to get Technical/Diploma/Cert
+                    // 2. TECHNICAL DIPLOMA & CERT SLOTS
                     try {
                         if (window.getTechnicalCourses && typeof window.getTechnicalCourses === 'function') {
                             const tech = window.getTechnicalCourses(grades);
-                            const techCategories = ['DIPLOMA PROGRAMS', 'CERTIFICATE PROGRAMS', 'ARTISAN PROGRAMS'];
-
                             if (tech && tech.courses) {
-                                techCategories.forEach(cat => {
-                                    if (samples.length >= 3) return;
-                                    if (tech.courses[cat] && tech.courses[cat].length > 0) {
-                                        // Find a program group
-                                        const group = tech.courses[cat][0];
-                                        if (group && group.programs && group.programs.length > 0) {
-                                            // Handle string vs object program definition
-                                            const progName = (typeof group.programs[0] === 'string')
-                                                ? group.programs[0]
-                                                : group.programs[0].program;
+                                // Try to get one Diploma (Priority)
+                                const dipList = tech.courses['DIPLOMA PROGRAMS'] || [];
+                                if (dipList.length > 0) {
+                                    // Pick a high-end sounding diploma if possible
+                                    const highEndEng = ['Aeronautical', 'Mechatronics', 'Electrical', 'Structural', 'Civil'];
+                                    let group = dipList.find(item => highEndEng.some(key => item.programs.some(p => (typeof p === 'string' ? p : p.program).includes(key))));
+                                    
+                                    if (!group) group = dipList[0];
+                                    
+                                    const progName = (typeof group.programs[0] === 'string') ? group.programs[0] : group.programs[0].program;
+                                    samples.push({ name: progName, uni: 'Technical University / TVET', type: 'DIPL' });
+                                }
 
-                                            const typeName = cat.split(' ')[0].substring(0, 4); // DIP, CERT, ARTI
-
-                                            // Avoid duplicates
-                                            if (!samples.some(s => s.name === progName)) {
-                                                samples.push({
-                                                    name: progName,
-                                                    uni: 'Technical University / TVET',
-                                                    type: typeName
-                                                });
+                                // Try to get one Certificate
+                                const certList = tech.courses['CERTIFICATE PROGRAMS'] || [];
+                                if (certList.length > 0) {
+                                    const group = certList[0];
+                                    const progName = (typeof group.programs[0] === 'string') ? group.programs[0] : group.programs[0].program;
+                                    samples.push({ name: progName, uni: 'Technical University / TVET', type: 'CERT' });
+                                }
+                                
+                                // Fill missing spots with more from categories (not Artisan unless necessary)
+                                if (samples.length < 3) {
+                                    const categories = ['DIPLOMA PROGRAMS', 'CERTIFICATE PROGRAMS', 'ARTISAN PROGRAMS'];
+                                    for (const cat of categories) {
+                                        if (samples.length >= 3) break;
+                                        if (tech.courses[cat]) {
+                                            for (const group of tech.courses[cat]) {
+                                                if (samples.length >= 3) break;
+                                                const progName = (typeof group.programs[0] === 'string') ? group.programs[0] : group.programs[0].program;
+                                                if (!samples.some(s => s.name === progName)) {
+                                                    const typeName = cat.split(' ')[0].substring(0, 4);
+                                                    samples.push({ name: progName, uni: 'Technical University / TVET', type: typeName });
+                                                }
                                             }
                                         }
                                     }
-                                });
+                                }
                             }
                         }
                     } catch (e) {
@@ -2238,8 +2258,8 @@
                     // Fallback to static if absolutely nothing found
                     if (samples.length === 0) {
                         samples = [
-                            { name: 'Diploma in Nursing / Clinical Med', uni: 'Kenya Medical Training College', type: 'KMTC' },
-                            { name: 'Diploma in Electrical Engineering', uni: 'Technical University / TVET', type: 'DIP' },
+                            { name: 'Diploma in Clinical Medicine', uni: 'Kenya Medical Training College', type: 'KMTC' },
+                            { name: 'Diploma in Electrical Engineering', uni: 'Technical University / TVET', type: 'DIPL' },
                             { name: 'Cert. in Information Technology', uni: 'KCA / Zetech / TVET', type: 'CERT' }
                         ];
                     }
@@ -2346,7 +2366,7 @@
                                 <i class="fas fa-box-open" style="color: #10b981; margin-right: 0.5rem;"></i>
                                 Select Package:
                             </label>
-                            <select id="modalPackageSelect" style="width: 100%; padding: 0.6rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; font-size: 0.95rem; cursor: pointer;">
+                            <select id="modalPackageSelect" class="cc-package-select" style="width: 100%; padding: 0.6rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; font-size: 0.95rem; cursor: pointer;">
                                 <option value="" data-amount="0">-- Choose a package --</option>
                                 <option value="gold" data-amount="599">⭐ Gold Package - KES 599</option>
                                 <option value="silver" data-amount="499">🥈 Silver Package - KES 499</option>

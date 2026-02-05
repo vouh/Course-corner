@@ -243,8 +243,11 @@ function initCustomSelects() {
         if (select.dataset.customSelectInit) return;
         select.dataset.customSelectInit = 'true';
 
+        // Packages should always use custom select for better UI
+        const isPackage = select.classList.contains('cc-package-select');
+
         new CustomSelect(select, {
-            mobileOnly: true,
+            mobileOnly: !isPackage, // Always show for packages
             mobileBreakpoint: 768
         });
     });

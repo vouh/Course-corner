@@ -948,12 +948,16 @@
     // Add function to check diploma course eligibility
     function checkDiplomaEligibility(grades, course) {
         // Check mean grade requirement
-        const studentMeanGrade = get_grade_from_points(parseInt(document.getElementById('overallGrade').value));
-        if (!meetsGradeRequirement(studentMeanGrade, course.mean_grade)) {
+        const studentMeanGradeVal = parseInt(document.getElementById('overallGrade').value);
+        const studentMeanGrade = get_grade_from_points(studentMeanGradeVal);
+        
+        if (!studentMeanGrade || !meetsGradeRequirement(studentMeanGrade, course.mean_grade)) {
             return false;
         }
 
         // Check subject requirements
+        if (!course.requirements || !Array.isArray(course.requirements)) return true;
+
         for (const requirement of course.requirements) {
             // Handle special case where only mean grade is specified
             if (requirement.mean_grade) {
@@ -961,10 +965,19 @@
             }
 
             // Check each subject requirement
+            // The JSON structure is: { "subject_1": "ENG/KIS", "grade": "C" }
             let requirementMet = false;
-            const subjects = Object.keys(requirement)[0].split('/');
-            const requiredGrade = requirement[Object.keys(requirement)[1]];
+            
+            // Extract the subject list (e.g., "ENG/KIS") and the required grade
+            const subjectKeys = Object.keys(requirement).filter(k => k.startsWith('subject_'));
+            if (subjectKeys.length === 0) continue;
+            
+            const subjectsStr = requirement[subjectKeys[0]];
+            const requiredGrade = requirement.grade;
 
+            if (!subjectsStr || !requiredGrade) continue;
+
+            const subjects = subjectsStr.split('/');
             for (const subject of subjects) {
                 const studentGrade = getStudentGradeForSubject(grades, subject);
                 if (studentGrade && meetsGradeRequirement(studentGrade, requiredGrade)) {

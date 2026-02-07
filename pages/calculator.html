@@ -3670,24 +3670,41 @@
             const urlParams = new URLSearchParams(window.location.search);
             const magicToken = urlParams.get('magic');
 
-            if (!magicToken) return false;
+            console.log('=== checkMagicLink called ===');
+            console.log('Magic token from URL:', magicToken);
+
+            if (!magicToken) {
+                console.log('No magic token in URL');
+                return false;
+            }
 
             try {
+                console.log('Fetching token from Firestore...');
                 // Validate token with Firestore
                 const db = firebase.firestore();
                 const tokenDoc = await db.collection('magicTokens').doc(magicToken).get();
 
+                console.log('Token doc exists:', tokenDoc.exists);
+
                 if (!tokenDoc.exists) {
-                    console.log('Magic token not found');
+                    console.log('Magic token not found in database');
                     return false;
                 }
 
                 const tokenData = tokenDoc.data();
+                console.log('Token data:', tokenData);
+                
                 const now = new Date();
                 const expiresAt = tokenData.expiresAt.toDate();
+                
+                console.log('Current time:', now);
+                console.log('Expires at:', expiresAt);
+                console.log('Is expired:', now > expiresAt);
+                console.log('Used count:', tokenData.usedCount, '/ Max:', tokenData.maxUses);
 
                 // Check if expired
                 if (now > expiresAt) {
+                    console.log('Token expired!');
                     Swal.fire({
                         icon: 'warning',
                         title: 'Link Expired',
@@ -3699,6 +3716,7 @@
 
                 // Check if max uses exceeded
                 if (tokenData.usedCount >= tokenData.maxUses) {
+                    console.log('Token max uses exceeded!');
                     Swal.fire({
                         icon: 'warning',
                         title: 'Link Usage Limit Reached',
@@ -3708,11 +3726,15 @@
                     return false;
                 }
 
+                console.log('Token is valid! Incrementing usage count...');
+                
                 // Increment usage count
                 await tokenDoc.ref.update({
                     usedCount: firebase.firestore.FieldValue.increment(1),
                     lastUsedAt: firebase.firestore.FieldValue.serverTimestamp()
                 });
+
+                console.log('Usage count incremented');
 
                 // Grant access
                 magicAccessGranted = true;
@@ -3721,6 +3743,7 @@
                 sessionStorage.setItem('magicExpiry', expiresAt.getTime().toString());
                 
                 console.log('✨ Magic access granted! magicAccessGranted =', magicAccessGranted);
+                console.log('Session storage set:', sessionStorage.getItem('magicAccess'));
 
                 // Show success notification
                 showMagicAccessNotification(expiresAt);
@@ -3732,6 +3755,7 @@
 
             } catch (error) {
                 console.error('Error validating magic token:', error);
+                console.error('Error details:', error.message, error.code);
                 return false;
             }
         }

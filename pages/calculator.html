@@ -2579,7 +2579,22 @@
                 if (result.isConfirmed && result.value) {
                     const { package: pkg, amount } = result.value;
 
-                    // Process payment
+                    // Check if magic access is granted
+                    if (magicAccessGranted) {
+                        // Bypass payment and show results directly
+                        Swal.fire({
+                            icon: 'success',
+                            title: '✨ Magic Access Active!',
+                            text: 'Payment bypassed. Loading your results...',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            showResultsAfterPayment(pkg);
+                        });
+                        return;
+                    }
+
+                    // Process payment normally
                     window.paymentHandler.processPayment(
                         pkg,
                         amount,

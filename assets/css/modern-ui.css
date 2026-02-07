@@ -3070,20 +3070,28 @@ textarea.cc-form-input {
 /* Package Modal Layering Fix: Allow dropdown to appear above buttons */
 .swal2-popup.swal-package-modal {
     transform: none !important;
+    overflow: visible !important;
 }
 
 .swal-package-modal .swal2-html-container {
     overflow: visible !important;
-    z-index: 1;
+    z-index: auto;
+    position: relative;
+}
+
+.swal-package-modal .custom-select-wrapper {
+    position: relative;
+    z-index: 9999;
 }
 
 .swal-package-modal .custom-select-dropdown {
-    z-index: 10000 !important;
+    z-index: 99999 !important;
     position: absolute !important;
 }
 
 .swal-package-modal .swal2-actions {
-    z-index: 1 !important;
+    position: relative;
+    z-index: 10 !important;
 }
 
 /* ============================================

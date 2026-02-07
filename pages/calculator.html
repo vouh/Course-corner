@@ -2353,11 +2353,15 @@
 
             if (viewAllBtn) {
                 viewAllBtn.addEventListener('click', function () {
+                    console.log('View All Results clicked. Magic Access:', magicAccessGranted);
+                    
                     // Check if magic access is granted
                     if (magicAccessGranted) {
+                        console.log('Showing magic link modal');
                         // Show magic link package selection modal (no payment)
                         showMagicLinkPackageModal();
                     } else {
+                        console.log('Showing normal payment modal');
                         showPackageModal();
                     }
                 });
@@ -3715,6 +3719,8 @@
                 magicTokenExpiry = expiresAt;
                 sessionStorage.setItem('magicAccess', 'true');
                 sessionStorage.setItem('magicExpiry', expiresAt.getTime().toString());
+                
+                console.log('✨ Magic access granted! magicAccessGranted =', magicAccessGranted);
 
                 // Show success notification
                 showMagicAccessNotification(expiresAt);
@@ -3733,24 +3739,33 @@
         function showMagicAccessNotification(expiresAt) {
             const remainingMinutes = Math.ceil((expiresAt - new Date()) / 1000 / 60);
             
+            console.log('Magic access granted! Expiry:', expiresAt, 'Minutes remaining:', remainingMinutes);
+            
             Swal.fire({
                 icon: 'success',
-                title: '✨ Magic Access Granted!',
+                title: '✨ Magic Link Detected!',
                 html: `
                     <div style="text-align: center; padding: 1rem;">
-                        <p style="font-size: 1.1rem; color: #374151; margin-bottom: 1rem;">
-                            You can now view results <strong>without payment</strong>
-                        </p>
-                        <div style="background: #fef3c7; border-radius: 0.75rem; padding: 1rem;">
-                            <p style="font-size: 0.875rem; color: #92400e; margin: 0;">
+                        <div style="background: #fef3c7; border: 2px solid #f59e0b; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1rem;">
+                            <div style="font-size: 3rem; margin-bottom: 0.5rem;">🎉</div>
+                            <p style="font-size: 1.2rem; font-weight: 700; color: #92400e; margin-bottom: 0.5rem;">
+                                Payment Bypass Active!
+                            </p>
+                            <p style="font-size: 0.95rem; color: #78350f; margin: 0;">
+                                You can now view results <strong>without payment</strong>
+                            </p>
+                        </div>
+                        <div style="background: #dcfce7; border-radius: 0.75rem; padding: 1rem;">
+                            <p style="font-size: 0.875rem; color: #166534; margin: 0;">
                                 <i class="fas fa-clock"></i> Access expires in <strong>${remainingMinutes} minutes</strong>
                             </p>
                         </div>
                     </div>
                 `,
-                confirmButtonText: 'Got it!',
-                confirmButtonColor: '#10b981',
-                timer: 5000
+                confirmButtonText: '<i class="fas fa-check mr-2"></i>Got it!',
+                confirmButtonColor: '#f59e0b',
+                timer: 6000,
+                timerProgressBar: true
             });
         }
 

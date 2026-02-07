@@ -129,14 +129,12 @@
         <aside id="sidebar"
             class="sidebar fixed lg:sticky top-0 left-0 z-40 w-72 h-screen flex-shrink-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 -translate-x-full lg:translate-x-0 transition-transform">
             <div class="h-full flex flex-col">
-                <div class="p-6 border-b border-gray-200 dark:border-gray-700">
-                    <h1 class="text-2xl font-black text-gray-900 dark:text-white flex items-center gap-3">
-                        <span
-                            class="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-700 rounded-xl flex items-center justify-center">
-                            <i class="fas fa-graduation-cap text-white text-lg"></i>
-                        </span>
-                        Admin Panel
-                    </h1>
+                <div class="h-20 flex items-center gap-3 px-6 border-b border-gray-200 dark:border-gray-700">
+                    <img src="../assets/images/logo.png" alt="Course Corner" class="w-12 h-12 rounded-xl shadow-lg">
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900 dark:text-white">Course Corner</h1>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Admin Panel</p>
+                    </div>
                 </div>
 
                 <nav class="flex-1 p-4 space-y-2 overflow-y-auto">
@@ -144,6 +142,11 @@
                         class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
                         <i class="fas fa-chart-pie text-xl w-6"></i>
                         <span>Dashboard</span>
+                    </a>
+                    <a href="index.html#transactions"
+                        class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                        <i class="fas fa-receipt text-xl w-6"></i>
+                        <span>Transactions</span>
                     </a>
                     <a href="referrals.html"
                         class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
@@ -172,17 +175,19 @@
                     </div>
                 </nav>
 
-                <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+                <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-gray-600 dark:text-gray-300"></i>
+                        <div
+                            class="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-white"></i>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <p id="admin-name" class="text-sm font-semibold text-gray-900 dark:text-white truncate">Admin</p>
-                            <p id="admin-email" class="text-xs text-gray-500 dark:text-gray-400 truncate">Loading...</p>
+                            <p id="sidebar-email" class="text-sm font-medium text-gray-900 dark:text-white truncate">
+                                admin@email.com</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Administrator</p>
                         </div>
-                        <button onclick="signOut()"
-                            class="w-8 h-8 flex items-center justify-center rounded-lg text-gray-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 dark:hover:text-red-400 transition-all">
+                        <button onclick="logout()" class="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                            title="Logout">
                             <i class="fas fa-sign-out-alt"></i>
                         </button>
                     </div>
@@ -191,37 +196,37 @@
         </aside>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col overflow-hidden">
-            <!-- Header -->
-            <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 lg:px-8 py-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-4">
-                        <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700">
-                            <i class="fas fa-bars text-gray-600 dark:text-gray-300 text-xl"></i>
-                        </button>
-                        <div>
-                            <h2 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-                                <i class="fas fa-link text-amber-500"></i>
-                                Magic Links
-                            </h2>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Create payment bypass links with expiry</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-3">
-                        <button onclick="toggleDarkMode()" class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-                            <i id="theme-icon" class="fas fa-moon"></i>
-                        </button>
-                        <button onclick="loadMagicLinks()" class="p-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
-                    </div>
+        <div class="lg:ml-72 min-h-screen">
+            <!-- Top Bar -->
+            <header
+                class="h-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30 px-4 lg:px-8 flex items-center justify-between">
+                <button onclick="toggleSidebar()"
+                    class="lg:hidden p-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+                <div class="hidden lg:block">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Magic Links</h2>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Create payment bypass links with expiry</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button onclick="loadMagicLinks()"
+                        class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                        title="Refresh">
+                        <i class="fas fa-sync-alt text-lg"></i>
+                    </button>
+                    <button onclick="toggleTheme()"
+                        class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                        title="Toggle Theme">
+                        <i class="fas fa-sun text-lg dark:hidden"></i>
+                        <i class="fas fa-moon text-lg hidden dark:inline"></i>
+                    </button>
                 </div>
             </header>
 
-            <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden"></div>
+            <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden">
+            </div>
 
-            <main class="flex-1 overflow-y-auto p-4 lg:p-8">
+            <main class="p-4 lg:p-8">
                 <!-- Stats -->
                 <div class="grid grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
                     <div class="hover-lift bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-sm border border-gray-100 dark:border-gray-700">
@@ -307,26 +312,34 @@
         </div>
     </div>
 
-    <script src="../assets/js/firebase-config.js"></script>
+    <!-- Toast -->
+    <div id="toast-container" class="fixed bottom-4 right-4 z-50 space-y-2"></div>
+
     <script>
-        let auth, db;
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
+            authDomain: "course-corner.firebaseapp.com",
+            projectId: "course-corner",
+            storageBucket: "course-corner.firebasestorage.app",
+            messagingSenderId: "961706784572",
+            appId: "1:961706784572:web:7aa6c24946570ffda59039"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
 
-        // Firebase initialization
-        firebase.auth().onAuthStateChanged((user) => {
-            handleAdminAuthState(user, (authorizedUser) => {
-                auth = firebase.auth();
-                db = firebase.firestore();
-
-                document.getElementById('admin-name').textContent = authorizedUser.displayName || 'Admin';
-                document.getElementById('admin-email').textContent = authorizedUser.email;
-
-                loadMagicLinks();
-                hideLoading();
-            });
-        });
+        // Auth
+        auth.onAuthStateChanged(user => handleAdminAuthState(user, (u) => {
+            document.getElementById('sidebar-email').textContent = u.email;
+            loadMagicLinks();
+            hideLoading();
+        }));
 
         function hideLoading() {
-            document.getElementById('loading').style.display = 'none';
+            const loadingEl = document.getElementById('loading');
+            if (loadingEl) {
+                loadingEl.classList.add('hidden');
+            }
         }
 
         function toggleSidebar() {
@@ -338,18 +351,25 @@
 
         function toggleDarkMode() {
             document.documentElement.classList.toggle('dark');
-            const icon = document.getElementById('theme-icon');
-            icon.className = document.documentElement.classList.contains('dark') ? 'fas fa-sun' : 'fas fa-moon';
             localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        }
+
+        // Alias for consistency with other admin pages
+        function toggleTheme() {
+            toggleDarkMode();
         }
 
         if (localStorage.getItem('darkMode') === 'true') {
             document.documentElement.classList.add('dark');
-            document.getElementById('theme-icon').className = 'fas fa-sun';
         }
 
         function signOut() {
             auth.signOut().then(() => window.location.href = 'index.html');
+        }
+
+        // Alias for consistency with other admin pages
+        function logout() {
+            signOut();
         }
 
         function showToast(message, type = 'info') {

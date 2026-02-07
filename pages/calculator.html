@@ -3849,32 +3849,58 @@
 
         // Check for existing magic access in session
         function restoreMagicAccess() {
+            console.log('=== restoreMagicAccess called ===');
             const hasAccess = sessionStorage.getItem('magicAccess');
             const expiryTime = sessionStorage.getItem('magicExpiry');
+            
+            console.log('Session magicAccess:', hasAccess);
+            console.log('Session expiryTime:', expiryTime);
 
             if (hasAccess && expiryTime) {
                 const expiresAt = new Date(parseInt(expiryTime));
                 const now = new Date();
+                
+                console.log('Expiry check - Now:', now, 'Expires:', expiresAt);
 
                 if (now < expiresAt) {
                     magicAccessGranted = true;
                     magicTokenExpiry = expiresAt;
+                    console.log('Restored magic access! magicAccessGranted =', magicAccessGranted);
                     startMagicCountdown(expiresAt);
                     return true;
                 } else {
+                    console.log('Session expired, clearing...');
                     sessionStorage.removeItem('magicAccess');
                     sessionStorage.removeItem('magicExpiry');
                 }
             }
+            console.log('No valid session found');
             return false;
         }
 
         // Initialize payment button handlers
         document.addEventListener('DOMContentLoaded', async function () {
+            console.log('=== DOMContentLoaded fired ===');
+            console.log('URL:', window.location.href);
+            console.log('Firebase initialized:', typeof firebase !== 'undefined');
+            
             // Check for magic link first
-            if (!restoreMagicAccess()) {
-                await checkMagicLink();
+            console.log('Checking for magic access...');
+            const restoredAccess = restoreMagicAccess();
+            console.log('Restored from session:', restoredAccess);
+            
+            if (!restoredAccess) {
+                console.log('No session found, checking URL for magic token...');
+                try {
+                    const magicResult = await checkMagicLink();
+                    console.log('checkMagicLink result:', magicResult);
+                } catch (error) {
+                    console.error('Error in checkMagicLink:', error);
+                }
             }
+            
+            console.log('Final magicAccessGranted state:', magicAccessGranted);
+            console.log('Session storage magicAccess:', sessionStorage.getItem('magicAccess'));
 
             // Get Results button handler (Freemium flow)
             const getResultsBtn = document.getElementById('getResultsBtn');

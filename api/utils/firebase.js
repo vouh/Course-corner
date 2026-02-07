@@ -581,7 +581,7 @@ const getReferralStats = async (userId) => {
  * Create withdrawal request
  */
 const createWithdrawalRequest = async (userId, amount, mpesaPhone) => {
-  const MINIMUM_WITHDRAWAL = 1; // 1 KES minimum for testing
+  const MINIMUM_WITHDRAWAL = 100; // 100 KES minimum
 
   try {
     const { admin, db } = await initializeFirebase();

@@ -754,10 +754,17 @@
                             <!-- Withdrawal Button -->
                             <button id="withdrawBtn" onclick="requestWithdrawal()" class="w-full py-5 px-6 rounded-2xl font-bold transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed bg-gray-100 text-gray-400 group h-16" disabled>
                                 <i class="fas fa-paper-plane group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i>
-                                <span id="withdrawBtnText">Minimum KES 1 required</span>
+                                <span id="withdrawBtnText">Minimum KES 100 required</span>
                             </button>
                             
                             <div class="mt-6 flex flex-col gap-3">
+                                <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200 flex items-start gap-3">
+                                    <i class="fas fa-exclamation-circle text-amber-600 mt-0.5 text-sm"></i>
+                                    <p class="text-[11px] text-amber-800 leading-relaxed font-semibold">
+                                        <strong>Minimum Withdrawal: KES 100</strong><br>
+                                        <span class="text-amber-700 font-normal">You need at least KES 100 to request a withdrawal.</span>
+                                    </p>
+                                </div>
                                 <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-start gap-3">
                                     <i class="fas fa-info-circle text-gray-400 mt-0.5 text-xs"></i>
                                     <p class="text-[11px] text-gray-500 leading-relaxed" id="withdrawNotice">
@@ -1315,7 +1322,7 @@
 
             withdrawableBalance.textContent = 'KES ' + pendingAmount.toLocaleString();
 
-            if (pendingAmount >= 1) {
+            if (pendingAmount >= 100) {
                 withdrawBtn.disabled = false;
                 withdrawBtn.classList.remove('bg-gray-200', 'text-gray-500');
                 withdrawBtn.classList.add('bg-green-600', 'hover:bg-green-700', 'text-white');
@@ -1324,7 +1331,7 @@
                 withdrawBtn.disabled = true;
                 withdrawBtn.classList.add('bg-gray-200', 'text-gray-500');
                 withdrawBtn.classList.remove('bg-green-600', 'hover:bg-green-700', 'text-white');
-                const remaining = 1 - pendingAmount;
+                const remaining = 100 - pendingAmount;
                 withdrawBtnText.textContent = `KES ${remaining} more to unlock withdrawal`;
             }
         }
@@ -1341,8 +1348,8 @@
 
             const pendingAmount = profile.referralPending || 0;
 
-            if (pendingAmount < 1) {
-                showToast('Minimum withdrawal is KES 1', 'error');
+            if (pendingAmount < 100) {
+                showToast('Minimum withdrawal is KES 100', 'error');
                 return;
             }
 

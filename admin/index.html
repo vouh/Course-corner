@@ -383,20 +383,6 @@
 
                     <!-- Quick Actions -->
                     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                        <button onclick="syncFailedTransactions()"
-                            class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-red-500 dark:hover:border-red-500 transition-all group">
-                            <div
-                                class="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
-                                <i class="fas fa-sync-alt text-red-600 dark:text-red-400 text-xl"></i>
-                            </div>
-                            <div class="text-left">
-                                <p class="font-semibold text-gray-900 dark:text-white">Sync Failed</p>
-                                <p class="text-xs text-gray-500 dark:text-gray-400">Fix Statuses</p>
-                            </div>
-                        </button>
-
-
-
                         <button onclick="exportToCSV()"
                             class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-all group">
                             <div
@@ -1198,31 +1184,6 @@
         function selectCode(code) { document.getElementById('generated-code').value = code; copyGeneratedCode(); }
 
         // Actions
-        async function syncFailedTransactions() { 
-            showToast('Syncing failed transactions...', 'info'); 
-            try {
-                // Call bulk sync endpoint
-                const res = await fetch(`${API_BASE}/api/mpesa/admin/sync-all`, { method: 'POST' });
-                const data = await res.json();
-                
-                if (data.success) {
-                    showToast(`Sync complete! ${data.results?.length || 0} checked.`, 'success');
-                } else {
-                    showToast(data.message || 'Sync failed', 'warning');
-                }
-            } catch (e) {
-                console.error('Sync error:', e);
-                showToast('Error connecting to sync service', 'error');
-            }
-            await loadTransactions(); 
-        }
-
-
-
-
-
-
-
         async function requeryTransaction(transactionId) {
             showToast('Re-querying M-Pesa...', 'info');
             try {

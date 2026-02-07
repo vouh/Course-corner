@@ -177,6 +177,8 @@ class FirebaseAuthHandler {
 
             // Check if user profile exists, if not create one
             const profileExists = await this.checkUserProfileExists(user.uid);
+            const isNewUser = !profileExists;
+            
             if (!profileExists) {
                 await this.createUserProfile(user, {
                     displayName: user.displayName,
@@ -185,12 +187,26 @@ class FirebaseAuthHandler {
             }
 
             this.showSuccessOverlay('Welcome!', 'Signed in with Google', 1500);
+            
+            // Prompt new users to complete profile (add phone number)
+            if (isNewUser) {
+                setTimeout(() => {
+                    this.promptProfileCompletion();
+                }, 2000);
+            }
+            
             return { success: true, user };
 
         } catch (error) {
             console.error('Google sign in error:', error);
             this.hideLoadingOverlay();
-            if (error.code !== 'auth/popup-closed-by-user') {
+            
+            // Handle specific error cases
+            if (error.code === 'auth/unauthorized-domain') {
+                this.showToast('Please add your domain to Firebase authorized domains. Contact support if issue persists.', 'error');
+            } else if (error.code === 'auth/popup-blocked') {
+                this.showToast('Pop-up blocked. Please allow pop-ups for this site and try again.', 'error');
+            } else if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
                 this.showToast(this.getErrorMessage(error.code), 'error');
             }
             return { success: false, error: error.message };
@@ -528,6 +544,39 @@ class FirebaseAuthHandler {
             modal.classList.remove('hidden');
             this.populateProfileForm();
         }
+    }
+
+    /**
+     * Prompt user to complete profile (especially phone number)
+     */
+    promptProfileCompletion() {
+        if (typeof Swal === 'undefined') {
+            // Fallback if SweetAlert2 is not available
+            this.openProfileModal();
+            return;
+        }
+
+        Swal.fire({
+            icon: 'info',
+            title: 'Complete Your Profile',
+            html: `
+                <p style="margin-bottom: 1rem; color: #374151;">
+                    Please add your <strong>phone number</strong> to receive M-Pesa payments for referrals.
+                </p>
+                <p style="font-size: 0.875rem; color: #6b7280;">
+                    You can update this information anytime from your profile settings.
+                </p>
+            `,
+            showCancelButton: true,
+            confirmButtonText: 'Update Profile',
+            cancelButtonText: 'Skip for Now',
+            confirmButtonColor: '#10b981',
+            cancelButtonColor: '#6b7280'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                this.openProfileModal();
+            }
+        });
     }
 
     /**

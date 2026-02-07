@@ -261,15 +261,17 @@ if (document.readyState === 'loading') {
 }
 
 // Re-initialize if new selects are added dynamically
-const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-        if (mutation.addedNodes.length) {
-            initCustomSelects();
-        }
+(function() {
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.addedNodes.length) {
+                initCustomSelects();
+            }
+        });
     });
-});
 
-observer.observe(document.body, { childList: true, subtree: true });
+    observer.observe(document.body, { childList: true, subtree: true });
+})();
 
 // Export for manual usage
 window.CustomSelect = CustomSelect;

@@ -30,8 +30,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="assets/js/paymentHandler.js"></script>
-    <!-- Feature Card Slider for Mobile -->
-    <script src="assets/js/feature-slider.js" defer></script>
     <link rel="stylesheet" href="assets/css/auth.css">
     <script src="assets/js/firebase-auth.js" defer></script>
 
@@ -1730,7 +1728,7 @@
         }
 
         // Add click handler to the third button
-        document.getElementById('calculateBtn3').addEventListener('click', function () {
+        document.getElementById('calculateBtn3')?.addEventListener('click', function () {
             setTimeout(() => {
                 const downloadBtn = document.getElementById('downloadBtn');
                 if (downloadBtn) {
@@ -2554,11 +2552,15 @@
 
         // Google sign in handler
         async function handleGoogleSignIn() {
-            const result = await window.firebaseAuth.signInWithGoogle();
-            if (result.success) {
-                window.firebaseAuth.closeAuthModal();
-                // Redirect to referral dashboard
-                window.location.href = 'pages/referral.html';
+            try {
+                const result = await window.firebaseAuth.signInWithGoogle();
+                if (result.success) {
+                    window.firebaseAuth.closeAuthModal();
+                    // Redirect to referral dashboard
+                    window.location.href = 'pages/referral.html';
+                }
+            } catch (error) {
+                console.error('Google Sign In Error:', error);
             }
         }
 

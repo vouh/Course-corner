@@ -2355,13 +2355,178 @@
                 viewAllBtn.addEventListener('click', function () {
                     // Check if magic access is granted
                     if (magicAccessGranted) {
-                        // Bypass payment and show full results directly
-                        showFullResults('magic-access');
+                        // Show magic link package selection modal (no payment)
+                        showMagicLinkPackageModal();
                     } else {
                         showPackageModal();
                     }
                 });
             }
+        }
+
+        // Show magic link package selection modal (no payment required)
+        function showMagicLinkPackageModal() {
+            Swal.fire({
+                title: '✨ Magic Access - Select Package',
+                width: window.innerWidth > 768 ? '850px' : '98%',
+                padding: window.innerWidth > 768 ? '1.25rem' : '0.5rem',
+                html: `
+                    <div style="text-align: left; margin-top: 0.5rem;">
+                        <div style="background: #fef3c7; border: 1px solid #fcd34d; border-radius: 0.75rem; padding: 0.75rem; margin-bottom: 1rem;">
+                            <p style="font-size: 0.875rem; color: #92400e; margin: 0; line-height: 1.5;">
+                                <i class="fas fa-magic"></i> <strong>Payment Bypassed:</strong> You have magic access. Select a package to view your results instantly.
+                            </p>
+                        </div>
+                        
+                        <div style="margin-bottom: 0.75rem;">
+                            <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.25rem; font-size: 0.9rem;">
+                                <i class="fas fa-box-open" style="color: #10b981; margin-right: 0.5rem;"></i>
+                                Select Package:
+                            </label>
+                            <select id="magicPackageSelect" class="cc-package-select" style="width: 100%; padding: 0.6rem; border: 2px solid #e5e7eb; border-radius: 0.5rem; font-size: 0.95rem; cursor: pointer;">
+                                <option value="" data-amount="0">-- Choose a package --</option>
+                                <option value="gold">⭐ Gold Package - Complete Results + Expert Guidance</option>
+                                <option value="silver">🥈 Silver Package - Complete Results with Clusters</option>
+                                <option value="bronze">🥉 Bronze Package - Universities & Courses</option>
+                                <option value="point-and-courses">📊 Premium - Points & Courses</option>
+                                <option value="courses-only">📚 Standard - Courses Only</option>
+                                <option value="calculate-cluster-points">📈 Starter - Cluster Points</option>
+                            </select>
+                        </div>
+                        
+                        <div id="magicPackageDetails" style="background: #f9fafb; border-radius: 0.75rem; padding: 0.75rem; margin-top: 0.5rem; display: none;">
+                            <h4 id="magicPackageTitle" style="font-weight: 700; color: #111827; margin-bottom: 0.25rem; font-size: 1rem;"></h4>
+                            <p id="magicPackageDesc" style="color: #6b7280; font-size: 0.8rem; margin-bottom: 0.5rem;"></p>
+                            <ul id="magicPackageFeatures" style="list-style: none; padding: 0; margin: 0; font-size: 0.8rem;"></ul>
+                        </div>
+                    </div>
+                `,
+                confirmButtonText: '<i class="fas fa-magic mr-2"></i>View Results Now',
+                cancelButtonText: 'Cancel',
+                showCancelButton: true,
+                confirmButtonColor: '#f59e0b',
+                cancelButtonColor: '#6b7280',
+                customClass: {
+                    popup: 'swal-package-modal'
+                },
+                didOpen: () => {
+                    const select = document.getElementById('magicPackageSelect');
+                    const detailsDiv = document.getElementById('magicPackageDetails');
+                    const titleEl = document.getElementById('magicPackageTitle');
+                    const descEl = document.getElementById('magicPackageDesc');
+                    const featuresEl = document.getElementById('magicPackageFeatures');
+
+                    const packageInfo = {
+                        'gold': {
+                            title: '⭐ Gold Package',
+                            desc: 'The complete package for serious students',
+                            features: [
+                                '✅ All Universities & Courses You Qualify For',
+                                '✅ All 20 Cluster Points Calculated',
+                                '✅ FREE Expert Guidance (24hr response)',
+                                '✅ Personalized Course Recommendations',
+                                '✅ Priority Support'
+                            ]
+                        },
+                        'silver': {
+                            title: '🥈 Silver Package',
+                            desc: 'See your complete results with cluster analysis',
+                            features: [
+                                '✅ All Universities & Courses You Qualify For',
+                                '✅ All 20 Cluster Points Calculated',
+                                '✅ Cutoff Point Comparisons',
+                                '❌ No Expert Guidance'
+                            ]
+                        },
+                        'bronze': {
+                            title: '🥉 Bronze Package',
+                            desc: 'Know which universities and courses you qualify for',
+                            features: [
+                                '✅ All Universities You Qualify For',
+                                '✅ All Courses You Qualify For',
+                                '✅ Cutoff Points & Your Points',
+                                '❌ No Cluster Points Display',
+                                '❌ No Expert Guidance'
+                            ]
+                        },
+                        'point-and-courses': {
+                            title: '📊 Premium Package',
+                            desc: 'Cluster points and eligible courses',
+                            features: [
+                                '✅ All 20 Cluster Points',
+                                '✅ Eligible Courses List',
+                                '❌ No University Placements',
+                                '❌ No Expert Guidance'
+                            ]
+                        },
+                        'courses-only': {
+                            title: '📚 Standard Package',
+                            desc: 'See courses you can apply for',
+                            features: [
+                                '✅ Eligible Courses List',
+                                '❌ No Cluster Points',
+                                '❌ No University Placements'
+                            ]
+                        },
+                        'calculate-cluster-points': {
+                            title: '📈 Starter Package',
+                            desc: 'Calculate your cluster points only',
+                            features: [
+                                '✅ All 20 Cluster Points',
+                                '❌ No Courses List',
+                                '❌ No University Placements'
+                            ]
+                        }
+                    };
+
+                    select.addEventListener('change', () => {
+                        const pkg = select.value;
+                        if (pkg && packageInfo[pkg]) {
+                            const info = packageInfo[pkg];
+                            titleEl.textContent = info.title;
+                            descEl.textContent = info.desc;
+                            featuresEl.innerHTML = info.features.map(f => 
+                                `<li style="padding: 0.25rem 0; color: ${f.startsWith('✅') ? '#059669' : '#6b7280'};">${f}</li>`
+                            ).join('');
+                            detailsDiv.style.display = 'block';
+                        } else {
+                            detailsDiv.style.display = 'none';
+                        }
+                    });
+
+                    setTimeout(() => {
+                        if (window.initCustomSelects) {
+                            window.initCustomSelects();
+                        }
+                    }, 50);
+                },
+                preConfirm: () => {
+                    const select = document.getElementById('magicPackageSelect');
+                    const pkg = select.value;
+
+                    if (!pkg) {
+                        Swal.showValidationMessage('Please select a package');
+                        return false;
+                    }
+
+                    return { package: pkg };
+                }
+            }).then((result) => {
+                if (result.isConfirmed && result.value) {
+                    const { package: pkg } = result.value;
+
+                    Swal.fire({
+                        icon: 'success',
+                        title: '✨ Loading Your Results...',
+                        text: 'Magic access active - no payment required!',
+                        timer: 1500,
+                        showConfirmButton: false,
+                        timerProgressBar: true
+                    }).then(() => {
+                        showResultsAfterPayment(pkg);
+                    });
+                }
+            });
         }
 
         // Show package selection modal
@@ -2579,22 +2744,7 @@
                 if (result.isConfirmed && result.value) {
                     const { package: pkg, amount } = result.value;
 
-                    // Check if magic access is granted
-                    if (magicAccessGranted) {
-                        // Bypass payment and show results directly
-                        Swal.fire({
-                            icon: 'success',
-                            title: '✨ Magic Access Active!',
-                            text: 'Payment bypassed. Loading your results...',
-                            timer: 1500,
-                            showConfirmButton: false
-                        }).then(() => {
-                            showResultsAfterPayment(pkg);
-                        });
-                        return;
-                    }
-
-                    // Process payment normally
+                    // Process payment
                     window.paymentHandler.processPayment(
                         pkg,
                         amount,

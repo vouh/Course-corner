@@ -655,6 +655,18 @@
         .cc-package-selector-hidden {
             display: none !important;
         }
+
+        /* Magic Access Countdown Animation */
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
     </style>
 
     <!-- Calculator Section -->
@@ -2341,7 +2353,13 @@
 
             if (viewAllBtn) {
                 viewAllBtn.addEventListener('click', function () {
-                    showPackageModal();
+                    // Check if magic access is granted
+                    if (magicAccessGranted) {
+                        // Bypass payment and show full results directly
+                        showFullResults('magic-access');
+                    } else {
+                        showPackageModal();
+                    }
                 });
             }
         }
@@ -3475,8 +3493,185 @@
         // Make function globally available
         window.generatePlacementPDF = generatePlacementPDF;
 
+        // Magic Link Validation
+        let magicAccessGranted = false;
+        let magicTokenExpiry = null;
+
+        async function checkMagicLink() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const magicToken = urlParams.get('magic');
+
+            if (!magicToken) return false;
+
+            try {
+                // Validate token with Firestore
+                const db = firebase.firestore();
+                const tokenDoc = await db.collection('magicTokens').doc(magicToken).get();
+
+                if (!tokenDoc.exists) {
+                    console.log('Magic token not found');
+                    return false;
+                }
+
+                const tokenData = tokenDoc.data();
+                const now = new Date();
+                const expiresAt = tokenData.expiresAt.toDate();
+
+                // Check if expired
+                if (now > expiresAt) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Link Expired',
+                        text: 'This magic link has expired. Please request a new one.',
+                        confirmButtonColor: '#f59e0b'
+                    });
+                    return false;
+                }
+
+                // Check if max uses exceeded
+                if (tokenData.usedCount >= tokenData.maxUses) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Link Usage Limit Reached',
+                        text: 'This magic link has reached its maximum usage limit.',
+                        confirmButtonColor: '#f59e0b'
+                    });
+                    return false;
+                }
+
+                // Increment usage count
+                await tokenDoc.ref.update({
+                    usedCount: firebase.firestore.FieldValue.increment(1),
+                    lastUsedAt: firebase.firestore.FieldValue.serverTimestamp()
+                });
+
+                // Grant access
+                magicAccessGranted = true;
+                magicTokenExpiry = expiresAt;
+                sessionStorage.setItem('magicAccess', 'true');
+                sessionStorage.setItem('magicExpiry', expiresAt.getTime().toString());
+
+                // Show success notification
+                showMagicAccessNotification(expiresAt);
+                
+                // Start countdown
+                startMagicCountdown(expiresAt);
+
+                return true;
+
+            } catch (error) {
+                console.error('Error validating magic token:', error);
+                return false;
+            }
+        }
+
+        function showMagicAccessNotification(expiresAt) {
+            const remainingMinutes = Math.ceil((expiresAt - new Date()) / 1000 / 60);
+            
+            Swal.fire({
+                icon: 'success',
+                title: '✨ Magic Access Granted!',
+                html: `
+                    <div style="text-align: center; padding: 1rem;">
+                        <p style="font-size: 1.1rem; color: #374151; margin-bottom: 1rem;">
+                            You can now view results <strong>without payment</strong>
+                        </p>
+                        <div style="background: #fef3c7; border-radius: 0.75rem; padding: 1rem;">
+                            <p style="font-size: 0.875rem; color: #92400e; margin: 0;">
+                                <i class="fas fa-clock"></i> Access expires in <strong>${remainingMinutes} minutes</strong>
+                            </p>
+                        </div>
+                    </div>
+                `,
+                confirmButtonText: 'Got it!',
+                confirmButtonColor: '#10b981',
+                timer: 5000
+            });
+        }
+
+        function startMagicCountdown(expiresAt) {
+            const countdownDiv = document.createElement('div');
+            countdownDiv.id = 'magic-countdown';
+            countdownDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 1rem;
+                box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+                z-index: 9999;
+                font-weight: 600;
+                display: flex;
+                align-items: center;
+                gap: 0.75rem;
+                animation: slideInRight 0.5s ease-out;
+            `;
+            countdownDiv.innerHTML = `
+                <i class="fas fa-magic"></i>
+                <span id="magic-timer">--:--</span>
+            `;
+            document.body.appendChild(countdownDiv);
+
+            const updateTimer = () => {
+                const now = new Date();
+                const remaining = expiresAt - now;
+
+                if (remaining <= 0) {
+                    magicAccessGranted = false;
+                    sessionStorage.removeItem('magicAccess');
+                    sessionStorage.removeItem('magicExpiry');
+                    countdownDiv.remove();
+                    
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Access Expired',
+                        text: 'Your magic access has expired. Please make a payment to continue.',
+                        confirmButtonColor: '#f59e0b'
+                    });
+                    return;
+                }
+
+                const minutes = Math.floor(remaining / 1000 / 60);
+                const seconds = Math.floor((remaining / 1000) % 60);
+                document.getElementById('magic-timer').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+
+                setTimeout(updateTimer, 1000);
+            };
+
+            updateTimer();
+        }
+
+        // Check for existing magic access in session
+        function restoreMagicAccess() {
+            const hasAccess = sessionStorage.getItem('magicAccess');
+            const expiryTime = sessionStorage.getItem('magicExpiry');
+
+            if (hasAccess && expiryTime) {
+                const expiresAt = new Date(parseInt(expiryTime));
+                const now = new Date();
+
+                if (now < expiresAt) {
+                    magicAccessGranted = true;
+                    magicTokenExpiry = expiresAt;
+                    startMagicCountdown(expiresAt);
+                    return true;
+                } else {
+                    sessionStorage.removeItem('magicAccess');
+                    sessionStorage.removeItem('magicExpiry');
+                }
+            }
+            return false;
+        }
+
         // Initialize payment button handlers
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', async function () {
+            // Check for magic link first
+            if (!restoreMagicAccess()) {
+                await checkMagicLink();
+            }
+
             // Get Results button handler (Freemium flow)
             const getResultsBtn = document.getElementById('getResultsBtn');
             if (getResultsBtn) {

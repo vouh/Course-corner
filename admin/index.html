@@ -419,6 +419,17 @@
                             </div>
                         </button>
 
+                        <button onclick="openMagicLinkGenerator()"
+                            class="flex items-center gap-4 p-4 bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-amber-500 dark:hover:border-amber-500 transition-all group">
+                            <div
+                                class="w-12 h-12 bg-amber-100 dark:bg-amber-900/30 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i class="fas fa-link text-amber-600 dark:text-amber-400 text-xl"></i>
+                            </div>
+                            <div class="text-left">
+                                <p class="font-semibold text-gray-900 dark:text-white">Magic Link</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Bypass Payment</p>
+                            </div>
+                        </button>
 
                     </div>
 
@@ -1182,6 +1193,149 @@
             l.innerHTML = generatedCodes.map(code => `<span class="px-3 py-1 bg-gray-100 dark:bg-gray-700 rounded-full text-sm font-mono cursor-pointer hover:bg-primary-100 dark:hover:bg-primary-900/30" onclick="selectCode('${code}')">${code}</span>`).join('');
         }
         function selectCode(code) { document.getElementById('generated-code').value = code; copyGeneratedCode(); }
+
+        // Magic Link Generator
+        function openMagicLinkGenerator() {
+            Swal.fire({
+                title: '🔗 Generate Magic Link',
+                html: `
+                    <div style="text-align: left; padding: 1rem;">
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
+                                <i class="fas fa-clock text-amber-500"></i> Link Expires In (minutes)
+                            </label>
+                            <input type="number" id="magic-expiry" value="10" min="1" max="60" 
+                                style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 0.75rem; font-size: 1rem;">
+                            <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.5rem;">
+                                <i class="fas fa-info-circle"></i> Link will auto-expire after this duration
+                            </p>
+                        </div>
+                        
+                        <div style="margin-bottom: 1.5rem;">
+                            <label style="display: block; font-weight: 600; margin-bottom: 0.5rem; color: #374151;">
+                                <i class="fas fa-hashtag text-amber-500"></i> Maximum Uses
+                            </label>
+                            <input type="number" id="magic-uses" value="5" min="1" max="100" 
+                                style="width: 100%; padding: 0.75rem; border: 2px solid #e5e7eb; border-radius: 0.75rem; font-size: 1rem;">
+                            <p style="font-size: 0.75rem; color: #6b7280; margin-top: 0.5rem;">
+                                <i class="fas fa-info-circle"></i> Link will stop working after this many uses
+                            </p>
+                        </div>
+
+                        <div style="background: #fffbeb; border: 1px solid #fcd34d; border-radius: 0.75rem; padding: 1rem; margin-top: 1rem;">
+                            <p style="font-size: 0.875rem; color: #92400e; margin: 0; line-height: 1.5;">
+                                <i class="fas fa-shield-alt"></i> <strong>Magic Link Bypass:</strong><br>
+                                Users with this link can view their results without payment. Use responsibly!
+                            </p>
+                        </div>
+                    </div>
+                `,
+                showCancelButton: true,
+                confirmButtonText: '<i class="fas fa-magic"></i> Generate Link',
+                cancelButtonText: 'Cancel',
+                confirmButtonColor: '#f59e0b',
+                cancelButtonColor: '#6b7280',
+                width: '600px',
+                preConfirm: async () => {
+                    const expiry = parseInt(document.getElementById('magic-expiry').value);
+                    const maxUses = parseInt(document.getElementById('magic-uses').value);
+
+                    if (expiry < 1 || expiry > 60) {
+                        Swal.showValidationMessage('Expiry must be between 1-60 minutes');
+                        return false;
+                    }
+                    if (maxUses < 1 || maxUses > 100) {
+                        Swal.showValidationMessage('Max uses must be between 1-100');
+                        return false;
+                    }
+
+                    return { expiry, maxUses };
+                }
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    await generateMagicLink(result.value.expiry, result.value.maxUses);
+                }
+            });
+        }
+
+        async function generateMagicLink(expiryMinutes, maxUses) {
+            showToast('Generating magic link...', 'info');
+            
+            try {
+                // Generate unique token
+                const token = generateRandomToken(32);
+                const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000);
+
+                // Save to Firestore
+                await db.collection('magicTokens').doc(token).set({
+                    token: token,
+                    expiresAt: firebase.firestore.Timestamp.fromDate(expiresAt),
+                    maxUses: maxUses,
+                    usedCount: 0,
+                    createdBy: auth.currentUser?.email || 'admin',
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                    isActive: true
+                });
+
+                // Generate the magic link
+                const magicLink = `https://coursecornerkenya.com/pages/calculator.html?magic=${token}`;
+
+                // Show success with copy option
+                Swal.fire({
+                    icon: 'success',
+                    title: '✨ Magic Link Generated!',
+                    html: `
+                        <div style="text-align: left; padding: 1rem;">
+                            <div style="background: #f3f4f6; border-radius: 0.75rem; padding: 1rem; margin-bottom: 1rem;">
+                                <p style="font-size: 0.75rem; color: #6b7280; margin-bottom: 0.5rem; font-weight: 600;">MAGIC LINK</p>
+                                <input type="text" readonly value="${magicLink}" id="magic-link-display"
+                                    style="width: 100%; padding: 0.75rem; border: 2px solid #d1d5db; border-radius: 0.5rem; font-family: monospace; font-size: 0.875rem; background: white;">
+                            </div>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem;">
+                                <div style="background: #fef3c7; padding: 0.75rem; border-radius: 0.5rem;">
+                                    <p style="font-size: 0.75rem; color: #92400e; margin: 0;">⏱️ Expires in</p>
+                                    <p style="font-size: 1.25rem; font-weight: 700; color: #b45309; margin: 0;">${expiryMinutes} min</p>
+                                </div>
+                                <div style="background: #dbeafe; padding: 0.75rem; border-radius: 0.5rem;">
+                                    <p style="font-size: 0.75rem; color: #1e40af; margin: 0;">🔢 Max Uses</p>
+                                    <p style="font-size: 1.25rem; font-weight: 700; color: #1d4ed8; margin: 0;">${maxUses}</p>
+                                </div>
+                            </div>
+
+                            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 0.75rem; padding: 0.75rem;">
+                                <p style="font-size: 0.75rem; color: #991b1b; margin: 0; line-height: 1.5;">
+                                    <i class="fas fa-exclamation-triangle"></i> This link bypasses payment verification. Share only with authorized users.
+                                </p>
+                            </div>
+                        </div>
+                    `,
+                    confirmButtonText: '<i class="fas fa-copy"></i> Copy Link',
+                    confirmButtonColor: '#10b981',
+                    didOpen: () => {
+                        document.getElementById('magic-link-display').select();
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        navigator.clipboard.writeText(magicLink);
+                        showToast('Link copied to clipboard!', 'success');
+                    }
+                });
+
+            } catch (error) {
+                console.error('Error generating magic link:', error);
+                showToast('Failed to generate link: ' + error.message, 'error');
+            }
+        }
+
+        function generateRandomToken(length) {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+            let token = '';
+            for (let i = 0; i < length; i++) {
+                token += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return token;
+        }
 
         // Actions
         async function requeryTransaction(transactionId) {

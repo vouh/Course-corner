@@ -3058,17 +3058,6 @@ textarea.cc-form-input {
     overflow: hidden !important;
 }
 
-/* Show native select on desktop */
-@media (min-width: 769px) {
-    .custom-select-wrapper select {
-        position: static !important;
-        opacity: 1 !important;
-        pointer-events: auto !important;
-        height: auto !important;
-        overflow: visible !important;
-    }
-}
-
 /* Force hide native select inside the SweetAlert modal to avoid double dropdown */
 .swal-package-modal .custom-select-wrapper select {
     position: absolute !important;
@@ -3078,8 +3067,23 @@ textarea.cc-form-input {
     overflow: hidden !important;
 }
 
+/* Package Modal Layering Fix: Allow dropdown to appear above buttons */
+.swal2-popup.swal-package-modal {
+    transform: none !important;
+}
+
+.swal-package-modal .swal2-html-container {
+    overflow: visible !important;
+    z-index: 1;
+}
+
 .swal-package-modal .custom-select-dropdown {
-    z-index: 10000;
+    z-index: 10000 !important;
+    position: absolute !important;
+}
+
+.swal-package-modal .swal2-actions {
+    z-index: 1 !important;
 }
 
 /* ============================================

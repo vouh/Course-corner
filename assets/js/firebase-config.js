@@ -3,7 +3,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
 import { getAnalytics, logEvent } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-analytics.js";
-import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, getDocs, doc, setDoc, getDoc, updateDoc, increment, serverTimestamp, Timestamp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -83,13 +83,28 @@ export {
     trackEvent,
     savePaymentRecord,
     getPaymentHistory,
-    saveCalculation
+    saveCalculation,
+    doc,
+    getDoc,
+    updateDoc,
+    increment,
+    serverTimestamp,
+    Timestamp
 };
 
 // Make available globally for non-module scripts
 window.firebaseApp = app;
 window.firebaseAnalytics = analytics;
 window.firebaseDb = db;
+window.firebaseFirestore = {
+    doc,
+    getDoc,
+    updateDoc,
+    increment,
+    serverTimestamp,
+    Timestamp,
+    collection
+};
 window.firebaseTrackEvent = trackEvent;
 window.firebaseSavePayment = savePaymentRecord;
 window.firebaseSaveCalculation = saveCalculation;

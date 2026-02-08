@@ -368,7 +368,7 @@ router.post('/callback', async (req, res) => {
         console.log('💾 Payment data saved successfully with Receipt:', mpesaReceiptNumber);
         console.log('   Transaction ID:', transactionId);
 
-        // Credit referrer if applicable (12% commission)
+        // Credit referrer if applicable (dynamic commission rate based on user type)
         if (payment.referralCode) {
           console.log('💰 Processing referral commission for code:', payment.referralCode);
           try {

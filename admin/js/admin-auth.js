@@ -1,21 +1,48 @@
 /**
  * Admin Authentication & Access Control
- * Centralized list of authorized admin emails
+ * Checks Firestore database for isAdmin flag
  */
 
 const ADMIN_EMAILS = [
     'peterkelvinkibiru1532@gmail.com',
-    'macharia074m@gmail.com' // Example of adding another one
+    'macharia074m@gmail.com' // Hardcoded super admins (fallback)
 ];
 
 /**
  * Checks if a user is authorized as an admin
+ * First checks Firestore for isAdmin flag, then falls back to hardcoded list
  * @param {firebase.User} user - The Firebase user object
- * @returns {boolean} - True if authorized
+ * @returns {Promise<boolean>} - True if authorized
  */
-function isAuthorizedAdmin(user) {
+async function isAuthorizedAdmin(user) {
     if (!user || !user.email) return false;
-    return ADMIN_EMAILS.includes(user.email.toLowerCase());
+    
+    // Check hardcoded list first (super admins)
+    if (ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+        console.log('✅ Super admin detected:', user.email);
+        return true;
+    }
+    
+    // Check Firestore for isAdmin flag
+    try {
+        const db = firebase.firestore();
+        const userDoc = await db.collection('users').doc(user.uid).get();
+        
+        if (userDoc.exists) {
+            const userData = userDoc.data();
+            if (userData.isAdmin === true) {
+                console.log('✅ Admin user from database:', user.email, 'Commission:', userData.commissionRate + '%');
+                return true;
+            }
+        }
+        
+        console.warn('⚠️ User not authorized as admin:', user.email);
+        return false;
+    } catch (error) {
+        console.error('Error checking admin status:', error);
+        // Fallback to hardcoded list on error
+        return ADMIN_EMAILS.includes(user.email.toLowerCase());
+    }
 }
 
 /**
@@ -25,12 +52,13 @@ function isAuthorizedAdmin(user) {
  * @param {Function} onSuccess - Callback when authorized
  * @param {string} redirectUrl - Where to send unauthorized users
  */
-function handleAdminAuthState(user, onSuccess, redirectUrl = 'index.html') {
+async function handleAdminAuthState(user, onSuccess, redirectUrl = 'index.html') {
     if (user) {
-        if (isAuthorizedAdmin(user)) {
+        const isAdmin = await isAuthorizedAdmin(user);
+        if (isAdmin) {
             if (onSuccess) onSuccess(user);
         } else {
-            console.error('Unauthorized admin access attempt:', user.email);
+            console.error('❌ Unauthorized admin access attempt:', user.email);
             // Sign out and redirect
             if (typeof firebase !== 'undefined') {
                 firebase.auth().signOut().then(() => {

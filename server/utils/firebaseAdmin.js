@@ -333,18 +333,20 @@ const markTransactionAsUsed = async (transactionId) => {
   }
 };
 
-// Credit referrer with commission (12%)
+// Credit referrer with commission (dynamic rate based on admin status)
 // Uses the 'users' collection with fields matching firebase-auth.js schema
 const creditReferrer = async (referralCode, transactionAmount, transactionId) => {
   try {
     const db = getFirestore();
-    const commissionRate = 0.12; // 12%
-    const commissionAmount = Math.round(transactionAmount * commissionRate);
-
-    console.log('💰 Processing referral commission:');
-    console.log('   Referral Code:', referralCode);
-    console.log('   Transaction Amount:', transactionAmount);
-    console.log('   Commission (12%):', commissionAmount);
+    
+    // Fetch commission rate from referralCodes collection
+    const codeDoc = await db.collection('referralCodes').doc(referralCode.toUpperCase()).get();
+    let commissionRate = 12; // Default 12%
+    
+    if (codeDoc.exists) {
+      const codeData = codeDoc.data();
+      commissionRate = codeData.commissionRate || 12;
+    }
 
     // Find referrer directly in users collection (single source of truth)
     const userSnapshot = await db.collection('users')
@@ -358,12 +360,27 @@ const creditReferrer = async (referralCode, transactionAmount, transactionId) =>
     }
 
     const referrerId = userSnapshot.docs[0].id;
+    const referrerData = userSnapshot.docs[0].data();
+    
+    // Use user's commission rate if available, otherwise use code's rate
+    if (referrerData.commissionRate !== undefined) {
+      commissionRate = referrerData.commissionRate;
+    }
+
+    const commissionAmount = Math.ceil(transactionAmount * (commissionRate / 100));
+
+    console.log('💰 Processing referral commission:');
+    console.log('   Referral Code:', referralCode);
+    console.log('   Transaction Amount:', transactionAmount);
+    console.log(`   Commission (${commissionRate}%):`, commissionAmount, '(rounded up)');
+    console.log('   User Type:', referrerData.accountType || 'regular');
 
     // Update transaction with commission info
     if (transactionId) {
       await db.collection('transactions').doc(transactionId).update({
         referrerCredited: true,
         commissionAmount: commissionAmount,
+        commissionRate: commissionRate, // Store the rate used for this transaction
         referrerId: referrerId,
         updatedAt: admin.firestore.FieldValue.serverTimestamp()
       });

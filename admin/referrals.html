@@ -369,57 +369,105 @@
 
     <!-- Code Generator Modal -->
     <div id="code-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden items-center justify-center p-4">
-        <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-md w-full p-8 overflow-y-auto max-h-[95vh]">
-            <div class="text-center mb-6">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-lg w-full p-6 overflow-y-auto max-h-[90vh]">
+            <div class="text-center mb-4">
                 <div
-                    class="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <i class="fas fa-magic text-white text-2xl"></i>
+                    class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                    <i class="fas fa-user-shield text-white text-xl"></i>
                 </div>
-                <h3 class="text-2xl font-bold text-gray-900 dark:text-white">Admin Code Generator</h3>
-                <p class="text-gray-500 dark:text-gray-400 mt-2">Create custom referral codes</p>
+                <h3 class="text-xl font-bold text-gray-900 dark:text-white">Admin Code Generator</h3>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">All codes created here are admin accounts with custom commission rates</p>
             </div>
 
-            <div class="space-y-4 mb-6">
+            <div class="grid grid-cols-2 gap-3 mb-3">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Referrer Name</label>
-                    <input type="text" id="admin-ref-name" placeholder="Enter Full Name"
-                        class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none">
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Referrer Name *</label>
+                    <input type="text" id="admin-ref-name" placeholder="Full Name"
+                        class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none">
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">M-Pesa Phone Number</label>
+                    <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">M-Pesa Phone *</label>
                     <input type="tel" id="admin-ref-phone" placeholder="0712345678"
-                        class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none">
+                        class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 outline-none">
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Referral Code</label>
-                    <div class="flex gap-2">
-                        <input type="text" id="generated-code" readonly
-                            class="flex-1 px-4 py-3 bg-gray-100 dark:bg-gray-700 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl text-primary-600 dark:text-primary-400 font-mono font-bold text-center"
-                            value="XXXXX">
-                        <button onclick="generateCode()" class="p-3 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
+            </div>
+            <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-700 mb-3">
+                <div class="flex items-center gap-2 mb-2">
+                    <i class="fas fa-key text-blue-600 text-sm"></i>
+                    <span class="text-xs font-bold text-gray-700 dark:text-gray-300">Login Credentials (Optional)</span>
+                </div>
+                <p class="text-[10px] text-gray-500 dark:text-gray-400 mb-2">Set email + password to let this user login directly without Google</p>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <input type="email" id="admin-ref-email" placeholder="email@example.com"
+                            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                    </div>
+                    <div>
+                        <input type="password" id="admin-ref-password" placeholder="Password (min 6 chars)"
+                            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                 </div>
             </div>
-
-            <div id="gen-result" class="hidden mb-6 p-4 bg-primary-50 dark:bg-primary-900/20 rounded-2xl border border-primary-100 dark:border-primary-800">
-                <p class="text-xs text-primary-600 dark:text-primary-400 font-bold uppercase mb-2">Referral Link Created!</p>
-                <div class="flex items-center gap-2">
-                    <input type="text" id="result-link" readonly class="flex-1 bg-transparent border-none p-0 text-sm font-medium text-gray-900 dark:text-white outline-none">
-                    <button onclick="copyToClipboard('result-link')" class="p-2 text-primary-600 hover:bg-primary-100 rounded-lg">
-                        <i class="fas fa-copy"></i>
+            <div class="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 p-3 rounded-lg border border-purple-200 dark:border-purple-700 mb-3">
+                <div class="flex items-center gap-2 mb-2">
+                    <i class="fas fa-crown text-purple-600 text-sm"></i>
+                    <span class="text-xs font-bold text-gray-700 dark:text-gray-300">Admin Account - KUCCPS Groups/Institutions</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <label class="text-xs font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                        <i class="fas fa-percent text-yellow-600 mr-1"></i>Commission Rate *
+                    </label>
+                    <div class="flex items-center gap-2 flex-1">
+                        <input type="number" id="commission-rate" min="1" max="100" value="50" required
+                            class="w-20 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white font-bold text-center focus:ring-2 focus:ring-yellow-500 outline-none text-sm">
+                        <span class="text-xs text-gray-600 dark:text-gray-400">% (1-100%)</span>
+                    </div>
+                </div>
+                <p class="text-[10px] text-gray-500 dark:text-gray-400 mt-1.5">Earnings rounded up with ceiling. Anyone using this code becomes admin with this rate.</p>
+            </div>
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">Referral Code</label>
+                <div class="flex gap-2">
+                    <input type="text" id="generated-code" readonly
+                        class="flex-1 px-3 py-2 bg-gray-100 dark:bg-gray-700 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-primary-600 dark:text-primary-400 font-mono font-bold text-center text-sm"
+                        value="XXXXX">
+                    <button onclick="generateCode()" class="px-3 py-2 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm">
+                        <i class="fas fa-sync-alt"></i>
                     </button>
                 </div>
             </div>
 
-            <div class="flex flex-col gap-3">
+            <div id="gen-result" class="hidden mb-4 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-100 dark:border-primary-800">
+                <p class="text-[10px] text-primary-600 dark:text-primary-400 font-bold uppercase mb-2">✓ Admin Code Created Successfully!</p>
+                <div class="space-y-2">
+                    <div class="bg-white dark:bg-gray-700 rounded-lg p-2">
+                        <label class="text-[10px] font-semibold text-gray-500 dark:text-gray-400 block mb-1">REFERRAL CODE</label>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="result-code" readonly class="flex-1 bg-transparent border-none p-0 text-sm font-bold font-mono text-primary-600 dark:text-primary-400 outline-none">
+                            <button onclick="copyToClipboard('result-code')" class="px-2 py-1 text-xs bg-primary-500 text-white hover:bg-primary-600 rounded transition-colors">
+                                <i class="fas fa-copy mr-1"></i>Copy Code
+                            </button>
+                        </div>
+                    </div>
+                    <div class="bg-white dark:bg-gray-700 rounded-lg p-2">
+                        <label class="text-[10px] font-semibold text-gray-500 dark:text-gray-400 block mb-1">REFERRAL LINK</label>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="result-link" readonly class="flex-1 bg-transparent border-none p-0 text-xs text-gray-900 dark:text-white outline-none truncate">
+                            <button onclick="copyToClipboard('result-link')" class="px-2 py-1 text-xs bg-blue-500 text-white hover:bg-blue-600 rounded transition-colors">
+                                <i class="fas fa-link mr-1"></i>Copy Link
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-2">
                 <button onclick="saveAndGenerate()" id="save-gen-btn"
-                    class="w-full bg-gradient-to-r from-primary-500 to-primary-600 text-white py-4 rounded-xl font-bold hover:from-primary-600 hover:to-primary-700 transition-all shadow-lg shadow-primary-500/20">
-                    <i class="fas fa-save mr-2"></i>Save & Generate Link
+                    class="flex-1 bg-gradient-to-r from-primary-500 to-primary-600 text-white py-2.5 rounded-lg text-sm font-bold hover:from-primary-600 hover:to-primary-700 transition-all shadow-lg shadow-primary-500/20">
+                    <i class="fas fa-save mr-1"></i>Generate Admin Code
                 </button>
                 <button onclick="closeCodeGenerator()"
-                    class="w-full py-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 font-medium">Cancel</button>
+                    class="px-4 py-2.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 font-medium">Cancel</button>
             </div>
         </div>
     </div>
@@ -719,7 +767,10 @@
         function openCodeGenerator() {
             document.getElementById('admin-ref-name').value = '';
             document.getElementById('admin-ref-phone').value = '';
+            document.getElementById('admin-ref-email').value = '';
+            document.getElementById('admin-ref-password').value = '';
             document.getElementById('generated-code').value = 'XXXXX';
+            document.getElementById('commission-rate').value = '50'; // Default admin commission
             document.getElementById('gen-result').classList.add('hidden');
             document.getElementById('code-modal').classList.remove('hidden');
             document.getElementById('code-modal').classList.add('flex');
@@ -746,10 +797,26 @@
         async function saveAndGenerate() {
             const name = document.getElementById('admin-ref-name').value.trim();
             const phone = document.getElementById('admin-ref-phone').value.trim();
+            const email = document.getElementById('admin-ref-email').value.trim();
+            const password = document.getElementById('admin-ref-password').value.trim();
             let code = document.getElementById('generated-code').value;
 
             if (!name || !phone) {
                 showToast('Please enter name and phone number', 'warning');
+                return;
+            }
+
+            // Validate email/password if provided
+            if (email && !password) {
+                showToast('Please enter a password for the email account', 'warning');
+                return;
+            }
+            if (password && !email) {
+                showToast('Please enter an email for the password', 'warning');
+                return;
+            }
+            if (password && password.length < 6) {
+                showToast('Password must be at least 6 characters', 'warning');
                 return;
             }
 
@@ -768,6 +835,43 @@
                 if (cleanPhone.startsWith('0')) cleanPhone = '254' + cleanPhone.substring(1);
                 if (cleanPhone.startsWith('+')) cleanPhone = cleanPhone.substring(1);
 
+                // Admin codes ALWAYS create admin accounts
+                const isAdmin = true;
+                const commissionRate = parseInt(document.getElementById('commission-rate').value) || 50;
+
+                // Validate commission rate
+                if (!commissionRate || commissionRate < 1 || commissionRate > 100) {
+                    showToast('Please enter a valid commission rate (1-100%)', 'error');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    return;
+                }
+
+                // Create Firebase Auth user if email/password provided
+                let authUserId = null;
+                if (email && password) {
+                    try {
+                        console.log('🔐 Creating Firebase Auth user with email:', email);
+                        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+                        authUserId = userCredential.user.uid;
+                        
+                        // Update display name
+                        await userCredential.user.updateProfile({
+                            displayName: name
+                        });
+                        
+                        console.log('✅ Auth user created:', authUserId);
+                        showToast('Login account created for ' + email, 'success');
+                    } catch (authError) {
+                        if (authError.code === 'auth/email-already-in-use') {
+                            showToast('Email already registered. Skipping authentication setup.', 'warning');
+                        } else {
+                            console.error('Auth error:', authError);
+                            showToast('Warning: Could not create login account - ' + authError.message, 'warning');
+                        }
+                    }
+                }
+
                 // Save to referralCodes collection
                 await db.collection('referralCodes').doc(code).set({
                     code: code,
@@ -777,42 +881,78 @@
                     isActive: true,
                     totalEarnings: 0,
                     totalReferrals: 0,
+                    isAdminCode: isAdmin,
+                    commissionRate: commissionRate,
+                    accountType: isAdmin ? 'admin' : 'user',
                     createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     createdBy: 'admin',
+                    createdByAdmin: currentUser?.email || 'admin',
                     source: 'admin-manual'
                 });
 
-                // Check if user exists with this phone (to link it)
-                const userSnapshot = await db.collection('users')
-                    .where('phoneNumber', '==', cleanPhone)
-                    .limit(1)
-                    .get();
+                // Check if user exists with this phone or auth UID (to link it)
+                let userSnapshot = null;
+                
+                if (authUserId) {
+                    // Try to find by auth UID first
+                    const uidDoc = await db.collection('users').doc(authUserId).get();
+                    if (uidDoc.exists) {
+                        await db.collection('users').doc(authUserId).update({
+                            referralCode: code,
+                            phoneNumber: cleanPhone,
+                            isAdmin: true,
+                            commissionRate: commissionRate,
+                            accountType: 'admin',
+                            lastCodeGeneratedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                        userSnapshot = { empty: false }; // Mark as found
+                    }
+                }
+                
+                if (!userSnapshot || userSnapshot.empty) {
+                    // Check by phone number
+                    userSnapshot = await db.collection('users')
+                        .where('phoneNumber', '==', cleanPhone)
+                        .limit(1)
+                        .get();
 
-                if (!userSnapshot.empty) {
-                    await userSnapshot.docs[0].ref.update({
-                        referralCode: code,
-                        lastCodeGeneratedAt: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-                } else {
-                    // Create a placeholder user doc so it shows up in the referrals table
-                    await db.collection('users').add({
-                        displayName: name,
-                        phoneNumber: cleanPhone,
-                        referralCode: code,
-                        referralCount: 0,
-                        referralEarnings: 0,
-                        referralPending: 0,
-                        referralPaidCount: 0,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                        source: 'admin-manual'
-                    });
+                    if (!userSnapshot.empty) {
+                        await userSnapshot.docs[0].ref.update({
+                            referralCode: code,
+                            isAdmin: true,
+                            commissionRate: commissionRate,
+                            accountType: 'admin',
+                            lastCodeGeneratedAt: firebase.firestore.FieldValue.serverTimestamp()
+                        });
+                    } else {
+                        // Create user profile document
+                        const userDocRef = authUserId ? db.collection('users').doc(authUserId) : db.collection('users').doc();
+                        await userDocRef.set({
+                            uid: authUserId || userDocRef.id,
+                            email: email || '',
+                            displayName: name,
+                            phoneNumber: cleanPhone,
+                            referralCode: code,
+                            referralCount: 0,
+                            referralEarnings: 0,
+                            referralPending: 0,
+                            referralPaidCount: 0,
+                            isAdmin: true,
+                            commissionRate: commissionRate,
+                            accountType: 'admin',
+                            adminCreatedBy: currentUser?.email || 'admin',
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+                            source: 'admin-manual'
+                        });
+                    }
                 }
 
                 const link = 'https://coursecornerkenya.com/#ref=' + code;
+                document.getElementById('result-code').value = code;
                 document.getElementById('result-link').value = link;
                 document.getElementById('gen-result').classList.remove('hidden');
 
-                showToast('Referral code saved and link generated!', 'success');
+                showToast('Admin code created! Anyone using this code will be an admin with ' + commissionRate + '% commission.', 'success');
                 loadReferrals(); // Refresh the list
             } catch (e) {
                 console.error(e);

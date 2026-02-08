@@ -471,14 +471,26 @@ const validateReferralCode = async (code) => {
 };
 
 /**
- * Credit referrer with commission (12%)
+ * Credit referrer with commission (dynamic rate based on account type)
  */
 const creditReferrer = async (referralCode, paymentAmount, paymentId) => {
-  const COMMISSION_RATE = 0.12; // 12%
-
   try {
     const { admin, db } = await initializeFirebase();
     if (!db) return false;
+
+    // Find referralCode document to get commission rate
+    const codeRef = db.collection('referralCodes').doc(referralCode.toUpperCase());
+    const codeDoc = await codeRef.get();
+    
+    let commissionRate = 0.12; // Default 12%
+    
+    if (codeDoc.exists) {
+      const codeData = codeDoc.data();
+      commissionRate = (codeData.commissionRate || 12) / 100; // Convert percentage to decimal
+      console.log(`📊 Using commission rate: ${commissionRate * 100}% for code ${referralCode}`);
+    } else {
+      console.log(`⚠️ Code document not found, using default 12%`);
+    }
 
     // Find referrer by code
     const userSnapshot = await db.collection('users')
@@ -492,7 +504,18 @@ const creditReferrer = async (referralCode, paymentAmount, paymentId) => {
     }
 
     const referrerId = userSnapshot.docs[0].id;
-    const commissionAmount = Math.round(paymentAmount * COMMISSION_RATE);
+    const referrerData = userSnapshot.docs[0].data();
+    
+    // Use commission rate from user profile if available, otherwise from code
+    if (referrerData.commissionRate) {
+      commissionRate = referrerData.commissionRate / 100;
+      console.log(`👤 Using user commission rate: ${commissionRate * 100}%`);
+    }
+    
+    // Calculate commission using Math.ceil for upper rounding
+    const commissionAmount = Math.ceil(paymentAmount * commissionRate);
+    
+    console.log(`💰 Calculated commission: ${paymentAmount} × ${commissionRate * 100}% = ${commissionAmount} KES (rounded up)`);
 
     // Update referrer's earnings (matching firebase-auth.js schema)
     // Fields: referralCount, referralPaidCount, referralEarnings, referralPending
@@ -510,7 +533,7 @@ const creditReferrer = async (referralCode, paymentAmount, paymentId) => {
       referralCode: referralCode.toUpperCase(),
       paymentId: paymentId,
       paymentAmount: paymentAmount,
-      commissionRate: COMMISSION_RATE,
+      commissionRate: commissionRate,
       commissionAmount: commissionAmount,
       status: 'credited',
       createdAt: admin.firestore.FieldValue.serverTimestamp()
@@ -520,6 +543,7 @@ const creditReferrer = async (referralCode, paymentAmount, paymentId) => {
     await db.collection('transactions').doc(paymentId).update({
       referrerCredited: true,
       commissionAmount: commissionAmount,
+      commissionRate: commissionRate * 100, // Store as percentage
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
@@ -838,8 +862,29 @@ const syncReferralStats = async () => {
       return { success: true, count: 0 };
     }
 
-    const referralData = {}; // code -> { count: 0, revenue: 0, earnings: 0 }
-    const COMMISSION_RATE = 0.12;
+    const referralData = {}; // code -> { count: 0, revenue: 0, earnings: 0, commissionRate: 0.12 }
+
+    // First, fetch commission rates for all codes
+    const uniqueCodes = new Set();
+    txSnapshot.forEach(doc => {
+      const data = doc.data();
+      const code = (data.referralCode || '').toUpperCase().trim();
+      if (code) uniqueCodes.add(code);
+    });
+
+    // Fetch commission rates from referralCodes collection
+    const codeRates = {};
+    for (const code of uniqueCodes) {
+      const codeDoc = await db.collection('referralCodes').doc(code).get();
+      if (codeDoc.exists) {
+        const codeData = codeDoc.data();
+        codeRates[code] = (codeData.commissionRate || 12) / 100;
+        console.log(`📊 Code ${code}: ${codeRates[code] * 100}% commission`);
+      } else {
+        codeRates[code] = 0.12; // Default 12%
+        console.log(`⚠️ Code ${code}: Using default 12%`);
+      }
+    }
 
     txSnapshot.forEach(doc => {
       const data = doc.data();
@@ -847,12 +892,18 @@ const syncReferralStats = async () => {
       if (!code) return;
 
       if (!referralData[code]) {
-        referralData[code] = { count: 0, revenue: 0, earnings: 0 };
+        referralData[code] = { 
+          count: 0, 
+          revenue: 0, 
+          earnings: 0,
+          commissionRate: codeRates[code] || 0.12
+        };
       }
 
       referralData[code].count++;
       referralData[code].revenue += (data.amount || 0);
-      referralData[code].earnings += Math.round((data.amount || 0) * COMMISSION_RATE);
+      // Use Math.ceil for upper rounding
+      referralData[code].earnings += Math.ceil((data.amount || 0) * referralData[code].commissionRate);
     });
 
     console.log(`🔄 [Sync] Processing ${Object.keys(referralData).length} referral codes...`);

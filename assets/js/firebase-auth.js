@@ -395,9 +395,38 @@ class FirebaseAuthHandler {
      */
     async createUserProfile(user, additionalData = {}) {
         try {
-            const { doc, setDoc, serverTimestamp } = this.firebaseFunctions;
+            const { doc, setDoc, serverTimestamp, getDoc } = this.firebaseFunctions;
 
             const userRef = doc(this.db, 'users', user.uid);
+
+            // Check for pending referral code and fetch admin settings if applicable
+            const pendingRefCode = localStorage.getItem('pendingReferralCode');
+            let isAdmin = additionalData.isAdmin || false;
+            let commissionRate = additionalData.commissionRate || 12;
+            let accountType = additionalData.accountType || 'user';
+            let adminCreatedBy = additionalData.adminCreatedBy || '';
+
+            if (pendingRefCode && !additionalData.isAdmin) {
+                // Check if this is an admin code
+                console.log('🔍 Checking referral code for admin settings:', pendingRefCode);
+                try {
+                    const codeRef = doc(this.db, 'referralCodes', pendingRefCode.toUpperCase());
+                    const codeSnap = await getDoc(codeRef);
+                    
+                    if (codeSnap.exists()) {
+                        const codeData = codeSnap.data();
+                        if (codeData.isAdminCode) {
+                            isAdmin = true;
+                            commissionRate = codeData.commissionRate || 50;
+                            accountType = 'admin';
+                            adminCreatedBy = codeData.createdByAdmin || 'admin';
+                            console.log(`👑 Admin code detected! User will be admin with ${commissionRate}% commission`);
+                        }
+                    }
+                } catch (codeError) {
+                    console.warn('⚠️ Could not fetch referral code details:', codeError);
+                }
+            }
 
             const profileData = {
                 uid: user.uid,
@@ -412,7 +441,12 @@ class FirebaseAuthHandler {
                 referralPaidCount: 0,
                 referralEarnings: 0,
                 referralPending: 0,
-                referredBy: additionalData.referredBy || '',
+                referredBy: additionalData.referredBy || pendingRefCode || '',
+                // Admin account fields (inherited from referral code if applicable)
+                isAdmin: isAdmin,
+                commissionRate: commissionRate,
+                accountType: accountType,
+                adminCreatedBy: adminCreatedBy,
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
             };
@@ -423,11 +457,14 @@ class FirebaseAuthHandler {
             await new Promise(resolve => setTimeout(resolve, 500));
             
             // Verify by reading it back
-            const { getDoc } = this.firebaseFunctions;
             const verifySnap = await getDoc(userRef);
             if (verifySnap.exists()) {
                 this.userProfile = verifySnap.data();
-                console.log('✅ User profile created and verified');
+                console.log('✅ User profile created and verified', {
+                    isAdmin: this.userProfile.isAdmin,
+                    commissionRate: this.userProfile.commissionRate,
+                    accountType: this.userProfile.accountType
+                });
             } else {
                 this.userProfile = profileData;
                 console.log('⚠️ User profile created but verification pending');

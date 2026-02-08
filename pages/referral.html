@@ -1084,7 +1084,7 @@
             }
 
             // Check if user has phone number - required for payouts
-            if (!profile.phoneNumber) {
+            if (!profile || !profile.phoneNumber) {
                 showToast('Please add your phone number in your profile first (for payouts)', 'error');
                 promptForPhoneNumber();
                 return;
@@ -1097,8 +1097,16 @@
             window.firebaseAuth.showLoadingOverlay('Generating Your Code...', 'Creating your unique referral code');
 
             try {
+                // Ensure profile exists in Firestore before proceeding
+                console.log('🔍 Verifying profile exists in Firestore...');
+                const profileExists = await window.firebaseAuth.ensureProfileExists();
+                if (!profileExists) {
+                    throw new Error('Profile could not be verified. Please try refreshing the page.');
+                }
+
                 const newCode = generateCode();
                 const user = window.firebaseAuth.currentUser;
+                console.log('💾 Saving referral code:', newCode);
 
                 // Save to user profile
                 const result = await window.firebaseAuth.updateUserProfile({
@@ -1135,9 +1143,18 @@
                     throw new Error('Failed to save code');
                 }
             } catch (error) {
-                console.error('Error generating code:', error);
+                console.error('❌ Error generating code:', error);
                 window.firebaseAuth.hideLoadingOverlay();
-                showToast('Error generating code. Please try again.', 'error');
+                
+                // Better error messaging for common issues
+                let errorMessage = 'Error generating code. Please try again.';
+                if (error.code === 'permission-denied' || error.message.includes('permission')) {
+                    errorMessage = 'Your profile is still syncing. Please wait a moment and try again.';
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                showToast(errorMessage, 'error');
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-magic"></i> Generate My Code';
             }
@@ -1279,32 +1296,61 @@
             if (loader) loader.style.display = 'none';
 
             if (user) {
+                console.log('👤 User authenticated:', user.email);
                 guestView.classList.remove('active');
                 guestView.classList.add('hidden');
                 dashboardView.classList.add('active');
 
-                // Load user's referral data
-                const profile = window.firebaseAuth.getProfile();
-                if (profile) {
-                    // Update user name display
-                    const userNameDisplay = document.getElementById('userNameDisplay');
-                    if (userNameDisplay) {
-                        userNameDisplay.textContent = profile.displayName || user.displayName || 'User';
-                    }
+                // Wait a moment for profile to be fully loaded, then update UI
+                let attempts = 0;
+                const maxAttempts = 10;
+                
+                const checkAndUpdateProfile = () => {
+                    const profile = window.firebaseAuth.getProfile();
+                    
+                    if (profile && profile.email) {
+                        console.log('📋 Profile loaded:', {
+                            email: profile.email,
+                            hasCode: !!profile.referralCode,
+                            code: profile.referralCode || 'none'
+                        });
+                        
+                        // Update user name display
+                        const userNameDisplay = document.getElementById('userNameDisplay');
+                        if (userNameDisplay) {
+                            userNameDisplay.textContent = profile.displayName || user.displayName || 'User';
+                        }
 
-                    if (profile.referralCode) {
-                        displayReferralCode(profile.referralCode);
-                    }
-                    // Update stats (these would come from backend in production)
-                    document.getElementById('statReferrals').textContent = profile.referralCount || 0;
-                    document.getElementById('statPaid').textContent = profile.referralPaidCount || 0;
-                    document.getElementById('statEarnings').textContent = 'KES ' + (profile.referralEarnings || 0).toLocaleString();
-                    document.getElementById('statPending').textContent = 'KES ' + (profile.referralPending || 0).toLocaleString();
+                        if (profile.referralCode) {
+                            console.log('✅ User has referral code:', profile.referralCode);
+                            displayReferralCode(profile.referralCode);
+                        } else {
+                            console.log('⚠️ User has no referral code - showing generate button');
+                        }
+                        
+                        // Update stats
+                        document.getElementById('statReferrals').textContent = profile.referralCount || 0;
+                        document.getElementById('statPaid').textContent = profile.referralPaidCount || 0;
+                        document.getElementById('statEarnings').textContent = 'KES ' + (profile.referralEarnings || 0).toLocaleString();
+                        document.getElementById('statPending').textContent = 'KES ' + (profile.referralPending || 0).toLocaleString();
 
-                    // Update withdrawal section
-                    updateWithdrawalButton(profile.referralPending || 0, profile.phoneNumber);
-                }
+                        // Update withdrawal section
+                        updateWithdrawalButton(profile.referralPending || 0, profile.phoneNumber);
+                    } else if (attempts < maxAttempts) {
+                        // Profile not loaded yet, retry
+                        attempts++;
+                        console.log(`⏳ Waiting for profile to load... (attempt ${attempts}/${maxAttempts})`);
+                        setTimeout(checkAndUpdateProfile, 300);
+                    } else {
+                        console.error('❌ Profile could not be loaded after max attempts');
+                        showToast('Error loading your profile. Please refresh the page.', 'error');
+                    }
+                };
+                
+                // Start checking for profile
+                checkAndUpdateProfile();
             } else {
+                console.log('👤 No user - showing guest view');
                 guestView.classList.add('active');
                 guestView.classList.remove('hidden');
                 dashboardView.classList.remove('active');

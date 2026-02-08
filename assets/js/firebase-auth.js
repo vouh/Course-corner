@@ -148,7 +148,17 @@ class FirebaseAuthHandler {
                             displayName: user.displayName,
                             photoURL: user.photoURL
                         });
+                    } else {
+                        console.log('👤 Existing user - loading profile from Firestore');
+                        await this.loadUserProfile();
                     }
+                    
+                    // Log profile state after loading
+                    console.log('📋 Profile loaded:', {
+                        email: user.email,
+                        hasCode: !!this.userProfile?.referralCode,
+                        code: this.userProfile?.referralCode || 'none'
+                    });
                     
                     // Store flag for profile completion prompt if new user
                     if (isNewUser) {
@@ -296,11 +306,22 @@ class FirebaseAuthHandler {
                 const isNewUser = !profileExists;
                 
                 if (!profileExists) {
+                    console.log('📝 Creating new user profile');
                     await this.createUserProfile(user, {
                         displayName: user.displayName,
                         photoURL: user.photoURL
                     });
+                } else {
+                    console.log('👤 Existing user - loading profile from Firestore');
+                    await this.loadUserProfile();
                 }
+                
+                // Log profile state after loading
+                console.log('📋 Profile loaded:', {
+                    email: user.email,
+                    hasCode: !!this.userProfile?.referralCode,
+                    code: this.userProfile?.referralCode || 'none'
+                });
 
                 this.showSuccessOverlay('Welcome!', 'Signed in with Google', 1500);
                 
@@ -397,13 +418,25 @@ class FirebaseAuthHandler {
             };
 
             await setDoc(userRef, profileData);
-            this.userProfile = profileData;
+            
+            // Wait a moment and verify the document was saved
+            await new Promise(resolve => setTimeout(resolve, 500));
+            
+            // Verify by reading it back
+            const { getDoc } = this.firebaseFunctions;
+            const verifySnap = await getDoc(userRef);
+            if (verifySnap.exists()) {
+                this.userProfile = verifySnap.data();
+                console.log('✅ User profile created and verified');
+            } else {
+                this.userProfile = profileData;
+                console.log('⚠️ User profile created but verification pending');
+            }
 
-            console.log('User profile created');
-            return profileData;
+            return this.userProfile;
 
         } catch (error) {
-            console.error('Error creating user profile:', error);
+            console.error('❌ Error creating user profile:', error);
             throw error;
         }
     }
@@ -436,15 +469,54 @@ class FirebaseAuthHandler {
 
             if (docSnap.exists()) {
                 this.userProfile = docSnap.data();
+                console.log('✅ Profile loaded from Firestore:', {
+                    uid: this.currentUser.uid,
+                    email: this.currentUser.email,
+                    hasCode: !!this.userProfile.referralCode,
+                    code: this.userProfile.referralCode || 'none'
+                });
                 return this.userProfile;
             } else {
+                console.log('⚠️ Profile not found in Firestore, creating new one');
                 // Create profile if it doesn't exist
                 return await this.createUserProfile(this.currentUser);
             }
 
         } catch (error) {
-            console.error('Error loading user profile:', error);
+            console.error('❌ Error loading user profile:', error);
             return null;
+        }
+    }
+
+    /**
+     * Ensure user profile exists in Firestore
+     */
+    async ensureProfileExists(retries = 3) {
+        if (!this.currentUser) return false;
+
+        try {
+            const { doc, getDoc } = this.firebaseFunctions;
+            const userRef = doc(this.db, 'users', this.currentUser.uid);
+            
+            for (let i = 0; i < retries; i++) {
+                const docSnap = await getDoc(userRef);
+                if (docSnap.exists()) {
+                    this.userProfile = docSnap.data();
+                    console.log('✅ Profile confirmed in Firestore');
+                    return true;
+                }
+                
+                if (i < retries - 1) {
+                    console.log(`⏳ Waiting for profile to sync... (attempt ${i + 1}/${retries})`);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+            }
+            
+            console.log('❌ Profile not found after retries');
+            return false;
+        } catch (error) {
+            console.error('❌ Error checking profile:', error);
+            return false;
         }
     }
 
@@ -458,16 +530,31 @@ class FirebaseAuthHandler {
         }
 
         try {
+            // Ensure profile exists before updating
+            const profileExists = await this.ensureProfileExists();
+            if (!profileExists) {
+                console.log('⚠️ Profile not found, creating it first');
+                await this.createUserProfile(this.currentUser);
+            }
+
             const { doc, updateDoc, serverTimestamp } = this.firebaseFunctions;
             const userRef = doc(this.db, 'users', this.currentUser.uid);
+
+            console.log('💾 Updating user profile with:', updates);
 
             await updateDoc(userRef, {
                 ...updates,
                 updatedAt: serverTimestamp()
             });
 
-            // Update local profile
-            this.userProfile = { ...this.userProfile, ...updates };
+            // Reload profile from Firestore to ensure we have the latest data
+            await this.loadUserProfile();
+            
+            console.log('✅ Profile updated and reloaded. Current profile:', {
+                email: this.userProfile.email,
+                hasCode: !!this.userProfile.referralCode,
+                code: this.userProfile.referralCode || 'none'
+            });
 
             this.showToast('Profile updated successfully!', 'success');
             return { success: true };

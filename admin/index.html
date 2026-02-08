@@ -610,18 +610,23 @@
             </div>
             <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-lg border border-blue-200 dark:border-blue-700 mb-3">
                 <div class="flex items-center gap-2 mb-2">
-                    <i class="fas fa-key text-blue-600 text-sm"></i>
-                    <span class="text-xs font-bold text-gray-700 dark:text-gray-300">User Login Credentials (Optional)</span>
+                    <i class="fas fa-user-plus text-blue-600 text-sm"></i>
+                    <span class="text-xs font-bold text-gray-700 dark:text-gray-300">User Signup Email (Optional)</span>
                 </div>
-                <p class="text-[10px] text-gray-500 dark:text-gray-400 mb-2">Create login for website access (they'll use normal referral page, not admin panel)</p>
+                <p class="text-[10px] text-blue-600 dark:text-blue-400 mb-2">
+                    <i class="fas fa-info-circle mr-1"></i>
+                    Provide email for institutional user. They'll SIGN UP (not login) on main site and create their own password. System auto-applies custom commission.
+                </p>
                 <div class="grid grid-cols-2 gap-2">
                     <div>
-                        <input type="email" id="admin-ref-email" placeholder="email@example.com"
+                        <label class="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Email Address</label>
+                        <input type="email" id="admin-ref-email" placeholder="user@institution.com"
                             class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                     <div>
-                        <input type="password" id="admin-ref-password" placeholder="Password (min 6 chars)"
-                            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
+                        <label class="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Password (Not Used - For Reference Only)</label>
+                        <input type="password" id="admin-ref-password" placeholder="Optional - user creates own"
+                            class="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-500 dark:text-gray-400 focus:ring-2 focus:ring-blue-500 outline-none">
                     </div>
                 </div>
             </div>
@@ -656,6 +661,10 @@
 
             <div id="gen-result" class="hidden mb-4 p-3 bg-primary-50 dark:bg-primary-900/20 rounded-lg border border-primary-100 dark:border-primary-800">
                 <p class="text-[10px] text-primary-600 dark:text-primary-400 font-bold uppercase mb-2">✓ Referral Code Created Successfully!</p>
+                <p class="text-[10px] text-blue-600 dark:text-blue-400 mb-2">
+                    <i class="fas fa-arrow-right mr-1"></i>
+                    Next: User visits main site → Clicks "Sign Up" → Enters their email → Creates password → Custom commission applies automatically!
+                </p>
                 <div class="space-y-2">
                     <div class="bg-white dark:bg-gray-700 rounded-lg p-2">
                         <label class="text-[10px] font-semibold text-gray-500 dark:text-gray-400 block mb-1">REFERRAL CODE</label>
@@ -1311,37 +1320,11 @@
                     });
                     console.log(`✅ Updated existing user ${authUserId} with ${commissionRate}% commission`);
                     showToast(`Updated existing user with ${commissionRate}% commission`, 'info', 3000);
-                } else if (email && password) {
-                    // Create Firebase Auth account using backend API (doesn't log out admin!)
-                    console.log(`🔐 Creating Firebase Auth account for ${email} via backend...`);
-                    try {
-                        const createResponse = await fetch('/api/admin/create-user', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                email: email,
-                                password: password,
-                                displayName: name,
-                                commissionRate: commissionRate,
-                                referralCode: code
-                            })
-                        });
-                        
-                        const createResult = await createResponse.json();
-                        
-                        if (createResult.success) {
-                            console.log(`✅ Firebase Auth account created successfully: ${createResult.userId}`);
-                            showToast(`✅ Account created! User can LOGIN with ${email}`, 'success', 4000);
-                        } else {
-                            console.warn('⚠️ Account creation failed:', createResult.error);
-                            showToast(`⚠️ Code saved but account creation failed: ${createResult.error}`, 'warning', 5000);
-                        }
-                    } catch (apiError) {
-                        console.error('❌ Backend API error:', apiError);
-                        showToast('⚠️ Backend API not available. Make sure server is running.', 'error', 5000);
-                    }
                 } else {
-                    console.log(`📝 No email/password provided - manual setup required`);
+                    // PHASE 1: User will SIGN UP on main site (not pre-create Auth account)
+                    // The signup flow auto-detects setupEmail in referralCodes and applies institutional settings
+                    // PHASE 2: Will use backend API to pre-create Auth account for direct login
+                    console.log(`📝 Code saved. User will SIGN UP on main site with ${email || 'their email'}`);
                 }
 
                 // Show results
@@ -1352,10 +1335,10 @@
                 document.getElementById('reload-notice').classList.add('hidden');
 
                 let message = `✅ Code created with ${commissionRate}% commission!`;
-                if (email && password) {
-                    message = `✅ Account ready! User can LOGIN now with ${email}`;
-                } else if (email) {
-                    message += ` | User: ${email} (no password - manual setup needed)`;
+                if (email) {
+                    message = `✅ Code ready! User should SIGN UP on main site using ${email} (they'll create their own password)`;
+                } else {
+                    message += ` | Share code with institutional user`;
                 }
                 showToast(message, 'success', 5000);
                 

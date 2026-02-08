@@ -25,7 +25,8 @@ class FirebaseAuthHandler {
 
             // Import Firebase Auth
             const { getAuth, onAuthStateChanged, signInWithEmailAndPassword,
-                createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider,
+                createUserWithEmailAndPassword, signInWithPopup, signInWithRedirect,
+                getRedirectResult, GoogleAuthProvider,
                 signOut, sendPasswordResetEmail, updateProfile } =
                 await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js");
 
@@ -41,6 +42,8 @@ class FirebaseAuthHandler {
                 signInWithEmailAndPassword,
                 createUserWithEmailAndPassword,
                 signInWithPopup,
+                signInWithRedirect,
+                getRedirectResult,
                 GoogleAuthProvider,
                 signOut,
                 sendPasswordResetEmail,
@@ -51,6 +54,9 @@ class FirebaseAuthHandler {
                 updateDoc,
                 serverTimestamp
             };
+
+            // Check for redirect result first (for mobile Google Sign-in)
+            await this.handleRedirectResult();
 
             // Listen for auth state changes
             onAuthStateChanged(this.auth, async (user) => {
@@ -81,7 +87,7 @@ class FirebaseAuthHandler {
     waitForFirebase() {
         return new Promise((resolve, reject) => {
             let attempts = 0;
-            const maxAttempts = 50;
+            const maxAttempts = 100;
 
             const check = () => {
                 if (window.firebaseApp) {
@@ -90,11 +96,64 @@ class FirebaseAuthHandler {
                     reject(new Error('Firebase not initialized'));
                 } else {
                     attempts++;
-                    setTimeout(check, 100);
+                    setTimeout(check, 50);
                 }
             };
             check();
         });
+    }
+
+    /**
+     * Detect if user is on mobile device
+     */
+    isMobileDevice() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    /**
+     * Handle redirect result from Google Sign-in (for mobile)
+     */
+    async handleRedirectResult() {
+        if (!this.auth) return;
+
+        try {
+            const { getRedirectResult } = this.firebaseFunctions;
+            const result = await getRedirectResult(this.auth);
+            
+            if (result && result.user) {
+                console.log('✅ Redirect sign-in successful');
+                this.showLoadingOverlay('Completing sign in...', 'Please wait');
+                
+                const user = result.user;
+                const profileExists = await this.checkUserProfileExists(user.uid);
+                const isNewUser = !profileExists;
+                
+                if (!profileExists) {
+                    await this.createUserProfile(user, {
+                        displayName: user.displayName,
+                        photoURL: user.photoURL
+                    });
+                }
+                
+                this.showSuccessOverlay('Welcome!', 'Signed in with Google', 1500);
+                
+                // Redirect to referral page
+                setTimeout(() => {
+                    window.location.href = window.location.pathname.includes('/pages/') ? 'referral.html' : 'pages/referral.html';
+                }, 1500);
+                
+                // Prompt new users to complete profile
+                if (isNewUser) {
+                    setTimeout(() => {
+                        this.promptProfileCompletion();
+                    }, 2500);
+                }
+            }
+        } catch (error) {
+            if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
+                console.error('Redirect result error:', error);
+            }
+        }
     }
 
     /**
@@ -164,38 +223,47 @@ class FirebaseAuthHandler {
      */
     async signInWithGoogle() {
         try {
-            const { signInWithPopup, GoogleAuthProvider } = this.firebaseFunctions;
+            const { signInWithPopup, signInWithRedirect, GoogleAuthProvider } = this.firebaseFunctions;
 
             const provider = new GoogleAuthProvider();
             provider.addScope('profile');
             provider.addScope('email');
 
-            const result = await signInWithPopup(this.auth, provider);
-            const user = result.user;
+            // Use redirect for mobile devices, popup for desktop
+            if (this.isMobileDevice()) {
+                this.showLoadingOverlay('Redirecting to Google...', 'Please wait');
+                await signInWithRedirect(this.auth, provider);
+                // The result will be handled by handleRedirectResult() on page load
+                return { success: true, redirecting: true };
+            } else {
+                // Desktop: use popup
+                const result = await signInWithPopup(this.auth, provider);
+                const user = result.user;
 
-            this.showLoadingOverlay('Completing sign in...', 'Please wait');
+                this.showLoadingOverlay('Completing sign in...', 'Please wait');
 
-            // Check if user profile exists, if not create one
-            const profileExists = await this.checkUserProfileExists(user.uid);
-            const isNewUser = !profileExists;
-            
-            if (!profileExists) {
-                await this.createUserProfile(user, {
-                    displayName: user.displayName,
-                    photoURL: user.photoURL
-                });
+                // Check if user profile exists, if not create one
+                const profileExists = await this.checkUserProfileExists(user.uid);
+                const isNewUser = !profileExists;
+                
+                if (!profileExists) {
+                    await this.createUserProfile(user, {
+                        displayName: user.displayName,
+                        photoURL: user.photoURL
+                    });
+                }
+
+                this.showSuccessOverlay('Welcome!', 'Signed in with Google', 1500);
+                
+                // Prompt new users to complete profile (add phone number)
+                if (isNewUser) {
+                    setTimeout(() => {
+                        this.promptProfileCompletion();
+                    }, 2000);
+                }
+                
+                return { success: true, user };
             }
-
-            this.showSuccessOverlay('Welcome!', 'Signed in with Google', 1500);
-            
-            // Prompt new users to complete profile (add phone number)
-            if (isNewUser) {
-                setTimeout(() => {
-                    this.promptProfileCompletion();
-                }, 2000);
-            }
-            
-            return { success: true, user };
 
         } catch (error) {
             console.error('Google sign in error:', error);
@@ -1009,12 +1077,9 @@ window.firebaseAuth = new FirebaseAuthHandler();
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
-    // Wait a bit for Firebase to initialize
-    setTimeout(async () => {
-        try {
-            await window.firebaseAuth.init();
-        } catch (error) {
-            console.error('Auth init failed:', error);
-        }
-    }, 500);
+    try {
+        await window.firebaseAuth.init();
+    } catch (error) {
+        console.error('Auth init failed:', error);
+    }
 });

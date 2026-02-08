@@ -2470,8 +2470,6 @@
             </div>
         </div>
     </div>
-        </div>
-    </div>
 
     <!-- Auth Form Handlers Script -->
     <script>
@@ -2553,11 +2551,12 @@
         async function handleGoogleSignIn() {
             try {
                 const result = await window.firebaseAuth.signInWithGoogle();
-                if (result.success) {
+                if (result.success && !result.redirecting) {
+                    // Desktop popup completed - redirect to dashboard
                     window.firebaseAuth.closeAuthModal();
-                    // Redirect to referral dashboard
                     window.location.href = 'pages/referral.html';
                 }
+                // Mobile redirect will handle navigation automatically
             } catch (error) {
                 console.error('Google Sign In Error:', error);
             }

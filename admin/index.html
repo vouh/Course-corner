@@ -765,7 +765,10 @@
         
         auth.onAuthStateChanged(user => {
             // Don't redirect if we're in the middle of creating a user account
-            if (isCreatingUser) return;
+            if (isCreatingUser) {
+                console.log('⏸️ Auth state change blocked - creating referral code in progress');
+                return;
+            }
             handleAdminAuthState(user, showDashboard);
         });
 
@@ -1211,6 +1214,10 @@
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Saving...';
 
+            // IMPORTANT: Set flag to prevent auth state changes from logging us out
+            isCreatingUser = true;
+            console.log('🔒 Admin session protected - creating referral code...');
+
             try {
                 // Formatting phone
                 let cleanPhone = phone.replace(/[^0-9]/g, '');
@@ -1335,6 +1342,9 @@
                 console.error('Error saving code:', error);
                 showToast('Failed to save code: ' + error.message, 'error');
             } finally {
+                // IMPORTANT: Reset flag to allow normal auth state changes
+                isCreatingUser = false;
+                console.log('🔓 Admin session protection released');
                 btn.disabled = false;
                 btn.innerHTML = '<i class="fas fa-save mr-1"></i>Generate Code';
             }

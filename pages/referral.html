@@ -712,8 +712,8 @@
                                 </button>
                             </div>
 
-                            <p class="text-center text-[10px] md:text-xs text-gray-400">
-                                <i class="fas fa-info-circle mr-1"></i> Your code can only be generated once and remains permanent.
+                            <p class="text-center text-[10px] md:text-xs text-gray-400" id="codeInfoText">
+                                <i class="fas fa-info-circle mr-1"></i> <span id="codeInfoMessage">Your code can only be generated once and remains permanent.</span>
                             </p>
                         </div>
 
@@ -1204,7 +1204,7 @@
         }
 
         // Display the referral code and link
-        function displayReferralCode(code) {
+        function displayReferralCode(code, isAdminGenerated = false) {
             const codeDisplay = document.getElementById('codeDisplay');
             const codePlaceholder = document.getElementById('codePlaceholder');
             const codeValue = document.getElementById('codeValue');
@@ -1213,6 +1213,7 @@
             const linkSection = document.getElementById('linkSection');
             const shareSection = document.getElementById('shareSection');
             const referralLink = document.getElementById('referralLink');
+            const codeInfoMessage = document.getElementById('codeInfoMessage');
 
             codeDisplay.classList.add('has-code');
             codePlaceholder.classList.add('hidden');
@@ -1222,6 +1223,11 @@
             // Hide generate button, show copy code button
             generateBtn.classList.add('hidden');
             copyCodeBtn.classList.remove('hidden');
+
+            // Update info message if admin generated
+            if (isAdminGenerated) {
+                codeInfoMessage.innerHTML = '<span class="text-green-600"><i class="fas fa-check-circle mr-1"></i>Code created for you - ready to share and earn!</span>';
+            }
 
             // Show link section and share section
             linkSection.style.display = 'block';
@@ -1337,8 +1343,8 @@
                         if (isAdmin) {
                             adminBadge.innerHTML = `
                                 <div class="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
-                                    <i class="fas fa-crown"></i>
-                                    <span>ADMIN ${commissionRate}%</span>
+                                    <i class="fas fa-star"></i>
+                                    <span>PREMIUM ${commissionRate}%</span>
                                 </div>
                             `;
                             adminBadge.classList.remove('hidden');
@@ -1350,7 +1356,7 @@
                         const commissionRateDisplay = document.getElementById('commissionRateDisplay');
                         if (commissionRateDisplay) {
                             if (isAdmin) {
-                                commissionRateDisplay.innerHTML = `${commissionRate}% admin commission`;
+                                commissionRateDisplay.innerHTML = `${commissionRate}% premium commission`;
                             } else {
                                 commissionRateDisplay.innerHTML = `${commissionRate}% commission`;
                             }
@@ -1358,7 +1364,8 @@
 
                         if (profile.referralCode) {
                             console.log('✅ User has referral code:', profile.referralCode);
-                            displayReferralCode(profile.referralCode);
+                            const isAdminGenerated = profile.isAdminAdded || profile.source === 'admin-manual';
+                            displayReferralCode(profile.referralCode, isAdminGenerated);
                         } else {
                             console.log('⚠️ User has no referral code - showing generate button');
                         }

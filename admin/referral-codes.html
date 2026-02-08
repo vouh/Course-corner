@@ -539,7 +539,18 @@
         function formatDate(dateStr) {
             if (!dateStr) return 'N/A';
             try {
-                const date = new Date(dateStr);
+                // Handle Firebase Timestamp objects
+                let date;
+                if (dateStr && typeof dateStr === 'object' && dateStr.toDate) {
+                    date = dateStr.toDate();
+                } else if (dateStr && typeof dateStr === 'object' && dateStr.seconds) {
+                    date = new Date(dateStr.seconds * 1000);
+                } else {
+                    date = new Date(dateStr);
+                }
+                
+                if (isNaN(date.getTime())) return 'N/A';
+                
                 return date.toLocaleDateString('en-KE', {
                     year: 'numeric',
                     month: 'short',
@@ -623,10 +634,20 @@
                 console.log('Could not fetch transactions:', err);
             }
 
+            const referralLink = `https://coursecornerkenya.com/#ref=${code}`;
+            
             Swal.fire({
                 title: `Code: ${code}`,
                 html: `
                     <div class="text-left text-sm">
+                        <div class="flex gap-2 mb-4">
+                            <button onclick="navigator.clipboard.writeText('${code}');" class="flex-1 bg-blue-500 text-white px-3 py-2 rounded hover:bg-blue-600 text-sm">
+                                <i class="fas fa-copy mr-1"></i> Copy Code
+                            </button>
+                            <button onclick="navigator.clipboard.writeText('${referralLink}');" class="flex-1 bg-green-500 text-white px-3 py-2 rounded hover:bg-green-600 text-sm">
+                                <i class="fas fa-link mr-1"></i> Copy Link
+                            </button>
+                        </div>
                         <div class="grid grid-cols-2 gap-4 mb-4">
                             <div class="p-3 bg-gray-100 rounded-lg">
                                 <p class="text-gray-500 text-xs">Owner</p>

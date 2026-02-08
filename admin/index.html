@@ -676,6 +676,15 @@
                         </div>
                     </div>
                 </div>
+                <!-- Reload button (shown after auth user creation) -->
+                <div id="reload-notice" class="hidden mt-3 p-2 bg-yellow-50 dark:bg-yellow-900/20 rounded border border-yellow-200 dark:border-yellow-800">
+                    <p class="text-xs text-yellow-800 dark:text-yellow-300 mb-2">
+                        <i class="fas fa-info-circle mr-1"></i>User account created! Reload page to restore your session.
+                    </p>
+                    <button onclick="location.reload()" class="w-full px-3 py-1.5 text-xs bg-yellow-500 text-white hover:bg-yellow-600 rounded transition-colors font-medium">
+                        <i class="fas fa-sync-alt mr-1"></i>Reload Page Now
+                    </button>
+                </div>
             </div>
 
             <div class="flex gap-2">
@@ -752,7 +761,13 @@
         }
 
         // Auth
-        auth.onAuthStateChanged(user => handleAdminAuthState(user, showDashboard));
+        let isCreatingUser = false; // Flag to prevent redirect during user creation
+        
+        auth.onAuthStateChanged(user => {
+            // Don't redirect if we're in the middle of creating a user account
+            if (isCreatingUser) return;
+            handleAdminAuthState(user, showDashboard);
+        });
 
         function showLogin() { document.getElementById('login-screen').classList.remove('hidden'); document.getElementById('dashboard').classList.add('hidden'); }
         function showDashboard(user) {
@@ -1135,6 +1150,7 @@
             document.getElementById('commission-rate').value = '50';
             document.getElementById('generated-code').value = 'XXXXX';
             document.getElementById('gen-result').classList.add('hidden');
+            document.getElementById('reload-notice').classList.add('hidden');
             document.getElementById('code-modal').classList.remove('hidden');
             document.getElementById('code-modal').classList.add('flex');
         }
@@ -1142,6 +1158,7 @@
             document.getElementById('code-modal').classList.add('hidden'); 
             document.getElementById('code-modal').classList.remove('flex'); 
             document.getElementById('gen-result').classList.add('hidden');
+            document.getElementById('reload-notice').classList.add('hidden');
         }
 
         function generateAdminReferralCode() {
@@ -1202,13 +1219,13 @@
                 else if (!cleanPhone.startsWith('254') && cleanPhone.length === 9) cleanPhone = '254' + cleanPhone;
 
                 // Create Firebase Auth user if email/password provided
-                // NOTE: This will temporarily log out the admin, but we'll restore the session
                 let authUserId = null;
-                let needsPageReload = false;
                 
                 if (email && password) {
                     try {
-                        console.log('🔐 Creating user account with email:', email);
+                        console.log('🔐 Creating Firebase Auth account for:', email);
+                        isCreatingUser = true; // Set flag to prevent auth state redirect
+                        
                         const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
                         authUserId = userCredential.user.uid;
                         
@@ -1217,30 +1234,43 @@
                             displayName: name
                         });
                         
-                        console.log('✅ User account created:', authUserId);
-                        needsPageReload = true; // Flag to reload and restore admin session
-                        showToast('User account created for ' + email, 'success');
+                        console.log('✅ Firebase Auth account created:', authUserId);
+                        
+                        // Sign out the newly created user (admin session is replaced)
+                        await firebase.auth().signOut();
+                        
+                        console.log('✅ Signed out new user');
+                        showToast('User can now login with email: ' + email, 'success');
                     } catch (authError) {
                         if (authError.code === 'auth/email-already-in-use') {
-                            // Fetch existing user ID
+                            // Email exists, find the user
                             try {
-                                const methods = await firebase.auth().fetchSignInMethodsForEmail(email);
-                                if (methods.length > 0) {
-                                    // Find user by email in Firestore
-                                    const usersSnapshot = await db.collection('users').where('email', '==', email).limit(1).get();
-                                    if (!usersSnapshot.empty) {
-                                        authUserId = usersSnapshot.docs[0].id;
-                                        console.log('✅ Using existing user:', authUserId);
-                                    }
+                                const usersSnapshot = await db.collection('users').where('email', '==', email).limit(1).get();
+                                if (!usersSnapshot.empty) {
+                                    authUserId = usersSnapshot.docs[0].id;
+                                    console.log('✅ Email already registered, linking to existing user:', authUserId);
                                 }
                             } catch (e) {
                                 console.warn('Could not fetch existing user:', e);
                             }
-                            showToast('Email already registered - linking to existing account', 'warning');
+                            showToast('Email already registered - updating code for existing account', 'warning');
                         } else {
                             console.error('Auth error:', authError);
-                            showToast('Warning: Could not create login - ' + authError.message, 'warning');
+                            showToast('Could not create login: ' + authError.message, 'error');
                         }
+                    } finally {
+                        isCreatingUser = false; // Reset flag
+                    }
+                } else if (email) {
+                    // Just check if user exists by email (no password provided)
+                    try {
+                        const usersSnapshot = await db.collection('users').where('email', '==', email).limit(1).get();
+                        if (!usersSnapshot.empty) {
+                            authUserId = usersSnapshot.docs[0].id;
+                            console.log('✅ Found existing user:', authUserId);
+                        }
+                    } catch (e) {
+                        console.warn('Could not fetch existing user:', e);
                     }
                 }
 
@@ -1252,7 +1282,7 @@
                     userName: name,
                     displayName: name,
                     phoneNumber: cleanPhone,
-                    createdAt: new Date().toISOString(),
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp(),
                     totalReferrals: 0,
                     paidReferrals: 0,
                     totalEarnings: 0,
@@ -1264,7 +1294,9 @@
                     createdBy: 'admin',
                     createdByAdmin: currentAdmin?.email || 'admin',
                     isAdminGenerated: true,
-                    source: 'admin-manual'
+                    source: 'admin-manual',
+                    plannedPassword: password || '', // Store for reference, user can signup with this
+                    setupInstructions: email && password ? 'User can login with email: ' + email : ''
                 });
 
                 // Check if user exists with this phone or auth UID (to link it)
@@ -1369,20 +1401,24 @@
                 document.getElementById('result-link').value = link;
                 document.getElementById('gen-result').classList.remove('hidden');
 
-                showToast('Referral code created with ' + commissionRate + '% commission rate!', 'success');
+                // Show reload notice if auth account was created
+                const reloadNotice = document.getElementById('reload-notice');
+                if (email && password && authUserId) {
+                    reloadNotice.classList.remove('hidden');
+                    showToast('✅ User account created! User can login with: ' + email, 'success', 5000);
+                } else {
+                    reloadNotice.classList.add('hidden');
+                    let message = 'Code created with ' + commissionRate + '% commission!';
+                    if (email && password) {
+                        message += ' Note: User needs to signup first with email: ' + email;
+                    }
+                    showToast(message, 'success', 5000);
+                }
                 
                 // Add to local history for convenience
                 if (!generatedCodes.includes(code)) {
                     generatedCodes.unshift(code);
                     localStorage.setItem('adminCodes', JSON.stringify(generatedCodes));
-                }
-                
-                // If we created an auth user, reload page to restore admin session
-                if (needsPageReload) {
-                    showToast('Reloading to restore your session...', 'info');
-                    setTimeout(() => {
-                        location.reload();
-                    }, 2000); // Give user time to copy code/link
                 }
             } catch (error) {
                 console.error('Error saving code:', error);
@@ -1661,7 +1697,7 @@
         }
 
         // Toast
-        function showToast(msg, type = 'info') {
+        function showToast(msg, type = 'info', duration = 3000) {
             const c = document.getElementById('toast-container');
             const colors = { success: 'bg-green-500', error: 'bg-red-500', warning: 'bg-yellow-500', info: 'bg-blue-500' };
             const icons = { success: 'fa-check-circle', error: 'fa-times-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
@@ -1669,7 +1705,7 @@
             t.className = `${colors[type]} text-white px-6 py-4 rounded-xl shadow-lg flex items-center gap-3 animate-slide-in`;
             t.innerHTML = `<i class="fas ${icons[type]}"></i><span>${msg}</span>`;
             c.appendChild(t);
-            setTimeout(() => t.remove(), 3000);
+            setTimeout(() => t.remove(), duration);
         }
 
         // Init

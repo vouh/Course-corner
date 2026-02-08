@@ -483,11 +483,12 @@ const creditReferrer = async (referralCode, paymentAmount, paymentId) => {
     const codeDoc = await codeRef.get();
     
     let commissionRate = 0.12; // Default 12%
+    let codeData = null;
     
     if (codeDoc.exists) {
-      const codeData = codeDoc.data();
+      codeData = codeDoc.data();
       commissionRate = (codeData.commissionRate || 12) / 100; // Convert percentage to decimal
-      console.log(`📊 Using commission rate: ${commissionRate * 100}% for code ${referralCode}`);
+      console.log(`📊 Referral code found with ${commissionRate * 100}% commission`);
     } else {
       console.log(`⚠️ Code document not found, using default 12%`);
     }
@@ -506,8 +507,23 @@ const creditReferrer = async (referralCode, paymentAmount, paymentId) => {
     const referrerId = userSnapshot.docs[0].id;
     const referrerData = userSnapshot.docs[0].data();
     
-    // Use commission rate from user profile if available, otherwise from code
-    if (referrerData.commissionRate) {
+    // PRIORITY: Use referralCode commission rate if it's an admin code
+    // This ensures admin-set rates always apply, even if user profile has old rate
+    if (codeData && codeData.isAdminCode) {
+      commissionRate = (codeData.commissionRate || 12) / 100;
+      console.log(`👑 Using ADMIN code rate: ${commissionRate * 100}% (overrides user profile)`);
+      
+      // Also update user profile to match (keep them in sync)
+      if (referrerData.commissionRate !== codeData.commissionRate) {
+        console.log(`🔄 Syncing user profile commission rate to ${codeData.commissionRate}%`);
+        await userSnapshot.docs[0].ref.update({
+          commissionRate: codeData.commissionRate,
+          accountType: 'institutional',
+          isAdmin: true
+        });
+      }
+    } else if (referrerData.commissionRate) {
+      // Use user profile rate for regular users
       commissionRate = referrerData.commissionRate / 100;
       console.log(`👤 Using user commission rate: ${commissionRate * 100}%`);
     }

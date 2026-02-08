@@ -1223,6 +1223,8 @@
                 
                 // Check if user already exists (update their commission if they do)
                 let authUserId = null;
+                
+                // Search by email first
                 if (email) {
                     try {
                         const usersSnapshot = await db.collection('users').where('email', '==', email).limit(1).get();
@@ -1231,7 +1233,33 @@
                             console.log('✅ Found existing user by email:', authUserId);
                         }
                     } catch (e) {
-                        console.warn('Could not check for existing user:', e);
+                        console.warn('Could not check for existing user by email:', e);
+                    }
+                }
+                
+                // If not found by email, search by phone
+                if (!authUserId && cleanPhone) {
+                    try {
+                        const usersSnapshot = await db.collection('users').where('phoneNumber', '==', cleanPhone).limit(1).get();
+                        if (!usersSnapshot.empty) {
+                            authUserId = usersSnapshot.docs[0].id;
+                            console.log('✅ Found existing user by phone:', authUserId);
+                        }
+                    } catch (e) {
+                        console.warn('Could not check for existing user by phone:', e);
+                    }
+                }
+                
+                // Search by referral code (in case they're being reassigned)
+                if (!authUserId) {
+                    try {
+                        const usersSnapshot = await db.collection('users').where('referralCode', '==', code).limit(1).get();
+                        if (!usersSnapshot.empty) {
+                            authUserId = usersSnapshot.docs[0].id;
+                            console.log('✅ Found existing user by referral code:', authUserId);
+                        }
+                    } catch (e) {
+                        console.warn('Could not check for existing user by code:', e);
                     }
                 }
                 
@@ -1261,19 +1289,23 @@
                     setupPassword: password || '' // Stored for user's first login
                 });
 
-                // Check if user already exists, update their commission rate
+                // Update existing user's profile with new commission rate
                 if (authUserId) {
-                    // User exists, update their profile with new code and commission
+                    // User exists, update their profile with new code and custom commission
                     await db.collection('users').doc(authUserId).update({
                         referralCode: code,
+                        email: email || firebase.firestore.FieldValue.delete(),
                         phoneNumber: cleanPhone,
                         displayName: name,
                         isAdmin: true,
-                        commissionRate: commissionRate,
+                        commissionRate: commissionRate, // THIS IS KEY - updated commission rate
                         accountType: 'institutional',
                         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
                     });
-                    console.log('✅ Updated existing user with custom commission:', authUserId);
+                    console.log(`✅ Updated existing user ${authUserId} with ${commissionRate}% commission`);
+                    showToast(`Updated existing user with ${commissionRate}% commission`, 'info', 3000);
+                } else {
+                    console.log(`📝 User doesn't exist yet - will be created on signup with ${commissionRate}% commission`);
                 }
                 // Note: If user doesn't exist yet, they'll be created when they signup on main site
                 // The system will detect their email matches a referralCode and apply custom commission

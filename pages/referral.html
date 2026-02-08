@@ -20,6 +20,14 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../assets/js/firebase-config.js" type="module"></script>
     <script src="../assets/js/firebase-auth.js" defer></script>
+    
+    <!-- Inline Firebase imports for real-time updates -->
+    <script type="module">
+        import { doc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+        // Make available globally
+        window.firestoreDoc = doc;
+        window.firestoreOnSnapshot = onSnapshot;
+    </script>
 
     <style>
         body {
@@ -1299,6 +1307,29 @@
             window.open(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${text}`, '_blank');
         }
 
+        // Store listener unsubscribe function
+        let profileUnsubscribe = null;
+
+        // Update stats UI from profile data
+        function updateStatsUI(profile) {
+            if (!profile) return;
+            
+            console.log('📊 Updating stats UI:', {
+                earnings: profile.referralEarnings || 0,
+                pending: profile.referralPending || 0,
+                count: profile.referralCount || 0,
+                paid: profile.referralPaidCount || 0
+            });
+            
+            document.getElementById('statReferrals').textContent = profile.referralCount || 0;
+            document.getElementById('statPaid').textContent = profile.referralPaidCount || 0;
+            document.getElementById('statEarnings').textContent = 'KES ' + (profile.referralEarnings || 0).toLocaleString();
+            document.getElementById('statPending').textContent = 'KES ' + (profile.referralPending || 0).toLocaleString();
+            
+            // Update withdrawal button
+            updateWithdrawalButton(profile.referralPending || 0, profile.phoneNumber);
+        }
+
         // Update UI based on auth state
         function updateViewForUser(user) {
             const guestView = document.getElementById('guestView');
@@ -1370,14 +1401,44 @@
                             console.log('⚠️ User has no referral code - showing generate button');
                         }
                         
-                        // Update stats
-                        document.getElementById('statReferrals').textContent = profile.referralCount || 0;
-                        document.getElementById('statPaid').textContent = profile.referralPaidCount || 0;
-                        document.getElementById('statEarnings').textContent = 'KES ' + (profile.referralEarnings || 0).toLocaleString();
-                        document.getElementById('statPending').textContent = 'KES ' + (profile.referralPending || 0).toLocaleString();
+                        // Update stats initially
+                        updateStatsUI(profile);
 
-                        // Update withdrawal section
-                        updateWithdrawalButton(profile.referralPending || 0, profile.phoneNumber);
+                        // Set up real-time listener for profile changes
+                        if (window.firestoreDoc && window.firestoreOnSnapshot && user.uid) {
+                            // Clean up existing listener if any
+                            if (profileUnsubscribe) {
+                                profileUnsubscribe();
+                            }
+                            
+                            console.log('🔔 Setting up real-time listener for user profile updates');
+                            const db = window.firebaseAuth.firebaseFunctions.getFirestore();
+                            const userDocRef = window.firestoreDoc(db, 'users', user.uid);
+                            
+                            profileUnsubscribe = window.firestoreOnSnapshot(userDocRef, (docSnapshot) => {
+                                if (docSnapshot.exists()) {
+                                    const updatedProfile = docSnapshot.data();
+                                    console.log('🔥 Profile updated in real-time!', {
+                                        earnings: updatedProfile.referralEarnings,
+                                        pending: updatedProfile.referralPending
+                                    });
+                                    
+                                    // Update the cached profile
+                                    window.firebaseAuth.userProfile = updatedProfile;
+                                    
+                                    // Update UI
+                                    updateStatsUI(updatedProfile);
+                                    
+                                    // Show notification for new earnings
+                                    if (updatedProfile.referralEarnings > (profile.referralEarnings || 0)) {
+                                        const newEarning = updatedProfile.referralEarnings - (profile.referralEarnings || 0);
+                                        showToast(`🎉 You earned ${newEarning} KES from a referral!`, 'success');
+                                    }
+                                }
+                            }, (error) => {
+                                console.error('❌ Error in real-time listener:', error);
+                            });
+                        }
                     } else if (attempts < maxAttempts) {
                         // Profile not loaded yet, retry
                         attempts++;

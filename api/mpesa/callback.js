@@ -142,6 +142,7 @@ module.exports = async (req, res) => {
         phoneNumber: paymentData?.phoneNumber || 'unknown',
         amount: paymentData?.amount || 0,
         category: paymentData?.category || 'unknown',
+        referralCode: paymentData?.referralCode || null, // Include referral code
         status: 'completed',
         checkoutRequestId: checkoutRequestID,
         merchantRequestId: paymentData?.merchantRequestId || null,
@@ -161,6 +162,29 @@ module.exports = async (req, res) => {
         callbackLog.steps.push({ step: 'Successful transaction saved', transactionId: successTxId, success: true });
         callbackLog.transactionId = successTxId;
         callbackLog.success = true;
+        
+        // Credit referrer if referral code exists
+        if (successData.referralCode) {
+          console.log('💰 Processing referral commission for code:', successData.referralCode);
+          try {
+            const referralResult = await creditReferrer(successData.referralCode, successData.amount, successTxId);
+            if (referralResult.success) {
+              console.log(`✅ Referrer credited: ${referralResult.commissionAmount} KES (${referralResult.commissionRate}%)`);
+              callbackLog.steps.push({ 
+                step: 'Referrer credited', 
+                commissionAmount: referralResult.commissionAmount,
+                commissionRate: referralResult.commissionRate,
+                success: true 
+              });
+            } else {
+              console.warn('⚠️ Referrer credit failed:', referralResult.error);
+              callbackLog.steps.push({ step: 'Referrer credit failed', error: referralResult.error });
+            }
+          } catch (refError) {
+            console.error('❌ Error crediting referrer:', refError.message);
+            callbackLog.steps.push({ step: 'Referrer credit error', error: refError.message });
+          }
+        }
       } else {
         console.error('⚠️ Successful transaction may not have been saved to Firebase!');
         callbackLog.steps.push({ step: 'Successful transaction save returned null', success: false });

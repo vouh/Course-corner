@@ -897,8 +897,8 @@
                         // Add referralCodes deletion to batch
                         batch.delete(doc(db, 'referralCodes', codeValue));
 
-                        // If we have userID, update user record in batch
-                        if (codeObj.userId) {
+                        // If we have a valid userID (not 'pending'), update user record in batch
+                        if (codeObj.userId && codeObj.userId !== 'pending') {
                             batch.update(doc(db, 'users', codeObj.userId), {
                                 referralCode: deleteField(),
                                 referralCreatedAt: deleteField(),

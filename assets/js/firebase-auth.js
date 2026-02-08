@@ -31,7 +31,7 @@ class FirebaseAuthHandler {
                 await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js");
 
             // Import Firestore
-            const { getFirestore, doc, setDoc, getDoc, updateDoc, serverTimestamp } =
+            const { getFirestore, doc, setDoc, getDoc, updateDoc, serverTimestamp, collection, query, where, getDocs } =
                 await import("https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js");
 
             this.auth = getAuth(window.firebaseApp);
@@ -52,7 +52,11 @@ class FirebaseAuthHandler {
                 setDoc,
                 getDoc,
                 updateDoc,
-                serverTimestamp
+                serverTimestamp,
+                collection,
+                query,
+                where,
+                getDocs
             };
 
             // Check for redirect result first (for mobile Google Sign-in)
@@ -395,7 +399,7 @@ class FirebaseAuthHandler {
      */
     async createUserProfile(user, additionalData = {}) {
         try {
-            const { doc, setDoc, serverTimestamp, getDoc } = this.firebaseFunctions;
+            const { doc, setDoc, serverTimestamp, getDoc, collection, query, where, getDocs } = this.firebaseFunctions;
 
             const userRef = doc(this.db, 'users', user.uid);
 
@@ -405,8 +409,45 @@ class FirebaseAuthHandler {
             let commissionRate = additionalData.commissionRate || 12;
             let accountType = additionalData.accountType || 'user';
             let adminCreatedBy = additionalData.adminCreatedBy || '';
+            let assignedCode = null;
 
-            if (pendingRefCode && !additionalData.isAdmin) {
+            // FIRST: Check if this email has a pre-created institutional account
+            if (user.email) {
+                console.log('🔍 Checking if email has pre-created institutional account:', user.email);
+                try {
+                    const codesRef = collection(this.db, 'referralCodes');
+                    const q = query(codesRef, where('setupEmail', '==', user.email));
+                    const querySnapshot = await getDocs(q);
+                    
+                    if (!querySnapshot.empty) {
+                        const codeDoc = querySnapshot.docs[0];
+                        const codeData = codeDoc.data();
+                        console.log('👑 Pre-created institutional account found!', codeData);
+                        
+                        // Apply institutional settings
+                        isAdmin = true;
+                        commissionRate = codeData.commissionRate || 50;
+                        accountType = 'institutional';
+                        adminCreatedBy = codeData.createdByAdmin || 'admin';
+                        assignedCode = codeData.code;
+                        
+                        // Update referralCode to link it to this user
+                        await setDoc(doc(this.db, 'referralCodes', codeData.code), {
+                            ...codeData,
+                            userId: user.uid,
+                            pendingAuth: false,
+                            linkedAt: serverTimestamp()
+                        });
+                        
+                        console.log(`✅ Linked institutional account with ${commissionRate}% commission`);
+                    }
+                } catch (emailCheckError) {
+                    console.warn('⚠️ Could not check for pre-created account:', emailCheckError);
+                }
+            }
+
+            // SECOND: Check pending referral code (for regular referrals)
+            if (pendingRefCode && !assignedCode && !additionalData.isAdmin) {
                 // Check if this is an admin code
                 console.log('🔍 Checking referral code for admin settings:', pendingRefCode);
                 try {
@@ -418,9 +459,9 @@ class FirebaseAuthHandler {
                         if (codeData.isAdminCode) {
                             isAdmin = true;
                             commissionRate = codeData.commissionRate || 50;
-                            accountType = 'admin';
+                            accountType = 'institutional';
                             adminCreatedBy = codeData.createdByAdmin || 'admin';
-                            console.log(`👑 Admin code detected! User will be admin with ${commissionRate}% commission`);
+                            console.log(`👑 Admin code detected! User will have ${commissionRate}% commission`);
                         }
                     }
                 } catch (codeError) {
@@ -435,18 +476,20 @@ class FirebaseAuthHandler {
                 photoURL: additionalData.photoURL || user.photoURL || '',
                 phoneNumber: additionalData.phoneNumber || '',
                 // Referral system fields
-                referralCode: '',
-                referralCreatedAt: null,
+                referralCode: assignedCode || '', // Pre-assigned code from admin
+                referralCreatedAt: assignedCode ? serverTimestamp() : null,
                 referralCount: 0,
                 referralPaidCount: 0,
                 referralEarnings: 0,
                 referralPending: 0,
                 referredBy: additionalData.referredBy || pendingRefCode || '',
-                // Admin account fields (inherited from referral code if applicable)
+                // Institutional account fields (inherited from admin-created code)
                 isAdmin: isAdmin,
                 commissionRate: commissionRate,
                 accountType: accountType,
                 adminCreatedBy: adminCreatedBy,
+                isAdminAdded: !!assignedCode, // Mark if admin pre-created this
+                source: assignedCode ? 'admin-manual' : 'signup',
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
             };
@@ -463,7 +506,8 @@ class FirebaseAuthHandler {
                 console.log('✅ User profile created and verified', {
                     isAdmin: this.userProfile.isAdmin,
                     commissionRate: this.userProfile.commissionRate,
-                    accountType: this.userProfile.accountType
+                    accountType: this.userProfile.accountType,
+                    assignedCode: this.userProfile.referralCode
                 });
             } else {
                 this.userProfile = profileData;

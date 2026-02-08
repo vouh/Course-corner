@@ -1218,66 +1218,27 @@
                 else if (cleanPhone.startsWith('+')) cleanPhone = cleanPhone.substring(1);
                 else if (!cleanPhone.startsWith('254') && cleanPhone.length === 9) cleanPhone = '254' + cleanPhone;
 
-                // Create Firebase Auth user if email/password provided
-                let authUserId = null;
+                // Don't create Firebase Auth account here - it logs out the admin!
+                // Auth account will be created when user first logs in on the main site
                 
-                if (email && password) {
-                    try {
-                        console.log('🔐 Creating Firebase Auth account for:', email);
-                        isCreatingUser = true; // Set flag to prevent auth state redirect
-                        
-                        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-                        authUserId = userCredential.user.uid;
-                        
-                        // Update display name
-                        await userCredential.user.updateProfile({
-                            displayName: name
-                        });
-                        
-                        console.log('✅ Firebase Auth account created:', authUserId);
-                        
-                        // Sign out the newly created user (admin session is replaced)
-                        await firebase.auth().signOut();
-                        
-                        console.log('✅ Signed out new user');
-                        showToast('User can now login with email: ' + email, 'success');
-                    } catch (authError) {
-                        if (authError.code === 'auth/email-already-in-use') {
-                            // Email exists, find the user
-                            try {
-                                const usersSnapshot = await db.collection('users').where('email', '==', email).limit(1).get();
-                                if (!usersSnapshot.empty) {
-                                    authUserId = usersSnapshot.docs[0].id;
-                                    console.log('✅ Email already registered, linking to existing user:', authUserId);
-                                }
-                            } catch (e) {
-                                console.warn('Could not fetch existing user:', e);
-                            }
-                            showToast('Email already registered - updating code for existing account', 'warning');
-                        } else {
-                            console.error('Auth error:', authError);
-                            showToast('Could not create login: ' + authError.message, 'error');
-                        }
-                    } finally {
-                        isCreatingUser = false; // Reset flag
-                    }
-                } else if (email) {
-                    // Just check if user exists by email (no password provided)
+                // Check if user already exists (update their commission if they do)
+                let authUserId = null;
+                if (email) {
                     try {
                         const usersSnapshot = await db.collection('users').where('email', '==', email).limit(1).get();
                         if (!usersSnapshot.empty) {
                             authUserId = usersSnapshot.docs[0].id;
-                            console.log('✅ Found existing user:', authUserId);
+                            console.log('✅ Found existing user by email:', authUserId);
                         }
                     } catch (e) {
-                        console.warn('Could not fetch existing user:', e);
+                        console.warn('Could not check for existing user:', e);
                     }
                 }
-
-                // Save to referralCodes collection
+                
+                // Save to referralCodes collection with login credentials
                 await db.collection('referralCodes').doc(code).set({
                     code: code,
-                    userId: authUserId || 'pending',
+                    userId: authUserId || 'pending', // Will be set when user signs up
                     userEmail: email || '',
                     userName: name,
                     displayName: name,
@@ -1295,127 +1256,45 @@
                     createdByAdmin: currentAdmin?.email || 'admin',
                     isAdminGenerated: true,
                     source: 'admin-manual',
-                    plannedPassword: password || '', // Store for reference, user can signup with this
-                    setupInstructions: email && password ? 'User can login with email: ' + email : ''
+                    pendingAuth: !authUserId, // True if user needs to signup on main site
+                    setupEmail: email || '',
+                    setupPassword: password || '' // Stored for user's first login
                 });
 
-                // Check if user exists with this phone or auth UID (to link it)
-                let userDocCreated = false;
-                
+                // Check if user already exists, update their commission rate
                 if (authUserId) {
-                    // If we created a new auth user, create their Firestore profile immediately
-                    const uidDoc = await db.collection('users').doc(authUserId).get();
-                    if (!uidDoc.exists) {
-                        // Create new user profile with the auth UID
-                        await db.collection('users').doc(authUserId).set({
-                            uid: authUserId,
-                            email: email,
-                            displayName: name,
-                            phoneNumber: cleanPhone,
-                            photoURL: '',
-                            referralCode: code,
-                            referralCreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            referralCount: 0,
-                            referralEarnings: 0,
-                            referralPending: 0,
-                            referralPaidCount: 0,
-                            referredBy: '',
-                            isAdmin: true,
-                            commissionRate: commissionRate,
-                            accountType: 'institutional',
-                            adminCreatedBy: currentAdmin?.email || 'admin',
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            isAdminAdded: true,
-                            source: 'admin-manual'
-                        });
-                        userDocCreated = true;
-                        console.log('✅ Created user profile for auth user:', authUserId);
-                    } else {
-                        // Update existing profile
-                        await db.collection('users').doc(authUserId).update({
-                            referralCode: code,
-                            phoneNumber: cleanPhone,
-                            displayName: name,
-                            email: email,
-                            isAdmin: true,
-                            commissionRate: commissionRate,
-                            accountType: 'institutional',
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                        userDocCreated = true;
-                        console.log('✅ Updated existing user profile:', authUserId);
-                    }
+                    // User exists, update their profile with new code and commission
+                    await db.collection('users').doc(authUserId).update({
+                        referralCode: code,
+                        phoneNumber: cleanPhone,
+                        displayName: name,
+                        isAdmin: true,
+                        commissionRate: commissionRate,
+                        accountType: 'institutional',
+                        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    console.log('✅ Updated existing user with custom commission:', authUserId);
                 }
-                
-                // If no auth user was created, check by phone number
-                if (!userDocCreated) {
-                    const userSnapshot = await db.collection('users')
-                        .where('phoneNumber', '==', cleanPhone)
-                        .limit(1)
-                        .get();
-
-                    if (!userSnapshot.empty) {
-                        // Update existing user found by phone
-                        await userSnapshot.docs[0].ref.update({
-                            referralCode: code,
-                            email: email || userSnapshot.docs[0].data().email || '',
-                            displayName: name,
-                            phoneNumber: cleanPhone,
-                            isAdmin: true,
-                            commissionRate: commissionRate,
-                            accountType: 'institutional',
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                        });
-                        console.log('✅ Updated user profile by phone:', cleanPhone);
-                    } else {
-                        // Create placeholder user profile (no auth account)
-                        await db.collection('users').add({
-                            email: email || '',
-                            displayName: name,
-                            phoneNumber: cleanPhone,
-                            photoURL: '',
-                            referralCode: code,
-                            referralCreatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            referralCount: 0,
-                            referralEarnings: 0,
-                            referralPending: 0,
-                            referralPaidCount: 0,
-                            referredBy: '',
-                            isAdmin: true,
-                            commissionRate: commissionRate,
-                            accountType: 'institutional',
-                            adminCreatedBy: currentAdmin?.email || 'admin',
-                            createdAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-                            isAdminAdded: true,
-                            source: 'admin-manual'
-                        });
-                        console.log('✅ Created placeholder user profile for phone:', cleanPhone);
-                    }
-                }
+                // Note: If user doesn't exist yet, they'll be created when they signup on main site
+                // The system will detect their email matches a referralCode and apply custom commission
 
                 // Show results
                 const link = 'https://coursecornerkenya.com/#ref=' + code;
                 document.getElementById('result-code').value = code;
                 document.getElementById('result-link').value = link;
                 document.getElementById('gen-result').classList.remove('hidden');
+                document.getElementById('reload-notice').classList.add('hidden');
 
-                // Show reload notice if auth account was created
-                const reloadNotice = document.getElementById('reload-notice');
-                if (email && password && authUserId) {
-                    reloadNotice.classList.remove('hidden');
-                    showToast('✅ User account created! User can login with: ' + email, 'success', 5000);
-                } else {
-                    reloadNotice.classList.add('hidden');
-                    let message = 'Code created with ' + commissionRate + '% commission!';
-                    if (email && password) {
-                        message += ' Note: User needs to signup first with email: ' + email;
+                let message = `✅ Code created with ${commissionRate}% commission!`;
+                if (email) {
+                    message += ` Send to user: ${email}`;
+                    if (password) {
+                        message += ` (password stored - user can signup on main site)`;
                     }
-                    showToast(message, 'success', 5000);
                 }
+                showToast(message, 'success', 5000);
                 
-                // Add to local history for convenience
+                // Add to local history
                 if (!generatedCodes.includes(code)) {
                     generatedCodes.unshift(code);
                     localStorage.setItem('adminCodes', JSON.stringify(generatedCodes));

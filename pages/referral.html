@@ -1331,7 +1331,7 @@
         }
 
         // Update UI based on auth state
-        function updateViewForUser(user) {
+        async function updateViewForUser(user) {
             const guestView = document.getElementById('guestView');
             const dashboardView = document.getElementById('dashboardView');
             const loader = document.getElementById('pageLoader');
@@ -1345,7 +1345,18 @@
                 dashboardView.classList.add('active');
 
                 // Profile should already be loaded by firebase-auth.js before this callback
-                const profile = window.firebaseAuth.getProfile();
+                let profile = window.firebaseAuth.getProfile();
+                
+                // If profile not available yet, wait for it (with timeout)
+                if (!profile || !profile.email) {
+                    console.log('⏳ Profile not ready yet, waiting...');
+                    let retries = 0;
+                    while ((!profile || !profile.email) && retries < 30) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        profile = window.firebaseAuth.getProfile();
+                        retries++;
+                    }
+                }
                 
                 if (profile && profile.email) {
                     console.log('📋 Profile loaded:', {
@@ -1436,8 +1447,16 @@
                         });
                     }
                 } else {
-                    console.error('❌ Profile not available after auth. This should not happen.');
-                    showToast('Error loading your profile. Please refresh the page.', 'error');
+                    console.error('❌ Profile not available after 3 seconds. Reloading profile...');
+                    // Try one more time to load profile
+                    await window.firebaseAuth.loadUserProfile();
+                    profile = window.firebaseAuth.getProfile();
+                    
+                    if (!profile || !profile.email) {
+                        console.error('❌ Profile still not available. Asking user to refresh.');
+                        showToast('Error loading your profile. Please refresh the page.', 'error');
+                        return;
+                    }
                 }
             } else {
                 console.log('👤 No user - showing guest view');
@@ -1600,6 +1619,8 @@
 
             if (result.success) {
                 window.firebaseAuth.closeAuthModal();
+                // If we're already on referral page, the auth state listener will update view
+                console.log('✅ Login successful, auth state will trigger dashboard view');
             }
         }
 
@@ -1635,6 +1656,8 @@
 
             if (result.success) {
                 window.firebaseAuth.closeAuthModal();
+                // Auth state listener will update view and show dashboard
+                console.log('✅ Signup successful, auth state will trigger dashboard view');
             }
         }
 

@@ -66,6 +66,7 @@ class FirebaseAuthHandler {
             onAuthStateChanged(this.auth, async (user) => {
                 this.currentUser = user;
                 if (user) {
+                    // Wait for profile to load before notifying listeners
                     await this.loadUserProfile();
                     this.updateUIForLoggedInUser();
                     
@@ -76,12 +77,16 @@ class FirebaseAuthHandler {
                             this.promptProfileCompletion();
                         }, 1000);
                     }
+                    
+                    // Notify listeners AFTER profile is loaded
+                    this.authStateListeners.forEach(listener => listener(user));
                 } else {
                     this.userProfile = null;
                     this.updateUIForLoggedOutUser();
+                    
+                    // Notify listeners immediately for logout
+                    this.authStateListeners.forEach(listener => listener(user));
                 }
-                // Notify all listeners
-                this.authStateListeners.forEach(listener => listener(user));
             });
 
             this.initialized = true;

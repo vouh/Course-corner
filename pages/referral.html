@@ -1344,114 +1344,101 @@
                 guestView.classList.add('hidden');
                 dashboardView.classList.add('active');
 
-                // Wait a moment for profile to be fully loaded, then update UI
-                let attempts = 0;
-                const maxAttempts = 10;
+                // Profile should already be loaded by firebase-auth.js before this callback
+                const profile = window.firebaseAuth.getProfile();
                 
-                const checkAndUpdateProfile = () => {
-                    const profile = window.firebaseAuth.getProfile();
+                if (profile && profile.email) {
+                    console.log('📋 Profile loaded:', {
+                        email: profile.email,
+                        hasCode: !!profile.referralCode,
+                        code: profile.referralCode || 'none',
+                        isAdmin: profile.isAdmin || false,
+                        commissionRate: profile.commissionRate || 12
+                    });
                     
-                    if (profile && profile.email) {
-                        console.log('📋 Profile loaded:', {
-                            email: profile.email,
-                            hasCode: !!profile.referralCode,
-                            code: profile.referralCode || 'none',
-                            isAdmin: profile.isAdmin || false,
-                            commissionRate: profile.commissionRate || 12
-                        });
-                        
-                        // Update user name display
-                        const userNameDisplay = document.getElementById('userNameDisplay');
-                        if (userNameDisplay) {
-                            userNameDisplay.textContent = profile.displayName || user.displayName || 'User';
-                        }
-
-                        // Show admin badge if user is admin
-                        const adminBadge = document.getElementById('adminBadge');
-                        const commissionRate = profile.commissionRate || 12;
-                        const isAdmin = profile.isAdmin || false;
-                        
-                        if (isAdmin) {
-                            adminBadge.innerHTML = `
-                                <div class="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
-                                    <i class="fas fa-star"></i>
-                                    <span>PREMIUM ${commissionRate}%</span>
-                                </div>
-                            `;
-                            adminBadge.classList.remove('hidden');
-                        } else {
-                            adminBadge.classList.add('hidden');
-                        }
-                        
-                        // Update commission rate display
-                        const commissionRateDisplay = document.getElementById('commissionRateDisplay');
-                        if (commissionRateDisplay) {
-                            if (isAdmin) {
-                                commissionRateDisplay.innerHTML = `${commissionRate}% premium commission`;
-                            } else {
-                                commissionRateDisplay.innerHTML = `${commissionRate}% commission`;
-                            }
-                        }
-
-                        if (profile.referralCode) {
-                            console.log('✅ User has referral code:', profile.referralCode);
-                            const isAdminGenerated = profile.isAdminAdded || profile.source === 'admin-manual';
-                            displayReferralCode(profile.referralCode, isAdminGenerated);
-                        } else {
-                            console.log('⚠️ User has no referral code - showing generate button');
-                        }
-                        
-                        // Update stats initially
-                        updateStatsUI(profile);
-
-                        // Set up real-time listener for profile changes
-                        if (window.firestoreDoc && window.firestoreOnSnapshot && user.uid) {
-                            // Clean up existing listener if any
-                            if (profileUnsubscribe) {
-                                profileUnsubscribe();
-                            }
-                            
-                            console.log('🔔 Setting up real-time listener for user profile updates');
-                            const db = window.firebaseAuth.firebaseFunctions.getFirestore();
-                            const userDocRef = window.firestoreDoc(db, 'users', user.uid);
-                            
-                            profileUnsubscribe = window.firestoreOnSnapshot(userDocRef, (docSnapshot) => {
-                                if (docSnapshot.exists()) {
-                                    const updatedProfile = docSnapshot.data();
-                                    console.log('🔥 Profile updated in real-time!', {
-                                        earnings: updatedProfile.referralEarnings,
-                                        pending: updatedProfile.referralPending
-                                    });
-                                    
-                                    // Update the cached profile
-                                    window.firebaseAuth.userProfile = updatedProfile;
-                                    
-                                    // Update UI
-                                    updateStatsUI(updatedProfile);
-                                    
-                                    // Show notification for new earnings
-                                    if (updatedProfile.referralEarnings > (profile.referralEarnings || 0)) {
-                                        const newEarning = updatedProfile.referralEarnings - (profile.referralEarnings || 0);
-                                        showToast(`🎉 You earned ${newEarning} KES from a referral!`, 'success');
-                                    }
-                                }
-                            }, (error) => {
-                                console.error('❌ Error in real-time listener:', error);
-                            });
-                        }
-                    } else if (attempts < maxAttempts) {
-                        // Profile not loaded yet, retry
-                        attempts++;
-                        console.log(`⏳ Waiting for profile to load... (attempt ${attempts}/${maxAttempts})`);
-                        setTimeout(checkAndUpdateProfile, 300);
-                    } else {
-                        console.error('❌ Profile could not be loaded after max attempts');
-                        showToast('Error loading your profile. Please refresh the page.', 'error');
+                    // Update user name display
+                    const userNameDisplay = document.getElementById('userNameDisplay');
+                    if (userNameDisplay) {
+                        userNameDisplay.textContent = profile.displayName || user.displayName || 'User';
                     }
-                };
-                
-                // Start checking for profile
-                checkAndUpdateProfile();
+
+                    // Show admin badge if user is admin
+                    const adminBadge = document.getElementById('adminBadge');
+                    const commissionRate = profile.commissionRate || 12;
+                    const isAdmin = profile.isAdmin || false;
+                    
+                    if (isAdmin) {
+                        adminBadge.innerHTML = `
+                            <div class="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold shadow-lg">
+                                <i class="fas fa-star"></i>
+                                <span>PREMIUM ${commissionRate}%</span>
+                            </div>
+                        `;
+                        adminBadge.classList.remove('hidden');
+                    } else {
+                        adminBadge.classList.add('hidden');
+                    }
+                    
+                    // Update commission rate display
+                    const commissionRateDisplay = document.getElementById('commissionRateDisplay');
+                    if (commissionRateDisplay) {
+                        if (isAdmin) {
+                            commissionRateDisplay.innerHTML = `${commissionRate}% premium commission`;
+                        } else {
+                            commissionRateDisplay.innerHTML = `${commissionRate}% commission`;
+                        }
+                    }
+
+                    if (profile.referralCode) {
+                        console.log('✅ User has referral code:', profile.referralCode);
+                        const isAdminGenerated = profile.isAdminAdded || profile.source === 'admin-manual';
+                        displayReferralCode(profile.referralCode, isAdminGenerated);
+                    } else {
+                        console.log('⚠️ User has no referral code - showing generate button');
+                    }
+                    
+                    // Update stats initially
+                    updateStatsUI(profile);
+
+                    // Set up real-time listener for profile changes
+                    if (window.firestoreDoc && window.firestoreOnSnapshot && user.uid) {
+                        // Clean up existing listener if any
+                        if (profileUnsubscribe) {
+                            profileUnsubscribe();
+                        }
+                        
+                        console.log('🔔 Setting up real-time listener for user profile updates');
+                        const db = window.firebaseAuth.db; // Use the already initialized db
+                        const userDocRef = window.firestoreDoc(db, 'users', user.uid);
+                        
+                        profileUnsubscribe = window.firestoreOnSnapshot(userDocRef, (docSnapshot) => {
+                            if (docSnapshot.exists()) {
+                                const updatedProfile = docSnapshot.data();
+                                console.log('🔥 Profile updated in real-time!', {
+                                    earnings: updatedProfile.referralEarnings,
+                                    pending: updatedProfile.referralPending
+                                });
+                                
+                                // Update the cached profile
+                                window.firebaseAuth.userProfile = updatedProfile;
+                                
+                                // Update UI
+                                updateStatsUI(updatedProfile);
+                                
+                                // Show notification for new earnings
+                                if (updatedProfile.referralEarnings > (profile.referralEarnings || 0)) {
+                                    const newEarning = updatedProfile.referralEarnings - (profile.referralEarnings || 0);
+                                    showToast(`🎉 You earned ${newEarning} KES from a referral!`, 'success');
+                                }
+                            }
+                        }, (error) => {
+                            console.error('❌ Error in real-time listener:', error);
+                        });
+                    }
+                } else {
+                    console.error('❌ Profile not available after auth. This should not happen.');
+                    showToast('Error loading your profile. Please refresh the page.', 'error');
+                }
             } else {
                 console.log('👤 No user - showing guest view');
                 guestView.classList.add('active');

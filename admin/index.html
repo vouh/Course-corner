@@ -617,17 +617,10 @@
                     <i class="fas fa-info-circle mr-1"></i>
                     Provide email for institutional user. They'll SIGN UP (not login) on main site and create their own password. System auto-applies custom commission.
                 </p>
-                <div class="grid grid-cols-2 gap-2">
-                    <div>
-                        <label class="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Email Address</label>
-                        <input type="email" id="admin-ref-email" placeholder="user@institution.com"
-                            class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Password (Not Used - For Reference Only)</label>
-                        <input type="password" id="admin-ref-password" placeholder="Optional - user creates own"
-                            class="w-full px-3 py-2 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-500 dark:text-gray-400 focus:ring-2 focus:ring-blue-500 outline-none">
-                    </div>
+                <div>
+                    <label class="text-[10px] text-gray-500 dark:text-gray-400 mb-1 block">Email Address</label>
+                    <input type="email" id="admin-ref-email" placeholder="user@institution.com"
+                        class="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 outline-none">
                 </div>
             </div>
             <div class="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 p-3 rounded-lg border border-purple-200 dark:border-purple-700 mb-3">
@@ -1158,7 +1151,6 @@
             document.getElementById('admin-ref-name').value = '';
             document.getElementById('admin-ref-phone').value = '';
             document.getElementById('admin-ref-email').value = '';
-            document.getElementById('admin-ref-password').value = '';
             document.getElementById('commission-rate').value = '50';
             document.getElementById('generated-code').value = 'XXXXX';
             document.getElementById('gen-result').classList.add('hidden');
@@ -1185,26 +1177,11 @@
             const name = document.getElementById('admin-ref-name').value.trim();
             const phone = document.getElementById('admin-ref-phone').value.trim();
             const email = document.getElementById('admin-ref-email').value.trim();
-            const password = document.getElementById('admin-ref-password').value.trim();
             let code = document.getElementById('generated-code').value;
             const currentAdmin = auth.currentUser; // Get admin info before any auth operations
 
             if (!name || !phone) {
                 showToast('Please enter name and phone number', 'warning');
-                return;
-            }
-
-            // Validate email/password if provided
-            if (email && !password) {
-                showToast('Please enter a password for the email account', 'warning');
-                return;
-            }
-            if (password && !email) {
-                showToast('Please enter an email for the password', 'warning');
-                return;
-            }
-            if (password && password.length < 6) {
-                showToast('Password must be at least 6 characters', 'warning');
                 return;
             }
 
@@ -1279,7 +1256,7 @@
                     }
                 }
                 
-                // Save to referralCodes collection with login credentials
+                // Save to referralCodes collection with signup email
                 await db.collection('referralCodes').doc(code).set({
                     code: code,
                     userId: authUserId || 'pending', // Will be set when user signs up
@@ -1301,8 +1278,7 @@
                     isAdminGenerated: true,
                     source: 'admin-manual',
                     pendingAuth: !authUserId, // True if user needs to signup on main site
-                    setupEmail: email || '',
-                    setupPassword: password || '' // Stored for user's first login
+                    setupEmail: email || ''
                 });
 
                 // Update existing user's profile with new commission rate

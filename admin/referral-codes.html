@@ -648,7 +648,7 @@
                                 <i class="fas fa-link mr-1"></i> Copy Link
                             </button>
                         </div>
-                        <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="grid grid-cols-3 gap-3 mb-4">
                             <div class="p-3 bg-gray-100 rounded-lg">
                                 <p class="text-gray-500 text-xs">Owner</p>
                                 <p class="font-medium">${codeData.userName || 'Unknown'}</p>
@@ -657,6 +657,15 @@
                             <div class="p-3 bg-gray-100 rounded-lg">
                                 <p class="text-gray-500 text-xs">Phone (for payout)</p>
                                 <p class="font-medium">${formatPhone(codeData.phoneNumber) || 'Not set'}</p>
+                            </div>
+                            <div class="p-3 ${codeData.commissionRate && codeData.commissionRate > 12 ? 'bg-green-50' : 'bg-blue-50'} rounded-lg">
+                                <p class="text-gray-500 text-xs">Commission Rate</p>
+                                <p class="font-bold text-lg ${codeData.commissionRate && codeData.commissionRate > 12 ? 'text-green-600' : 'text-blue-600'}">
+                                    ${codeData.commissionRate || 12}%
+                                </p>
+                                <p class="text-xs ${codeData.commissionRate && codeData.commissionRate > 12 ? 'text-green-600' : 'text-gray-500'}">
+                                    ${codeData.accountType === 'institutional' || codeData.isAdminCode ? '👑 Institutional' : 'Regular'}
+                                </p>
                             </div>
                         </div>
                         <div class="grid grid-cols-4 gap-2 mb-4">
@@ -707,7 +716,7 @@
                         </div>
                     </div>
                 `,
-                width: '440px',
+                width: '520px',
                 confirmButtonColor: '#3b82f6'
             });
         };

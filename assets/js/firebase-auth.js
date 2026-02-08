@@ -64,6 +64,14 @@ class FirebaseAuthHandler {
                 if (user) {
                     await this.loadUserProfile();
                     this.updateUIForLoggedInUser();
+                    
+                    // Check if we need to show profile prompt after redirect
+                    if (sessionStorage.getItem('showProfilePrompt') === 'true') {
+                        sessionStorage.removeItem('showProfilePrompt');
+                        setTimeout(() => {
+                            this.promptProfileCompletion();
+                        }, 1000);
+                    }
                 } else {
                     this.userProfile = null;
                     this.updateUIForLoggedOutUser();
@@ -114,44 +122,76 @@ class FirebaseAuthHandler {
      * Handle redirect result from Google Sign-in (for mobile)
      */
     async handleRedirectResult() {
-        if (!this.auth) return;
+        if (!this.auth || !this.firebaseFunctions || !this.firebaseFunctions.getRedirectResult) {
+            console.log('⚠️ Not ready to handle redirect result yet');
+            return;
+        }
 
         try {
             const { getRedirectResult } = this.firebaseFunctions;
+            console.log('🔍 Checking for redirect result...');
             const result = await getRedirectResult(this.auth);
             
             if (result && result.user) {
-                console.log('✅ Redirect sign-in successful');
+                console.log('✅ Redirect sign-in successful for:', result.user.email);
                 this.showLoadingOverlay('Completing sign in...', 'Please wait');
                 
                 const user = result.user;
-                const profileExists = await this.checkUserProfileExists(user.uid);
-                const isNewUser = !profileExists;
                 
-                if (!profileExists) {
-                    await this.createUserProfile(user, {
-                        displayName: user.displayName,
-                        photoURL: user.photoURL
-                    });
+                try {
+                    const profileExists = await this.checkUserProfileExists(user.uid);
+                    const isNewUser = !profileExists;
+                    
+                    if (!profileExists) {
+                        console.log('📝 Creating new user profile');
+                        await this.createUserProfile(user, {
+                            displayName: user.displayName,
+                            photoURL: user.photoURL
+                        });
+                    }
+                    
+                    // Store flag for profile completion prompt if new user
+                    if (isNewUser) {
+                        sessionStorage.setItem('showProfilePrompt', 'true');
+                        console.log('🎯 New user - will prompt for profile completion');
+                    }
+                    
+                    this.showSuccessOverlay('Welcome!', 'Signed in with Google', 1500);
+                    
+                    // Only redirect if NOT already on referral page
+                    const isOnReferralPage = window.location.pathname.includes('referral.html');
+                    if (!isOnReferralPage) {
+                        console.log('🔄 Redirecting to referral page...');
+                        setTimeout(() => {
+                            const referralUrl = window.location.pathname.includes('/pages/') ? 'referral.html' : 'pages/referral.html';
+                            window.location.href = referralUrl;
+                        }, 1500);
+                    } else {
+                        // Already on referral page, hide loading and trigger prompt if needed
+                        console.log('✅ Already on referral page');
+                        setTimeout(() => {
+                            this.hideLoadingOverlay();
+                            if (isNewUser) {
+                                this.promptProfileCompletion();
+                                sessionStorage.removeItem('showProfilePrompt');
+                            }
+                        }, 1500);
+                    }
+                } catch (profileError) {
+                    console.error('❌ Error setting up profile:', profileError);
+                    this.hideLoadingOverlay();
+                    this.showToast('Sign in successful, but there was an error setting up your profile', 'error');
                 }
-                
-                this.showSuccessOverlay('Welcome!', 'Signed in with Google', 1500);
-                
-                // Redirect to referral page
-                setTimeout(() => {
-                    window.location.href = window.location.pathname.includes('/pages/') ? 'referral.html' : 'pages/referral.html';
-                }, 1500);
-                
-                // Prompt new users to complete profile
-                if (isNewUser) {
-                    setTimeout(() => {
-                        this.promptProfileCompletion();
-                    }, 2500);
-                }
+            } else {
+                console.log('ℹ️ No pending redirect result');
             }
         } catch (error) {
-            if (error.code !== 'auth/popup-closed-by-user' && error.code !== 'auth/cancelled-popup-request') {
-                console.error('Redirect result error:', error);
+            // Only log errors that are not user cancellations
+            if (error.code !== 'auth/popup-closed-by-user' && 
+                error.code !== 'auth/cancelled-popup-request' &&
+                error.code !== 'auth/redirect-cancelled-by-user') {
+                console.error('❌ Redirect result error:', error);
+                this.hideLoadingOverlay();
             }
         }
     }
@@ -231,11 +271,20 @@ class FirebaseAuthHandler {
 
             // Use redirect for mobile devices, popup for desktop
             if (this.isMobileDevice()) {
+                console.log('📱 Mobile detected - using redirect method');
                 this.showLoadingOverlay('Redirecting to Google...', 'Please wait');
-                await signInWithRedirect(this.auth, provider);
-                // The result will be handled by handleRedirectResult() on page load
-                return { success: true, redirecting: true };
+                try {
+                    await signInWithRedirect(this.auth, provider);
+                    console.log('🔄 Redirect initiated');
+                    // The result will be handled by handleRedirectResult() on page load
+                    return { success: true, redirecting: true };
+                } catch (redirectError) {
+                    console.error('❌ Redirect error:', redirectError);
+                    this.hideLoadingOverlay();
+                    throw redirectError;
+                }
             } else {
+                console.log('💻 Desktop detected - using popup method');
                 // Desktop: use popup
                 const result = await signInWithPopup(this.auth, provider);
                 const user = result.user;
@@ -287,12 +336,17 @@ class FirebaseAuthHandler {
     async logout() {
         this.showLoadingOverlay('Signing out...', '');
         try {
+            // Clear any pending profile prompt flags
+            sessionStorage.removeItem('showProfilePrompt');
+            
             const { signOut } = this.firebaseFunctions;
             await signOut(this.auth);
             this.showSuccessOverlay('Goodbye!', 'You have been signed out', 1500);
+            
+            console.log('✅ User signed out successfully');
             return { success: true };
         } catch (error) {
-            console.error('Sign out error:', error);
+            console.error('❌ Sign out error:', error);
             this.hideLoadingOverlay();
             this.showToast('Error signing out', 'error');
             return { success: false, error: error.message };

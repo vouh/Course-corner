@@ -1138,13 +1138,58 @@
 
         // Code Generator - Admin can generate UNLIMITED codes, all stored permanently
         let generatedCodes = JSON.parse(localStorage.getItem('adminCodes') || '[]');
+        let currentAdminCode = null; // Store the admin's existing code
 
-        function openCodeGenerator() {
-            document.getElementById('admin-ref-name').value = '';
-            document.getElementById('admin-ref-email').value = '';
-            document.getElementById('commission-rate').value = '50';
-            document.getElementById('generated-code').value = 'XXXXX';
-            document.getElementById('gen-result').classList.add('hidden');
+        async function checkAdminExistingCode() {
+            try {
+                const user = auth.currentUser;
+                if (!user || !user.email) return null;
+
+                // Check if logged-in admin has a referral code already
+                const snapshot = await db.collection('referralCodes')
+                    .where('userEmail', '==', user.email)
+                    .limit(1)
+                    .get();
+
+                if (!snapshot.empty) {
+                    const codeData = snapshot.docs[0].data();
+                    console.log('✅ Found existing code for admin:', codeData.code);
+                    return codeData;
+                }
+                return null;
+            } catch (error) {
+                console.error('Error checking existing code:', error);
+                return null;
+            }
+        }
+
+        async function openCodeGenerator() {
+            // Check if admin already has a code
+            const existingCode = await checkAdminExistingCode();
+            
+            if (existingCode) {
+                // Pre-fill form with existing data
+                document.getElementById('admin-ref-name').value = existingCode.userName || existingCode.displayName || '';
+                document.getElementById('admin-ref-email').value = existingCode.userEmail || '';
+                document.getElementById('commission-rate').value = existingCode.commissionRate || 50;
+                document.getElementById('generated-code').value = existingCode.code;
+                
+                // Show the result section with the existing code
+                const link = 'https://coursecornerkenya.com/#ref=' + existingCode.code;
+                document.getElementById('result-code').value = existingCode.code;
+                document.getElementById('result-link').value = link;
+                document.getElementById('gen-result').classList.remove('hidden');
+                
+                showToast('✅ Your existing referral code is displayed below', 'info', 4000);
+            } else {
+                // Reset form for new code
+                document.getElementById('admin-ref-name').value = '';
+                document.getElementById('admin-ref-email').value = auth.currentUser?.email || '';
+                document.getElementById('commission-rate').value = '50';
+                document.getElementById('generated-code').value = 'XXXXX';
+                document.getElementById('gen-result').classList.add('hidden');
+            }
+            
             document.getElementById('reload-notice').classList.add('hidden');
             document.getElementById('code-modal').classList.remove('hidden');
             document.getElementById('code-modal').classList.add('flex');
@@ -1271,7 +1316,7 @@
                     await db.collection('users').doc(authUserId).update({
                         referralCode: code,
                         email: email || firebase.firestore.FieldValue.delete(),
-                        phoneNumber: cleanPhone,
+                        phoneNumber: '', // Phone will be provided by user during signup
                         displayName: name,
                         isAdmin: true,
                         commissionRate: commissionRate, // THIS IS KEY - updated commission rate

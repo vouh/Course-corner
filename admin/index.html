@@ -1311,11 +1311,38 @@
                     });
                     console.log(`✅ Updated existing user ${authUserId} with ${commissionRate}% commission`);
                     showToast(`Updated existing user with ${commissionRate}% commission`, 'info', 3000);
+                } else if (email && password) {
+                    // Create Firebase Auth account using backend API (doesn't log out admin!)
+                    console.log(`🔐 Creating Firebase Auth account for ${email} via backend...`);
+                    try {
+                        const createResponse = await fetch('/api/admin/create-user', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                email: email,
+                                password: password,
+                                displayName: name,
+                                commissionRate: commissionRate,
+                                referralCode: code
+                            })
+                        });
+                        
+                        const createResult = await createResponse.json();
+                        
+                        if (createResult.success) {
+                            console.log(`✅ Firebase Auth account created successfully: ${createResult.userId}`);
+                            showToast(`✅ Account created! User can LOGIN with ${email}`, 'success', 4000);
+                        } else {
+                            console.warn('⚠️ Account creation failed:', createResult.error);
+                            showToast('⚠️ Code saved but user account creation failed', 'warning', 4000);
+                        }
+                    } catch (apiError) {
+                        console.error('❌ Backend API error:', apiError);
+                        showToast('Code saved but verify backend is running', 'warning', 4000);
+                    }
                 } else {
-                    console.log(`📝 User doesn't exist yet - will be created on signup with ${commissionRate}% commission`);
+                    console.log(`📝 No email/password provided - manual setup required`);
                 }
-                // Note: If user doesn't exist yet, they'll be created when they signup on main site
-                // The system will detect their email matches a referralCode and apply custom commission
 
                 // Show results
                 const link = 'https://coursecornerkenya.com/#ref=' + code;
@@ -1325,11 +1352,10 @@
                 document.getElementById('reload-notice').classList.add('hidden');
 
                 let message = `✅ Code created with ${commissionRate}% commission!`;
-                if (email) {
-                    message += ` Send to user: ${email}`;
-                    if (password) {
-                        message += ` (password stored - user can signup on main site)`;
-                    }
+                if (email && password) {
+                    message = `✅ Account ready! User can LOGIN now with ${email}`;
+                } else if (email) {
+                    message += ` | User: ${email} (no password - manual setup needed)`;
                 }
                 showToast(message, 'success', 5000);
                 

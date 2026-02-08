@@ -260,8 +260,30 @@ class FirebaseAuthHandler {
             const { signInWithEmailAndPassword } = this.firebaseFunctions;
 
             const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
+            const user = userCredential.user;
+            
+            // Load user profile to check commission rate and code
+            await this.loadUserProfile();
+            
+            console.log('📋 User profile loaded:', {
+                email: user.email,
+                hasCode: !!this.userProfile?.referralCode,
+                code: this.userProfile?.referralCode || 'none',
+                commissionRate: this.userProfile?.commissionRate || 12,
+                accountType: this.userProfile?.accountType || 'user'
+            });
 
             this.showSuccessOverlay('Welcome Back!', 'You are now signed in', 1500);
+            
+            // Redirect to referral page after successful login
+            setTimeout(() => {
+                const isOnReferralPage = window.location.pathname.includes('referral.html');
+                if (!isOnReferralPage) {
+                    const prefix = window.location.pathname.includes('/pages/') ? '' : 'pages/';
+                    window.location.href = prefix + 'referral.html';
+                }
+            }, 1500);
+            
             return { success: true, user: userCredential.user };
 
         } catch (error) {
@@ -493,6 +515,8 @@ class FirebaseAuthHandler {
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp()
             };
+            
+            console.log('💾 Creating user profile with commission rate:', commissionRate + '%');
 
             await setDoc(userRef, profileData);
             

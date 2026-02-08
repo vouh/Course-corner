@@ -33,7 +33,10 @@ module.exports = async (req, res) => {
         success: true,
         valid: true,
         referrerName: result.referrerName,
-        message: `Code belongs to ${result.referrerName}`
+        commissionRate: result.commissionRate,
+        isAdminCode: result.isAdminCode,
+        accountType: result.accountType,
+        message: `Code belongs to ${result.referrerName} (${result.commissionRate}% commission)`
       });
     } else {
       res.json({

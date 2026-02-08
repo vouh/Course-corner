@@ -449,6 +449,22 @@ const validateReferralCode = async (code) => {
     const { db } = await initializeFirebase();
     if (!db) return null;
 
+    // First check referralCodes collection for commission rate
+    const codeRef = db.collection('referralCodes').doc(code.toUpperCase());
+    const codeDoc = await codeRef.get();
+    
+    let commissionRate = 12; // Default
+    let isAdminCode = false;
+    let accountType = 'user';
+    
+    if (codeDoc.exists) {
+      const codeData = codeDoc.data();
+      commissionRate = codeData.commissionRate || 12;
+      isAdminCode = codeData.isAdminCode || false;
+      accountType = codeData.accountType || 'user';
+    }
+
+    // Then check users collection for the referrer
     const snapshot = await db.collection('users')
       .where('referralCode', '==', code.toUpperCase())
       .limit(1)
@@ -456,10 +472,17 @@ const validateReferralCode = async (code) => {
 
     if (!snapshot.empty) {
       const userData = snapshot.docs[0].data();
+      
+      // Use user's commission rate if available, otherwise use code's rate
+      const userCommissionRate = userData.commissionRate || commissionRate;
+      
       return {
         valid: true,
         referrerId: snapshot.docs[0].id,
-        referrerName: userData.displayName || 'Course Corner User'
+        referrerName: userData.displayName || 'Course Corner User',
+        commissionRate: userCommissionRate,
+        isAdminCode: isAdminCode || userData.isAdmin || false,
+        accountType: userData.accountType || accountType
       };
     }
 
@@ -475,6 +498,9 @@ const validateReferralCode = async (code) => {
  */
 const creditReferrer = async (referralCode, paymentAmount, paymentId) => {
   try {
+    console.log(`\n====== CREDIT REFERRER DEBUG ======`);
+    console.log(`📥 Input: code=${referralCode}, amount=${paymentAmount}, paymentId=${paymentId}`);
+    
     const { admin, db } = await initializeFirebase();
     if (!db) return false;
 
@@ -487,10 +513,15 @@ const creditReferrer = async (referralCode, paymentAmount, paymentId) => {
     
     if (codeDoc.exists) {
       codeData = codeDoc.data();
+      console.log(`📊 Code document found:`, {
+        code: codeData.code,
+        isAdminCode: codeData.isAdminCode,
+        commissionRate: codeData.commissionRate,
+        accountType: codeData.accountType
+      });
       commissionRate = (codeData.commissionRate || 12) / 100; // Convert percentage to decimal
-      console.log(`📊 Referral code found with ${commissionRate * 100}% commission`);
     } else {
-      console.log(`⚠️ Code document not found, using default 12%`);
+      console.log(`⚠️ Code document not found in referralCodes collection!`);
     }
 
     // Find referrer by code
@@ -507,31 +538,44 @@ const creditReferrer = async (referralCode, paymentAmount, paymentId) => {
     const referrerId = userSnapshot.docs[0].id;
     const referrerData = userSnapshot.docs[0].data();
     
+    console.log(`👤 User profile found:`, {
+      userId: referrerId,
+      email: referrerData.email,
+      referralCode: referrerData.referralCode,
+      commissionRate: referrerData.commissionRate,
+      accountType: referrerData.accountType,
+      isAdmin: referrerData.isAdmin
+    });
+    
     // PRIORITY: Use referralCode commission rate if it's an admin code
     // This ensures admin-set rates always apply, even if user profile has old rate
     if (codeData && codeData.isAdminCode) {
       commissionRate = (codeData.commissionRate || 12) / 100;
-      console.log(`👑 Using ADMIN code rate: ${commissionRate * 100}% (overrides user profile)`);
+      console.log(`👑 ADMIN CODE DETECTED! Using code rate: ${commissionRate * 100}% (overrides user profile)`);
       
       // Also update user profile to match (keep them in sync)
       if (referrerData.commissionRate !== codeData.commissionRate) {
-        console.log(`🔄 Syncing user profile commission rate to ${codeData.commissionRate}%`);
+        console.log(`🔄 Syncing user profile from ${referrerData.commissionRate}% to ${codeData.commissionRate}%`);
         await userSnapshot.docs[0].ref.update({
           commissionRate: codeData.commissionRate,
           accountType: 'institutional',
           isAdmin: true
         });
+      } else {
+        console.log(`✅ User profile already has correct commission rate: ${codeData.commissionRate}%`);
       }
     } else if (referrerData.commissionRate) {
       // Use user profile rate for regular users
       commissionRate = referrerData.commissionRate / 100;
-      console.log(`👤 Using user commission rate: ${commissionRate * 100}%`);
+      console.log(`👤 Using user profile commission rate: ${commissionRate * 100}%`);
+    } else {
+      console.log(`⚠️ No custom rate found, using default: ${commissionRate * 100}%`);
     }
     
     // Calculate commission using Math.ceil for upper rounding
     const commissionAmount = Math.ceil(paymentAmount * commissionRate);
     
-    console.log(`💰 Calculated commission: ${paymentAmount} × ${commissionRate * 100}% = ${commissionAmount} KES (rounded up)`);
+    console.log(`💰 FINAL CALCULATION: ${paymentAmount} × ${commissionRate * 100}% = ${commissionAmount} KES (rounded up)`);
 
     // Update referrer's earnings (matching firebase-auth.js schema)
     // Fields: referralCount, referralPaidCount, referralEarnings, referralPending
@@ -563,10 +607,13 @@ const creditReferrer = async (referralCode, paymentAmount, paymentId) => {
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    console.log(`💰 Credited ${commissionAmount} KES to referrer ${referrerId}`);
-    return { success: true, commissionAmount };
+    console.log(`✅ SUCCESS! Credited ${commissionAmount} KES (${commissionRate * 100}%) to referrer ${referrerId}`);
+    console.log(`====== END CREDIT REFERRER ======\n`);
+    return { success: true, commissionAmount, commissionRate: commissionRate * 100 };
   } catch (error) {
-    console.error('Error crediting referrer:', error.message);
+    console.error('❌ ERROR crediting referrer:', error.message);
+    console.error(error.stack);
+    console.log(`====== END CREDIT REFERRER (ERROR) ======\n`);
     return { success: false, error: error.message };
   }
 };

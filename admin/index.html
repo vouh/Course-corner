@@ -1334,11 +1334,11 @@
                             showToast(`✅ Account created! User can LOGIN with ${email}`, 'success', 4000);
                         } else {
                             console.warn('⚠️ Account creation failed:', createResult.error);
-                            showToast('⚠️ Code saved but user account creation failed', 'warning', 4000);
+                            showToast(`⚠️ Code saved but account creation failed: ${createResult.error}`, 'warning', 5000);
                         }
                     } catch (apiError) {
                         console.error('❌ Backend API error:', apiError);
-                        showToast('Code saved but verify backend is running', 'warning', 4000);
+                        showToast('⚠️ Backend API not available. Make sure server is running.', 'error', 5000);
                     }
                 } else {
                     console.log(`📝 No email/password provided - manual setup required`);

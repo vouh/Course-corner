@@ -2412,6 +2412,12 @@
                 customClass: {
                     popup: 'swal-package-modal'
                 },
+                didClose: () => {
+                    // Force cleanup to prevent freeze
+                    document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                    document.body.style.overflow = 'auto';
+                    document.body.style.paddingRight = '';
+                },
                 didOpen: () => {
                     const select = document.getElementById('magicPackageSelect');
                     const detailsDiv = document.getElementById('magicPackageDetails');
@@ -2524,7 +2530,14 @@
                         text: 'Magic access active - no payment required!',
                         timer: 1500,
                         showConfirmButton: false,
-                        timerProgressBar: true
+                        timerProgressBar: true,
+                        scrollbarPadding: false,
+                        heightAuto: false,
+                        didClose: () => {
+                            document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                            document.body.style.overflow = 'auto';
+                            document.body.style.paddingRight = '';
+                        }
                     }).then(() => {
                         showResultsAfterPayment(pkg);
                     });
@@ -2584,6 +2597,7 @@
                     // Restore scroll when modal closes
                     document.body.style.overflow = 'auto';
                     document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                    document.body.style.paddingRight = '';
                 },
                 didOpen: () => {
                     const select = document.getElementById('modalPackageSelect');
@@ -3328,30 +3342,23 @@
         // ============================================
         function showDownloadReminderModal() {
             Swal.fire({
-                icon: 'info',
-                title: '📥 Don\'t Forget to Download!',
-                html: `
-                    <div style="text-align: center; padding: 0.5rem;">
-                        <p style="font-size: 1rem; color: #374151; margin-bottom: 1rem; line-height: 1.6;">
-                            Your results are ready! <strong>Don't forget to download your results</strong> for offline access.
-                        </p>
-                        <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 0.75rem; padding: 0.75rem; margin-top: 1rem;">
-                            <p style="font-size: 0.875rem; color: #166534; margin: 0;">
-                                <i class="fas fa-arrow-up"></i> Look for the <strong>Download PDF</strong> button at the top of your results section.
-                            </p>
-                        </div>
-                    </div>
-                `,
-                confirmButtonText: '<i class="fas fa-check mr-2"></i>OK, Got it!',
+                title: '📥 Download Your Results',
+                text: 'Click the Download button above',
+                confirmButtonText: 'OK',
                 confirmButtonColor: '#10b981',
+                timer: 3000,
+                timerProgressBar: true,
                 allowOutsideClick: true,
                 scrollbarPadding: false,
                 heightAuto: false,
+                width: '320px',
                 didClose: () => {
-                    // Ensure no scroll lock
+                    // Force cleanup to prevent freeze
                     document.body.classList.remove('swal2-shown', 'swal2-height-auto');
                     document.body.style.overflow = 'auto';
                     document.body.style.paddingRight = '';
+                    const backdrop = document.querySelector('.swal2-container');
+                    if (backdrop) backdrop.remove();
                 }
             });
         }
@@ -3819,6 +3826,8 @@
                     document.body.classList.remove('swal2-shown', 'swal2-height-auto');
                     document.body.style.overflow = 'auto';
                     document.body.style.paddingRight = '';
+                    const backdrop = document.querySelector('.swal2-container');
+                    if (backdrop) backdrop.remove();
                 }
             });
         }

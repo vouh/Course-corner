@@ -2413,20 +2413,10 @@
                     popup: 'swal-package-modal'
                 },
                 willClose: () => {
-                    // Aggressive cleanup BEFORE modal closes
-                    document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                    document.body.style.overflow = 'auto';
-                    document.body.style.paddingRight = '';
+                    forceCleanupModalState();
                 },
                 didClose: () => {
-                    // Double cleanup AFTER modal closes
-                    setTimeout(() => {
-                        document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                        document.body.style.overflow = 'auto';
-                        document.body.style.paddingRight = '';
-                        const backdrop = document.querySelector('.swal2-container');
-                        if (backdrop) backdrop.remove();
-                    }, 0);
+                    setTimeout(() => forceCleanupModalState(), 0);
                 },
                 didOpen: () => {
                     const select = document.getElementById('magicPackageSelect');
@@ -2543,20 +2533,8 @@
                         timerProgressBar: true,
                         scrollbarPadding: false,
                         heightAuto: false,
-                        willClose: () => {
-                            document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                            document.body.style.overflow = 'auto';
-                            document.body.style.paddingRight = '';
-                        },
-                        didClose: () => {
-                            setTimeout(() => {
-                                document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                                document.body.style.overflow = 'auto';
-                                document.body.style.paddingRight = '';
-                                const backdrop = document.querySelector('.swal2-container');
-                                if (backdrop) backdrop.remove();
-                            }, 0);
-                        }
+                        willClose: () => forceCleanupModalState(),
+                        didClose: () => setTimeout(() => forceCleanupModalState(), 0)
                     }).then(() => {
                         showResultsAfterPayment(pkg);
                     });
@@ -2612,22 +2590,8 @@
                     confirmButton: 'swal-confirm-btn',
                     cancelButton: 'swal-cancel-btn'
                 },
-                willClose: () => {
-                    // Aggressive cleanup BEFORE modal closes
-                    document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                    document.body.style.overflow = 'auto';
-                    document.body.style.paddingRight = '';
-                },
-                didClose: () => {
-                    // Double cleanup AFTER modal closes
-                    setTimeout(() => {
-                        document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                        document.body.style.overflow = 'auto';
-                        document.body.style.paddingRight = '';
-                        const backdrop = document.querySelector('.swal2-container');
-                        if (backdrop) backdrop.remove();
-                    }, 0);
-                },
+                willClose: () => forceCleanupModalState(),
+                didClose: () => setTimeout(() => forceCleanupModalState(), 0),
                 didOpen: () => {
                     const select = document.getElementById('modalPackageSelect');
                     const detailsDiv = document.getElementById('packageDetails');
@@ -3363,7 +3327,43 @@
                 // Ensure scroll is restored no matter what
                 document.body.classList.remove('swal2-shown', 'swal2-height-auto');
                 document.body.style.overflow = 'auto';
+                document.body.style.paddingRight = '';
+                // Remove aria-hidden from all elements to fix focus issues
+                document.querySelectorAll('[aria-hidden="true"]').forEach(el => {
+                    if (!el.classList.contains('swal2-container')) {
+                        el.removeAttribute('aria-hidden');
+                    }
+                });
             }
+        }
+
+        // ============================================
+        // GLOBAL CLEANUP FUNCTION
+        // ============================================
+        function forceCleanupModalState() {
+            // Remove all SweetAlert classes and states
+            document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+            document.body.style.overflow = 'auto';
+            document.body.style.paddingRight = '';
+            
+            // Remove aria-hidden from all non-modal elements
+            document.querySelectorAll('[aria-hidden="true"]').forEach(el => {
+                if (!el.classList.contains('swal2-container')) {
+                    el.removeAttribute('aria-hidden');
+                }
+            });
+            
+            // Specifically ensure calculator section is never hidden (fixes focus warning)
+            const calculatorSection = document.querySelector('.cc-calculator-section');
+            if (calculatorSection && calculatorSection.hasAttribute('aria-hidden')) {
+                calculatorSection.removeAttribute('aria-hidden');
+            }
+            
+            // Remove lingering backdrops
+            const backdrop = document.querySelector('.swal2-container');
+            if (backdrop) backdrop.remove();
+            const htmlBackdrop = document.querySelector('.swal2-backdrop-show');
+            if (htmlBackdrop) htmlBackdrop.remove();
         }
 
         // ============================================
@@ -3381,21 +3381,12 @@
                 width: '320px',
                 willClose: () => {
                     // Aggressive cleanup BEFORE modal closes
-                    Swal.close();
-                    document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                    document.body.style.overflow = 'auto';
-                    document.body.style.paddingRight = '';
+                    forceCleanupModalState();
                 },
                 didClose: () => {
                     // Double cleanup AFTER modal closes to ensure no freeze
                     setTimeout(() => {
-                        document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                        document.body.style.overflow = 'auto';
-                        document.body.style.paddingRight = '';
-                        const backdrop = document.querySelector('.swal2-container');
-                        if (backdrop) backdrop.remove();
-                        const htmlBackdrop = document.querySelector('.swal2-backdrop-show');
-                        if (htmlBackdrop) htmlBackdrop.remove();
+                        forceCleanupModalState();
                     }, 0);
                 }
             });
@@ -3702,20 +3693,8 @@
                     title: 'PDF Generated!',
                     html: '<p>Your report has been downloaded.</p><p class="text-sm text-gray-500 mt-2">If you have any issues, contact us:</p><p class="font-bold text-green-600">0718 744780 | 0741 739262</p>',
                     confirmButtonColor: '#10b981',
-                    willClose: () => {
-                        document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                        document.body.style.overflow = 'auto';
-                        document.body.style.paddingRight = '';
-                    },
-                    didClose: () => {
-                        setTimeout(() => {
-                            document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                            document.body.style.overflow = 'auto';
-                            document.body.style.paddingRight = '';
-                            const backdrop = document.querySelector('.swal2-container');
-                            if (backdrop) backdrop.remove();
-                        }, 0);
-                    }
+                    willClose: () => forceCleanupModalState(),
+                    didClose: () => setTimeout(() => forceCleanupModalState(), 0)
                 });
 
             } catch (error) {
@@ -3725,20 +3704,8 @@
                     title: 'PDF Generation Failed',
                     html: '<p>Unable to generate PDF. Please try again.</p><p class="text-sm text-gray-500 mt-3">If the problem persists, contact us with your M-Pesa payment code:</p><p class="font-bold text-green-600 text-lg mt-2">0718 744780</p><p class="font-bold text-green-600 text-lg">0741 739262</p>',
                     confirmButtonColor: '#10b981',
-                    willClose: () => {
-                        document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                        document.body.style.overflow = 'auto';
-                        document.body.style.paddingRight = '';
-                    },
-                    didClose: () => {
-                        setTimeout(() => {
-                            document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                            document.body.style.overflow = 'auto';
-                            document.body.style.paddingRight = '';
-                            const backdrop = document.querySelector('.swal2-container');
-                            if (backdrop) backdrop.remove();
-                        }, 0);
-                    }
+                    willClose: () => forceCleanupModalState(),
+                    didClose: () => setTimeout(() => forceCleanupModalState(), 0)
                 });
             }
         }
@@ -3803,18 +3770,8 @@
                         confirmButtonColor: '#f59e0b',
                         background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#fff',
                         color: document.documentElement.classList.contains('dark') ? '#fff' : '#000',
-                        willClose: () => {
-                            document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                            document.body.style.overflow = 'auto';
-                            document.body.style.paddingRight = '';
-                        },
-                        didClose: () => {
-                            setTimeout(() => {
-                                document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                                document.body.style.overflow = 'auto';
-                                document.body.style.paddingRight = '';
-                            }, 0);
-                        }
+                        willClose: () => forceCleanupModalState(),
+                        didClose: () => setTimeout(() => forceCleanupModalState(), 0)
                     });
                     return false;
                 }
@@ -3829,18 +3786,8 @@
                         confirmButtonColor: '#f59e0b',
                         background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#fff',
                         color: document.documentElement.classList.contains('dark') ? '#fff' : '#000',
-                        willClose: () => {
-                            document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                            document.body.style.overflow = 'auto';
-                            document.body.style.paddingRight = '';
-                        },
-                        didClose: () => {
-                            setTimeout(() => {
-                                document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                                document.body.style.overflow = 'auto';
-                                document.body.style.paddingRight = '';
-                            }, 0);
-                        }
+                        willClose: () => forceCleanupModalState(),
+                        didClose: () => setTimeout(() => forceCleanupModalState(), 0)
                     });
                     return false;
                 }
@@ -3913,20 +3860,12 @@
                 timerProgressBar: true,
                 willClose: () => {
                     // Aggressive cleanup BEFORE modal closes
-                    document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                    document.body.style.overflow = 'auto';
-                    document.body.style.paddingRight = '';
+                    forceCleanupModalState();
                 },
                 didClose: () => {
                     // Double cleanup AFTER modal closes
                     setTimeout(() => {
-                        document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                        document.body.style.overflow = 'auto';
-                        document.body.style.paddingRight = '';
-                        const backdrop = document.querySelector('.swal2-container');
-                        if (backdrop) backdrop.remove();
-                        const htmlBackdrop = document.querySelector('.swal2-backdrop-show');
-                        if (htmlBackdrop) htmlBackdrop.remove();
+                        forceCleanupModalState();
                     }, 0);
                 }
             });
@@ -3972,18 +3911,8 @@
                         title: 'Access Expired',
                         text: 'Your magic access has expired. Please make a payment to continue.',
                         confirmButtonColor: '#f59e0b',
-                        willClose: () => {
-                            document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                            document.body.style.overflow = 'auto';
-                            document.body.style.paddingRight = '';
-                        },
-                        didClose: () => {
-                            setTimeout(() => {
-                                document.body.classList.remove('swal2-shown', 'swal2-height-auto');
-                                document.body.style.overflow = 'auto';
-                                document.body.style.paddingRight = '';
-                            }, 0);
-                        }
+                        willClose: () => forceCleanupModalState(),
+                        didClose: () => setTimeout(() => forceCleanupModalState(), 0)
                     });
                     return;
                 }
@@ -4082,20 +4011,53 @@
             setTimeout(updateGetResultsButtonState, 100);
 
             // Delegated collapsible handler for all collapsible sections (smooth, no hang)
+            let collapsibleDebounce = false;
             document.addEventListener('click', function(e) {
+                // Prevent multiple rapid clicks
+                if (collapsibleDebounce) return;
+                
                 const header = e.target.closest('.collapsible-header');
                 if (!header) return;
+                
+                // Prevent default and stop propagation to avoid conflicts
+                e.preventDefault();
+                e.stopPropagation();
+                
+                // Set debounce flag
+                collapsibleDebounce = true;
+                setTimeout(() => { collapsibleDebounce = false; }, 300);
                 
                 const content = header.nextElementSibling;
                 const icon = header.querySelector('.collapse-icon, .uni-arrow');
                 
                 if (content && content.classList.contains('collapsible-content')) {
+                    // Force hardware acceleration for smooth animation
+                    content.style.transform = 'translateZ(0)';
                     content.classList.toggle('hidden');
+                    
                     if (icon) {
                         icon.classList.toggle('rotate-180');
                     }
+                    
+                    // Ensure no aria-hidden blocking focus
+                    setTimeout(() => {
+                        forceCleanupModalState();
+                    }, 50);
                 }
-            });
+            }, true); // Use capture phase to catch event early
+
+            // Periodic cleanup to prevent aria-hidden buildup (runs every 2 seconds)
+            setInterval(() => {
+                const calculatorSection = document.querySelector('.cc-calculator-section');
+                if (calculatorSection && calculatorSection.hasAttribute('aria-hidden')) {
+                    console.warn('Removing aria-hidden from calculator section');
+                    calculatorSection.removeAttribute('aria-hidden');
+                }
+                // Also clean up any stray SweetAlert classes on body
+                if (!document.querySelector('.swal2-container')) {
+                    document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                }
+            }, 2000);
 
             // Package selector handler (kept for backwards compatibility)
             const packageSelect = document.getElementById('packageSelect');

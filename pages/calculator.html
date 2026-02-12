@@ -2412,11 +2412,21 @@
                 customClass: {
                     popup: 'swal-package-modal'
                 },
-                didClose: () => {
-                    // Force cleanup to prevent freeze
+                willClose: () => {
+                    // Aggressive cleanup BEFORE modal closes
                     document.body.classList.remove('swal2-shown', 'swal2-height-auto');
                     document.body.style.overflow = 'auto';
                     document.body.style.paddingRight = '';
+                },
+                didClose: () => {
+                    // Double cleanup AFTER modal closes
+                    setTimeout(() => {
+                        document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                        document.body.style.overflow = 'auto';
+                        document.body.style.paddingRight = '';
+                        const backdrop = document.querySelector('.swal2-container');
+                        if (backdrop) backdrop.remove();
+                    }, 0);
                 },
                 didOpen: () => {
                     const select = document.getElementById('magicPackageSelect');
@@ -2533,10 +2543,19 @@
                         timerProgressBar: true,
                         scrollbarPadding: false,
                         heightAuto: false,
-                        didClose: () => {
+                        willClose: () => {
                             document.body.classList.remove('swal2-shown', 'swal2-height-auto');
                             document.body.style.overflow = 'auto';
                             document.body.style.paddingRight = '';
+                        },
+                        didClose: () => {
+                            setTimeout(() => {
+                                document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                                document.body.style.overflow = 'auto';
+                                document.body.style.paddingRight = '';
+                                const backdrop = document.querySelector('.swal2-container');
+                                if (backdrop) backdrop.remove();
+                            }, 0);
                         }
                     }).then(() => {
                         showResultsAfterPayment(pkg);
@@ -2593,11 +2612,21 @@
                     confirmButton: 'swal-confirm-btn',
                     cancelButton: 'swal-cancel-btn'
                 },
-                didClose: () => {
-                    // Restore scroll when modal closes
-                    document.body.style.overflow = 'auto';
+                willClose: () => {
+                    // Aggressive cleanup BEFORE modal closes
                     document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                    document.body.style.overflow = 'auto';
                     document.body.style.paddingRight = '';
+                },
+                didClose: () => {
+                    // Double cleanup AFTER modal closes
+                    setTimeout(() => {
+                        document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                        document.body.style.overflow = 'auto';
+                        document.body.style.paddingRight = '';
+                        const backdrop = document.querySelector('.swal2-container');
+                        if (backdrop) backdrop.remove();
+                    }, 0);
                 },
                 didOpen: () => {
                     const select = document.getElementById('modalPackageSelect');
@@ -3346,19 +3375,28 @@
                 text: 'Click the Download button above',
                 confirmButtonText: 'OK',
                 confirmButtonColor: '#10b981',
-                timer: 3000,
-                timerProgressBar: true,
-                allowOutsideClick: true,
+                allowOutsideClick: false,
                 scrollbarPadding: false,
                 heightAuto: false,
                 width: '320px',
-                didClose: () => {
-                    // Force cleanup to prevent freeze
+                willClose: () => {
+                    // Aggressive cleanup BEFORE modal closes
+                    Swal.close();
                     document.body.classList.remove('swal2-shown', 'swal2-height-auto');
                     document.body.style.overflow = 'auto';
                     document.body.style.paddingRight = '';
-                    const backdrop = document.querySelector('.swal2-container');
-                    if (backdrop) backdrop.remove();
+                },
+                didClose: () => {
+                    // Double cleanup AFTER modal closes to ensure no freeze
+                    setTimeout(() => {
+                        document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                        document.body.style.overflow = 'auto';
+                        document.body.style.paddingRight = '';
+                        const backdrop = document.querySelector('.swal2-container');
+                        if (backdrop) backdrop.remove();
+                        const htmlBackdrop = document.querySelector('.swal2-backdrop-show');
+                        if (htmlBackdrop) htmlBackdrop.remove();
+                    }, 0);
                 }
             });
         }
@@ -3663,7 +3701,21 @@
                     icon: 'success',
                     title: 'PDF Generated!',
                     html: '<p>Your report has been downloaded.</p><p class="text-sm text-gray-500 mt-2">If you have any issues, contact us:</p><p class="font-bold text-green-600">0718 744780 | 0741 739262</p>',
-                    confirmButtonColor: '#10b981'
+                    confirmButtonColor: '#10b981',
+                    willClose: () => {
+                        document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                        document.body.style.overflow = 'auto';
+                        document.body.style.paddingRight = '';
+                    },
+                    didClose: () => {
+                        setTimeout(() => {
+                            document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                            document.body.style.overflow = 'auto';
+                            document.body.style.paddingRight = '';
+                            const backdrop = document.querySelector('.swal2-container');
+                            if (backdrop) backdrop.remove();
+                        }, 0);
+                    }
                 });
 
             } catch (error) {
@@ -3672,7 +3724,21 @@
                     icon: 'error',
                     title: 'PDF Generation Failed',
                     html: '<p>Unable to generate PDF. Please try again.</p><p class="text-sm text-gray-500 mt-3">If the problem persists, contact us with your M-Pesa payment code:</p><p class="font-bold text-green-600 text-lg mt-2">0718 744780</p><p class="font-bold text-green-600 text-lg">0741 739262</p>',
-                    confirmButtonColor: '#10b981'
+                    confirmButtonColor: '#10b981',
+                    willClose: () => {
+                        document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                        document.body.style.overflow = 'auto';
+                        document.body.style.paddingRight = '';
+                    },
+                    didClose: () => {
+                        setTimeout(() => {
+                            document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                            document.body.style.overflow = 'auto';
+                            document.body.style.paddingRight = '';
+                            const backdrop = document.querySelector('.swal2-container');
+                            if (backdrop) backdrop.remove();
+                        }, 0);
+                    }
                 });
             }
         }
@@ -3736,7 +3802,19 @@
                         text: 'This magic link has expired. Please request a new one.',
                         confirmButtonColor: '#f59e0b',
                         background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#fff',
-                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
+                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#000',
+                        willClose: () => {
+                            document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                            document.body.style.overflow = 'auto';
+                            document.body.style.paddingRight = '';
+                        },
+                        didClose: () => {
+                            setTimeout(() => {
+                                document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                                document.body.style.overflow = 'auto';
+                                document.body.style.paddingRight = '';
+                            }, 0);
+                        }
                     });
                     return false;
                 }
@@ -3750,7 +3828,19 @@
                         text: 'This magic link has reached its maximum usage limit.',
                         confirmButtonColor: '#f59e0b',
                         background: document.documentElement.classList.contains('dark') ? '#1f2937' : '#fff',
-                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#000'
+                        color: document.documentElement.classList.contains('dark') ? '#fff' : '#000',
+                        willClose: () => {
+                            document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                            document.body.style.overflow = 'auto';
+                            document.body.style.paddingRight = '';
+                        },
+                        didClose: () => {
+                            setTimeout(() => {
+                                document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                                document.body.style.overflow = 'auto';
+                                document.body.style.paddingRight = '';
+                            }, 0);
+                        }
                     });
                     return false;
                 }
@@ -3821,13 +3911,23 @@
                 confirmButtonColor: '#f59e0b',
                 timer: 6000,
                 timerProgressBar: true,
-                didClose: () => {
-                    // Force cleanup to prevent page freeze
+                willClose: () => {
+                    // Aggressive cleanup BEFORE modal closes
                     document.body.classList.remove('swal2-shown', 'swal2-height-auto');
                     document.body.style.overflow = 'auto';
                     document.body.style.paddingRight = '';
-                    const backdrop = document.querySelector('.swal2-container');
-                    if (backdrop) backdrop.remove();
+                },
+                didClose: () => {
+                    // Double cleanup AFTER modal closes
+                    setTimeout(() => {
+                        document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                        document.body.style.overflow = 'auto';
+                        document.body.style.paddingRight = '';
+                        const backdrop = document.querySelector('.swal2-container');
+                        if (backdrop) backdrop.remove();
+                        const htmlBackdrop = document.querySelector('.swal2-backdrop-show');
+                        if (htmlBackdrop) htmlBackdrop.remove();
+                    }, 0);
                 }
             });
         }
@@ -3871,7 +3971,19 @@
                         icon: 'warning',
                         title: 'Access Expired',
                         text: 'Your magic access has expired. Please make a payment to continue.',
-                        confirmButtonColor: '#f59e0b'
+                        confirmButtonColor: '#f59e0b',
+                        willClose: () => {
+                            document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                            document.body.style.overflow = 'auto';
+                            document.body.style.paddingRight = '';
+                        },
+                        didClose: () => {
+                            setTimeout(() => {
+                                document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                                document.body.style.overflow = 'auto';
+                                document.body.style.paddingRight = '';
+                            }, 0);
+                        }
                     });
                     return;
                 }

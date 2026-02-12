@@ -1754,7 +1754,7 @@
             // Show subject grades in a collapsible section
             html += `
                 <div class="mb-6 overflow-hidden rounded-xl shadow-lg border border-gray-100 bg-white">
-                    <button class="collapsible-header w-full p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-all duration-200 group" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.collapse-icon').classList.toggle('rotate-180');">
+                    <button class="collapsible-header w-full p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-all duration-200 group">
                         <div class="flex items-center">
                             <div class="w-1.5 h-10 bg-blue-500 rounded-full mr-5"></div>
                             <div class="text-left">
@@ -1791,7 +1791,7 @@
 
                     html += `
                         <div class="mb-6 overflow-hidden rounded-xl shadow-lg border border-gray-100 bg-white">
-                            <button class="collapsible-header w-full p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-all duration-200 group" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.collapse-icon').classList.toggle('rotate-180');">
+                            <button class="collapsible-header w-full p-4 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-all duration-200 group">
                                 <div class="flex items-center">
                                     <div class="w-1.5 h-10 bg-${color}-500 rounded-full mr-5"></div>
                                     <div class="text-left">
@@ -2892,27 +2892,6 @@
                 } else if (category === 'bronze' || category === 'silver' || category === 'gold') {
                     console.log('Branch: bronze/silver/gold (Placement Engine)');
 
-                    // Helper function to initialize collapsible sections
-                    function initializeNewCollapsibles() {
-                        document.querySelectorAll('.collapsible-header').forEach(button => {
-                            // Remove existing listeners to prevent duplicates
-                            const newButton = button.cloneNode(true);
-                            button.parentNode.replaceChild(newButton, button);
-
-                            newButton.addEventListener('click', function () {
-                                const content = this.nextElementSibling;
-                                const icon = this.querySelector('.collapse-icon');
-
-                                if (content && content.classList.contains('collapsible-content')) {
-                                    content.classList.toggle('hidden');
-                                    if (icon) {
-                                        icon.classList.toggle('rotate-180');
-                                    }
-                                }
-                            });
-                        });
-                    }
-
                     if (typeof window.CampusPlacementEngine !== 'undefined' && typeof window.PlacementRules !== 'undefined') {
                         // Show quick loading progress
                         if (resultsDiv) {
@@ -3045,57 +3024,57 @@
                         // ============================================
                         if (category === 'gold' && resultsContent) {
                             let expertInnerContent = `
-                                <div class="flex items-start gap-4">
-                                    <div class="flex-shrink-0">
+                                <div class="flex flex-col sm:flex-row items-start gap-4">
+                                    <div class="flex-shrink-0 mx-auto sm:mx-0">
                                         <div class="h-14 w-14 bg-gradient-to-br from-amber-400 to-yellow-500 rounded-2xl flex items-center justify-center shadow-lg">
                                             <i class="fas fa-headset text-white text-2xl"></i>
                                         </div>
                                     </div>
-                                    <div class="flex-1">
-                                        <div class="flex items-center gap-2 mb-2">
+                                    <div class="flex-1 min-w-0 w-full">
+                                        <div class="flex flex-wrap items-center gap-2 mb-2">
                                             <span class="bg-amber-100 text-amber-700 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">Gold Exclusive</span>
                                             <span class="bg-green-100 text-green-700 text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full">Free Consultation</span>
                                         </div>
-                                        <h4 class="text-xl font-black text-gray-900 mb-2">🎉 Expert Guidance Included!</h4>
-                                        <p class="text-gray-600 text-sm leading-relaxed mb-3">
+                                        <h4 class="text-lg sm:text-xl font-black text-gray-900 mb-2">🎉 Expert Guidance Included!</h4>
+                                        <p class="text-gray-600 text-xs sm:text-sm leading-relaxed mb-3">
                                             As a <strong>Gold Package</strong> member, you get <strong>FREE access to our education experts</strong> who will contact you within <strong>24 hours</strong> to provide personalized guidance on your course and university choices.
                                         </p>
                                         
                                         <!-- IMPORTANT ACTION BOX -->
-                                        <div class="bg-red-50 border-2 border-red-300 rounded-xl p-4 mb-4">
+                                        <div class="bg-red-50 border-2 border-red-300 rounded-xl p-3 sm:p-4 mb-4">
                                             <div class="flex items-center gap-2 mb-2">
-                                                <i class="fas fa-exclamation-triangle text-red-500 text-lg"></i>
-                                                <span class="text-red-700 font-bold text-sm uppercase">Action Required!</span>
+                                                <i class="fas fa-exclamation-triangle text-red-500 text-base sm:text-lg"></i>
+                                                <span class="text-red-700 font-bold text-xs sm:text-sm uppercase">Action Required!</span>
                                             </div>
-                                            <p class="text-red-800 text-sm font-medium mb-3">
+                                            <p class="text-red-800 text-xs sm:text-sm font-medium mb-3">
                                                 To receive your FREE expert consultation, you <strong>MUST</strong> fill out the form below:
                                             </p>
                                             <a href="https://forms.gle/5B3CzWgWVhTCYyGe8" target="_blank" rel="noopener noreferrer" 
-                                               class="inline-flex items-center gap-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition-all hover:scale-105 mb-3">
+                                               class="flex sm:inline-flex items-center justify-center gap-2 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white font-bold px-4 sm:px-6 py-2.5 sm:py-3 rounded-xl shadow-lg transition-all hover:scale-105 mb-3 text-xs sm:text-sm w-full sm:w-auto">
                                                 <i class="fas fa-external-link-alt"></i>
-                                                Fill Expert Consultation Form NOW
+                                                <span class="break-words">Fill Expert Consultation Form NOW</span>
                                             </a>
 
                                         </div>
                                         
                                         <!-- Alternative Contact -->
-                                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
-                                            <p class="text-amber-800 text-sm font-medium mb-2">
+                                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 sm:p-4 mb-4">
+                                            <p class="text-amber-800 text-xs sm:text-sm font-medium mb-2">
                                                 <i class="fas fa-phone-alt mr-2"></i>Prefer to call or WhatsApp? Contact us directly:
                                             </p>
-                                            <div class="flex flex-wrap gap-3">
-                                                <a href="tel:0718744780" class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded-lg transition-all text-sm">
+                                            <div class="flex flex-col sm:flex-row flex-wrap gap-2 sm:gap-3">
+                                                <a href="tel:0718744780" class="flex sm:inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-3 sm:px-4 py-2 rounded-lg transition-all text-xs sm:text-sm">
                                                     <i class="fas fa-phone"></i>
                                                     0718 744780
                                                 </a>
-                                                <a href="tel:0741739262" class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-4 py-2 rounded-lg transition-all text-sm">
+                                                <a href="tel:0741739262" class="flex sm:inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold px-3 sm:px-4 py-2 rounded-lg transition-all text-xs sm:text-sm">
                                                     <i class="fas fa-phone"></i>
                                                     0741 739262
                                                 </a>
                                             </div>
                                         </div>
                                         
-                                        <div class="flex flex-wrap gap-3 text-xs text-gray-500">
+                                        <div class="flex flex-wrap gap-2 sm:gap-3 text-[10px] sm:text-xs text-gray-500">
                                             <span class="flex items-center gap-1"><i class="fas fa-check-circle text-green-500"></i> Response within 24 hours</span>
                                             <span class="flex items-center gap-1"><i class="fas fa-check-circle text-green-500"></i> Personalized advice</span>
                                             <span class="flex items-center gap-1"><i class="fas fa-check-circle text-green-500"></i> No extra cost</span>
@@ -3107,21 +3086,21 @@
                             // Wrap in collapsible section with gold gradient border - STARTS EXPANDED for visibility
                             let expertHtml = `
                                 <div class="mb-6 overflow-hidden rounded-xl shadow-lg border-2 border-amber-300 bg-white">
-                                    <button class="collapsible-header w-full p-4 flex items-center justify-between cursor-pointer hover:bg-amber-50 transition-all duration-200 group">
-                                        <div class="flex items-center">
-                                            <div class="w-1.5 h-10 bg-amber-500 rounded-full mr-5 group-hover:scale-y-110 transition-transform"></div>
-                                            <div class="text-left">
-                                                <h3 class="text-lg font-bold text-gray-800">🌟 Expert Consultation Access <span class="text-red-500 text-sm">(ACTION REQUIRED)</span></h3>
-                                                <p class="text-xs font-medium text-amber-600 uppercase tracking-widest">Gold Package Exclusive - Fill Form to Activate</p>
+                                    <button class="collapsible-header w-full p-3 sm:p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between cursor-pointer hover:bg-amber-50 transition-all duration-200 group gap-3 sm:gap-0">
+                                        <div class="flex items-center w-full sm:w-auto">
+                                            <div class="w-1.5 h-10 bg-amber-500 rounded-full mr-3 sm:mr-5 group-hover:scale-y-110 transition-transform"></div>
+                                            <div class="text-left flex-1 min-w-0">
+                                                <h3 class="text-sm sm:text-lg font-bold text-gray-800 break-words">🌟 Expert Consultation Access <span class="text-red-500 text-xs sm:text-sm">(ACTION REQUIRED)</span></h3>
+                                                <p class="text-[10px] sm:text-xs font-medium text-amber-600 uppercase tracking-widest">Gold Exclusive - Fill Form</p>
                                             </div>
                                         </div>
-                                        <div class="flex items-center gap-3">
+                                        <div class="flex items-center gap-3 w-full sm:w-auto justify-end">
                                             <span class="bg-red-100 text-red-600 text-xs font-bold px-2 py-1 rounded-full animate-pulse">Fill Form!</span>
                                             <i class="fas fa-chevron-down collapse-icon text-gray-400 group-hover:text-gray-600 transition-transform duration-300 rotate-180"></i>
                                         </div>
                                     </button>
                                     <div class="collapsible-content border-t border-amber-100 bg-amber-50/30">
-                                        <div class="p-6">
+                                        <div class="p-4 sm:p-6">
                                             ${expertInnerContent}
                                         </div>
                                     </div>
@@ -3182,8 +3161,7 @@
 
                                 placementHtml += `
                                     <div class="bg-white rounded-3xl border border-gray-200 shadow-xl overflow-hidden mb-2 transform transition-all duration-300 hover:shadow-2xl">
-                                        <button onclick="document.getElementById('${uniId}').classList.toggle('hidden'); this.querySelector('.uni-arrow').classList.toggle('rotate-180')" 
-                                            class="w-full bg-gradient-to-r ${uni.type === 'Public' ? 'from-green-600 via-green-700 to-green-800' : 'from-indigo-600 via-indigo-700 to-indigo-800'} p-5 cursor-pointer hover:opacity-95 transition-opacity">
+                                        <button class="collapsible-header w-full bg-gradient-to-r ${uni.type === 'Public' ? 'from-green-600 via-green-700 to-green-800' : 'from-indigo-600 via-indigo-700 to-indigo-800'} p-5 cursor-pointer hover:opacity-95 transition-opacity">
                                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                                 <div class="flex items-center gap-4">
                                                     <div class="h-12 w-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-md border border-white/30 shadow-inner">
@@ -3207,7 +3185,7 @@
                                                 </div>
                                             </div>
                                         </button>
-                                        <div id="${uniId}" class="hidden divide-y divide-gray-100">
+                                        <div id="${uniId}" class="collapsible-content hidden divide-y divide-gray-100">
                                             ${coursesHtml}
                                         </div>
                                     </div>
@@ -3280,9 +3258,6 @@
 
                             // Attach copy handlers to code buttons
                             attachCopyHandlers();
-
-                            // Initialize collapsible sections for cluster points and expert access
-                            initializeNewCollapsibles();
                         } else if (resultsContent && universities.length === 0) {
                             resultsContent.innerHTML += `
                                 <div class="mt-8 p-12 bg-gray-50 border-2 border-dashed border-gray-200 rounded-3xl text-center">
@@ -3315,6 +3290,10 @@
                 if (resultsDiv) {
                     setTimeout(() => {
                         resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        // Show download reminder modal after scroll
+                        setTimeout(() => {
+                            showDownloadReminderModal();
+                        }, 500);
                     }, 300); // Slightly longer delay for rendering
                 }
             } catch (error) {
@@ -3342,6 +3321,39 @@
                 document.body.classList.remove('swal2-shown', 'swal2-height-auto');
                 document.body.style.overflow = 'auto';
             }
+        }
+
+        // ============================================
+        // DOWNLOAD REMINDER MODAL
+        // ============================================
+        function showDownloadReminderModal() {
+            Swal.fire({
+                icon: 'info',
+                title: '📥 Don\'t Forget to Download!',
+                html: `
+                    <div style="text-align: center; padding: 0.5rem;">
+                        <p style="font-size: 1rem; color: #374151; margin-bottom: 1rem; line-height: 1.6;">
+                            Your results are ready! <strong>Don't forget to download your results</strong> for offline access.
+                        </p>
+                        <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 0.75rem; padding: 0.75rem; margin-top: 1rem;">
+                            <p style="font-size: 0.875rem; color: #166534; margin: 0;">
+                                <i class="fas fa-arrow-up"></i> Look for the <strong>Download PDF</strong> button at the top of your results section.
+                            </p>
+                        </div>
+                    </div>
+                `,
+                confirmButtonText: '<i class="fas fa-check mr-2"></i>OK, Got it!',
+                confirmButtonColor: '#10b981',
+                allowOutsideClick: true,
+                scrollbarPadding: false,
+                heightAuto: false,
+                didClose: () => {
+                    // Ensure no scroll lock
+                    document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                    document.body.style.overflow = 'auto';
+                    document.body.style.paddingRight = '';
+                }
+            });
         }
 
         // ============================================
@@ -3801,7 +3813,13 @@
                 confirmButtonText: '<i class="fas fa-check mr-2"></i>Got it!',
                 confirmButtonColor: '#f59e0b',
                 timer: 6000,
-                timerProgressBar: true
+                timerProgressBar: true,
+                didClose: () => {
+                    // Force cleanup to prevent page freeze
+                    document.body.classList.remove('swal2-shown', 'swal2-height-auto');
+                    document.body.style.overflow = 'auto';
+                    document.body.style.paddingRight = '';
+                }
             });
         }
 
@@ -3941,6 +3959,22 @@
 
             // Initial state update
             setTimeout(updateGetResultsButtonState, 100);
+
+            // Delegated collapsible handler for all collapsible sections (smooth, no hang)
+            document.addEventListener('click', function(e) {
+                const header = e.target.closest('.collapsible-header');
+                if (!header) return;
+                
+                const content = header.nextElementSibling;
+                const icon = header.querySelector('.collapse-icon, .uni-arrow');
+                
+                if (content && content.classList.contains('collapsible-content')) {
+                    content.classList.toggle('hidden');
+                    if (icon) {
+                        icon.classList.toggle('rotate-180');
+                    }
+                }
+            });
 
             // Package selector handler (kept for backwards compatibility)
             const packageSelect = document.getElementById('packageSelect');

@@ -1,125 +1,96 @@
 [
   {
-    "id": "digital-literacy",
-    "slug": "digital-literacy-masterclass",
-    "title": "Digital Literacy & Monetization Masterclass",
-    "description": "A comprehensive 6-week programme covering computers, Microsoft Office, graphic design, AI skills and career readiness — with monetizable projects you can take straight to the job market.",
-    "shortDescription": "Master essential digital skills for the modern job market.",
+    "id": "starter",
+    "slug": "starter-package",
+    "title": "Starter Package",
+    "description": "Essential digital literacy foundation. Perfect for beginners looking to master basics of computers and the internet.",
+    "shortDescription": "Master the basics of computing.",
     "level": "Beginner",
-    "duration": "6 Weeks",
-    "modulesCount": 10,
-    "fee": 2500,
-    "currency": "KES",
-    "icon": "fas fa-laptop-code",
-    "color": "green",
-    "gradient": "linear-gradient(135deg, #16a34a, #0ea5e9)",
-    "tags": ["Microsoft Office", "Canva Design", "AI Prompting", "Monetization"],
+    "duration": "4 Weeks",
+    "modulesCount": 5,
+    "fee": 2000,
+    "currency": "KSH",
+    "icon": "fas fa-seedling",
+    "gradient": "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+    "tags": ["Basics", "Computing", "Internet"],
     "features": [
-      { "icon": "fas fa-calendar-week", "title": "6 Weeks · 10 Modules", "text": "Fully structured learning path" },
-      { "icon": "fas fa-trophy", "title": "Capstone Project + Certificate", "text": "Showcase your skills" },
-      { "icon": "fas fa-robot", "title": "AI & Future Skills", "text": "Week 5 dedicated to AI tools" }
+      { "icon": "fas fa-check", "title": "5 Core Modules", "text": "Structured learning" },
+      { "icon": "fas fa-check", "title": "Basic Certificate", "text": "Proof of completion" }
     ],
     "syllabus": [
       {
-        "week": "Week 1",
-        "title": "Introduction to Computers & Digital Literacy",
-        "subtitle": "Build confidence and independence",
-        "sessions": "4 Essential Sessions",
-        "topics": [
-          "Computer components (hardware vs software)",
-          "Operating systems (Windows basics)",
-          "File & folder management",
-          "Internet usage & safe browsing",
-          "Email creation & professional use",
-          "Digital safety, passwords & scams"
-        ],
-        "outcomes": [
-          "Create organized digital filing system",
-          "Professional email identity setup",
-          "Security checklist implementation"
-        ]
+        "week": "Module 1",
+        "title": "Computer Basics",
+        "topics": ["Hardware vs Software", "Using Mouse & Keyboard", "Windows OS Navigation"]
       },
       {
-        "week": "Week 2",
-        "title": "Microsoft Word for Professionals",
-        "subtitle": "Document creation & management",
-        "sessions": "5 Sessions",
-        "topics": [
-          "Interface & basic formatting",
-          "Styles, themes & document structures",
-          "Tables, images & smart art",
-          "Referencing, headers & footers",
-          "PDF conversion & printing"
-        ],
-        "outcomes": [
-          "Create professional CVs & cover letters",
-          "Draft business letters & reports"
-        ]
+        "week": "Module 2",
+        "title": "Internet & Email",
+        "topics": ["Browsing the Web", "Creating Email", "Online Safety"]
+      }
+    ]
+  },
+  {
+    "id": "intermediate",
+    "slug": "intermediate-package",
+    "title": "Intermediate Package",
+    "description": "Master professional tools like Microsoft Office, Canva, and AI skills for the modern workplace.",
+    "shortDescription": "Professional productivity tools mastery.",
+    "level": "Intermediate",
+    "duration": "6 Weeks",
+    "modulesCount": 10,
+    "fee": 4000,
+    "currency": "KSH",
+    "icon": "fas fa-layer-group",
+    "gradient": "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+    "tags": ["MS Office", "Canva", "AI Skills"],
+    "features": [
+      { "icon": "fas fa-check", "title": "10 Modules", "text": "Deep dive" },
+      { "icon": "fas fa-check", "title": "Professional Certificate", "text": "Industry standard" },
+      { "icon": "fas fa-check", "title": "Capstone Projects", "text": "Build a portfolio" }
+    ],
+    "syllabus": [
+      {
+        "week": "Module 1-4",
+        "title": "Microsoft Office Suite",
+        "topics": ["Advanced Word", "Excel Formulas", "PowerPoint Design"]
       },
       {
-        "week": "Week 3",
-        "title": "Microsoft Excel & Data Entry",
-        "subtitle": "Master numbers and organization",
-        "sessions": "5 Sessions (Module 3)",
-        "topics": [
-          "Excel interface, cells & ranges",
-          "Data entry & basic arithmetic",
-          "Sum, Average, Min, Max functions",
-          "Data sorting, filtering & tables",
-          "Introduction to simple charts"
-        ],
-        "outcomes": [
-          "Create personal/business budgets",
-          "Manage digital inventories"
-        ]
+        "week": "Module 5-8",
+        "title": "Graphic Design & AI",
+        "topics": ["Canva Pro Tips", "AI Prompt Engineering", "Content Creation"]
+      }
+    ]
+  },
+  {
+    "id": "pro",
+    "slug": "pro-package",
+    "title": "Pro Package",
+    "description": "Premium mentorship, career readiness, advanced monetization strategies and 1-on-1 support.",
+    "shortDescription": "Career-ready mastery with mentorship.",
+    "level": "Advanced",
+    "duration": "8 Weeks",
+    "modulesCount": 15,
+    "fee": 6000,
+    "currency": "KSH",
+    "icon": "fas fa-crown",
+    "gradient": "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
+    "tags": ["Mentorship", "Monetization", "Career"],
+    "features": [
+      { "icon": "fas fa-check", "title": "15 Modules", "text": "Full mastery" },
+      { "icon": "fas fa-check", "title": "Mentorship", "text": "1-on-1 support" },
+      { "icon": "fas fa-check", "title": "Direct Job Referrals", "text": "Career boost" }
+    ],
+    "syllabus": [
+      {
+        "week": "Module 1-10",
+        "title": "Full Curriculum",
+        "topics": ["All Intermediate Skills", "Advanced Projects", "Portfolio Building"]
       },
       {
-        "week": "Week 4",
-        "title": "PowerPoint & Canva Graphic Design",
-        "subtitle": "Communicate visually and professionally",
-        "sessions": "5 Sessions (Modules 4 & 5)",
-        "topics": [
-          "Presentation principles & PPT",
-          "Canva basics: Templates & editing",
-          "Color theory & layout composition",
-          "Designing social media posts",
-          "Creating posters & business cards"
-        ],
-        "outcomes": [
-          "Design high-quality visual content",
-          "Deliver engaging presentations"
-        ]
-      },
-      {
-        "week": "Week 5",
-        "title": "AI Skills & Prompt Engineering",
-        "subtitle": "Modern productivity with Artificial Intelligence",
-        "sessions": "5 Sessions (Modules 7 & 8)",
-        "topics": [
-          "Using AI for studying & research",
-          "Prompt structures (Role, Task, Format)",
-          "Summarization & Idea generation",
-          "Ethical AI use & fact-checking"
-        ],
-        "outcomes": [
-          "Master productive AI usage"
-        ]
-      },
-      {
-        "week": "Week 6",
-        "title": "Career & Monetization",
-        "subtitle": "Final transition into earning income",
-        "sessions": "5 Sessions (Module 10 + Monetization)",
-        "topics": [
-          "Copywriting basics for sales",
-          "Social Media content planning",
-          "Time management & productivity tools",
-          "Personal branding & Digital Identity",
-          "Freelancing platforms & service strategy"
-        ],
-        "outcomes": [
-          "Complete one monetizable project"
-        ]
+        "week": "Module 11-15",
+        "title": "Monetization & Career",
+        "topics": ["Freelancing", "Personal Branding", "1-on-1 Mentorship"]
       }
     ]
   }

@@ -163,15 +163,23 @@
         }
         .btn-enrol:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(22,163,74,.3); }
 
-        /* ── Features band ───────────────────────────────────── */
+        <!-- ── Features band ───────────────────────────────────── -->
         .features-band {
-            padding:4rem 2rem;
-            background:linear-gradient(135deg,#16a34a 0%,#15803d 100%);
-            color:white; position:relative; overflow:hidden;
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
         }
-        .features-band::before {
-            content:''; position:absolute; inset:0; pointer-events:none;
-            background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        .features-band::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(5, 150, 105, 0.1) 0%, transparent 50%);
+            pointer-events: none;
         }
         .features-grid { max-width:1240px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:2.5rem; position:relative; }
         .feature-item  { text-align:center; }
@@ -236,23 +244,25 @@
         </a>
         <nav class="desktop-nav">
             <div class="nav-links">
+                <a href="index.html"         class="modern-nav-link">Home</a>
+                <a href="about.html"         class="modern-nav-link">About Us</a>
                 <a href="#courses"          class="modern-nav-link">Courses</a>
-                <a href="course-detail.html" class="modern-nav-link">Course Details</a>
-                <a href="about.html"         class="modern-nav-link">About</a>
-                <a href="dashboard.html"     class="modern-nav-link">My Dashboard</a>
+                <a href="#blog"             class="modern-nav-link">What's New</a>
             </div>
             <div class="nav-auth-buttons">
-                <button id="signInNavBtn" class="btn-nav-profile" onclick="openSignInModal()">
-                    <i class="fas fa-user"></i> Sign In
-                </button>
-                <button id="signUpNavBtn" class="btn-nav-login" onclick="openSignUpModal()">
-                    <i class="fas fa-rocket"></i> Get Started
+                <button id="authNavBtn" class="btn-nav-login" onclick="openAuthModal()">
+                    <i class="fas fa-sign-in-alt"></i> Sign In / Sign Up
                 </button>
                 <div id="userNavArea" style="display:none;align-items:center;gap:.75rem;">
-                    <div id="userInitial" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#0ea5e9);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:.9rem;">?</div>
-                    <button class="btn-nav-profile" onclick="handleSignOut()">
-                        <i class="fas fa-sign-out-alt"></i> Sign Out
-                    </button>
+                    <span id="userGreeting" style="font-size:0.875rem;font-weight:600;color:var(--cc-primary);">Welcome back, <span id="userNameText">User</span></span>
+                    <div id="userInitial" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#0ea5e9);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:.9rem;cursor:pointer;" onclick="toggleUserDropdown()">?</div>
+                    
+                    <!-- Dropdown Menu -->
+                    <div id="userDropdown" style="display:none;position:absolute;top:70px;right:2rem;background:white;box-shadow:0 10px 30px rgba(0,0,0,0.1);border-radius:1rem;padding:0.5rem;width:200px;z-index:999;border:1px solid #f3f4f6;">
+                        <a href="dashboard.html" class="dropdown-item" style="display:block;padding:0.75rem 1rem;font-size:0.875rem;font-weight:600;color:#374151;border-radius:0.75rem;"><i class="fas fa-th-large mr-2"></i>My Learning</a>
+                        <hr style="margin:0.5rem 0;border-color:#f3f4f6;">
+                        <button onclick="handleSignOut()" class="dropdown-item" style="width:100%;text-align:left;display:block;padding:0.75rem 1rem;font-size:0.875rem;font-weight:600;color:#ef4444;border-radius:0.75rem;"><i class="fas fa-sign-out-alt mr-2"></i>Sign Out</button>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -350,24 +360,70 @@
 <section class="features-band" id="features">
     <div class="features-grid">
         <div class="feature-item">
-            <div class="feature-icon-wrap"><i class="fas fa-mobile-alt"></i></div>
-            <h3>Learn Anywhere</h3>
-            <p>Access all course material from any device, any time.</p>
-        </div>
-        <div class="feature-item">
-            <div class="feature-icon-wrap"><i class="fas fa-chart-line"></i></div>
-            <h3>Track Progress</h3>
-            <p>A personal dashboard shows exactly how far you've come.</p>
+            <div class="feature-icon-wrap"><i class="fas fa-video"></i></div>
+            <h3>Expert-Led Training</h3>
+            <p>Guided sessions from industry professionals.</p>
         </div>
         <div class="feature-item">
             <div class="feature-icon-wrap"><i class="fas fa-certificate"></i></div>
-            <h3>Earn Certificates</h3>
-            <p>Download shareable certificates when you complete a course.</p>
+            <h3>Recognized Certificates</h3>
+            <p>Earn certificates to boost your professional profile.</p>
         </div>
         <div class="feature-item">
-            <div class="feature-icon-wrap"><i class="fas fa-user-tie"></i></div>
-            <h3>Expert Instructors</h3>
-            <p>Courses created and reviewed by industry professionals.</p>
+            <div class="feature-icon-wrap"><i class="fas fa-globe"></i></div>
+            <h3>Remote Learning</h3>
+            <p>Access your training anytime, anywhere, on any device.</p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon-wrap"><i class="fas fa-users-viewfinder"></i></div>
+            <h3>Community Support</h3>
+            <p>Join our thriving community of modern learners.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ BLOG ════════════════════════════════════════════ -->
+<section id="blog" class="py-20 bg-gray-50">
+    <div class="section-wrap">
+        <div class="flex items-end justify-between mb-12">
+            <div>
+                <span class="section-label">Latest Updates</span>
+                <h2 class="section-title">What's New <span class="text-green-600">& Stories</span></h2>
+                <p class="section-desc">Success stories, tips for digital literacy, and recent portal updates.</p>
+            </div>
+            <a href="#" class="btn-hero-outline" style="padding: 0.6rem 1.25rem; font-size: 0.875rem;">View All Posts</a>
+        </div>
+        <div id="blogGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 group hover:shadow-xl transition-all">
+                <div class="h-48 bg-emerald-100 flex items-center justify-center">
+                    <i class="fas fa-rocket text-4xl text-emerald-500 opacity-40"></i>
+                </div>
+                <div class="p-6">
+                    <span class="text-[10px] font-black uppercase text-emerald-600 tracking-widest bg-emerald-50 px-2 py-1 rounded">Portal News</span>
+                    <h3 class="font-bold text-lg mt-3 group-hover:text-emerald-600 transition-colors">Course Corner Learn: Portal V2 is Live</h3>
+                    <p class="text-sm text-gray-500 mt-2 line-clamp-2">Our new learning portal is officially launched with 3 tiered packages and enhanced support.</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 group hover:shadow-xl transition-all">
+                <div class="h-48 bg-blue-100 flex items-center justify-center">
+                    <i class="fas fa-graduation-cap text-4xl text-blue-500 opacity-40"></i>
+                </div>
+                <div class="p-6">
+                    <span class="text-[10px] font-black uppercase text-blue-600 tracking-widest bg-blue-50 px-2 py-1 rounded">Success Story</span>
+                    <h3 class="font-bold text-lg mt-3 group-hover:text-blue-600 transition-colors">How John Mastered MS Office in 4 Weeks</h3>
+                    <p class="text-sm text-gray-500 mt-2 line-clamp-2">Hear from John, one of our first students who landed a data entry role after completing our course.</p>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 group hover:shadow-xl transition-all">
+                <div class="h-48 bg-purple-100 flex items-center justify-center">
+                    <i class="fas fa-lightbulb text-4xl text-purple-500 opacity-40"></i>
+                </div>
+                <div class="p-6">
+                    <span class="text-[10px] font-black uppercase text-purple-600 tracking-widest bg-purple-50 px-2 py-1 rounded">Quick Tips</span>
+                    <h3 class="font-bold text-lg mt-3 group-hover:text-purple-600 transition-colors">5 AI Prompts to Boost Your Productivity</h3>
+                    <p class="text-sm text-gray-500 mt-2 line-clamp-2">Artificial Intelligence is here to stay. Here are 5 quick prompts to save you hours every week.</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
@@ -418,28 +474,34 @@
 </footer>
 
 
-<!-- ═══ SIGN IN MODAL ═════════════════════════════════════════ -->
-<div id="signInModal" class="auth-modal-overlay" style="display:none;">
+<!-- ═══ AUTH MODAL ════════════════════════════════════════════ -->
+<div id="authModal" class="auth-modal-overlay" style="display:none;">
     <div class="auth-modal">
         <div class="modal-header">
-            <div style="display:flex;align-items:center;gap:.75rem;">
+            <div id="modalTitleGroup" style="display:flex;align-items:center;gap:.75rem;">
                 <img src="../assets/images/logo.png" alt="Logo" style="width:32px;height:32px;object-fit:contain;">
-                <h2>Sign In to Learn</h2>
+                <h2 id="authTitle">Sign In</h2>
             </div>
-            <button class="modal-close-btn" onclick="closeSignInModal()"><i class="fas fa-times"></i></button>
+            <button class="modal-close-btn" onclick="closeAuthModal()"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
-            <form id="signInForm" class="auth-form" onsubmit="handleSignIn(event)">
-                <div class="form-group">
-                    <label for="siEmail">Email Address</label>
-                    <input id="siEmail" type="email" class="form-input" placeholder="you@example.com" required>
+            <form id="authForm" class="auth-form" onsubmit="handleAuthSubmit(event)">
+                <div id="signUpFields" style="display:none;">
+                    <div class="form-group">
+                        <label for="auName">Full Name</label>
+                        <input id="auName" type="text" class="form-input" placeholder="Your Name">
+                    </div>
                 </div>
                 <div class="form-group">
-                    <label for="siPassword">Password</label>
-                    <input id="siPassword" type="password" class="form-input" placeholder="Your password" required>
+                    <label for="auEmail">Email Address</label>
+                    <input id="auEmail" type="email" class="form-input" placeholder="you@example.com" required>
                 </div>
-                <button type="submit" class="btn-primary" id="signInBtn">
-                    <i class="fas fa-sign-in-alt"></i> Sign In
+                <div class="form-group">
+                    <label for="auPassword">Password</label>
+                    <input id="auPassword" type="password" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary" id="authBtn">
+                    <i class="fas fa-sign-in-alt"></i> <span id="authBtnText">Sign In</span>
                 </button>
             </form>
             <div class="auth-divider"><span>or</span></div>
@@ -447,59 +509,16 @@
                 <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/></svg>
                 Continue with Google
             </button>
-            <p style="text-align:center;margin-top:1.25rem;font-size:.875rem;color:#6b7280;">
-                No account yet?
-                <button style="background:none;border:none;color:#16a34a;font-weight:600;cursor:pointer;" onclick="switchToSignUp()">Create one free</button>
+            <p id="toggleAuthMode" style="text-align:center;margin-top:1.25rem;font-size:.875rem;color:#6b7280;cursor:pointer;">
+                Don't have an account? <span style="color:#16a34a;font-weight:700;">Sign Up</span>
             </p>
         </div>
     </div>
 </div>
+<!-- Unified modal end -->
 
 
-<!-- ═══ SIGN UP MODAL ═════════════════════════════════════════ -->
-<div id="signUpModal" class="auth-modal-overlay" style="display:none;">
-    <div class="auth-modal">
-        <div class="modal-header">
-            <div style="display:flex;align-items:center;gap:.75rem;">
-                <img src="../assets/images/logo.png" alt="Logo" style="width:32px;height:32px;object-fit:contain;">
-                <h2>Create Account</h2>
-            </div>
-            <button class="modal-close-btn" onclick="closeSignUpModal()"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="modal-body">
-            <form id="signUpForm" class="auth-form" onsubmit="handleSignUp(event)">
-                <div class="form-group">
-                    <label for="suName">Full Name</label>
-                    <input id="suName" type="text" class="form-input" placeholder="Jane Doe" required>
-                </div>
-                <div class="form-group">
-                    <label for="suEmail">Email Address</label>
-                    <input id="suEmail" type="email" class="form-input" placeholder="you@example.com" required>
-                </div>
-                <div class="form-group">
-                    <label for="suPassword">Password</label>
-                    <input id="suPassword" type="password" class="form-input" placeholder="Min. 6 characters" required minlength="6">
-                </div>
-                <div class="form-group">
-                    <label for="suConfirm">Confirm Password</label>
-                    <input id="suConfirm" type="password" class="form-input" placeholder="Repeat password" required minlength="6">
-                </div>
-                <button type="submit" class="btn-primary" id="signUpBtn">
-                    <i class="fas fa-user-plus"></i> Create Account
-                </button>
-            </form>
-            <div class="auth-divider"><span>or</span></div>
-            <button class="btn-google" onclick="handleGoogleAuth()">
-                <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/></svg>
-                Sign up with Google
-            </button>
-            <p style="text-align:center;margin-top:1.25rem;font-size:.875rem;color:#6b7280;">
-                Already have an account?
-                <button style="background:none;border:none;color:#16a34a;font-weight:600;cursor:pointer;" onclick="switchToSignIn()">Sign In</button>
-            </p>
-        </div>
-    </div>
-</div>
+<!-- Modals cleaned up -->
 
 
 <!-- ═══ APPLY MODAL ═══════════════════════════════════════════ -->
@@ -561,111 +580,121 @@
     const db   = getFirestore(app);
     const gProvider = new GoogleAuthProvider();
 
-    // Auth state
+    // Auth state management
     onAuthStateChanged(auth, user => {
-        const siBtn = document.getElementById('signInNavBtn');
-        const suBtn = document.getElementById('signUpNavBtn');
-        const area  = document.getElementById('userNavArea');
-        const init  = document.getElementById('userInitial');
+        const authBtn = document.getElementById('authNavBtn');
+        const userArea = document.getElementById('userNavArea');
+        const userName = document.getElementById('userNameText');
+        const userInit = document.getElementById('userInitial');
+
         if (user) {
-            if(siBtn) siBtn.style.display='none';
-            if(suBtn) suBtn.style.display='none';
-            if(area) area.style.display='flex';
-            if(init) init.textContent=(user.displayName||user.email||'?')[0].toUpperCase();
+            authBtn.style.display = 'none';
+            userArea.style.display = 'flex';
+            userName.textContent = user.displayName || user.email.split('@')[0];
+            userInit.textContent = (user.displayName || user.email || '?')[0].toUpperCase();
         } else {
-            if(siBtn) siBtn.style.display='';
-            if(suBtn) suBtn.style.display='';
-            if(area) area.style.display='none';
+            authBtn.style.display = 'inline-flex';
+            userArea.style.display = 'none';
         }
     });
 
-    // Modals
-    window.openSignInModal  = () => document.getElementById('signInModal').style.display='flex';
-    window.closeSignInModal = () => document.getElementById('signInModal').style.display='none';
-    window.openSignUpModal  = () => document.getElementById('signUpModal').style.display='flex';
-    window.closeSignUpModal = () => document.getElementById('signUpModal').style.display='none';
-    window.switchToSignUp   = () => { closeSignInModal(); openSignUpModal(); };
-    window.switchToSignIn   = () => { closeSignUpModal(); openSignInModal(); };
-    ['signInModal','signUpModal'].forEach(id => {
-        document.getElementById(id).addEventListener('click', e => { if(e.target.id===id) e.target.style.display='none'; });
-    });
+    // Unified Auth Modal Logic
+    let isSignUp = false;
+    window.openAuthModal = () => {
+        document.getElementById('authModal').style.display = 'flex';
+        setAuthMode(false);
+    };
+    window.closeAuthModal = () => document.getElementById('authModal').style.display = 'none';
+    
+    window.setAuthMode = (signup) => {
+        isSignUp = signup;
+        document.getElementById('authTitle').textContent = signup ? 'Create Account' : 'Sign In';
+        document.getElementById('authBtnText').textContent = signup ? 'Get Started' : 'Sign In';
+        document.getElementById('signUpFields').style.display = signup ? 'block' : 'none';
+        document.getElementById('toggleAuthMode').innerHTML = signup ? 
+            'Already have an account? <span style="color:#16a34a;font-weight:700;">Sign In</span>' : 
+            'Don\'t have an account? <span style="color:#16a34a;font-weight:700;">Sign Up</span>';
+    };
 
-    // Sign In
-    window.handleSignIn = async e => {
+    document.getElementById('toggleAuthMode').onclick = () => setAuthMode(!isSignUp);
+    document.getElementById('authModal').onclick = (e) => { if(e.target.id === 'authModal') closeAuthModal(); };
+
+    window.toggleUserDropdown = () => {
+        const dd = document.getElementById('userDropdown');
+        dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+    };
+
+    window.handleAuthSubmit = async (e) => {
         e.preventDefault();
-        const email = document.getElementById('siEmail').value;
-        const pass = document.getElementById('siPassword').value;
+        const email = document.getElementById('auEmail').value;
+        const pass = document.getElementById('auPassword').value;
+        const btn = document.getElementById('authBtn');
         const adminEmails = ['peterkelvinkibiru1532@gmail.com', 'macharia074m@gmail.com'];
-        const btn = document.getElementById('signInBtn');
-        btn.classList.add('btn-loading');
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+
         try {
-            await signInWithEmailAndPassword(auth, email, pass);
-            closeSignInModal();
-            document.getElementById('signInForm').reset();
-            if (adminEmails.includes(email.toLowerCase())) {
-                window.location.href = '../admin/index.html?section=learn-courses';
+            if (isSignUp) {
+                const name = document.getElementById('auName').value;
+                const { user } = await createUserWithEmailAndPassword(auth, email, pass);
+                await updateProfile(user, { displayName: name });
+                await setDoc(doc(db, 'learn_users', user.uid), { uid: user.uid, name, email, createdAt: new Date() });
+                Swal.fire({ icon: 'success', title: 'Welcome!', text: `Account created, ${name}!` });
             } else {
-                Swal.fire({icon:'success',title:'Welcome back!',timer:2000,showConfirmButton:false,confirmButtonColor:'#16a34a'});
+                await signInWithEmailAndPassword(auth, email, pass);
+                if (adminEmails.includes(email.toLowerCase())) {
+                    window.location.href = 'admin/dashboard.html';
+                }
             }
-        } catch(err) {
-            Swal.fire({icon:'error',title:'Sign In Failed',text:authErr(err.code),confirmButtonColor:'#16a34a'});
-        } finally { btn.classList.remove('btn-loading'); }
+            closeAuthModal();
+        } catch (err) {
+            Swal.fire({ icon: 'error', title: 'Auth Failed', text: authErr(err.code) });
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = isSignUp ? 'Get Started' : 'Sign In';
+        }
     };
 
-    // Sign Up
-    window.handleSignUp = async e => {
-        e.preventDefault();
-        const name=document.getElementById('suName').value,
-              email=document.getElementById('suEmail').value,
-              pw=document.getElementById('suPassword').value,
-              pw2=document.getElementById('suConfirm').value;
-        if(pw!==pw2){Swal.fire({icon:'warning',title:'Passwords do not match',confirmButtonColor:'#16a34a'});return;}
-        const btn=document.getElementById('signUpBtn');
-        btn.classList.add('btn-loading');
-        try {
-            const {user}=await createUserWithEmailAndPassword(auth,email,pw);
-            await updateProfile(user,{displayName:name});
-            await setDoc(doc(db,'learn_users',user.uid),{uid:user.uid,name,email,createdAt:new Date(),lastLogin:new Date()});
-            closeSignUpModal();
-            document.getElementById('signUpForm').reset();
-            Swal.fire({icon:'success',title:'Account Created!',text:`Welcome, ${name}! Start exploring courses.`,confirmButtonColor:'#16a34a'});
-        } catch(err) {
-            Swal.fire({icon:'error',title:'Sign Up Failed',text:authErr(err.code),confirmButtonColor:'#16a34a'});
-        } finally { btn.classList.remove('btn-loading'); }
-    };
-
-    // Google
     window.handleGoogleAuth = async () => {
         const adminEmails = ['peterkelvinkibiru1532@gmail.com', 'macharia074m@gmail.com'];
         try {
-            const {user}=await signInWithPopup(auth,gProvider);
-            await setDoc(doc(db,'learn_users',user.uid),{uid:user.uid,name:user.displayName,email:user.email,photoURL:user.photoURL,lastLogin:new Date()},{merge:true});
-            closeSignInModal();closeSignUpModal();
+            const { user } = await signInWithPopup(auth, gProvider);
+            await setDoc(doc(db, 'learn_users', user.uid), { uid: user.uid, name: user.displayName, email: user.email, lastLogin: new Date() }, { merge: true });
+            closeAuthModal();
             if (adminEmails.includes(user.email.toLowerCase())) {
-                window.location.href = '../admin/index.html?section=learn-courses';
-            } else {
-                Swal.fire({icon:'success',title:`Welcome, ${user.displayName}!`,timer:2000,showConfirmButton:false,confirmButtonColor:'#16a34a'});
+                window.location.href = 'admin/dashboard.html';
             }
-        } catch(err) {
-            if(err.code!=='auth/popup-closed-by-user')
-                Swal.fire({icon:'error',title:'Google Sign-in Failed',text:authErr(err.code),confirmButtonColor:'#16a34a'});
+        } catch (err) {
+            if (err.code !== 'auth/popup-closed-by-user')
+                Swal.fire({ icon: 'error', title: 'Google Sign-in Failed', text: authErr(err.code) });
         }
     };
 
-    // Sign Out
-    window.handleSignOut = async()=>{
+    window.handleSignOut = async () => {
         await signOut(auth);
-        Swal.fire({icon:'info',title:'Signed out',timer:1500,showConfirmButton:false});
+        location.reload();
     };
 
     // Apply Modal
-    window.openApplyModal = (courseId) => {
+    window.openApplyModal = async (courseId) => {
         const modal = document.getElementById('applyModal');
         const courseTitle = document.getElementById('applyCourseTitle');
+        const pkgTitle = document.getElementById('pkgTitle');
+        const pkgPrice = document.getElementById('pkgPrice');
         document.getElementById('appliedCourseId').value = courseId;
         
-        // Find course name from current data or set placeholder
-        courseTitle.innerText = "Step into your future";
+        try {
+            const resp = await fetch('data/courses.json');
+            const courses = await resp.json();
+            const course = courses.find(c => c.id === courseId);
+            if(course) {
+                courseTitle.innerText = `Enroll in ${course.title}`;
+                pkgTitle.innerText = `${course.title}`;
+                pkgPrice.innerText = `${course.currency} ${course.fee.toLocaleString()}`;
+            }
+        } catch(e) { console.error(e); }
+        
         modal.style.display = 'flex';
     };
     window.closeApplyModal = () => document.getElementById('applyModal').style.display = 'none';

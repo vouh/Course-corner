@@ -21,9 +21,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Site Stylesheets -->
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../assets/css/modern-ui.css">
-    <link rel="stylesheet" href="../assets/css/auth.css">
+    <link rel="stylesheet" href="https://coursecorkerkenya.com/assets/css/style.css">
+    <link rel="stylesheet" href="https://coursecorkerkenya.com/assets/css/modern-ui.css">
+    <link rel="stylesheet" href="https://coursecorkerkenya.com/assets/css/auth.css">
 
     <style>
         body { font-family: 'Inter','Poppins',sans-serif; background:#f9fafb; color:#1f2937; }
@@ -233,48 +233,50 @@
 <body>
 
 <!-- ═══ NAVIGATION ════════════════════════════════════════════ -->
-<header class="modern-header" id="learnHeader">
-    <div class="header-container">
+<header class="modern-header fixed top-0 left-0 right-0 w-full z-[1000] bg-white/95 backdrop-blur-md border-b border-transparent transition-all duration-300" id="learnHeader">
+    <div class="header-container flex items-center justify-between max-w-[1400px] mx-auto px-4 md:px-8 py-3">
         <!-- Logo -->
-        <a href="index.html" class="logo-container">
-            <img src="../assets/images/logo.png" alt="Course Corner Logo">
-            <div class="logo-text-group" style="display: flex; flex-direction: column; line-height: 1.1;">
-                <span style="font-size: 1.15rem; font-weight: 800; color: #16a34a; letter-spacing: -0.01em;">Course Corner</span>
-                <span style="font-size: 0.7rem; font-weight: 700; color: #0ea5e9; text-transform: uppercase; letter-spacing: 0.05em;">Learn Portal</span>
+        <a href="index.html" class="logo-container flex items-center gap-3 no-underline">
+            <img src="https://coursecorkerkenya.com/assets/images/logo.png" alt="Course Corner Logo" class="h-10 md:h-12 w-auto">
+            <div class="logo-text-group flex flex-col justify-center leading-none">
+                <span class="text-[1rem] md:text-[1.15rem] font-extrabold text-[#16a34a] tracking-tight">Course Corner</span>
+                <span class="text-[0.65rem] md:text-[0.7rem] font-bold text-[#0ea5e9] uppercase tracking-[0.05em]">Learn Portal</span>
             </div>
         </a>
 
         <!-- Desktop Navigation -->
-        <nav class="desktop-nav">
-            <div class="nav-links">
-                <a href="index.html" class="modern-nav-link active">Home</a>
-                <a href="#courses" class="modern-nav-link">Courses</a>
-                <a href="../pages/packages.html" class="modern-nav-link">Pricing</a>
-                <a href="about.html" class="modern-nav-link">About Portal</a>
-                <a href="../index.html" class="modern-nav-link" style="color:#6b7280; opacity:0.8;">Main Site</a>
+        <nav class="desktop-nav hidden lg:flex items-center gap-8">
+            <div class="nav-links flex items-center gap-6">
+                <a href="index.html" class="modern-nav-link text-[0.95rem] font-semibold text-[#16a34a] no-underline">Home</a>
+                <a href="#courses" class="modern-nav-link text-[0.95rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Courses</a>
+                <a href="https://coursecorkerkenya.com/pages/packages.html" class="modern-nav-link text-[0.95rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Pricing</a>
+                <a href="about.html" class="modern-nav-link text-[0.95rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">About Portal</a>
+                <a href="https://coursecorkerkenya.com/index.html" class="modern-nav-link text-[0.95rem] font-semibold text-gray-400 opacity-80 no-underline hover:text-[#16a34a] transition-colors">Main Site</a>
             </div>
 
             <!-- Auth Area -->
-            <div class="nav-auth-buttons">
-                <button id="authNavBtn" class="btn-nav-login" onclick="openAuthModal()">
+            <div class="nav-auth-buttons flex items-center gap-4">
+                <button id="authNavBtn" class="px-6 py-2.5 bg-[#16a34a] text-white rounded-full text-sm font-bold flex items-center gap-2 hover:bg-[#15803d] transition-all shadow-lg shadow-green-600/20" onclick="openAuthModal()">
                     <i class="fas fa-user-circle"></i>
                     <span>Sign In</span>
                 </button>
 
-                <div id="userNavArea" style="display: none; align-items: center; gap: 1rem; position: relative;">
-                    <span id="userGreeting" style="font-size: 0.875rem; font-weight: 600; color: #374151;">
-                        Hi, <span id="userNameText" style="color: #16a34a;">User</span>
+                <div id="userNavArea" style="display: none; align-items: center; gap: 1rem; position: relative;" class="flex items-center gap-3">
+                    <span id="userGreeting" class="text-sm font-semibold text-gray-700">
+                        Hi, <span id="userNameText" class="text-[#16a34a]">User</span>
                     </span>
-                    <div id="userInitial" onclick="toggleUserDropdown()" style="width: 38px; height: 38px; border-radius: 12px; background: linear-gradient(135deg, #16a34a, #0ea5e9); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.2);">?</div>
+                    <div id="userInitial" onclick="toggleUserDropdown()" class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#16a34a] to-[#0ea5e9] text-white flex items-center justify-center font-bold cursor-pointer shadow-lg shadow-green-600/10 transition-transform active:scale-95">?</div>
                     
                     <!-- Dropdown -->
-                    <div id="userDropdown" style="display: none; position: absolute; top: calc(100% + 15px); right: 0; width: 220px; background: white; border-radius: 1rem; box-shadow: 0 10px 40px rgba(0,0,0,0.12); border: 1px solid #f3f4f6; padding: 0.5rem; z-index: 1000;">
-                        <a href="dashboard.html" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: #374151; text-decoration: none; border-radius: 0.75rem; font-size: 0.875rem; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='#f0fdf4'; this.style.color='#16a34a'" onmouseout="this.style.background='transparent'; this.style.color='#374151'">
-                            <i class="fas fa-graduation-cap"></i> My Courses
+                    <div id="userDropdown" style="display: none;" class="absolute top-[calc(100%+15px)] right-0 w-[220px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 z-[1000] animate-in fade-in slide-in-from-top-2 duration-200">
+                        <a href="dashboard.html" class="flex items-center gap-3 p-3 text-gray-700 no-underline rounded-xl text-sm font-bold hover:bg-green-50 hover:text-[#16a34a] transition-all group">
+                            <i class="fas fa-graduation-cap text-[#16a34a]/60 group-hover:text-[#16a34a]"></i> 
+                            My Courses
                         </a>
-                        <hr style="margin: 0.5rem; border: none; border-top: 1px solid #f3f4f6;">
-                        <button onclick="handleSignOut()" style="width: 100%; display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem 1rem; color: #ef4444; background: none; border: none; border-radius: 0.75rem; font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='#fef2f2'" onmouseout="this.style.background='transparent'">
-                            <i class="fas fa-sign-out-alt"></i> Sign Out
+                        <hr class="my-1 border-gray-100">
+                        <button onclick="handleSignOut()" class="w-full flex items-center gap-3 p-3 text-red-500 bg-transparent border-none rounded-xl text-sm font-bold cursor-pointer hover:bg-red-50 transition-all">
+                            <i class="fas fa-sign-out-alt opacity-70"></i> 
+                            Sign Out
                         </button>
                     </div>
                 </div>
@@ -282,33 +284,35 @@
         </nav>
 
         <!-- Mobile Toggle -->
-        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle menu">
-            <span></span><span></span><span></span>
+        <button class="mobile-menu-btn lg:hidden flex flex-col justify-center items-center gap-1.5 w-10 h-10 border-none bg-transparent cursor-pointer" id="mobileMenuBtn" aria-label="Toggle menu">
+            <span class="w-6 h-0.5 bg-gray-800 transition-all duration-300"></span>
+            <span class="w-6 h-0.5 bg-gray-800 transition-all duration-300"></span>
+            <span class="w-6 h-0.5 bg-gray-800 transition-all duration-300"></span>
         </button>
     </div>
 
     <!-- Mobile Menu Overlay -->
-    <div class="mobile-menu" id="mobileMenu">
-        <div style="display: flex; flex-direction: column; height: 100%;">
-            <nav class="mobile-nav-links">
-                <a href="index.html" class="mobile-nav-link" onclick="closeMobileMenu()">Home</a>
-                <a href="#courses" class="mobile-nav-link" onclick="closeMobileMenu()">Courses</a>
-                <a href="../pages/packages.html" class="mobile-nav-link" onclick="closeMobileMenu()">Pricing</a>
-                <a href="about.html" class="mobile-nav-link" onclick="closeMobileMenu()">About Us</a>
-                <a href="../index.html" class="mobile-nav-link" onclick="closeMobileMenu()">Main Site</a>
+    <div class="mobile-menu lg:hidden fixed top-[64px] left-0 right-0 h-0 opacity-0 overflow-hidden bg-white/98 backdrop-blur-xl transition-all duration-300 z-[999]" id="mobileMenu">
+        <div class="flex flex-col h-full p-6">
+            <nav class="mobile-nav-links flex flex-col gap-2">
+                <a href="index.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Home</a>
+                <a href="#courses" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Courses</a>
+                <a href="https://coursecorkerkenya.com/pages/packages.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Pricing</a>
+                <a href="about.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">About Us</a>
+                <a href="https://coursecorkerkenya.com/index.html" class="p-4 text-lg font-bold text-gray-400 no-underline rounded-xl hover:bg-gray-50 transition-all" onclick="closeMobileMenu()">Main Site</a>
             </nav>
             
-            <div style="margin-top: auto; padding-top: 2rem; border-top: 1px solid #f3f4f6;">
+            <div class="mt-auto pt-6 border-t border-gray-100">
                 <div id="mobileAuthArea">
-                    <button class="btn-nav-login" style="width: 100%; justify-content: center; padding: 1rem;" onclick="openAuthModal(); closeMobileMenu()">
+                    <button class="w-full py-4 bg-[#16a34a] text-white rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg shadow-green-600/20" onclick="openAuthModal(); closeMobileMenu()">
                         <i class="fas fa-sign-in-alt"></i> Sign In / Sign Up
                     </button>
                 </div>
-                <div id="mobileUserArea" style="display: none; flex-direction: column; gap: 1rem;">
-                    <a href="dashboard.html" class="btn-nav-profile" style="width: 100%; justify-content: center; padding: 1rem; text-decoration: none;" onclick="closeMobileMenu()">
+                <div id="mobileUserArea" style="display: none;" class="flex flex-col gap-3">
+                    <a href="dashboard.html" class="w-full py-4 bg-green-50 text-[#16a34a] rounded-2xl font-bold flex items-center justify-center gap-3 no-underline" onclick="closeMobileMenu()">
                         <i class="fas fa-graduation-cap"></i> My Dashboard
                     </a>
-                    <button onclick="handleSignOut(); closeMobileMenu()" style="width: 100%; padding: 1rem; color: #ef4444; background: #fef2f2; border: none; border-radius: 1rem; font-weight: 700;">
+                    <button onclick="handleSignOut(); closeMobileMenu()" class="w-full py-4 bg-red-50 text-red-500 border-none rounded-2xl font-bold">
                         Logout
                     </button>
                 </div>

@@ -18,8 +18,18 @@ async function loadLearnApplications() {
 
 function renderApplications(apps) {
     const tableBody = document.getElementById('learn-apps-table-body');
+
+    // Update stat tiles
+    const total   = allApplications.length;
+    const pending  = allApplications.filter(a => (a.status || 'pending') === 'pending').length;
+    const approved = allApplications.filter(a => a.status === 'approved').length;
+    const setEl = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+    setEl('learn-stat-total',    total);
+    setEl('learn-stat-pending',  pending);
+    setEl('learn-stat-approved', approved);
+
     if (apps.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">No applications found.</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="6" class="px-4 py-8 text-center text-gray-500">No applications found.</td></tr>`;
         return;
     }
 
@@ -116,6 +126,8 @@ async function loadLearnCourses() {
 
 function renderCourses(courses) {
     const grid = document.getElementById('courses-grid');
+    const setEl = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+    setEl('learn-stat-courses', courses.length);
     grid.innerHTML = courses.map(c => `
         <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm hover:shadow-xl transition-all group relative overflow-hidden">
             <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-100 transition-all">

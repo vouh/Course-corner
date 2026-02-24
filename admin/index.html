@@ -218,31 +218,59 @@
             </div>
 
             <nav class="p-4 space-y-2">
-                <a href="#" onclick="switchPage('dashboard')" id="nav-dashboard"
-                    class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
-                    <i class="fas fa-chart-pie text-xl w-6"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="#" onclick="switchPage('transactions')" id="nav-transactions"
-                    class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
-                    <i class="fas fa-receipt text-xl w-6"></i>
-                    <span>Transactions</span>
-                </a>
-                <a href="referrals.html" id="nav-referrals"
-                    class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
-                    <i class="fas fa-users text-xl w-6"></i>
-                    <span>Referrals</span>
-                </a>
-                <a href="withdrawals.html" id="nav-withdrawals"
-                    class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
-                    <i class="fas fa-money-bill-wave text-xl w-6"></i>
-                    <span>Withdrawals</span>
-                </a>
+                <!-- Main Tools Section -->
+                <div id="section-main">
+                    <p class="px-4 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.15em] mb-2 px-4">Main Platform</p>
+                    <a href="#" onclick="switchPage('dashboard')" id="nav-dashboard"
+                        class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                        <i class="fas fa-chart-pie text-xl w-6"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" onclick="switchPage('transactions')" id="nav-transactions"
+                        class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                        <i class="fas fa-receipt text-xl w-6"></i>
+                        <span>Transactions</span>
+                    </a>
+                    <a href="referrals.html" id="nav-referrals"
+                        class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                        <i class="fas fa-users text-xl w-6"></i>
+                        <span>Referrals</span>
+                    </a>
+                    <a href="withdrawals.html" id="nav-withdrawals"
+                        class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                        <i class="fas fa-money-bill-wave text-xl w-6"></i>
+                        <span>Withdrawals</span>
+                    </a>
+                </div>
+
+                <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+                    <p class="px-4 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.15em] mb-2 px-4">Learn Portal</p>
+                    <a id="nav-learn" href="#" onclick="switchPage('learn'); return false;"
+                        class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                        <i class="fas fa-university text-xl w-6"></i>
+                        <span>Manage Learn</span>
+                    </a>
+                    <a href="#" onclick="switchPage('learn-enrollments'); return false;" id="nav-learn-enroll"
+                        class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium ml-4 border-l-2 border-transparent">
+                        <i class="fas fa-user-graduate text-lg w-6"></i>
+                        <span class="text-sm">Enrollments</span>
+                    </a>
+                    <a href="#" onclick="switchPage('learn-packages'); return false;" id="nav-learn-pkg"
+                        class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium ml-4 border-l-2 border-transparent">
+                        <i class="fas fa-layer-group text-lg w-6"></i>
+                        <span class="text-sm">Course Packages</span>
+                    </a>
+                    <a href="../Learn/index.html" target="_blank"
+                        class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium opacity-60">
+                        <i class="fas fa-external-link-alt text-xl w-6"></i>
+                        <span>Public Portal ↗</span>
+                    </a>
+                </div>
 
                 <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
                     <p
                         class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                        Tools</p>
+                        Admin Tools</p>
                     <a href="referral-codes.html"
                         class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
                         <i class="fas fa-ticket-alt text-xl w-6"></i>
@@ -257,22 +285,6 @@
                         class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
                         <i class="fas fa-link text-xl w-6"></i>
                         <span>Magic Links</span>
-                    </a>
-                </div>
-
-                <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
-                    <p
-                        class="px-4 text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-2">
-                        Learn Portal</p>
-                    <a href="../Learn/admin/dashboard.html"
-                        class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
-                        <i class="fas fa-chalkboard-teacher text-xl w-6"></i>
-                        <span>Learn Dashboard</span>
-                    </a>
-                    <a href="../Learn/index.html"
-                        class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
-                        <i class="fas fa-external-link-alt text-xl w-6"></i>
-                        <span>View Portal</span>
                     </a>
                 </div>
             </nav>
@@ -597,6 +609,69 @@
                         </div>
                     </div>
                 </div>
+                <!-- Learn Portal Management Page -->
+                <div id="page-learn" class="hidden">
+                    <!-- Header stats -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xl"><i class="fas fa-users"></i></div>
+                            <div><p class="text-2xl font-extrabold text-gray-900 dark:text-white" id="learn-stat-total">—</p><p class="text-xs text-gray-500">Total Applications</p></div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-yellow-600 dark:text-yellow-400 text-xl"><i class="fas fa-clock"></i></div>
+                            <div><p class="text-2xl font-extrabold text-gray-900 dark:text-white" id="learn-stat-pending">—</p><p class="text-xs text-gray-500">Pending Review</p></div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 text-xl"><i class="fas fa-check-circle"></i></div>
+                            <div><p class="text-2xl font-extrabold text-gray-900 dark:text-white" id="learn-stat-approved">—</p><p class="text-xs text-gray-500">Approved</p></div>
+                        </div>
+                        <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700 flex items-center gap-4">
+                            <div class="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400 text-xl"><i class="fas fa-book"></i></div>
+                            <div><p class="text-2xl font-extrabold text-gray-900 dark:text-white" id="learn-stat-courses">—</p><p class="text-xs text-gray-500">Active Courses</p></div>
+                        </div>
+                    </div>
+                    <!-- Applications table -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 mb-6">
+                        <div class="p-6 border-b border-gray-100 dark:border-gray-700 flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <h2 class="text-lg font-bold text-gray-900 dark:text-white">Learn Applications</h2>
+                                <p class="text-sm text-gray-500 mt-0.5">Review and manage student applications</p>
+                            </div>
+                            <select id="app-status-filter" onchange="filterLearnApps()" class="px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl text-sm text-gray-900 dark:text-white">
+                                <option value="">All Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead><tr class="border-b border-gray-100 dark:border-gray-700">
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Email</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Package</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Status</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Date</th>
+                                    <th class="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase">Actions</th>
+                                </tr></thead>
+                                <tbody id="learn-apps-table-body" class="divide-y divide-gray-100 dark:divide-gray-700">
+                                    <tr><td colspan="6" class="p-8 text-center text-gray-500"><div class="loader mx-auto mb-3"></div>Loading applications...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Courses overview -->
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700">
+                        <div class="p-6 border-b border-gray-100 dark:border-gray-700">
+                            <h2 class="text-lg font-bold text-gray-900 dark:text-white">Course Packages</h2>
+                            <p class="text-sm text-gray-500 mt-0.5">Overview of available learn packages</p>
+                        </div>
+                        <div id="courses-grid" class="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="p-8 text-center text-gray-400"><div class="loader mx-auto mb-3"></div>Loading courses...</div>
+                        </div>
+                    </div>
+                </div>
+
             </main>
         </div>
     </div>
@@ -838,24 +913,58 @@
 
         // Navigation
         function switchPage(page) {
-            document.getElementById('page-dashboard').classList.add('hidden');
-            document.getElementById('page-transactions').classList.add('hidden');
+            // Mapping for shared sections
+            const effectivePage = page.startsWith('learn-') ? 'learn' : page;
 
-            document.getElementById(`page-${page}`).classList.remove('hidden');
+            ['dashboard','transactions','learn'].forEach(p => {
+                const el = document.getElementById(`page-${p}`);
+                if (el) el.classList.add('hidden');
+            });
+
+            const target = document.getElementById(`page-${effectivePage}`);
+            if (target) target.classList.remove('hidden');
             
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('bg-primary-50', 'dark:bg-primary-900/20', 'text-primary-600', 'dark:text-primary-400'));
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('bg-primary-50', 'dark:bg-primary-900/20', 'text-primary-600', 'dark:text-primary-400', 'border-primary-500'));
             const nav = document.getElementById(`nav-${page}`);
             if (nav) nav.classList.add('bg-primary-50', 'dark:bg-primary-900/20', 'text-primary-600', 'dark:text-primary-400');
             
+            // Sub-nav styling
+            if (page.startsWith('learn-')) {
+                const parentNav = document.getElementById('nav-learn');
+                if (parentNav) parentNav.classList.add('text-primary-600', 'dark:text-primary-400');
+                if (nav) nav.classList.add('border-primary-500');
+            }
+
             document.getElementById('page-title').textContent = { 
                 dashboard: 'Dashboard', 
-                transactions: 'Transactions'
+                transactions: 'Transactions',
+                learn: 'Learn Overview',
+                'learn-enrollments': 'Student Enrollments',
+                'learn-packages': 'Course Packages'
             }[page] || page;
 
             document.getElementById('page-subtitle').textContent = { 
                 dashboard: 'Overview of your business', 
-                transactions: 'All payment records'
+                transactions: 'All payment records',
+                learn: 'Learn Portal Overview',
+                'learn-enrollments': 'Manage all student applications',
+                'learn-packages': 'Course curriculum & pricing'
             }[page] || '';
+
+            // Scroll to top of table if sub-page
+            if (page === 'learn-enrollments') {
+                const table = document.getElementById('learn-apps-table-body');
+                if (table) table.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else if (page === 'learn-packages') {
+                const grid = document.getElementById('courses-grid');
+                if (grid) grid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            // Load Learn data on first visit
+            if (effectivePage === 'learn') {
+                if (typeof loadLearnApplications === 'function') loadLearnApplications();
+                if (typeof loadLearnCourses === 'function') loadLearnCourses();
+            }
 
             if (window.innerWidth < 1024) toggleSidebar();
         }
@@ -1674,7 +1783,10 @@
         }
 
         // Init
-        switchPage('dashboard');
+        const urlParams = new URLSearchParams(window.location.search);
+        const startPage = urlParams.get('page') || 'dashboard';
+        switchPage(startPage);
+
         document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeCodeGenerator(); } });
         document.getElementById('detail-modal').addEventListener('click', function (e) { if (e.target === this) closeModal(); });
         document.getElementById('code-modal').addEventListener('click', function (e) { if (e.target === this) closeCodeGenerator(); });

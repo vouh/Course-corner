@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's New – Course Corner Learn</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://coursecornerkenya.com/assets/css/modern-ui.css">
+    <link rel="stylesheet" href="https://coursecornerkenya.com/assets/css/auth.css">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1f2937}
+
+        /* ── Hero ── */
+        .page-hero{
+            padding-top:80px;
+            background:linear-gradient(135deg,#0a1f10 0%,#111827 55%,#0d1e30 100%);
+            position:relative;overflow:hidden;
+        }
+        .page-hero::before{content:'';position:absolute;top:-120px;right:-100px;width:560px;height:560px;background:radial-gradient(circle,rgba(22,163,74,.13) 0%,transparent 65%);pointer-events:none}
+        .page-hero::after{content:'';position:absolute;bottom:-80px;left:-60px;width:400px;height:400px;background:radial-gradient(circle,rgba(14,165,233,.09) 0%,transparent 65%);pointer-events:none}
+        .hero-inner{max-width:780px;margin:0 auto;padding:5rem 2rem 4rem;text-align:center;position:relative;z-index:1}
+        .pill{display:inline-flex;align-items:center;gap:.5rem;background:rgba(22,163,74,.15);border:1px solid rgba(22,163,74,.3);color:#4ade80;padding:.4rem 1rem;border-radius:9999px;font-size:.8125rem;font-weight:600;margin-bottom:1.5rem;letter-spacing:.04em;text-transform:uppercase}
+        .hero-title{font-size:clamp(2rem,4vw,3.25rem);font-weight:800;color:white;line-height:1.2;letter-spacing:-.025em;margin-bottom:1.25rem}
+        .hero-title .g{background:linear-gradient(135deg,#4ade80,#38bdf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+        .hero-desc{font-size:1.0625rem;color:#d1d5db;line-height:1.7;max-width:580px;margin:0 auto}
+
+        /* ── Post grid ── */
+        .posts-section{max-width:1140px;margin:0 auto;padding:4rem 2rem 5rem}
+        .posts-header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:2.5rem}
+        .posts-header h2{font-size:1.5rem;font-weight:800;color:#111827}
+        .filter-tabs{display:flex;gap:.5rem;flex-wrap:wrap}
+        .filter-tab{padding:.4rem 1rem;border-radius:9999px;font-size:.875rem;font-weight:600;border:1.5px solid #e5e7eb;background:white;color:#6b7280;cursor:pointer;transition:all .2s}
+        .filter-tab.active,.filter-tab:hover{background:#16a34a;border-color:#16a34a;color:white}
+        .posts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:2rem}
+
+        /* card */
+        .post-card{background:white;border-radius:1.5rem;overflow:hidden;border:1px solid #e5e7eb;transition:all .3s;cursor:pointer}
+        .post-card:hover{transform:translateY(-5px);box-shadow:0 20px 48px rgba(0,0,0,.1);border-color:#d1fae5}
+        .post-img{height:200px;display:flex;align-items:center;justify-content:center;font-size:3rem;position:relative;overflow:hidden}
+        .post-img img{width:100%;height:100%;object-fit:cover}
+        .post-img .overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.45) 0%,transparent 60%)}
+        .post-img .cat-pill{position:absolute;top:14px;left:14px;font-size:.6875rem;font-weight:700;padding:.25rem .625rem;border-radius:9999px;text-transform:uppercase;letter-spacing:.05em}
+        .post-body{padding:1.5rem}
+        .post-body h3{font-size:1.0625rem;font-weight:700;color:#111827;margin-bottom:.625rem;line-height:1.4}
+        .post-body p{font-size:.9rem;color:#6b7280;line-height:1.65;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+        .post-meta{display:flex;align-items:center;gap:.75rem;margin-top:.875rem;font-size:.8125rem;color:#9ca3af}
+        .post-meta .dot{width:3px;height:3px;border-radius:50%;background:#d1d5db}
+        .read-btn{display:inline-flex;align-items:center;gap:.375rem;margin-top:1.25rem;font-size:.875rem;font-weight:700;color:#16a34a;text-decoration:none;transition:gap .2s}
+        .read-btn:hover{gap:.625rem}
+
+        /* Featured card */
+        .post-card.featured{grid-column:1/-1}
+        @media(min-width:900px){
+            .post-card.featured .inner{display:grid;grid-template-columns:1.2fr 1fr}
+            .post-card.featured .post-img{height:100%;min-height:280px}
+        }
+
+        /* Newsletter strip */
+        .nl-strip{background:linear-gradient(135deg,#16a34a,#0ea5e9);padding:3.5rem 2rem;text-align:center;color:white}
+        .nl-strip h3{font-size:1.5rem;font-weight:800;margin-bottom:.5rem}
+        .nl-strip p{font-size:.9375rem;opacity:.9;margin-bottom:1.75rem;max-width:440px;margin-left:auto;margin-right:auto;line-height:1.6}
+        .nl-form{display:flex;gap:.75rem;max-width:400px;margin:0 auto;flex-wrap:wrap}
+        .nl-form input{flex:1;min-width:0;padding:.75rem 1.25rem;border-radius:999px;border:none;font-size:.9375rem;outline:none}
+        .nl-form button{padding:.75rem 1.5rem;background:#111827;color:white;font-weight:700;border:none;border-radius:999px;cursor:pointer;font-size:.9375rem;transition:all .2s}
+        .nl-form button:hover{background:#0f172a;transform:scale(1.03)}
+
+        /* Footer – same as index.html */
+        .learn-footer { background:#0f172a; color:#94a3b8; padding:4rem 2rem 2rem; border-top:3px solid #16a34a; }
+        .footer-inner { max-width:1240px; margin:0 auto; }
+        .footer-top { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:3rem; padding-bottom:3rem; border-bottom:1px solid rgba(255,255,255,.08); margin-bottom:2rem; }
+        .footer-brand .brand-logo-row { display:flex; align-items:center; gap:.75rem; margin-bottom:1.25rem; }
+        .footer-brand .brand-logo-row img { width:44px; height:44px; object-fit:contain; }
+        .footer-brand .brand-logo-row .fn { font-size:1.125rem; font-weight:800; color:#fff; line-height:1.1; }
+        .footer-brand .brand-logo-row .fs { font-size:.625rem; font-weight:700; color:#0ea5e9; letter-spacing:.08em; text-transform:uppercase; }
+        .footer-brand p { font-size:.9375rem; color:#64748b; line-height:1.7; max-width:260px; }
+        .footer-brand .social-row { display:flex; gap:.75rem; margin-top:1.25rem; }
+        .footer-brand .social-row a { width:36px; height:36px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:.625rem; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:.9rem; text-decoration:none; transition:all .2s; }
+        .footer-brand .social-row a:hover { background:#16a34a; border-color:#16a34a; color:white; }
+        .footer-col h4 { font-size:.75rem; font-weight:700; color:#e2e8f0; margin-bottom:1.25rem; letter-spacing:.1em; text-transform:uppercase; }
+        .footer-col ul { list-style:none; padding:0; margin:0; }
+        .footer-col ul li { margin-bottom:.75rem; }
+        .footer-col ul li a { color:#64748b; text-decoration:none; font-size:.9375rem; transition:all .2s; }
+        .footer-col ul li a:hover { color:#22c55e; padding-left:4px; }
+        .footer-bottom { text-align:center; font-size:.875rem; color:#334155; padding-top:1.5rem; }
+
+        @media(max-width:768px){
+            .footer-top{grid-template-columns:1fr 1fr}
+            .footer-top .footer-brand{grid-column:1/-1}
+        }
+        @media(max-width:480px){.footer-top{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+
+<!-- ═══ NAV ════════════════════════════════════════════════════════════ -->
+<header class="modern-header" id="wnHeader">
+    <div class="header-container flex items-center justify-between py-2 px-4 max-w-7xl mx-auto">
+        <a href="index.html" class="logo-container flex items-center gap-2.5 no-underline">
+            <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Course Corner Logo" class="h-8 md:h-10 w-auto">
+            <div class="logo-text-group flex flex-col justify-center leading-none gap-[2px]">
+                <span class="text-[1.15rem] md:text-[1.35rem] font-extrabold text-[#16a34a] tracking-tight leading-none">Course Corner</span>
+                <span class="text-[0.55rem] md:text-[0.65rem] font-semibold text-[#0ea5e9] tracking-wide leading-none">Learn Portal</span>
+            </div>
+        </a>
+
+        <nav class="desktop-nav flex items-center gap-10">
+            <div class="nav-links flex items-center gap-6">
+                <a href="index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Home</a>
+                <a href="index.html#courses" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Courses</a>
+                <a href="about.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">About</a>
+                <a href="whats-new.html" class="modern-nav-link text-[0.9rem] font-semibold text-[#16a34a] no-underline">What's New</a>
+            </div>
+            <div class="nav-auth-buttons flex items-center gap-3">
+                <button id="signInNavBtn" class="px-4 py-2 text-[0.9rem] font-bold text-[#16a34a] hover:bg-[#16a34a]/10 rounded-lg transition-all" onclick="openSignInModal()">Sign In</button>
+                <button id="signUpNavBtn" class="px-4 py-2 text-[0.9rem] font-bold text-white bg-[#16a34a] hover:bg-[#15803d] rounded-lg shadow-sm transition-all" onclick="openSignUpModal()">Get Started</button>
+                <div id="userNavArea" style="display:none;align-items:center;gap:.75rem;">
+                    <div id="userInitial" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#0ea5e9);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:.9rem;">?</div>
+                    <button class="btn-nav-profile" onclick="handleSignOut()"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile menu btn -->
+        <button id="mobileMenuBtn" class="mobile-menu-btn md:hidden" onclick="toggleMobileMenu()" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+    <!-- Mobile menu -->
+    <nav id="mobileMenu" class="mobile-menu">
+        <a href="index.html" class="mobile-nav-link">Home</a>
+        <a href="index.html#courses" class="mobile-nav-link">Courses</a>
+        <a href="about.html" class="mobile-nav-link">About</a>
+        <a href="whats-new.html" class="mobile-nav-link" style="color:#16a34a;font-weight:700;">What's New</a>
+        <div class="mobile-auth-section">
+            <button class="mv-btn-outline" onclick="openSignInModal();closeMobileMenu()">Sign In</button>
+            <button class="mv-btn-primary" onclick="openSignUpModal();closeMobileMenu()">Get Started</button>
+        </div>
+    </nav>
+</header>
+
+<!-- ═══ HERO ═══════════════════════════════════════════════════════════ -->
+<section class="page-hero">
+    <div class="hero-inner">
+        <div class="pill"><i class="fas fa-newspaper"></i> Updates &amp; Stories</div>
+        <h1 class="hero-title">What's New on<br><span class="g">Course Corner Learn</span></h1>
+        <p class="hero-desc">Portal updates, student success stories, and quick tips to help you thrive in the digital world.</p>
+    </div>
+</section>
+
+<!-- ═══ POSTS ══════════════════════════════════════════════════════════ -->
+<main class="posts-section">
+    <div class="posts-header">
+        <h2>All Posts <span class="text-gray-400 font-normal text-base">(3)</span></h2>
+        <div class="filter-tabs">
+            <button class="filter-tab active" onclick="filterPosts('all',this)">All</button>
+            <button class="filter-tab" onclick="filterPosts('news',this)">Portal News</button>
+            <button class="filter-tab" onclick="filterPosts('story',this)">Success Stories</button>
+            <button class="filter-tab" onclick="filterPosts('tips',this)">Quick Tips</button>
+        </div>
+    </div>
+
+    <div class="posts-grid" id="postsGrid">
+
+        <!-- Featured: Portal V2 -->
+        <article class="post-card featured" data-cat="news">
+            <div class="inner">
+                <div class="post-img">
+                    <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=900&auto=format&fit=crop" alt="Portal Launch">
+                    <div class="overlay"></div>
+                    <span class="cat-pill" style="background:#16a34a;color:white;">Portal News</span>
+                </div>
+                <div class="post-body" style="padding:2rem">
+                    <h3 style="font-size:1.3rem;line-height:1.35">Course Corner Learn: Portal V2 is Now Live 🚀</h3>
+                    <p>Our fully redesigned learning portal is officially live — now featuring 3 tiered packages, an improved student dashboard, faster performance, and much better mobile support. Whether you're on Starter, Intermediate, or Pro, the experience is now world-class.</p>
+                    <div class="post-meta">
+                        <i class="fas fa-calendar-alt text-green-500"></i>
+                        <span>June 2025</span>
+                        <span class="dot"></span>
+                        <span>Course Corner Team</span>
+                        <span class="dot"></span>
+                        <span>3 min read</span>
+                    </div>
+                    <a href="#" class="read-btn">Read More <i class="fas fa-arrow-right text-xs"></i></a>
+                </div>
+            </div>
+        </article>
+
+        <!-- Success story -->
+        <article class="post-card" data-cat="story">
+            <div class="post-img">
+                <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=600&auto=format&fit=crop" alt="">
+                <div class="overlay"></div>
+                <span class="cat-pill" style="background:#3b82f6;color:white;">Success Story</span>
+            </div>
+            <div class="post-body">
+                <h3>How John Mastered MS Office in 4 Weeks</h3>
+                <p>Fresh from Form 4, John enrolled in our Starter package and focused entirely on the Microsoft Office module. Four weeks later he landed a data-entry role at a local logistics firm.</p>
+                <div class="post-meta">
+                    <i class="fas fa-calendar-alt text-blue-500"></i>
+                    <span>May 2025</span>
+                    <span class="dot"></span>
+                    <span>4 min read</span>
+                </div>
+                <a href="#" class="read-btn">Read More <i class="fas fa-arrow-right text-xs"></i></a>
+            </div>
+        </article>
+
+        <!-- Quick tips -->
+        <article class="post-card" data-cat="tips">
+            <div class="post-img">
+                <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=600&auto=format&fit=crop" alt="">
+                <div class="overlay"></div>
+                <span class="cat-pill" style="background:#8b5cf6;color:white;">Quick Tips</span>
+            </div>
+            <div class="post-body">
+                <h3>5 AI Prompts to Boost Your Productivity Right Now</h3>
+                <p>Artificial Intelligence isn't going away — and it doesn't have to be scary. Here are 5 practical prompts you can use today in ChatGPT to save hours every week.</p>
+                <div class="post-meta">
+                    <i class="fas fa-calendar-alt text-purple-500"></i>
+                    <span>April 2025</span>
+                    <span class="dot"></span>
+                    <span>5 min read</span>
+                </div>
+                <a href="#" class="read-btn">Read More <i class="fas fa-arrow-right text-xs"></i></a>
+            </div>
+        </article>
+
+    </div><!-- /postsGrid -->
+
+    <!-- Empty state (hidden) -->
+    <div id="emptyState" style="display:none;text-align:center;padding:4rem 0">
+        <i class="fas fa-newspaper text-4xl text-gray-300 mb-3 block"></i>
+        <p class="text-gray-500">No posts in this category yet. Check back soon!</p>
+    </div>
+</main>
+
+<!-- ═══ NEWSLETTER STRIP ════════════════════════════════════════════════ -->
+<section class="nl-strip">
+    <h3>Stay in the Loop</h3>
+    <p>Get portal updates, new posts, and student tips sent straight to your WhatsApp.</p>
+    <div class="nl-form">
+        <input type="tel" placeholder="07XX XXX XXX" id="nlPhone">
+        <button onclick="subscribeNL()"><i class="fas fa-paper-plane mr-1"></i> Notify Me</button>
+    </div>
+</section>
+
+<!-- footer class="learn-footer" replacement -->
+    <footer class="cc-footer">
+        <div class="cc-footer-container">
+            <div class="cc-footer-grid">
+                <div class="cc-footer-brand">
+                    <div class="cc-footer-logo">
+                        <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Logo">
+                        <span>Course Corner</span>
+                    </div>
+                    <p>Empowering Kenyan students to gain practical digital skills for the modern economy. Join our community of learners and start your journey today.</p>
+                    <div class="cc-footer-social">
+                        <a href="https://wa.me/254703554765" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://tiktok.com/@course.corner" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                    </div>
+                </div>
+                
+                <div class="cc-footer-links">
+                    <h4>Learn Portal</h4>
+                    <ul>
+                        <li><a href="index.html#courses">Browse Courses</a></li>
+                        <li><a href="whats-new.html">What's New</a></li>
+                        <li><a href="about.html">About Portal</a></li>
+                        <li><a href="apply.html">Application</a></li>
+                    </ul>
+                </div>
+
+                <div class="cc-footer-links">
+                    <h4>Main Resources</h4>
+                    <ul>
+                        <li><a href="https://coursecornerkenya.com/pages/calculator.html" onclick="confirmExternal(event, this)">Cluster Calculator</a></li>
+                        <li><a href="https://coursecornerkenya.com/pages/packages.html" onclick="confirmExternal(event, this)">Placement Packages</a></li>
+                        <li><a href="https://coursecornerkenya.com/pages/guide.html" onclick="confirmExternal(event, this)">Career Guide</a></li>
+                        <li><a href="https://coursecornerkenya.com/pages/contact.html" onclick="confirmExternal(event, this)">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <div class="cc-footer-contact">
+                    <h4>Contact Support</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> support@coursecornerkenya.com</li>
+                        <li><i class="fas fa-phone"></i> +254 703 554 765</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Nairobi, Kenya</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="cc-footer-bottom">
+                <p>&copy; 2024 Course Corner Learn Portal. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+<!-- Auth Modals -->
+<div id="signInModal" class="auth-modal-overlay" style="display:none;">
+    <div class="auth-modal">
+        <div class="modal-header">
+            <div style="display:flex;align-items:center;gap:.75rem;"><img src="https://coursecornerkenya.com/assets/images/logo.png" style="width:32px;height:32px;object-fit:contain;" alt=""><h2>Sign In</h2></div>
+            <button class="modal-close-btn" onclick="closeSignInModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="signInForm" class="auth-form" onsubmit="handleSignIn(event)">
+                <div class="form-group"><label>Email</label><input id="siEmail" type="email" class="form-input" placeholder="you@example.com" required></div>
+                <div class="form-group"><label>Password</label><input id="siPassword" type="password" class="form-input" placeholder="Your password" required></div>
+                <button type="submit" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Sign In</button>
+            </form>
+            <p style="text-align:center;margin-top:1rem;font-size:.875rem;color:#6b7280;">No account? <button style="background:none;border:none;color:#16a34a;font-weight:600;cursor:pointer;" onclick="switchToSignUp()">Create one</button></p>
+        </div>
+    </div>
+</div>
+<div id="signUpModal" class="auth-modal-overlay" style="display:none;">
+    <div class="auth-modal">
+        <div class="modal-header">
+            <div style="display:flex;align-items:center;gap:.75rem;"><img src="https://coursecornerkenya.com/assets/images/logo.png" style="width:32px;height:32px;object-fit:contain;" alt=""><h2>Create Account</h2></div>
+            <button class="modal-close-btn" onclick="closeSignUpModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="signUpForm" class="auth-form" onsubmit="handleSignUp(event)">
+                <div class="form-group"><label>Full Name</label><input id="suName" type="text" class="form-input" placeholder="Jane Doe" required></div>
+                <div class="form-group"><label>Email</label><input id="suEmail" type="email" class="form-input" placeholder="you@example.com" required></div>
+                <div class="form-group"><label>Password</label><input id="suPassword" type="password" class="form-input" placeholder="Min 6 chars" required minlength="6"></div>
+                <div class="form-group"><label>Confirm Password</label><input id="suConfirm" type="password" class="form-input" placeholder="Repeat password" required></div>
+                <button type="submit" class="btn-primary"><i class="fas fa-user-plus"></i> Create Account</button>
+            </form>
+            <p style="text-align:center;margin-top:1rem;font-size:.875rem;color:#6b7280;">Have an account? <button style="background:none;border:none;color:#16a34a;font-weight:600;cursor:pointer;" onclick="switchToSignIn()">Sign In</button></p>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+    const app=initializeApp({apiKey:"AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",authDomain:"course-corner.firebaseapp.com",projectId:"course-corner",storageBucket:"course-corner.firebasestorage.app",messagingSenderId:"961706784572",appId:"1:961706784572:web:7aa6c24946570ffda59039"});
+    const auth=getAuth(app); const db=getFirestore(app);
+    onAuthStateChanged(auth,user=>{
+        const si=document.getElementById('signInNavBtn'),su=document.getElementById('signUpNavBtn'),area=document.getElementById('userNavArea'),init=document.getElementById('userInitial');
+        if(user){if(si)si.style.display='none';if(su)su.style.display='none';if(area)area.style.display='flex';if(init)init.textContent=(user.displayName||user.email||'?')[0].toUpperCase();}
+        else{if(si)si.style.display='';if(su)su.style.display='';if(area)area.style.display='none';}
+    });
+    window.openSignInModal=()=>document.getElementById('signInModal').style.display='flex';
+    window.closeSignInModal=()=>document.getElementById('signInModal').style.display='none';
+    window.openSignUpModal=()=>document.getElementById('signUpModal').style.display='flex';
+    window.closeSignUpModal=()=>document.getElementById('signUpModal').style.display='none';
+    window.switchToSignUp=()=>{closeSignInModal();openSignUpModal();};
+    window.switchToSignIn=()=>{closeSignUpModal();openSignInModal();};
+    window.handleSignIn=async e=>{e.preventDefault();try{await signInWithEmailAndPassword(auth,document.getElementById('siEmail').value,document.getElementById('siPassword').value);closeSignInModal();Swal.fire({icon:'success',title:'Welcome back!',timer:2000,showConfirmButton:false});}catch(err){Swal.fire({icon:'error',title:'Error',text:err.message,confirmButtonColor:'#16a34a'});}};
+    window.handleSignUp=async e=>{e.preventDefault();const name=document.getElementById('suName').value,email=document.getElementById('suEmail').value,pw=document.getElementById('suPassword').value,pw2=document.getElementById('suConfirm').value;if(pw!==pw2){Swal.fire({icon:'warning',title:'Passwords do not match',confirmButtonColor:'#16a34a'});return;}try{const{user}=await createUserWithEmailAndPassword(auth,email,pw);await updateProfile(user,{displayName:name});await setDoc(doc(db,'learn_users',user.uid),{uid:user.uid,name,email,createdAt:serverTimestamp()},{merge:true});closeSignUpModal();Swal.fire({icon:'success',title:'Account Created!',confirmButtonColor:'#16a34a'});}catch(err){Swal.fire({icon:'error',title:'Error',text:err.message,confirmButtonColor:'#16a34a'});}};
+    window.handleSignOut=async()=>{await signOut(auth);Swal.fire({icon:'info',title:'Signed out',timer:1500,showConfirmButton:false});};
+    ['signInModal','signUpModal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)e.target.style.display='none';});});
+</script>
+
+<script>
+    // Scroll header
+    window.addEventListener('scroll',()=>document.getElementById('wnHeader').classList.toggle('scrolled',scrollY>10));
+
+    // Mobile menu
+    window.toggleMobileMenu=()=>{
+        document.getElementById('mobileMenu').classList.toggle('show');
+        document.getElementById('mobileMenuBtn').classList.toggle('active');
+    };
+    window.closeMobileMenu=()=>{
+        document.getElementById('mobileMenu').classList.remove('show');
+        document.getElementById('mobileMenuBtn').classList.remove('active');
+    };
+
+    // Post filtering
+    window.filterPosts = function(cat, btn) {
+        document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
+        btn.classList.add('active');
+        const cards = document.querySelectorAll('.post-card');
+        let visible = 0;
+        cards.forEach(c => {
+            const show = cat === 'all' || c.dataset.cat === cat;
+            c.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+        document.getElementById('emptyState').style.display = visible === 0 ? 'block' : 'none';
+    };
+
+    // Newsletter
+    window.subscribeNL = function() {
+        const phone = document.getElementById('nlPhone').value.trim();
+        if (!phone) { Swal.fire({icon:'warning',title:'Enter your phone number',confirmButtonColor:'#16a34a'}); return; }
+        Swal.fire({icon:'success',title:'Subscribed!',text:`We'll send updates to ${phone} on WhatsApp.`,confirmButtonColor:'#16a34a'});
+        document.getElementById('nlPhone').value='';
+    };
+
+    // External link redirect prompt
+    window.confirmExternal = function(e, el) {
+        e.preventDefault();
+        const url  = el.href;
+        const host = new URL(url).hostname.replace('www.','');
+        Swal.fire({
+            title: 'Leaving Learn Portal',
+            html: `You are being redirected to <br><strong>${host}</strong>`,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-external-link-alt"></i>&nbsp;Continue',
+            cancelButtonText: 'Stay Here',
+            confirmButtonColor: '#16a34a',
+            cancelButtonColor: '#6b7280',
+        }).then(r => { if (r.isConfirmed) window.location.href = url; });
+        return false;
+    };
+</script>
+</body>
+</html>

@@ -38,9 +38,9 @@
 </head>
 <body class="bg-gray-50 text-gray-900 font-sans">
     
-    <!-- Navigation -->
-<header class="modern-header" id="detailHeader">
-    <div class="header-container flex items-center justify-between py-2 px-4 max-w-7xl mx-auto">
+<!-- ═══ NAVIGATION ════════════════════════════════════════════ -->
+<header class="modern-header fixed top-0 left-0 right-0 w-full z-[1000] bg-white/95 backdrop-blur-md border-b border-transparent transition-all duration-300" id="learnHeader">
+    <div class="header-container flex items-center justify-between max-w-[1400px] mx-auto px-4 md:px-8 py-3">
         <!-- Logo -->
         <a href="index.html" class="logo-container flex items-center gap-2.5 no-underline">
             <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Course Corner Logo" class="h-8 md:h-10 w-auto">
@@ -53,19 +53,75 @@
         <!-- Desktop Navigation -->
         <nav class="desktop-nav flex items-center gap-10">
             <div class="nav-links flex items-center gap-6">
-                <a href="index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Home</a>
-                <a href="index.html#courses" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Courses</a>
-                <a href="about.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">About</a>
+                <a href="index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors focus:text-[#16a34a]">Home</a>
+                <a href="index.html#courses" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors focus:text-[#16a34a]">Courses</a>
+                <a href="whats-new.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors focus:text-[#16a34a]">What's New</a>
+                <a href="about.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors focus:text-[#16a34a]">About</a>
             </div>
-            <div class="nav-auth-buttons">
-                <button id="signInNavBtn" class="btn-nav-profile" onclick="openSignInModal()"><i class="fas fa-user"></i> Sign In</button>
-                <button id="signUpNavBtn" class="btn-nav-login"   onclick="openSignUpModal()"><i class="fas fa-rocket"></i> Get Started</button>
-                <div id="userNavArea" style="display:none;align-items:center;gap:.75rem;">
-                    <div id="userInitial" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#0ea5e9);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:.9rem;">?</div>
-                    <button class="btn-nav-profile" onclick="handleSignOut()"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
+
+            <!-- Auth Area -->
+            <div class="nav-auth-buttons flex items-center gap-4">
+                <button id="authNavBtn" class="px-6 py-2.5 bg-[#16a34a] text-white rounded-full text-sm font-bold flex items-center gap-2 hover:bg-[#15803d] transition-all shadow-lg shadow-green-600/20" onclick="openAuthModal()">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Sign In</span>
+                </button>
+
+                <div id="userNavArea" style="display: none; align-items: center; gap: 1rem; position: relative;" class="flex items-center gap-3">
+                    <span id="userGreeting" class="text-sm font-semibold text-gray-700">
+                        Hi, <span id="userNameText" class="text-[#16a34a]">User</span>
+                    </span>
+                    <div id="userInitial" onclick="toggleUserDropdown()" class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#16a34a] to-[#0ea5e9] text-white flex items-center justify-center font-bold cursor-pointer shadow-lg shadow-green-600/10 transition-transform active:scale-95">?</div>
+                    
+                    <!-- Dropdown -->
+                    <div id="userDropdown" style="display: none;" class="absolute top-[calc(100%+15px)] right-0 w-[220px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 z-[1000] animate-in fade-in slide-in-from-top-2 duration-200">
+                        <a href="dashboard.html" class="flex items-center gap-3 p-3 text-gray-700 no-underline rounded-xl text-sm font-bold hover:bg-green-50 hover:text-[#16a34a] transition-all group">
+                            <i class="fas fa-graduation-cap text-[#16a34a]/60 group-hover:text-[#16a34a]"></i> 
+                            My Courses
+                        </a>
+                        <hr class="my-1 border-gray-100">
+                        <button onclick="handleSignOut()" class="w-full flex items-center gap-3 p-3 text-red-500 bg-transparent border-none rounded-xl text-sm font-bold cursor-pointer hover:bg-red-50 transition-all">
+                            <i class="fas fa-sign-out-alt opacity-70"></i> 
+                            Sign Out
+                        </button>
+                    </div>
                 </div>
             </div>
         </nav>
+
+        <!-- Mobile Toggle -->
+        <button class="mobile-menu-btn lg:hidden flex flex-col justify-center items-center gap-1.5 w-10 h-10 border-none bg-transparent cursor-pointer" id="mobileMenuBtn" aria-label="Toggle menu">
+            <span class="w-6 h-0.5 bg-gray-800 transition-all duration-300"></span>
+            <span class="w-6 h-0.5 bg-gray-800 transition-all duration-300"></span>
+            <span class="w-6 h-0.5 bg-gray-800 transition-all duration-300"></span>
+        </button>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu lg:hidden fixed top-[64px] left-0 right-0 h-0 opacity-0 overflow-hidden bg-white/98 backdrop-blur-xl transition-all duration-300 z-[999]" id="mobileMenu">
+        <div class="flex flex-col h-full p-6">
+            <nav class="mobile-nav-links flex flex-col gap-2">
+                <a href="index.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Home</a>
+                <a href="index.html#courses" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Courses</a>
+                <a href="whats-new.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">What's New</a>
+                <a href="about.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">About</a>
+            </nav>
+            
+            <div class="mt-auto pt-6 border-t border-gray-100">
+                <div id="mobileAuthArea">
+                    <button class="w-full py-4 bg-[#16a34a] text-white rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg shadow-green-600/20" onclick="openAuthModal(); closeMobileMenu()">
+                        <i class="fas fa-sign-in-alt"></i> Sign In / Sign Up
+                    </button>
+                </div>
+                <div id="mobileUserArea" style="display: none;" class="flex flex-col gap-3">
+                    <a href="dashboard.html" class="w-full py-4 bg-green-50 text-[#16a34a] rounded-2xl font-bold flex items-center justify-center gap-3 no-underline" onclick="closeMobileMenu()">
+                        <i class="fas fa-graduation-cap"></i> My Dashboard
+                    </a>
+                    <button onclick="handleSignOut(); closeMobileMenu()" class="w-full py-4 bg-red-50 text-red-500 border-none rounded-2xl font-bold">
+                        Logout
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </header>
 
@@ -152,49 +208,76 @@
     </div>
 </div>
 
-<!-- ═══ FOOTER ════════════════════════════════════════════════ -->
-<footer class="learn-footer">
-    <div class="footer-inner">
-        <div class="footer-top">
-            <div class="footer-brand">
-                <img src="../assets/images/logo.png" alt="Course Corner">
-                <div class="brand-name">Course Corner</div>
-                <div class="brand-sub">Learn Portal</div>
-                <p>Your career path starts here. Empowering students through quality education.</p>
+<!-- footer class="learn-footer" replacement -->
+    <footer class="cc-footer">
+        <div class="cc-footer-container">
+            <div class="cc-footer-grid">
+                <div class="cc-footer-brand">
+                    <div class="cc-footer-logo">
+                        <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Logo">
+                        <span>Course Corner</span>
+                    </div>
+                    <p>Empowering Kenyan students to gain practical digital skills for the modern economy. Join our community of learners and start your journey today.</p>
+                    <div class="cc-footer-social">
+                        <a href="https://wa.me/254703554765" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                        <a href="https://tiktok.com/@course.corner" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                    </div>
+                </div>
+                
+                <div class="cc-footer-links">
+                    <h4>Learn Portal</h4>
+                    <ul>
+                        <li><a href="index.html#courses">Browse Courses</a></li>
+                        <li><a href="whats-new.html">What's New</a></li>
+                        <li><a href="about.html">About Portal</a></li>
+                        <li><a href="apply.html">Application</a></li>
+                    </ul>
+                </div>
+
+                <div class="cc-footer-links">
+                    <h4>Main Resources</h4>
+                    <ul>
+                        <li><a href="https://coursecornerkenya.com/pages/calculator.html" onclick="confirmExternal(event, this)">Cluster Calculator</a></li>
+                        <li><a href="https://coursecornerkenya.com/pages/packages.html" onclick="confirmExternal(event, this)">Placement Packages</a></li>
+                        <li><a href="https://coursecornerkenya.com/pages/guide.html" onclick="confirmExternal(event, this)">Career Guide</a></li>
+                        <li><a href="https://coursecornerkenya.com/pages/contact.html" onclick="confirmExternal(event, this)">Contact Us</a></li>
+                    </ul>
+                </div>
+
+                <div class="cc-footer-contact">
+                    <h4>Contact Support</h4>
+                    <ul>
+                        <li><i class="fas fa-envelope"></i> support@coursecornerkenya.com</li>
+                        <li><i class="fas fa-phone"></i> +254 703 554 765</li>
+                        <li><i class="fas fa-map-marker-alt"></i> Nairobi, Kenya</li>
+                    </ul>
+                </div>
             </div>
-            <div class="footer-col">
-                <h4>Learn</h4>
-                <ul>
-                    <li><a href="index.html#courses">All Courses</a></li>
-                    <li><a href="course-detail.html">Course Details</a></li>
-                    <li><a href="apply.html">Apply Now</a></li>
-                    <li><a href="dashboard.html">My Dashboard</a></li>
-                    <li><a href="about.html">About Learn</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Course Corner</h4>
-                <ul>
-                    <li><a href="/index.html">Main Site</a></li>
-                    <li><a href="/pages/calculator.html">Cluster Calculator</a></li>
-                    <li><a href="/pages/packages.html">Packages</a></li>
-                    <li><a href="/pages/about.html">About Us</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>Legal</h4>
-                <ul>
-                    <li><a href="/pages/privacy-policy.html">Privacy Policy</a></li>
-                    <li><a href="/pages/terms-of-service.html">Terms of Service</a></li>
-                    <li><a href="/pages/contact.html">Support</a></li>
-                </ul>
+            <div class="cc-footer-bottom">
+                <p>&copy; 2024 Course Corner Learn Portal. All rights reserved.</p>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 Course Corner. All rights reserved. &nbsp;&middot;&nbsp; Empowering Students Through Quality Education</p>
-        </div>
+    </footer>
     </div>
 </footer>
+
+<script>
+function confirmExternal(e, a) {
+    e.preventDefault();
+    Swal.fire({
+        title: 'Main Website',
+        text: 'This will take you to the main Course Corner platform. Continue?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#16a34a',
+        cancelButtonColor: '#334155',
+        confirmButtonText: 'Yes, proceed'
+    }).then((r) => { if(r.isConfirmed) window.location.href = a.href; });
+    return false;
+}
+</script>
 
 <style>
     /* ── Footer ──────────────────────────────────────────── */

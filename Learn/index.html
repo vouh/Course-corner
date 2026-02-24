@@ -30,43 +30,42 @@
 
         /* ── Hero ───────────────────────────────────────────── */
         .learn-hero {
-            min-height:100vh; padding-top:80px;
-            background:linear-gradient(135deg,#f0fdf4 0%,#ecfdf5 40%,#e0f2fe 100%);
+            min-height:92vh; padding-top:80px;
+            background:linear-gradient(135deg,#0a1f10 0%,#111827 55%,#0d1e30 100%);
             display:flex; align-items:center; position:relative; overflow:hidden;
         }
         .learn-hero::before {
-            content:''; position:absolute; top:-120px; right:-120px;
-            width:600px; height:600px;
-            background:radial-gradient(circle,rgba(22,163,74,.08) 0%,transparent 70%);
+            content:''; position:absolute; top:-200px; right:-100px;
+            width:700px; height:700px;
+            background:radial-gradient(circle,rgba(22,163,74,.12) 0%,transparent 65%);
             pointer-events:none;
         }
         .learn-hero::after {
-            content:''; position:absolute; bottom:-80px; left:-80px;
-            width:400px; height:400px;
-            background:radial-gradient(circle,rgba(14,165,233,.06) 0%,transparent 70%);
+            content:''; position:absolute; bottom:-100px; left:-60px;
+            width:500px; height:500px;
+            background:radial-gradient(circle,rgba(14,165,233,.08) 0%,transparent 65%);
             pointer-events:none;
         }
         .hero-inner {
-            max-width:1240px; margin:0 auto; width:100%; padding:4rem 2rem;
-            display:grid; grid-template-columns:1fr 1fr; gap:5rem;
+            max-width:1280px; margin:0 auto; width:100%; padding:4rem 2rem;
+            display:grid; grid-template-columns:1fr 1.15fr; gap:4rem;
             align-items:center; position:relative; z-index:1;
         }
         .hero-badge {
             display:inline-flex; align-items:center; gap:.5rem;
-            background:linear-gradient(135deg,rgba(22,163,74,.12) 0%,rgba(22,163,74,.06) 100%);
-            border:1px solid rgba(22,163,74,.2); color:#15803d;
+            background:rgba(22,163,74,.15); border:1px solid rgba(22,163,74,.3); color:#4ade80;
             padding:.4rem 1rem; border-radius:9999px; font-size:.8125rem;
             font-weight:600; margin-bottom:1.5rem; width:fit-content;
         }
         .hero-heading {
-            font-size:clamp(2.25rem,4.5vw,3.75rem); font-weight:800;
-            line-height:1.15; letter-spacing:-.025em; color:#111827; margin-bottom:1.5rem;
+            font-size:clamp(2.5rem,4.5vw,4rem); font-weight:800;
+            line-height:1.1; letter-spacing:-.03em; color:#fff; margin-bottom:1.5rem;
         }
         .hero-heading .green {
-            background:linear-gradient(135deg,#16a34a 0%,#0ea5e9 100%);
+            background:linear-gradient(135deg,#4ade80 0%,#38bdf8 100%);
             -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
         }
-        .hero-sub { font-size:1.125rem; line-height:1.7; color:#4b5563; margin-bottom:2.5rem; max-width:500px; }
+        .hero-sub { font-size:1.125rem; line-height:1.7; color:#d1d5db; margin-bottom:2.5rem; max-width:500px; }
         .hero-ctas { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:3rem; }
         .btn-hero-primary {
             display:inline-flex; align-items:center; gap:.5rem;
@@ -83,10 +82,10 @@
             font-size:1rem; cursor:pointer; transition:all .3s ease; text-decoration:none;
         }
         .btn-hero-outline:hover { background:#16a34a; color:white; transform:translateY(-3px); box-shadow:0 8px 24px rgba(22,163,74,.25); }
-        .hero-stats { display:flex; gap:2.5rem; }
+        .hero-stats { display:flex; gap:2.5rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,.1); }
         .stat-item { display:flex; flex-direction:column; }
-        .stat-number { font-size:1.625rem; font-weight:800; color:#16a34a; line-height:1; }
-        .stat-label { font-size:.8125rem; color:#6b7280; margin-top:.2rem; }
+        .stat-number { font-size:1.625rem; font-weight:800; color:#4ade80; line-height:1; }
+        .stat-label { font-size:.8125rem; color:#9ca3af; margin-top:.2rem; }
 
         /* Hero visual card */
         .hero-visual { position:relative; display:flex; align-items:center; justify-content:center; }
@@ -188,19 +187,23 @@
         .feature-item p  { font-size:.9rem; opacity:.85; line-height:1.6; }
 
         /* ── Footer ──────────────────────────────────────────── */
-        .learn-footer { background: linear-gradient(135deg, #16a34a, #15803d); color: white; padding: 4rem 2rem 2rem; border-top: 1px solid rgba(255,255,255,0.1); }
-        .footer-inner { max-width: 1240px; margin: 0 auto; }
-        .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 2rem; }
-        .footer-brand img { width: 56px; height: 56px; object-fit: contain; margin-bottom: 1rem; filter: brightness(0) invert(1); }
-        .footer-brand .brand-name { font-size: 1.25rem; font-weight: 800; color: white; }
-        .footer-brand .brand-sub { font-size: 0.875rem; color: #dcfce7; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-        .footer-brand p { margin-top: 1.25rem; font-size: 0.9375rem; color: #f0fdf4; line-height: 1.7; max-width: 280px; }
-        .footer-col h4 { font-size: 0.8125rem; font-weight: 800; color: white; margin-bottom: 1.5rem; letter-spacing: 0.1em; text-transform: uppercase; }
-        .footer-col ul { list-style: none; }
-        .footer-col ul li { margin-bottom: 0.75rem; }
-        .footer-col ul li a { color: #f0fdf4; text-decoration: none; font-size: 0.9375rem; transition: all 0.2s; opacity: 0.8; }
-        .footer-col ul li a:hover { opacity: 1; color: white; transform: translateX(4px); display: inline-block; }
-        .footer-bottom { text-align: center; font-size: 0.875rem; color: #dcfce7; padding-top: 1rem; opacity: 0.8; }
+        .learn-footer { background:#0f172a; color:#94a3b8; padding:4rem 2rem 2rem; border-top:3px solid #16a34a; }
+        .footer-inner { max-width:1240px; margin:0 auto; }
+        .footer-top { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:3rem; padding-bottom:3rem; border-bottom:1px solid rgba(255,255,255,.08); margin-bottom:2rem; }
+        .footer-brand .brand-logo-row { display:flex; align-items:center; gap:.75rem; margin-bottom:1.25rem; }
+        .footer-brand .brand-logo-row img { width:44px; height:44px; object-fit:contain; }
+        .footer-brand .brand-logo-row .fn { font-size:1.125rem; font-weight:800; color:#fff; line-height:1.1; }
+        .footer-brand .brand-logo-row .fs { font-size:.625rem; font-weight:700; color:#0ea5e9; letter-spacing:.08em; text-transform:uppercase; }
+        .footer-brand p { font-size:.9375rem; color:#64748b; line-height:1.7; max-width:260px; }
+        .footer-brand .social-row { display:flex; gap:.75rem; margin-top:1.25rem; }
+        .footer-brand .social-row a { width:36px; height:36px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:.625rem; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:.9rem; text-decoration:none; transition:all .2s; }
+        .footer-brand .social-row a:hover { background:#16a34a; border-color:#16a34a; color:white; }
+        .footer-col h4 { font-size:.75rem; font-weight:700; color:#e2e8f0; margin-bottom:1.25rem; letter-spacing:.1em; text-transform:uppercase; }
+        .footer-col ul { list-style:none; padding:0; margin:0; }
+        .footer-col ul li { margin-bottom:.75rem; }
+        .footer-col ul li a { color:#64748b; text-decoration:none; font-size:.9375rem; transition:all .2s; }
+        .footer-col ul li a:hover { color:#22c55e; padding-left:4px; }
+        .footer-bottom { text-align:center; font-size:.875rem; color:#334155; padding-top:1.5rem; }
 
         /* ── Learn nav pill ──────────────────────────────────── */
         .learn-pill {
@@ -249,6 +252,7 @@
             <div class="nav-links flex items-center gap-6">
                 <a href="index.html" class="modern-nav-link text-[0.9rem] font-semibold text-[#16a34a] no-underline">Home</a>
                 <a href="#courses" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Courses</a>
+                <a href="whats-new.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">What's New</a>
                 <a href="about.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">About</a>
             </div>
 
@@ -294,7 +298,8 @@
         <div class="flex flex-col h-full p-6">
             <nav class="mobile-nav-links flex flex-col gap-2">
                 <a href="index.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Home</a>
-                <a href="#courses" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Courses</a>
+                <a href="index.html#courses" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Courses</a>
+                <a href="whats-new.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">What's New</a>
                 <a href="about.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">About</a>
             </nav>
             
@@ -344,28 +349,33 @@
 
         <!-- Right: visual image -->
         <div class="hero-visual">
-            <div class="relative group">
-                <div class="absolute -inset-1 bg-gradient-to-r from-green-600 to-blue-600 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                <div class="relative bg-white ring-1 ring-gray-900/5 rounded-3xl overflow-hidden leading-none flex items-center justify-center">
-                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1470&auto=format&fit=crop" 
-                         alt="Student Learning" 
-                         class="w-full h-full object-cover max-h-[500px]">
-                    
-                    <!-- Floating stats on image -->
-                    <div class="absolute bottom-6 left-6 right-6 bg-white/80 backdrop-blur-md p-4 rounded-2xl border border-white/20 shadow-xl">
-                        <div class="flex items-center justify-between gap-4">
-                            <div class="flex -space-x-3 overflow-hidden">
-                                <img src="https://i.pravatar.cc/100?u=1" class="inline-block h-8 w-8 rounded-full ring-2 ring-white" alt="Student">
-                                <img src="https://i.pravatar.cc/100?u=2" class="inline-block h-8 w-8 rounded-full ring-2 ring-white" alt="Student">
-                                <img src="https://i.pravatar.cc/100?u=3" class="inline-block h-8 w-8 rounded-full ring-2 ring-white" alt="Student">
+            <div class="relative">
+                <!-- Glow ring -->
+                <div class="absolute -inset-4 rounded-3xl opacity-30" style="background:radial-gradient(ellipse,rgba(22,163,74,.5) 0%,transparent 70%); filter:blur(40px);"></div>
+                <!-- Image frame -->
+                <div class="relative rounded-3xl overflow-hidden shadow-2xl border border-white/10" style="height:520px;">
+                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1470&auto=format&fit=crop"
+                         alt="Students Learning"
+                         class="w-full h-full object-cover">
+                    <!-- Dark overlay bottom -->
+                    <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(10,31,16,.85) 0%,transparent 50%);"></div>
+                    <!-- Stat chips at bottom -->
+                    <div class="absolute bottom-0 left-0 right-0 p-6 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2.5 rounded-2xl">
+                            <div class="flex -space-x-2">
+                                <img src="https://i.pravatar.cc/40?u=a1" class="w-7 h-7 rounded-full ring-2 ring-white/30" alt="">
+                                <img src="https://i.pravatar.cc/40?u=a2" class="w-7 h-7 rounded-full ring-2 ring-white/30" alt="">
+                                <img src="https://i.pravatar.cc/40?u=a3" class="w-7 h-7 rounded-full ring-2 ring-white/30" alt="">
                             </div>
-                            <div class="text-sm font-semibold text-gray-900">
-                                500+ Students enrolled
-                            </div>
-                            <div class="flex items-center gap-1 text-amber-500">
-                                <i class="fas fa-star text-xs"></i>
-                                <span class="text-sm font-bold">4.9/5</span>
-                            </div>
+                            <span class="text-white text-xs font-semibold">500+ Enrolled</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 bg-amber-400/20 backdrop-blur-md border border-amber-400/30 px-4 py-2.5 rounded-2xl">
+                            <i class="fas fa-star text-amber-400 text-xs"></i>
+                            <span class="text-amber-300 text-xs font-bold">4.9 Rating</span>
+                        </div>
+                        <div class="flex items-center gap-1.5 bg-green-400/20 backdrop-blur-md border border-green-400/30 px-4 py-2.5 rounded-2xl">
+                            <i class="fas fa-certificate text-green-400 text-xs"></i>
+                            <span class="text-green-300 text-xs font-bold">Certified</span>
                         </div>
                     </div>
                 </div>
@@ -379,11 +389,6 @@
 <!-- ═══ COURSES ═══════════════════════════════════════════════ -->
 <section class="courses-section" id="courses">
     <div class="section-wrap">
-        <div class="courses-header">
-            <div class="section-label"><i class="fas fa-book-open"></i> Our Courses</div>
-            <h2 class="section-title">Explore What's Available</h2>
-            <p class="section-desc">Structured, self-paced courses built to help students master the skills they need.</p>
-        </div>
         <div class="courses-grid" id="coursesGrid"></div>
     </div>
 </section>
@@ -415,93 +420,81 @@
     </div>
 </section>
 
-<!-- ═══ BLOG ════════════════════════════════════════════ -->
-<section id="blog" class="py-20 bg-gray-50">
+<!-- ═══ WHAT'S NEW TEASER ════════════════════════════════ -->
+<section class="py-16 bg-gray-50">
     <div class="section-wrap">
-        <div class="flex items-end justify-between mb-12">
-            <div>
-                <span class="section-label">Latest Updates</span>
-                <h2 class="section-title">What's New <span class="text-green-600">& Stories</span></h2>
-                <p class="section-desc">Success stories, tips for digital literacy, and recent portal updates.</p>
-            </div>
-            <a href="#" class="btn-hero-outline" style="padding: 0.6rem 1.25rem; font-size: 0.875rem;">View All Posts</a>
-        </div>
-        <div id="blogGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 group hover:shadow-xl transition-all">
-                <div class="h-48 bg-emerald-100 flex items-center justify-center">
-                    <i class="fas fa-rocket text-4xl text-emerald-500 opacity-40"></i>
+        <div class="flex flex-col md:flex-row items-center justify-between gap-6 bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
+            <div class="flex items-center gap-5">
+                <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl text-white flex-shrink-0" style="background:linear-gradient(135deg,#16a34a,#0ea5e9)">
+                    <i class="fas fa-newspaper"></i>
                 </div>
-                <div class="p-6">
-                    <span class="text-[10px] font-black uppercase text-emerald-600 tracking-widest bg-emerald-50 px-2 py-1 rounded">Portal News</span>
-                    <h3 class="font-bold text-lg mt-3 group-hover:text-emerald-600 transition-colors">Course Corner Learn: Portal V2 is Live</h3>
-                    <p class="text-sm text-gray-500 mt-2 line-clamp-2">Our new learning portal is officially launched with 3 tiered packages and enhanced support.</p>
+                <div>
+                    <h3 class="text-xl font-extrabold text-gray-900">What's New</h3>
+                    <p class="text-sm text-gray-500 mt-0.5">Updates, success stories and tips from the Learn Portal.</p>
                 </div>
             </div>
-            <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 group hover:shadow-xl transition-all">
-                <div class="h-48 bg-blue-100 flex items-center justify-center">
-                    <i class="fas fa-graduation-cap text-4xl text-blue-500 opacity-40"></i>
-                </div>
-                <div class="p-6">
-                    <span class="text-[10px] font-black uppercase text-blue-600 tracking-widest bg-blue-50 px-2 py-1 rounded">Success Story</span>
-                    <h3 class="font-bold text-lg mt-3 group-hover:text-blue-600 transition-colors">How John Mastered MS Office in 4 Weeks</h3>
-                    <p class="text-sm text-gray-500 mt-2 line-clamp-2">Hear from John, one of our first students who landed a data entry role after completing our course.</p>
-                </div>
-            </div>
-            <div class="bg-white rounded-2xl overflow-hidden border border-gray-100 group hover:shadow-xl transition-all">
-                <div class="h-48 bg-purple-100 flex items-center justify-center">
-                    <i class="fas fa-lightbulb text-4xl text-purple-500 opacity-40"></i>
-                </div>
-                <div class="p-6">
-                    <span class="text-[10px] font-black uppercase text-purple-600 tracking-widest bg-purple-50 px-2 py-1 rounded">Quick Tips</span>
-                    <h3 class="font-bold text-lg mt-3 group-hover:text-purple-600 transition-colors">5 AI Prompts to Boost Your Productivity</h3>
-                    <p class="text-sm text-gray-500 mt-2 line-clamp-2">Artificial Intelligence is here to stay. Here are 5 quick prompts to save you hours every week.</p>
-                </div>
-            </div>
+            <a href="whats-new.html" class="btn-hero-primary" style="flex-shrink:0">
+                <i class="fas fa-arrow-right"></i> View All Posts
+            </a>
         </div>
     </div>
 </section>
 
 
 <!-- ═══ FOOTER ════════════════════════════════════════════════ -->
-<footer class="learn-footer">
-    <div class="footer-inner">
-        <div class="footer-top">
-            <div class="footer-brand">
-                <img src="../assets/images/logo.png" alt="Course Corner">
-                <div class="brand-name">Course Corner</div>
-                <div class="brand-sub">Learn Portal</div>
-                <p>Your career path starts here. Empowering students through quality education.</p>
+<footer class="cc-footer">
+    <div class="cc-footer-container">
+        <div class="cc-footer-grid">
+            <div class="cc-footer-brand">
+                <div class="flex items-center gap-2 mb-4">
+                    <img src="https://coursecornerkenya.com/assets/images/logo.png" class="h-10 w-auto" alt="Course Corner logo" />
+                    <div class="flex flex-col leading-none">
+                        <span class="text-white font-extrabold text-lg">Course Corner</span>
+                        <span class="text-blue-400 font-bold text-[0.6rem] uppercase tracking-wider">Learn Portal</span>
+                    </div>
+                </div>
+                <p>Empowering Kenyan students to gain practical digital skills for the modern economy.</p>
+                <div class="cc-social-links flex gap-3 mt-6">
+                    <a href="#" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#16a34a] transition-all"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#16a34a] transition-all"><i class="fab fa-tiktok"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#16a34a] transition-all"><i class="fab fa-twitter"></i></a>
+                </div>
             </div>
-            <div class="footer-col">
-                <h4>Learn</h4>
-                <ul>
-                    <li><a href="#courses">All Courses</a></li>
-                    <li><a href="course-detail.html">Course Details</a></li>
-                    <li><a href="apply.html">Apply Now</a></li>
-                    <li><a href="dashboard.html">My Dashboard</a></li>
-                    <li><a href="about.html">About Learn</a></li>
+
+            <div class="cc-footer-links">
+                <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Learn Portal</h4>
+                <ul class="space-y-3">
+                    <li><a href="index.html" class="text-gray-400 hover:text-white transition-all text-sm">Home</a></li>
+                    <li><a href="index.html#courses" class="text-gray-400 hover:text-white transition-all text-sm">Our Courses</a></li>
+                    <li><a href="apply.html" class="text-gray-400 hover:text-white transition-all text-sm">Apply Now</a></li>
+                    <li><a href="dashboard.html" class="text-gray-400 hover:text-white transition-all text-sm">Student Dashboard</a></li>
+                    <li><a href="whats-new.html" class="text-gray-400 hover:text-white transition-all text-sm">What's New</a></li>
                 </ul>
             </div>
-            <div class="footer-col">
-                <h4>Course Corner</h4>
-                <ul>
-                    <li><a href="/index.html">Main Site</a></li>
-                    <li><a href="/pages/calculator.html">Cluster Calculator</a></li>
-                    <li><a href="/pages/packages.html">Packages</a></li>
-                    <li><a href="/pages/about.html">About Us</a></li>
+
+            <div class="cc-footer-links">
+                <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Main Resources</h4>
+                <ul class="space-y-3">
+                    <li><a href="https://coursecornerkenya.com" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Main Site</a></li>
+                    <li><a href="https://coursecornerkenya.com/pages/calculator.html" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Cluster Calculator</a></li>
+                    <li><a href="https://coursecornerkenya.com/pages/privacy-policy.html" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Privacy Policy</a></li>
+                    <li><a href="https://coursecornerkenya.com/pages/terms-of-service.html" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Terms of Service</a></li>
                 </ul>
             </div>
-            <div class="footer-col">
-                <h4>Legal</h4>
-                <ul>
-                    <li><a href="/pages/privacy-policy.html">Privacy Policy</a></li>
-                    <li><a href="/pages/terms-of-service.html">Terms of Service</a></li>
-                    <li><a href="/pages/contact.html">Support</a></li>
+
+            <div class="cc-footer-contact">
+                <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Contact Support</h4>
+                <ul class="space-y-4">
+                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-envelope text-[#16a34a]"></i> info.coursecorner@gmail.com</li>
+                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-phone text-[#16a34a]"></i> 0718 744780</li>
+                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-phone text-[#16a34a]"></i> 0741 739262</li>
+                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-map-marker-alt text-[#16a34a]"></i> Nairobi, Kenya</li>
                 </ul>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 Course Corner. All rights reserved. &nbsp;&middot;&nbsp; Empowering Students Through Quality Education</p>
+
+        <div class="cc-footer-bottom border-t border-white/5 pt-8 mt-8 text-center">
+            <p class="text-gray-500 text-sm">&copy; 2026 Course Corner. All rights reserved. &nbsp;&middot;&nbsp; Empowering Students Through Quality Education</p>
         </div>
     </div>
 </footer>
@@ -874,6 +867,25 @@
         const mmBtn = document.getElementById('mobileMenuBtn');
         if (mm) mm.classList.remove('show');
         if (mmBtn) mmBtn.classList.remove('active');
+    };
+
+    // ── External link redirect prompt ─────────────────────────
+    window.confirmExternal = function(e, el) {
+        e.preventDefault();
+        const url  = el.href;
+        const host = new URL(url).hostname.replace('www.','');
+        Swal.fire({
+            title: 'Leaving Learn Portal',
+            html: `You are being redirected to <br><strong>${host}</strong>`,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-external-link-alt"></i>&nbsp;Continue',
+            cancelButtonText: 'Stay Here',
+            confirmButtonColor: '#16a34a',
+            cancelButtonColor: '#6b7280',
+            borderRadius: '1rem',
+        }).then(r => { if (r.isConfirmed) window.location.href = url; });
+        return false;
     };
 </script>
 

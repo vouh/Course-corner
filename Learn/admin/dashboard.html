@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn Admin Dashboard - Course Corner</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="../../apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="../../favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="../../favicon-16x16.png">
+    <link rel="manifest" href="../../site.webmanifest">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="../../admin/js/admin-auth.js"></script>
+    <script src="../../admin/js/learn-admin.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac',
+                            400: '#4ade80', 500: '#22c55e', 600: '#16a34a', 700: '#15803d',
+                            800: '#166534', 900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        .loader { width: 48px; height: 48px; border: 4px solid #e5e7eb; border-top-color: #22c55e; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .sidebar { transition: transform 0.3s ease, width 0.3s ease; }
+    </style>
+</head>
+
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="min-h-screen flex items-center justify-center p-4">
+        <div class="w-full max-w-md bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-8 border border-gray-100 dark:border-gray-700">
+            <div class="text-center mb-8">
+                <img src="../../assets/images/logo.png" class="w-20 h-20 mx-auto mb-4 rounded-2xl shadow-lg">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Learn Dashboard</h1>
+                <p class="text-gray-500">Administrator Login</p>
+            </div>
+            <form id="login-form" class="space-y-4">
+                <input type="email" id="login-email" placeholder="Email" required class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-xl border-none">
+                <input type="password" id="login-password" placeholder="Password" required class="w-full px-4 py-3 bg-gray-50 dark:bg-gray-700 rounded-xl border-none">
+                <div id="login-error" class="hidden text-red-500 text-sm"></div>
+                <button type="submit" id="login-btn" class="w-full bg-primary-600 text-white py-4 rounded-xl font-bold shadow-lg hover:bg-primary-700 transition-all">Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div id="dashboard" class="hidden">
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-40 sidebar">
+            <div class="h-20 flex items-center gap-3 px-6 border-b border-gray-200">
+                <img src="../../assets/images/logo.png" class="w-10 h-10 rounded-lg">
+                <div>
+                    <h1 class="text-lg font-bold">Course Corner</h1>
+                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Learn Dashboard</p>
+                </div>
+            </div>
+            <nav class="p-4 space-y-1">
+                <a href="#" onclick="switchPage('learn-courses')" id="nav-learn-courses" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium active">
+                    <i class="fas fa-graduation-cap w-6"></i>
+                    <span>Course Catalog</span>
+                </a>
+                <a href="#" onclick="switchPage('learn-applications')" id="nav-learn-applications" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
+                    <i class="fas fa-user-graduate w-6"></i>
+                    <span>Applications</span>
+                </a>
+                <div class="pt-4 mt-4 border-t border-gray-100">
+                    <a href="../../admin/index.html" class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-arrow-left w-6"></i>
+                        <span>Back to Main Admin</span>
+                    </a>
+                </div>
+            </nav>
+            <div class="absolute bottom-0 left-0 right-0 p-4 border-t">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center text-white font-bold" id="userInitial">?</div>
+                    <div class="flex-1 min-w-0">
+                        <p id="sidebar-email" class="text-xs font-bold truncate text-gray-900 dark:text-white">Admin</p>
+                    </div>
+                    <button onclick="logout()" class="p-2 text-gray-400 hover:text-red-500"><i class="fas fa-sign-out-alt"></i></button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main -->
+        <div class="lg:ml-72 min-h-screen">
+            <header class="h-20 bg-white dark:bg-gray-800 border-b border-gray-200 px-8 flex items-center justify-between sticky top-0 z-30">
+                <h2 id="page-title" class="text-xl font-bold">Course Catalog</h2>
+                <div class="flex gap-2">
+                    <button onclick="switchPage('learn-courses')" class="p-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100"><i class="fas fa-sync-alt"></i></button>
+                    <button onclick="toggleTheme()" class="p-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100"><i class="fas fa-moon"></i></button>
+                </div>
+            </header>
+            
+            <main class="p-6">
+                <!-- Course Management Page -->
+                <div id="page-learn-courses">
+                    <div class="flex items-center justify-between mb-8">
+                        <div>
+                            <h3 class="text-lg font-extrabold text-gray-900">Manage Syllabus</h3>
+                            <p class="text-sm text-gray-500">Update course content and prices</p>
+                        </div>
+                        <button onclick="openAddCourseModal()" class="px-5 py-2.5 bg-primary-600 text-white font-bold rounded-xl shadow-lg">Add Course</button>
+                    </div>
+                    <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+                </div>
+
+                <!-- Applications Page -->
+                <div id="page-learn-applications" class="hidden">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
+                        <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <h3 class="font-bold">Student Applications</h3>
+                            <select id="app-status-filter" onchange="filterLearnApps()" class="bg-white border rounded-lg px-3 py-1 text-sm">
+                                <option value="all">All</option>
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                            </select>
+                        </div>
+                        <table class="w-full text-left">
+                            <thead class="bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                <tr>
+                                    <th class="px-6 py-4">Student</th>
+                                    <th class="px-6 py-4">Course</th>
+                                    <th class="px-6 py-4">Date</th>
+                                    <th class="px-6 py-4 text-center">Status</th>
+                                    <th class="px-6 py-4 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="learn-apps-table-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const app = firebase.initializeApp({
+            apiKey:"AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
+            authDomain:"course-corner.firebaseapp.com",
+            projectId:"course-corner",
+            appId:"1:961706784572:web:7aa6c24946570ffda59039"
+        });
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        auth.onAuthStateChanged(user => {
+            if (user && isAuthorizedAdmin(user)) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('dashboard').classList.remove('hidden');
+                document.getElementById('sidebar-email').textContent = user.email;
+                document.getElementById('userInitial').textContent = user.email[0].toUpperCase();
+                loadLearnCourses();
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('dashboard').classList.add('hidden');
+            }
+        });
+
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const pass = document.getElementById('login-password').value;
+            const btn = document.getElementById('login-btn');
+            btn.disabled = true;
+            try {
+                await auth.signInWithEmailAndPassword(email, pass);
+            } catch (err) {
+                document.getElementById('login-error').textContent = err.message;
+                document.getElementById('login-error').classList.remove('hidden');
+                btn.disabled = false;
+            }
+        });
+
+        function switchPage(page) {
+            document.getElementById('page-learn-courses').classList.add('hidden');
+            document.getElementById('page-learn-applications').classList.add('hidden');
+            document.getElementById(`page-${page}`).classList.remove('hidden');
+            document.getElementById('page-title').textContent = page === 'learn-courses' ? 'Course Catalog' : 'Student Applications';
+            
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('bg-primary-50', 'text-primary-600'));
+            document.getElementById(`nav-${page}`).classList.add('bg-primary-50', 'text-primary-600');
+            
+            if(page === 'learn-applications') loadLearnApplications();
+            if(page === 'learn-courses') loadLearnCourses();
+        }
+
+        function logout() { auth.signOut(); }
+        function showToast(msg, type) { alert(msg); } // Basic for now
+        function toggleTheme() { document.documentElement.classList.toggle('dark'); }
+    </script>
+</body>
+</html>

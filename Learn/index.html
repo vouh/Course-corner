@@ -1,1034 +1,774 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Corner Learn - Online Learning Portal</title>
-    
+    <title>Course Corner Learn – Online Learning Portal</title>
+
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <link rel="icon" href="/favicon.ico" sizes="any">
-    <link rel="manifest" href="/site.webmanifest">
 
-    <!-- External Libraries -->
+    <!-- External Deps -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
-    <!-- Firebase Config -->
-    <script src="../assets/js/firebase-config.js" type="module"></script>
-
-    <!-- Stylesheets -->
+    <!-- Site Stylesheets -->
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../assets/css/modern-ui.css">
     <link rel="stylesheet" href="../assets/css/auth.css">
+
     <style>
-        :root {
-            --primary: #16a34a;
-            --primary-dark: #15803d;
-            --primary-light: #22c55e;
-            --secondary: #0ea5e9;
-            --accent: #f59e0b;
-            --text-dark: #1f2937;
-            --text-gray: #4b5563;
-            --border-gray: #e5e7eb;
+        body { font-family: 'Inter','Poppins',sans-serif; background:#f9fafb; color:#1f2937; }
+
+        /* ── Hero ───────────────────────────────────────────── */
+        .learn-hero {
+            min-height:100vh; padding-top:80px;
+            background:linear-gradient(135deg,#f0fdf4 0%,#ecfdf5 40%,#e0f2fe 100%);
+            display:flex; align-items:center; position:relative; overflow:hidden;
         }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        .learn-hero::before {
+            content:''; position:absolute; top:-120px; right:-120px;
+            width:600px; height:600px;
+            background:radial-gradient(circle,rgba(22,163,74,.08) 0%,transparent 70%);
+            pointer-events:none;
         }
-
-        body {
-            font-family: 'Poppins', sans-serif;
-            color: var(--text-dark);
-            background-color: #f9fafb;
+        .learn-hero::after {
+            content:''; position:absolute; bottom:-80px; left:-80px;
+            width:400px; height:400px;
+            background:radial-gradient(circle,rgba(14,165,233,.06) 0%,transparent 70%);
+            pointer-events:none;
         }
-
-        /* Navigation */
-        nav {
-            position: fixed;
-            top: 0;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            z-index: 1000;
-            padding: 1rem 2rem;
+        .hero-inner {
+            max-width:1240px; margin:0 auto; width:100%; padding:4rem 2rem;
+            display:grid; grid-template-columns:1fr 1fr; gap:5rem;
+            align-items:center; position:relative; z-index:1;
         }
-
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .hero-badge {
+            display:inline-flex; align-items:center; gap:.5rem;
+            background:linear-gradient(135deg,rgba(22,163,74,.12) 0%,rgba(22,163,74,.06) 100%);
+            border:1px solid rgba(22,163,74,.2); color:#15803d;
+            padding:.4rem 1rem; border-radius:9999px; font-size:.8125rem;
+            font-weight:600; margin-bottom:1.5rem; width:fit-content;
         }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            font-weight: 700;
-            font-size: 1.25rem;
-            color: var(--primary);
-            text-decoration: none;
+        .hero-heading {
+            font-size:clamp(2.25rem,4.5vw,3.75rem); font-weight:800;
+            line-height:1.15; letter-spacing:-.025em; color:#111827; margin-bottom:1.5rem;
         }
-
-        .logo img {
-            width: 40px;
-            height: 40px;
+        .hero-heading .green {
+            background:linear-gradient(135deg,#16a34a 0%,#0ea5e9 100%);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
         }
-
-        .logo-text {
-            display: flex;
-            flex-direction: column;
-            line-height: 1;
+        .hero-sub { font-size:1.125rem; line-height:1.7; color:#4b5563; margin-bottom:2.5rem; max-width:500px; }
+        .hero-ctas { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:3rem; }
+        .btn-hero-primary {
+            display:inline-flex; align-items:center; gap:.5rem;
+            padding:.9rem 2rem; background:linear-gradient(135deg,#16a34a 0%,#15803d 100%);
+            color:white; border:none; border-radius:.75rem; font-weight:700;
+            font-size:1rem; cursor:pointer; transition:all .3s ease;
+            box-shadow:0 8px 24px rgba(22,163,74,.28); text-decoration:none;
         }
-
-        .logo-text .main {
-            font-size: 1.1rem;
+        .btn-hero-primary:hover { transform:translateY(-3px); box-shadow:0 14px 32px rgba(22,163,74,.38); }
+        .btn-hero-outline {
+            display:inline-flex; align-items:center; gap:.5rem;
+            padding:.9rem 2rem; background:white; color:#16a34a;
+            border:2px solid #16a34a; border-radius:.75rem; font-weight:700;
+            font-size:1rem; cursor:pointer; transition:all .3s ease; text-decoration:none;
         }
+        .btn-hero-outline:hover { background:#16a34a; color:white; transform:translateY(-3px); box-shadow:0 8px 24px rgba(22,163,74,.25); }
+        .hero-stats { display:flex; gap:2.5rem; }
+        .stat-item { display:flex; flex-direction:column; }
+        .stat-number { font-size:1.625rem; font-weight:800; color:#16a34a; line-height:1; }
+        .stat-label { font-size:.8125rem; color:#6b7280; margin-top:.2rem; }
 
-        .logo-text .sub {
-            font-size: 0.75rem;
-            color: var(--secondary);
-            font-weight: 500;
+        /* Hero visual card */
+        .hero-visual { position:relative; display:flex; align-items:center; justify-content:center; }
+        .hero-visual-card {
+            background:white; border-radius:2rem; padding:2.5rem;
+            box-shadow:0 30px 80px rgba(22,163,74,.12),0 8px 24px rgba(0,0,0,.06);
+            border:1px solid rgba(22,163,74,.1); width:100%; max-width:420px; position:relative;
         }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
+        .hero-logo-center { display:flex; flex-direction:column; align-items:center; margin-bottom:2rem; }
+        .hero-logo-center img { width:90px; height:90px; object-fit:contain; margin-bottom:1rem; }
+        .hero-logo-center .portal-name { font-size:1.4rem; font-weight:800; color:#16a34a; letter-spacing:-.02em; text-align:center; line-height:1.2; }
+        .hero-logo-center .portal-sub  { font-size:.8125rem; color:#6b7280; text-align:center; margin-top:.25rem; }
+        .hero-course-preview { display:flex; flex-direction:column; gap:.75rem; }
+        .preview-item {
+            display:flex; align-items:center; gap:1rem;
+            padding:.875rem 1rem; background:#f9fafb; border-radius:.875rem;
+            border:1px solid #e5e7eb; transition:all .2s;
         }
-
-        .nav-links a {
-            color: var(--text-gray);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
+        .preview-item:hover { background:#f0fdf4; border-color:#bbf7d0; }
+        .preview-icon { width:40px; height:40px; border-radius:.625rem; display:flex; align-items:center; justify-content:center; font-size:1.1rem; color:white; flex-shrink:0; }
+        .preview-info { flex:1; min-width:0; }
+        .preview-title { font-size:.875rem; font-weight:600; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .preview-meta  { font-size:.75rem; color:#6b7280; margin-top:.1rem; }
+        .preview-badge { font-size:.6875rem; font-weight:600; padding:.2rem .5rem; border-radius:9999px; white-space:nowrap; }
+        .badge-beginner    { background:#dcfce7; color:#15803d; }
+        .badge-intermediate{ background:#dbeafe; color:#1d4ed8; }
+        .badge-advanced    { background:#fce7f3; color:#9d174d; }
+        .float-badge {
+            position:absolute; background:white; border-radius:1rem; padding:.625rem .875rem;
+            box-shadow:0 8px 24px rgba(0,0,0,.1); display:flex; align-items:center; gap:.5rem;
+            font-size:.8125rem; font-weight:600; border:1px solid #e5e7eb;
+            animation:float 3s ease-in-out infinite;
         }
+        .float-badge.top-right   { top:-20px; right:-20px; animation-delay:0s; }
+        .float-badge.bottom-left { bottom:-20px; left:-20px; animation-delay:1.5s; }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
 
-        .nav-links a:hover {
-            color: var(--primary);
+        /* ── Shared section ──────────────────────────────────── */
+        .section-wrap { max-width:1240px; margin:0 auto; padding:0 2rem; }
+        .section-label {
+            display:inline-flex; align-items:center; gap:.5rem;
+            background:rgba(22,163,74,.08); color:#15803d;
+            padding:.35rem .875rem; border-radius:9999px; font-size:.8rem;
+            font-weight:600; margin-bottom:.75rem; letter-spacing:.03em; text-transform:uppercase;
         }
+        .section-title { font-size:clamp(1.75rem,3vw,2.5rem); font-weight:800; color:#111827; letter-spacing:-.02em; margin-bottom:.75rem; line-height:1.2; }
+        .section-desc  { font-size:1.0625rem; color:#6b7280; line-height:1.7; max-width:580px; }
 
-        .nav-btn {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .nav-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(22, 163, 74, 0.3);
-        }
-
-        .nav-btn-secondary {
-            background: transparent;
-            color: var(--primary);
-            border: 1px solid var(--primary);
-            margin-right: 0.5rem;
-        }
-
-        .nav-btn-secondary:hover {
-            background: var(--primary);
-            color: white;
-        }
-
-        @media (max-width: 768px) {
-            nav {
-                padding: 1rem;
-            }
-
-            .nav-links {
-                display: none;
-            }
-
-            .nav-container {
-                padding: 0 1rem;
-            }
-        }
-
-        /* Hero Section */
-        .hero {
-            margin-top: 70px;
-            padding: 3rem 2rem;
-            background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
-            min-height: calc(100vh - 70px);
-            display: flex;
-            align-items: center;
-        }
-
-        .hero-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        .hero-content h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
-            line-height: 1.2;
-            margin-bottom: 1.5rem;
-            color: var(--text-dark);
-        }
-
-        .hero-content h1 .gradient {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero-content p {
-            font-size: 1.125rem;
-            color: var(--text-gray);
-            margin-bottom: 2rem;
-            line-height: 1.6;
-        }
-
-        .cta-buttons {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .btn-cta {
-            padding: 1rem 2rem;
-            border-radius: 0.75rem;
-            font-weight: 600;
-            font-size: 1rem;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .btn-primary-cta {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: white;
-            box-shadow: 0 10px 30px rgba(22, 163, 74, 0.3);
-        }
-
-        .btn-primary-cta:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 40px rgba(22, 163, 74, 0.4);
-        }
-
-        .btn-secondary-cta {
-            background: white;
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-
-        .btn-secondary-cta:hover {
-            background: var(--primary);
-            color: white;
-            transform: translateY(-4px);
-        }
-
-        .hero-image {
-            position: relative;
-            height: 500px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .hero-image-placeholder {
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--secondary) 100%);
-            border-radius: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4rem;
-            color: white;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(22, 163, 74, 0.2);
-        }
-
-        .hero-image-placeholder::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
-        }
-
-        @media (max-width: 768px) {
-            .hero-container {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-                padding: 2rem 1rem;
-            }
-
-            .hero-content h1 {
-                font-size: 2rem;
-            }
-
-            .hero-content p {
-                font-size: 1rem;
-            }
-
-            .hero-image {
-                height: 300px;
-            }
-
-            .cta-buttons {
-                flex-direction: column;
-            }
-
-            .btn-cta {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-
-        /* Courses Section */
-        .courses-section {
-            padding: 4rem 2rem;
-            background: #ffffff;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 3rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .section-header h2 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            margin-bottom: 1rem;
-            color: var(--text-dark);
-        }
-
-        .section-header p {
-            font-size: 1.125rem;
-            color: var(--text-gray);
-            line-height: 1.6;
-        }
-
-        .courses-container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .courses-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 2rem;
-        }
-
+        /* ── Courses ─────────────────────────────────────────── */
+        .courses-section { padding:5rem 2rem; background:white; }
+        .courses-header  { margin-bottom:3rem; }
+        .courses-grid    { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.75rem; }
         .course-card {
-            background: white;
-            border-radius: 1rem;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            border: 1px solid var(--border-gray);
+            background:white; border-radius:1.25rem; border:1px solid #e5e7eb;
+            overflow:hidden; transition:all .3s cubic-bezier(.4,0,.2,1);
+            display:flex; flex-direction:column;
+        }
+        .course-card:hover { transform:translateY(-6px); box-shadow:0 20px 50px rgba(22,163,74,.1),0 8px 20px rgba(0,0,0,.06); border-color:#bbf7d0; }
+        .course-thumb { height:160px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+        .course-thumb i { font-size:3rem; color:white; position:relative; z-index:1; filter:drop-shadow(0 4px 8px rgba(0,0,0,.15)); }
+        .course-thumb::after { content:''; position:absolute; inset:0; background:linear-gradient(45deg,rgba(255,255,255,.08) 0%,transparent 100%); }
+        .course-body { padding:1.5rem; flex:1; display:flex; flex-direction:column; }
+        .course-level-tag { display:inline-flex; align-items:center; gap:.3rem; font-size:.75rem; font-weight:600; padding:.25rem .625rem; border-radius:9999px; margin-bottom:.875rem; width:fit-content; }
+        .course-name  { font-size:1.125rem; font-weight:700; color:#111827; margin-bottom:.5rem; line-height:1.35; }
+        .course-desc  { font-size:.9rem; color:#6b7280; line-height:1.6; flex:1; margin-bottom:1.25rem; }
+        .course-footer { display:flex; align-items:center; justify-content:space-between; padding-top:1rem; border-top:1px solid #f3f4f6; }
+        .course-meta-info { display:flex; align-items:center; gap:.375rem; font-size:.8125rem; color:#9ca3af; }
+        .course-meta-info i { font-size:.75rem; }
+        .btn-enrol {
+            display:inline-flex; align-items:center; gap:.375rem;
+            padding:.5rem 1.125rem; background:linear-gradient(135deg,#16a34a 0%,#15803d 100%);
+            color:white; border:none; border-radius:.625rem; font-size:.875rem;
+            font-weight:600; cursor:pointer; transition:all .2s;
+        }
+        .btn-enrol:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(22,163,74,.3); }
+
+        /* ── Features band ───────────────────────────────────── */
+        .features-band {
+            padding:4rem 2rem;
+            background:linear-gradient(135deg,#16a34a 0%,#15803d 100%);
+            color:white; position:relative; overflow:hidden;
+        }
+        .features-band::before {
+            content:''; position:absolute; inset:0; pointer-events:none;
+            background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .features-grid { max-width:1240px; margin:0 auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:2.5rem; position:relative; }
+        .feature-item  { text-align:center; }
+        .feature-icon-wrap { width:64px; height:64px; background:rgba(255,255,255,.15); border-radius:1rem; display:flex; align-items:center; justify-content:center; font-size:1.75rem; margin:0 auto 1.25rem; backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,.2); }
+        .feature-item h3 { font-size:1.125rem; font-weight:700; margin-bottom:.5rem; }
+        .feature-item p  { font-size:.9rem; opacity:.85; line-height:1.6; }
+
+        /* ── Footer ──────────────────────────────────────────── */
+        .learn-footer { background: linear-gradient(135deg, #16a34a, #15803d); color: white; padding: 4rem 2rem 2rem; border-top: 1px solid rgba(255,255,255,0.1); }
+        .footer-inner { max-width: 1240px; margin: 0 auto; }
+        .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem; padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 2rem; }
+        .footer-brand img { width: 56px; height: 56px; object-fit: contain; margin-bottom: 1rem; filter: brightness(0) invert(1); }
+        .footer-brand .brand-name { font-size: 1.25rem; font-weight: 800; color: white; }
+        .footer-brand .brand-sub { font-size: 0.875rem; color: #dcfce7; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .footer-brand p { margin-top: 1.25rem; font-size: 0.9375rem; color: #f0fdf4; line-height: 1.7; max-width: 280px; }
+        .footer-col h4 { font-size: 0.8125rem; font-weight: 800; color: white; margin-bottom: 1.5rem; letter-spacing: 0.1em; text-transform: uppercase; }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 0.75rem; }
+        .footer-col ul li a { color: #f0fdf4; text-decoration: none; font-size: 0.9375rem; transition: all 0.2s; opacity: 0.8; }
+        .footer-col ul li a:hover { opacity: 1; color: white; transform: translateX(4px); display: inline-block; }
+        .footer-bottom { text-align: center; font-size: 0.875rem; color: #dcfce7; padding-top: 1rem; opacity: 0.8; }
+
+        /* ── Learn nav pill ──────────────────────────────────── */
+        .learn-pill {
+            display:inline-flex; align-items:center; gap:.375rem;
+            background:linear-gradient(135deg,#16a34a 0%,#0ea5e9 100%);
+            color:white; font-size:.7rem; font-weight:700;
+            padding:.2rem .55rem; border-radius:9999px; text-transform:uppercase;
+            letter-spacing:.04em; margin-left:.4rem; vertical-align:middle;
         }
 
-        .course-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(22, 163, 74, 0.15);
-            border-color: var(--primary);
+        /* ── Responsive ──────────────────────────────────────── */
+        @media(max-width:1024px){
+            .hero-inner{grid-template-columns:1fr;gap:3rem;}
+            .hero-visual{display:none;}
+            .hero-heading{font-size:2.5rem;}
+            .footer-top{grid-template-columns:1fr 1fr;gap:2rem;}
         }
-
-        .course-image {
-            width: 100%;
-            height: 180px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            color: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .course-image::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 100%);
-        }
-
-        .course-content {
-            padding: 1.5rem;
-        }
-
-        .course-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%);
-            color: white;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-bottom: 0.75rem;
-        }
-
-        .course-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .course-description {
-            font-size: 0.9375rem;
-            color: var(--text-gray);
-            margin-bottom: 1rem;
-            line-height: 1.5;
-        }
-
-        .course-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 1rem;
-            border-top: 1px solid var(--border-gray);
-            font-size: 0.875rem;
-            color: var(--text-gray);
-        }
-
-        .course-btn {
-            background: transparent;
-            color: var(--primary);
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            padding: 0.5rem 1rem;
-            margin-right: -1rem;
-        }
-
-        .course-btn:hover {
-            color: var(--primary-dark);
-            transform: translateX(4px);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 4rem 2rem;
-        }
-
-        .empty-state-icon {
-            font-size: 4rem;
-            color: var(--primary-light);
-            margin-bottom: 1rem;
-        }
-
-        .empty-state h3 {
-            font-size: 1.5rem;
-            color: var(--text-dark);
-            margin-bottom: 0.5rem;
-        }
-
-        .empty-state p {
-            color: var(--text-gray);
-            margin-bottom: 2rem;
-        }
-
-        /* Footer */
-        footer {
-            background: linear-gradient(135deg, var(--text-dark) 0%, #374151 100%);
-            color: white;
-            padding: 3rem 2rem;
-            margin-top: 3rem;
-        }
-
-        .footer-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin-bottom: 2rem;
-        }
-
-        .footer-section h3 {
-            font-size: 1rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            color: var(--primary-light);
-        }
-
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section ul li {
-            margin-bottom: 0.75rem;
-        }
-
-        .footer-section a {
-            color: #d1d5db;
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-section a:hover {
-            color: var(--primary-light);
-        }
-
-        .footer-bottom {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 2rem;
-            text-align: center;
-            color: #d1d5db;
+        @media(max-width:640px){
+            .hero-inner{padding:2rem 1.25rem;}
+            .hero-heading{font-size:2rem;}
+            .hero-ctas{flex-direction:column;}
+            .btn-hero-primary,.btn-hero-outline{width:100%;justify-content:center;}
+            .hero-stats{gap:1.5rem;}
+            .courses-section,.features-band{padding:3rem 1.25rem;}
+            .footer-top{grid-template-columns:1fr;gap:1.5rem;}
         }
     </style>
 </head>
 
 <body>
-    <!-- Navigation -->
-    <nav>
-        <div class="nav-container">
-            <a href="/" class="logo">
-                <i class="fas fa-graduation-cap"></i>
-                <div class="logo-text">
-                    <span class="main">Course Corner</span>
-                    <span class="sub">Learn Portal</span>
-                </div>
-            </a>
+
+<!-- ═══ NAVIGATION ════════════════════════════════════════════ -->
+<header class="modern-header" id="learnHeader">
+    <div class="header-container">
+        <a href="index.html" class="logo-container">
+            <img src="../assets/images/logo.png" alt="Course Corner Logo">
+            <span class="logo-text" style="display:flex;flex-direction:column;line-height:1.15;">
+                <span style="font-size:1rem;font-weight:700;color:var(--cc-primary);">Course Corner</span>
+                <span style="font-size:0.7rem;font-weight:600;color:var(--cc-primary);letter-spacing:0.04em;text-transform:uppercase;">Learn Portal</span>
+            </span>
+        </a>
+        <nav class="desktop-nav">
             <div class="nav-links">
-                <a href="#courses">Courses</a>
-                <a href="#about">About</a>
-                <a href="#contact">Contact</a>
-                <button class="nav-btn nav-btn-secondary" onclick="showSignInModal()">Sign In</button>
-                <button class="nav-btn" onclick="showSignUpModal()">Get Started</button>
+                <a href="#courses"          class="modern-nav-link">Courses</a>
+                <a href="course-detail.html" class="modern-nav-link">Course Details</a>
+                <a href="about.html"         class="modern-nav-link">About</a>
+                <a href="dashboard.html"     class="modern-nav-link">My Dashboard</a>
             </div>
-        </div>
-    </nav>
-
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-container">
-            <div class="hero-content">
-                <h1>
-                    Welcome to <span class="gradient">Course Corner Learn</span>
-                </h1>
-                <p>
-                    Master new skills at your own pace with our comprehensive online courses. 
-                    Learn from industry experts and track your progress as you grow.
-                </p>
-                <div class="cta-buttons">
-                    <button class="btn-cta btn-primary-cta" onclick="showSignUpModal()">
-                        <i class="fas fa-rocket"></i> Start Learning
-                    </button>
-                    <button class="btn-cta btn-secondary-cta" onclick="document.getElementById('courses').scrollIntoView({behavior: 'smooth'})">
-                        <i class="fas fa-arrow-right"></i> Explore Courses
-                    </button>
-                </div>
-            </div>
-            <div class="hero-image">
-                <div class="hero-image-placeholder">
-                    <i class="fas fa-book-open"></i>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Courses Section -->
-    <section class="courses-section" id="courses">
-        <div class="courses-container">
-            <div class="section-header">
-                <h2>Our Courses</h2>
-                <p>Choose from a variety of courses designed to help you achieve your learning goals</p>
-            </div>
-            <div class="courses-grid" id="coursesGrid">
-                <!-- Courses will be loaded here by JavaScript -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Authentication Modals -->
-    <!-- Sign In Modal -->
-    <div id="signInModal" class="auth-modal-overlay" style="display: none;">
-        <div class="auth-modal">
-            <div class="modal-header">
-                <h2>Sign In to Learn</h2>
-                <button class="modal-close-btn" onclick="closeSignInModal()">
-                    <i class="fas fa-times"></i>
+            <div class="nav-auth-buttons">
+                <button id="signInNavBtn" class="btn-nav-profile" onclick="openSignInModal()">
+                    <i class="fas fa-user"></i> Sign In
                 </button>
-            </div>
-            <div class="modal-body">
-                <form id="signInForm" onsubmit="handleSignIn(event)">
-                    <div class="form-group">
-                        <label for="signInEmail">Email Address</label>
-                        <input type="email" id="signInEmail" class="form-input" placeholder="Enter your email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="signInPassword">Password</label>
-                        <input type="password" id="signInPassword" class="form-input" placeholder="Enter your password" required>
-                    </div>
-                    <button type="submit" class="btn-primary" style="width: 100%; margin-top: 0.5rem;">
-                        Sign In
-                    </button>
-                </form>
-                <div style="margin: 1rem 0; text-align: center; color: #6b7280;">
-                    Or continue with
-                </div>
-                <button class="btn-primary" style="width: 100%; background: #f9fafb; color: var(--text-dark); border: 1px solid var(--border-gray); margin-bottom: 1rem;" onclick="handleGoogleSignIn()">
-                    <i class="fab fa-google" style="margin-right: 0.5rem;"></i> Google
+                <button id="signUpNavBtn" class="btn-nav-login" onclick="openSignUpModal()">
+                    <i class="fas fa-rocket"></i> Get Started
                 </button>
-                <div style="text-align: center; margin-top: 1rem;">
-                    <p style="color: #6b7280; font-size: 0.875rem;">
-                        Don't have an account? 
-                        <button style="background: none; border: none; color: var(--primary); font-weight: 600; cursor: pointer;" onclick="switchToSignUp()">
-                            Create one
-                        </button>
-                    </p>
+                <div id="userNavArea" style="display:none;align-items:center;gap:.75rem;">
+                    <div id="userInitial" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#0ea5e9);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:.9rem;">?</div>
+                    <button class="btn-nav-profile" onclick="handleSignOut()">
+                        <i class="fas fa-sign-out-alt"></i> Sign Out
+                    </button>
                 </div>
             </div>
+        </nav>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+    <div class="mobile-menu" id="mobileMenu">
+        <nav class="mobile-nav-links">
+            <a href="#courses"          class="mobile-nav-link" onclick="closeMobileMenu()">Courses</a>
+            <a href="course-detail.html"  class="mobile-nav-link" onclick="closeMobileMenu()">Course Details</a>
+            <a href="about.html"          class="mobile-nav-link" onclick="closeMobileMenu()">About</a>
+            <a href="dashboard.html"      class="mobile-nav-link" onclick="closeMobileMenu()">My Dashboard</a>
+        </nav>
+        <div style="margin-top:1rem;display:flex;flex-direction:column;gap:.75rem;">
+            <button class="btn-nav-profile" style="width:100%;justify-content:center;" onclick="openSignInModal();closeMobileMenu()"><i class="fas fa-user"></i> Sign In</button>
+            <button class="btn-nav-login"   style="width:100%;justify-content:center;" onclick="openSignUpModal();closeMobileMenu()"><i class="fas fa-rocket"></i> Get Started Free</button>
         </div>
     </div>
+</header>
 
-    <!-- Sign Up Modal -->
-    <div id="signUpModal" class="auth-modal-overlay" style="display: none;">
-        <div class="auth-modal">
-            <div class="modal-header">
-                <h2>Create Your Account</h2>
-                <button class="modal-close-btn" onclick="closeSignUpModal()">
-                    <i class="fas fa-times"></i>
+
+<!-- ═══ HERO ══════════════════════════════════════════════════ -->
+<section class="learn-hero">
+    <div class="hero-inner">
+
+        <!-- Left: copy -->
+        <div class="hero-content">
+            <h1 class="hero-heading">
+                Learn Smarter with<br>
+                <span class="green">Course Corner Learn</span>
+            </h1>
+            <p class="hero-sub">
+                Your personal gateway to structured online learning. Master digital literacy,
+                AI productivity, and professional skills designed for the modern job market.
+            </p>
+            <div class="hero-ctas">
+                <button class="btn-hero-primary" onclick="openSignUpModal()">
+                    <i class="fas fa-rocket"></i> Start Learning Free
+                </button>
+                <button class="btn-hero-outline" onclick="document.getElementById('courses').scrollIntoView({behavior:'smooth'})">
+                    <i class="fas fa-search"></i> Browse Courses
                 </button>
             </div>
-            <div class="modal-body">
-                <form id="signUpForm" onsubmit="handleSignUp(event)">
-                    <div class="form-group">
-                        <label for="signUpName">Full Name</label>
-                        <input type="text" id="signUpName" class="form-input" placeholder="Enter your full name" required>
+        </div>
+
+        <!-- Right: visual image -->
+        <div class="hero-visual">
+            <div class="relative group">
+                <div class="absolute -inset-1 bg-gradient-to-r from-green-600 to-blue-600 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                <div class="relative bg-white ring-1 ring-gray-900/5 rounded-3xl overflow-hidden leading-none flex items-center justify-center">
+                    <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=1470&auto=format&fit=crop" 
+                         alt="Student Learning" 
+                         class="w-full h-full object-cover max-h-[500px]">
+                    
+                    <!-- Floating stats on image -->
+                    <div class="absolute bottom-6 left-6 right-6 bg-white/80 backdrop-blur-md p-4 rounded-2xl border border-white/20 shadow-xl">
+                        <div class="flex items-center justify-between gap-4">
+                            <div class="flex -space-x-3 overflow-hidden">
+                                <img src="https://i.pravatar.cc/100?u=1" class="inline-block h-8 w-8 rounded-full ring-2 ring-white" alt="Student">
+                                <img src="https://i.pravatar.cc/100?u=2" class="inline-block h-8 w-8 rounded-full ring-2 ring-white" alt="Student">
+                                <img src="https://i.pravatar.cc/100?u=3" class="inline-block h-8 w-8 rounded-full ring-2 ring-white" alt="Student">
+                            </div>
+                            <div class="text-sm font-semibold text-gray-900">
+                                500+ Students enrolled
+                            </div>
+                            <div class="flex items-center gap-1 text-amber-500">
+                                <i class="fas fa-star text-xs"></i>
+                                <span class="text-sm font-bold">4.9/5</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="signUpEmail">Email Address</label>
-                        <input type="email" id="signUpEmail" class="form-input" placeholder="Enter your email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="signUpPassword">Password</label>
-                        <input type="password" id="signUpPassword" class="form-input" placeholder="Create a password (min 6 characters)" required minlength="6">
-                    </div>
-                    <div class="form-group">
-                        <label for="signUpConfirmPassword">Confirm Password</label>
-                        <input type="password" id="signUpConfirmPassword" class="form-input" placeholder="Confirm your password" required minlength="6">
-                    </div>
-                    <button type="submit" class="btn-primary" style="width: 100%; margin-top: 0.5rem;">
-                        Create Account
-                    </button>
-                </form>
-                <div style="margin: 1rem 0; text-align: center; color: #6b7280;">
-                    Or sign up with
-                </div>
-                <button class="btn-primary" style="width: 100%; background: #f9fafb; color: var(--text-dark); border: 1px solid var(--border-gray); margin-bottom: 1rem;" onclick="handleGoogleSignUp()">
-                    <i class="fab fa-google" style="margin-right: 0.5rem;"></i> Google
-                </button>
-                <div style="text-align: center; margin-top: 1rem;">
-                    <p style="color: #6b7280; font-size: 0.875rem;">
-                        Already have an account? 
-                        <button style="background: none; border: none; color: var(--primary); font-weight: 600; cursor: pointer;" onclick="switchToSignIn()">
-                            Sign in
-                        </button>
-                    </p>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-container">
-            <div class="footer-section">
-                <h3>About Course Corner</h3>
-                <ul>
-                    <li><a href="/pages/about.html">About Us</a></li>
-                    <li><a href="/pages/contact.html">Contact Us</a></li>
-                    <li><a href="/pages/guide.html">Learning Guide</a></li>
-                </ul>
+    </div>
+</section>
+
+
+<!-- ═══ COURSES ═══════════════════════════════════════════════ -->
+<section class="courses-section" id="courses">
+    <div class="section-wrap">
+        <div class="courses-header">
+            <div class="section-label"><i class="fas fa-book-open"></i> Our Courses</div>
+            <h2 class="section-title">Explore What's Available</h2>
+            <p class="section-desc">Structured, self-paced courses built to help students master the skills they need.</p>
+        </div>
+        <div class="courses-grid" id="coursesGrid"></div>
+    </div>
+</section>
+
+
+<!-- ═══ FEATURES ══════════════════════════════════════════════ -->
+<section class="features-band" id="features">
+    <div class="features-grid">
+        <div class="feature-item">
+            <div class="feature-icon-wrap"><i class="fas fa-mobile-alt"></i></div>
+            <h3>Learn Anywhere</h3>
+            <p>Access all course material from any device, any time.</p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon-wrap"><i class="fas fa-chart-line"></i></div>
+            <h3>Track Progress</h3>
+            <p>A personal dashboard shows exactly how far you've come.</p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon-wrap"><i class="fas fa-certificate"></i></div>
+            <h3>Earn Certificates</h3>
+            <p>Download shareable certificates when you complete a course.</p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon-wrap"><i class="fas fa-user-tie"></i></div>
+            <h3>Expert Instructors</h3>
+            <p>Courses created and reviewed by industry professionals.</p>
+        </div>
+    </div>
+</section>
+
+
+<!-- ═══ FOOTER ════════════════════════════════════════════════ -->
+<footer class="learn-footer">
+    <div class="footer-inner">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <img src="../assets/images/logo.png" alt="Course Corner">
+                <div class="brand-name">Course Corner</div>
+                <div class="brand-sub">Learn Portal</div>
+                <p>Your career path starts here. Empowering students through quality education.</p>
             </div>
-            <div class="footer-section">
-                <h3>Courses</h3>
+            <div class="footer-col">
+                <h4>Learn</h4>
                 <ul>
                     <li><a href="#courses">All Courses</a></li>
-                    <li><a href="/pages/calculator.html">Cluster Points Calculator</a></li>
-                    <li><a href="/pages/packages.html">Packages</a></li>
+                    <li><a href="course-detail.html">Course Details</a></li>
+                    <li><a href="apply.html">Apply Now</a></li>
+                    <li><a href="dashboard.html">My Dashboard</a></li>
+                    <li><a href="about.html">About Learn</a></li>
                 </ul>
             </div>
-            <div class="footer-section">
-                <h3>Legal</h3>
+            <div class="footer-col">
+                <h4>Course Corner</h4>
+                <ul>
+                    <li><a href="/index.html">Main Site</a></li>
+                    <li><a href="/pages/calculator.html">Cluster Calculator</a></li>
+                    <li><a href="/pages/packages.html">Packages</a></li>
+                    <li><a href="/pages/about.html">About Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Legal</h4>
                 <ul>
                     <li><a href="/pages/privacy-policy.html">Privacy Policy</a></li>
                     <li><a href="/pages/terms-of-service.html">Terms of Service</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Follow Us</h3>
-                <ul>
-                    <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
-                    <li><a href="#"><i class="fab fa-twitter"></i> Twitter</a></li>
-                    <li><a href="#"><i class="fab fa-linkedin"></i> LinkedIn</a></li>
+                    <li><a href="/pages/contact.html">Support</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 Course Corner. All rights reserved. | Empowering Students Through Quality Education</p>
+            <p>&copy; 2026 Course Corner. All rights reserved. &nbsp;&middot;&nbsp; Empowering Students Through Quality Education</p>
         </div>
-    </footer>
+    </div>
+</footer>
 
-    <!-- Firebase Auth Script -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, updateProfile } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
-        // Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
-            authDomain: "course-corner.firebaseapp.com",
-            projectId: "course-corner",
-            storageBucket: "course-corner.firebasestorage.app",
-            messagingSenderId: "961706784572",
-            appId: "1:961706784572:web:7aa6c24946570ffda59039",
-            measurementId: "G-QGJ7NZ31Z0"
-        };
+<!-- ═══ SIGN IN MODAL ═════════════════════════════════════════ -->
+<div id="signInModal" class="auth-modal-overlay" style="display:none;">
+    <div class="auth-modal">
+        <div class="modal-header">
+            <div style="display:flex;align-items:center;gap:.75rem;">
+                <img src="../assets/images/logo.png" alt="Logo" style="width:32px;height:32px;object-fit:contain;">
+                <h2>Sign In to Learn</h2>
+            </div>
+            <button class="modal-close-btn" onclick="closeSignInModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="signInForm" class="auth-form" onsubmit="handleSignIn(event)">
+                <div class="form-group">
+                    <label for="siEmail">Email Address</label>
+                    <input id="siEmail" type="email" class="form-input" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="siPassword">Password</label>
+                    <input id="siPassword" type="password" class="form-input" placeholder="Your password" required>
+                </div>
+                <button type="submit" class="btn-primary" id="signInBtn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+            <div class="auth-divider"><span>or</span></div>
+            <button class="btn-google" onclick="handleGoogleAuth()">
+                <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/></svg>
+                Continue with Google
+            </button>
+            <p style="text-align:center;margin-top:1.25rem;font-size:.875rem;color:#6b7280;">
+                No account yet?
+                <button style="background:none;border:none;color:#16a34a;font-weight:600;cursor:pointer;" onclick="switchToSignUp()">Create one free</button>
+            </p>
+        </div>
+    </div>
+</div>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const googleProvider = new GoogleAuthProvider();
 
-        // Make auth available globally
-        window.firebaseAuth = { auth, db, googleProvider };
+<!-- ═══ SIGN UP MODAL ═════════════════════════════════════════ -->
+<div id="signUpModal" class="auth-modal-overlay" style="display:none;">
+    <div class="auth-modal">
+        <div class="modal-header">
+            <div style="display:flex;align-items:center;gap:.75rem;">
+                <img src="../assets/images/logo.png" alt="Logo" style="width:32px;height:32px;object-fit:contain;">
+                <h2>Create Account</h2>
+            </div>
+            <button class="modal-close-btn" onclick="closeSignUpModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="signUpForm" class="auth-form" onsubmit="handleSignUp(event)">
+                <div class="form-group">
+                    <label for="suName">Full Name</label>
+                    <input id="suName" type="text" class="form-input" placeholder="Jane Doe" required>
+                </div>
+                <div class="form-group">
+                    <label for="suEmail">Email Address</label>
+                    <input id="suEmail" type="email" class="form-input" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="suPassword">Password</label>
+                    <input id="suPassword" type="password" class="form-input" placeholder="Min. 6 characters" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="suConfirm">Confirm Password</label>
+                    <input id="suConfirm" type="password" class="form-input" placeholder="Repeat password" required minlength="6">
+                </div>
+                <button type="submit" class="btn-primary" id="signUpBtn">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </form>
+            <div class="auth-divider"><span>or</span></div>
+            <button class="btn-google" onclick="handleGoogleAuth()">
+                <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/></svg>
+                Sign up with Google
+            </button>
+            <p style="text-align:center;margin-top:1.25rem;font-size:.875rem;color:#6b7280;">
+                Already have an account?
+                <button style="background:none;border:none;color:#16a34a;font-weight:600;cursor:pointer;" onclick="switchToSignIn()">Sign In</button>
+            </p>
+        </div>
+    </div>
+</div>
 
-        // Sample Courses Data
-        const sampleCourses = [
-            {
-                id: 1,
-                title: "Web Development Fundamentals",
-                description: "Learn HTML, CSS, and JavaScript to build stunning websites",
-                icon: "fa-code",
-                level: "Beginner",
-                duration: "8 weeks"
-            },
-            {
-                id: 2,
-                title: "Full Stack JavaScript",
-                description: "Master modern web development with Node.js and React",
-                icon: "fa-js-square",
-                level: "Intermediate",
-                duration: "12 weeks"
-            },
-            {
-                id: 3,
-                title: "Data Science Basics",
-                description: "Introduction to Python, pandas, and data visualization",
-                icon: "fa-chart-bar",
-                level: "Beginner",
-                duration: "10 weeks"
-            },
-            {
-                id: 4,
-                title: "Mobile App Development",
-                description: "Build cross-platform apps with React Native",
-                icon: "fa-mobile-alt",
-                level: "Intermediate",
-                duration: "10 weeks"
-            },
-            {
-                id: 5,
-                title: "Digital Marketing",
-                description: "Master SEO, social media, and content marketing strategies",
-                icon: "fa-bullhorn",
-                level: "Beginner",
-                duration: "6 weeks"
-            },
-            {
-                id: 6,
-                title: "Cloud Computing with AWS",
-                description: "Deploy and manage applications on Amazon Web Services",
-                icon: "fa-cloud",
-                level: "Advanced",
-                duration: "8 weeks"
-            }
-        ];
 
-        // Load courses
-        function loadCourses() {
-            const coursesGrid = document.getElementById('coursesGrid');
-            if (sampleCourses.length === 0) {
-                coursesGrid.innerHTML = `
-                    <div class="empty-state" style="grid-column: 1/-1;">
-                        <div class="empty-state-icon">
-                            <i class="fas fa-inbox"></i>
-                        </div>
-                        <h3>No Courses Available Yet</h3>
-                        <p>Check back soon for exciting new courses!</p>
-                    </div>
-                `;
+<!-- ═══ APPLY MODAL ═══════════════════════════════════════════ -->
+<div id="applyModal" class="auth-modal-overlay" style="display:none;">
+    <div class="auth-modal" style="max-width: 500px;">
+        <div class="modal-header">
+            <div style="display:flex;align-items:center;gap:.75rem;">
+                <img src="../assets/images/logo.png" alt="Logo" style="width:32px;height:32px;object-fit:contain;">
+                <h2 id="applyCourseTitle">Enroll in Course</h2>
+            </div>
+            <button class="modal-close-btn" onclick="closeApplyModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="applyForm" class="auth-form" onsubmit="handleApplySubmit(event)">
+                <input type="hidden" id="appliedCourseId" name="courseId">
+                <div class="form-group">
+                    <label for="appName">Full Name</label>
+                    <input id="appName" name="fullName" type="text" class="form-input" placeholder="Jane Doe" required>
+                </div>
+                <div class="form-group">
+                    <label for="appEmail">Email Address</label>
+                    <input id="appEmail" name="email" type="email" class="form-input" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="appWhatsApp">WhatsApp Number</label>
+                    <input id="appWhatsApp" name="whatsapp" type="tel" class="form-input" placeholder="0712 345 678" required>
+                </div>
+                <div class="form-group">
+                    <label for="appMessage">Why are you interested in this course? (Optional)</label>
+                    <textarea id="appMessage" name="message" class="form-input" placeholder="Tell us a bit about your goals..."></textarea>
+                </div>
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-paper-plane"></i> Submit Application
+                </button>
+            </form>
+            <p style="text-align:center;margin-top:1.25rem;font-size:.8125rem;color:#6b7280;line-height:1.5;">
+                By submitting, you agree to receive training updates via WhatsApp and Email. You can opt out anytime.
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ SCRIPTS ═══════════════════════════════════════════════ -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+    const app = initializeApp({
+        apiKey:"AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
+        authDomain:"course-corner.firebaseapp.com",
+        projectId:"course-corner",
+        storageBucket:"course-corner.firebasestorage.app",
+        messagingSenderId:"961706784572",
+        appId:"1:961706784572:web:7aa6c24946570ffda59039",
+        measurementId:"G-QGJ7NZ31Z0"
+    });
+    const auth = getAuth(app);
+    const db   = getFirestore(app);
+    const gProvider = new GoogleAuthProvider();
+
+    // Auth state
+    onAuthStateChanged(auth, user => {
+        const siBtn = document.getElementById('signInNavBtn');
+        const suBtn = document.getElementById('signUpNavBtn');
+        const area  = document.getElementById('userNavArea');
+        const init  = document.getElementById('userInitial');
+        if (user) {
+            if(siBtn) siBtn.style.display='none';
+            if(suBtn) suBtn.style.display='none';
+            if(area) area.style.display='flex';
+            if(init) init.textContent=(user.displayName||user.email||'?')[0].toUpperCase();
+        } else {
+            if(siBtn) siBtn.style.display='';
+            if(suBtn) suBtn.style.display='';
+            if(area) area.style.display='none';
+        }
+    });
+
+    // Modals
+    window.openSignInModal  = () => document.getElementById('signInModal').style.display='flex';
+    window.closeSignInModal = () => document.getElementById('signInModal').style.display='none';
+    window.openSignUpModal  = () => document.getElementById('signUpModal').style.display='flex';
+    window.closeSignUpModal = () => document.getElementById('signUpModal').style.display='none';
+    window.switchToSignUp   = () => { closeSignInModal(); openSignUpModal(); };
+    window.switchToSignIn   = () => { closeSignUpModal(); openSignInModal(); };
+    ['signInModal','signUpModal'].forEach(id => {
+        document.getElementById(id).addEventListener('click', e => { if(e.target.id===id) e.target.style.display='none'; });
+    });
+
+    // Sign In
+    window.handleSignIn = async e => {
+        e.preventDefault();
+        const email = document.getElementById('siEmail').value;
+        const pass = document.getElementById('siPassword').value;
+        const adminEmails = ['peterkelvinkibiru1532@gmail.com', 'macharia074m@gmail.com'];
+        const btn = document.getElementById('signInBtn');
+        btn.classList.add('btn-loading');
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+            closeSignInModal();
+            document.getElementById('signInForm').reset();
+            if (adminEmails.includes(email.toLowerCase())) {
+                window.location.href = '../admin/index.html?section=learn-courses';
             } else {
-                coursesGrid.innerHTML = sampleCourses.map(course => `
-                    <div class="course-card">
-                        <div class="course-image">
-                            <i class="fas ${course.icon}"></i>
+                Swal.fire({icon:'success',title:'Welcome back!',timer:2000,showConfirmButton:false,confirmButtonColor:'#16a34a'});
+            }
+        } catch(err) {
+            Swal.fire({icon:'error',title:'Sign In Failed',text:authErr(err.code),confirmButtonColor:'#16a34a'});
+        } finally { btn.classList.remove('btn-loading'); }
+    };
+
+    // Sign Up
+    window.handleSignUp = async e => {
+        e.preventDefault();
+        const name=document.getElementById('suName').value,
+              email=document.getElementById('suEmail').value,
+              pw=document.getElementById('suPassword').value,
+              pw2=document.getElementById('suConfirm').value;
+        if(pw!==pw2){Swal.fire({icon:'warning',title:'Passwords do not match',confirmButtonColor:'#16a34a'});return;}
+        const btn=document.getElementById('signUpBtn');
+        btn.classList.add('btn-loading');
+        try {
+            const {user}=await createUserWithEmailAndPassword(auth,email,pw);
+            await updateProfile(user,{displayName:name});
+            await setDoc(doc(db,'learn_users',user.uid),{uid:user.uid,name,email,createdAt:new Date(),lastLogin:new Date()});
+            closeSignUpModal();
+            document.getElementById('signUpForm').reset();
+            Swal.fire({icon:'success',title:'Account Created!',text:`Welcome, ${name}! Start exploring courses.`,confirmButtonColor:'#16a34a'});
+        } catch(err) {
+            Swal.fire({icon:'error',title:'Sign Up Failed',text:authErr(err.code),confirmButtonColor:'#16a34a'});
+        } finally { btn.classList.remove('btn-loading'); }
+    };
+
+    // Google
+    window.handleGoogleAuth = async () => {
+        const adminEmails = ['peterkelvinkibiru1532@gmail.com', 'macharia074m@gmail.com'];
+        try {
+            const {user}=await signInWithPopup(auth,gProvider);
+            await setDoc(doc(db,'learn_users',user.uid),{uid:user.uid,name:user.displayName,email:user.email,photoURL:user.photoURL,lastLogin:new Date()},{merge:true});
+            closeSignInModal();closeSignUpModal();
+            if (adminEmails.includes(user.email.toLowerCase())) {
+                window.location.href = '../admin/index.html?section=learn-courses';
+            } else {
+                Swal.fire({icon:'success',title:`Welcome, ${user.displayName}!`,timer:2000,showConfirmButton:false,confirmButtonColor:'#16a34a'});
+            }
+        } catch(err) {
+            if(err.code!=='auth/popup-closed-by-user')
+                Swal.fire({icon:'error',title:'Google Sign-in Failed',text:authErr(err.code),confirmButtonColor:'#16a34a'});
+        }
+    };
+
+    // Sign Out
+    window.handleSignOut = async()=>{
+        await signOut(auth);
+        Swal.fire({icon:'info',title:'Signed out',timer:1500,showConfirmButton:false});
+    };
+
+    // Apply Modal
+    window.openApplyModal = (courseId) => {
+        const modal = document.getElementById('applyModal');
+        const courseTitle = document.getElementById('applyCourseTitle');
+        document.getElementById('appliedCourseId').value = courseId;
+        
+        // Find course name from current data or set placeholder
+        courseTitle.innerText = "Step into your future";
+        modal.style.display = 'flex';
+    };
+    window.closeApplyModal = () => document.getElementById('applyModal').style.display = 'none';
+
+    // Submit Application
+    window.handleApplySubmit = async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        const formData = new FormData(e.target);
+        const data = Object.fromEntries(formData.entries());
+        data.timestamp = new Date();
+        data.status = 'pending';
+        data.userId = auth.currentUser ? auth.currentUser.uid : 'anonymous';
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+
+        try {
+            await setDoc(doc(db, "learnApplications", `${Date.now()}_${data.whatsapp}`), data);
+            Swal.fire({
+                icon: 'success',
+                title: 'Application Received!',
+                text: 'We will contact you on WhatsApp with joining instructions shortly.',
+                confirmButtonColor: '#16a34a'
+            });
+            closeApplyModal();
+            e.target.reset();
+        } catch (err) {
+            console.error(err);
+            Swal.fire({ icon: 'error', title: 'Submission Failed', text: 'Please try again later.' });
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Submit Application';
+        }
+    };
+
+    // Load Courses from JSON
+    async function loadCourses() {
+        try {
+            const resp = await fetch('data/courses.json');
+            const courses = await resp.json();
+            const grid = document.getElementById('coursesGrid');
+            grid.innerHTML = courses.map(c => `
+                <div class="course-card group">
+                    <div class="course-thumb" style="background: ${c.gradient || 'linear-gradient(135deg, #16a34a, #15803d)'};">
+                        <i class="${c.icon}" style="font-size: 3.5rem;"></i>
+                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
+                    </div>
+                    <div class="course-body p-6 flex flex-col h-full">
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                c.level === 'Beginner' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
+                            }">${c.level} · ${c.duration}</span>
+                            <span class="text-xs font-bold text-gray-400">#${c.id}</span>
                         </div>
-                        <div class="course-content">
-                            <span class="course-badge">${course.level}</span>
-                            <h3 class="course-title">${course.title}</h3>
-                            <p class="course-description">${course.description}</p>
-                            <div class="course-meta">
-                                <span><i class="fas fa-clock"></i> ${course.duration}</span>
-                                <button class="course-btn" onclick="handleEnrollClick(${course.id})">
-                                    Enroll <i class="fas fa-arrow-right"></i>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2 leading-tight">${c.title}</h3>
+                        <p class="text-sm text-gray-500 line-clamp-3 mb-4">${c.description}</p>
+                        
+                        <div class="flex flex-wrap gap-1.5 mb-6">
+                            ${c.tags.slice(0, 3).map(t => `<span class="text-[10px] font-bold px-2 py-0.5 bg-gray-50 text-gray-600 rounded-md border border-gray-100">${t}</span>`).join('')}
+                        </div>
+
+                        <div class="mt-auto pt-4 border-t border-gray-100 flex items-center justify-between">
+                            <div>
+                                <p class="text-[10px] uppercase font-bold text-gray-400">Course Fee</p>
+                                <p class="text-lg font-extrabold text-[#16a34a]">${c.currency} ${c.fee.toLocaleString()}</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <a href="course-detail.html?id=${c.id}" class="w-10 h-10 rounded-xl bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200 transition-colors">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <button onclick="openApplyModal('${c.id}')" class="px-4 h-10 rounded-xl bg-[#16a34a] text-white font-bold text-sm hover:bg-[#15803d] transition-colors shadow-lg shadow-green-600/20">
+                                    Apply Now
                                 </button>
                             </div>
                         </div>
                     </div>
-                `).join('');
-            }
+                </div>
+            `).join('');
+            
+            // Adjust grid layout for dynamic items
+            grid.className = "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8";
+        } catch (err) {
+            console.error("Failed to load courses:", err);
+            document.getElementById('coursesGrid').innerHTML = '<p class="text-center py-10 text-gray-400">No courses currently available. Please check back later.</p>';
         }
+    }
 
-        // Modal Functions
-        window.showSignInModal = function() {
-            document.getElementById('signInModal').style.display = 'flex';
-        };
+    loadCourses();
 
-        window.closeSignInModal = function() {
-            document.getElementById('signInModal').style.display = 'none';
-        };
+    function authErr(code){
+        return({'auth/email-already-in-use':'This email is already registered.','auth/weak-password':'Password must be at least 6 characters.','auth/invalid-email':'Please enter a valid email address.','auth/user-not-found':'No account found with this email.','auth/wrong-password':'Incorrect password.','auth/invalid-credential':'Incorrect email or password.','auth/too-many-requests':'Too many attempts. Please try again later.'})[code]||'An error occurred. Please try again.';
+    }
+</script>
 
-        window.showSignUpModal = function() {
-            document.getElementById('signUpModal').style.display = 'flex';
-        };
+<script>
+    // Mobile menu
+    const mmBtn=document.getElementById('mobileMenuBtn'), mm=document.getElementById('mobileMenu');
+    mmBtn.addEventListener('click',()=>{ mm.classList.toggle('show'); mmBtn.classList.toggle('active'); });
+    window.closeMobileMenu=()=>{ mm.classList.remove('show'); mmBtn.classList.remove('active'); };
+    // Scroll shadow
+    window.addEventListener('scroll',()=>{ document.getElementById('learnHeader').classList.toggle('scrolled',scrollY>10); });
+</script>
 
-        window.closeSignUpModal = function() {
-            document.getElementById('signUpModal').style.display = 'none';
-        };
-
-        window.switchToSignUp = function() {
-            closeSignInModal();
-            showSignUpModal();
-        };
-
-        window.switchToSignIn = function() {
-            closeSignUpModal();
-            showSignInModal();
-        };
-
-        // Sign In Handler
-        window.handleSignIn = async function(e) {
-            e.preventDefault();
-            const email = document.getElementById('signInEmail').value;
-            const password = document.getElementById('signInPassword').value;
-
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Welcome Back!',
-                    text: 'You have successfully signed in.',
-                    confirmButtonColor: '#16a34a'
-                });
-                closeSignInModal();
-                document.getElementById('signInForm').reset();
-            } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Sign In Failed',
-                    text: getErrorMessage(error.code),
-                    confirmButtonColor: '#16a34a'
-                });
-            }
-        };
-
-        // Sign Up Handler
-        window.handleSignUp = async function(e) {
-            e.preventDefault();
-            const name = document.getElementById('signUpName').value;
-            const email = document.getElementById('signUpEmail').value;
-            const password = document.getElementById('signUpPassword').value;
-            const confirmPassword = document.getElementById('signUpConfirmPassword').value;
-
-            if (password !== confirmPassword) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Password Mismatch',
-                    text: 'Passwords do not match. Please try again.',
-                    confirmButtonColor: '#16a34a'
-                });
-                return;
-            }
-
-            try {
-                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-                const user = userCredential.user;
-
-                // Update profile with name
-                await updateProfile(user, { displayName: name });
-
-                // Save user profile to Firestore
-                await setDoc(doc(db, "users", user.uid), {
-                    uid: user.uid,
-                    name: name,
-                    email: email,
-                    createdAt: new Date(),
-                    lastLogin: new Date()
-                });
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Account Created!',
-                    text: 'Welcome to Course Corner Learn. Start exploring courses now!',
-                    confirmButtonColor: '#16a34a'
-                });
-                closeSignUpModal();
-                document.getElementById('signUpForm').reset();
-            } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Sign Up Failed',
-                    text: getErrorMessage(error.code),
-                    confirmButtonColor: '#16a34a'
-                });
-            }
-        };
-
-        // Google Sign In Handler
-        window.handleGoogleSignIn = async function() {
-            try {
-                const result = await signInWithPopup(auth, googleProvider);
-                const user = result.user;
-
-                // Save or update user profile
-                await setDoc(doc(db, "users", user.uid), {
-                    uid: user.uid,
-                    name: user.displayName,
-                    email: user.email,
-                    photoURL: user.photoURL,
-                    lastLogin: new Date()
-                }, { merge: true });
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Welcome!',
-                    text: `Hello ${user.displayName}! You have been signed in.`,
-                    confirmButtonColor: '#16a34a'
-                });
-                closeSignInModal();
-            } catch (error) {
-                if (error.code !== 'auth/popup-closed-by-user') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Google Sign In Failed',
-                        text: getErrorMessage(error.code),
-                        confirmButtonColor: '#16a34a'
-                    });
-                }
-            }
-        };
-
-        // Google Sign Up Handler
-        window.handleGoogleSignUp = async function() {
-            try {
-                const result = await signInWithPopup(auth, googleProvider);
-                const user = result.user;
-
-                // Save user profile
-                await setDoc(doc(db, "users", user.uid), {
-                    uid: user.uid,
-                    name: user.displayName,
-                    email: user.email,
-                    photoURL: user.photoURL,
-                    createdAt: new Date(),
-                    lastLogin: new Date()
-                }, { merge: true });
-
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Account Created!',
-                    text: `Welcome ${user.displayName}! Start exploring courses now.`,
-                    confirmButtonColor: '#16a34a'
-                });
-                closeSignUpModal();
-            } catch (error) {
-                if (error.code !== 'auth/popup-closed-by-user') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Google Sign Up Failed',
-                        text: getErrorMessage(error.code),
-                        confirmButtonColor: '#16a34a'
-                    });
-                }
-            }
-        };
-
-        // Enroll Handler
-        window.handleEnrollClick = function(courseId) {
-            const user = auth.currentUser;
-            if (!user) {
-                Swal.fire({
-                    icon: 'info',
-                    title: 'Sign In Required',
-                    text: 'Please sign in to enroll in a course.',
-                    confirmButtonColor: '#16a34a',
-                    confirmButtonText: 'Sign In'
-                }).then(() => showSignInModal());
-            } else {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Enrollment Successful!',
-                    text: 'You have been enrolled in the course. Happy learning!',
-                    confirmButtonColor: '#16a34a'
-                });
-            }
-        };
-
-        // Error message helper
-        function getErrorMessage(errorCode) {
-            const messages = {
-                'auth/email-already-in-use': 'This email is already registered. Please sign in instead.',
-                'auth/weak-password': 'Password is too weak. Please use at least 6 characters.',
-                'auth/invalid-email': 'Please enter a valid email address.',
-                'auth/user-not-found': 'No account found with this email.',
-                'auth/wrong-password': 'Incorrect password. Please try again.',
-                'auth/too-many-requests': 'Too many failed login attempts. Please try again later.',
-                'default': 'An error occurred. Please try again.'
-            };
-            return messages[errorCode] || messages['default'];
-        }
-
-        // Close modals on outside click
-        document.getElementById('signInModal').addEventListener('click', function(e) {
-            if (e.target === this) closeSignInModal();
-        });
-
-        document.getElementById('signUpModal').addEventListener('click', function(e) {
-            if (e.target === this) closeSignUpModal();
-        });
-
-        // Initialize
-        loadCourses();
-    </script>
 </body>
-
 </html>

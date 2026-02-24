@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Learning Dashboard - Course Corner Learn</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --cc-primary: #16a34a; }
+        .stat-card { background: white; padding: 1.5rem; border-radius: 1rem; border-bottom: 3px solid #e5e7eb; transition: transform 0.2s; }
+        .stat-card:hover { transform: translateY(-5px); border-bottom-color: #16a34a; }
+        .progress-bar { height: 8px; background: #e5e7eb; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #16a34a; width: 0%; transition: width 0.5s; }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex flex-col md:flex-row">
+        <!-- Sidebar -->
+        <aside class="w-full md:w-64 bg-white border-r min-h-screen p-6 hidden md:block">
+            <div class="mb-10">
+                <a href="index.html" class="flex items-center gap-3 transition-transform hover:scale-105">
+                    <img src="../assets/images/logo.png" class="w-10 h-10" alt="Logo">
+                    <div class="flex flex-col leading-none">
+                        <span class="font-bold text-[#16a34a] text-lg">Course Corner</span>
+                        <span class="text-[0.65rem] font-bold text-[#16a34a] uppercase tracking-wider">Learn Portal</span>
+                    </div>
+                </a>
+            </div>
+            <nav class="space-y-2">
+                <a href="#" class="flex items-center gap-3 p-3 rounded-xl bg-green-50 text-[#16a34a] font-semibold">
+                    <i class="fas fa-home"></i> Dashboard
+                </a>
+                <a href="index.html" class="flex items-center gap-3 p-3 rounded-xl text-gray-500 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-book"></i> Courses
+                </a>
+                <a href="course-detail.html" class="flex items-center gap-3 p-3 rounded-xl text-gray-500 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-graduation-cap"></i> Syllabus
+                </a>
+                <a href="about.html" class="flex items-center gap-3 p-3 rounded-xl text-gray-500 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-info-circle"></i> About
+                </a>
+                <a href="#" class="flex items-center gap-3 p-3 rounded-xl text-gray-500 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-wallet"></i> Payments
+                </a>
+            </nav>
+            
+            <div class="mt-auto pt-10">
+                <button onclick="handleSignOut()" class="flex items-center gap-3 p-3 w-full rounded-xl text-red-500 hover:bg-red-50 transition-colors font-medium">
+                    <i class="fas fa-sign-out-alt"></i> Sign Out
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-grow p-4 md:p-10">
+            <header class="flex justify-between items-center mb-10">
+                <div>
+                    <h2 class="text-3xl font-extrabold text-gray-900">Welcome Back, <span id="userName">Student</span>!</h2>
+                    <p class="text-gray-500">Track your learning progress and finances.</p>
+                </div>
+                <div id="userProfile" class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center text-[#16a34a] font-bold text-xl">
+                        S
+                    </div>
+                </div>
+            </header>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                <div class="stat-card">
+                    <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Enrolled Courses</p>
+                    <p class="text-3xl font-bold text-gray-900" id="enrolledCount">1</p>
+                </div>
+                <div class="stat-card">
+                    <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Total Paid</p>
+                    <p class="text-3xl font-bold text-green-600">KES <span id="paidAmt">0</span></p>
+                </div>
+                <div class="stat-card">
+                    <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Remaining Balance</p>
+                    <p class="text-3xl font-bold text-red-500">KES <span id="balanceAmt">2,500</span></p>
+                </div>
+                <div class="stat-card">
+                    <p class="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-1">Certificates</p>
+                    <p class="text-3xl font-bold text-gray-900" id="certCount">0</p>
+                </div>
+            </div>
+
+            <!-- Active Course -->
+            <div class="bg-white rounded-2xl shadow-sm border p-8 mb-10">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-900">Digital Literacy & Monetization Masterclass</h3>
+                        <p class="text-gray-500">Next Class: Monday, 9:00 AM (Week 1)</p>
+                    </div>
+                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-bold">Active</span>
+                </div>
+                
+                <div class="mb-6">
+                    <div class="flex justify-between text-sm font-bold mb-2">
+                        <span>Course Progress</span>
+                        <span id="progressText">15%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 15%"></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <button class="bg-[#16a34a] text-white py-3 rounded-xl font-bold hover:bg-[#15803d]">Resume Learning</button>
+                    <button class="bg-white border text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-50">View Syllabus</button>
+                    <button class="bg-white border text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-50">Download Assets</button>
+                </div>
+            </div>
+
+            <!-- Recent Activity/Certificates -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white rounded-2xl p-6 border">
+                    <h4 class="font-bold text-gray-900 mb-6">Recent Payments</h4>
+                    <div class="space-y-4" id="paymentsList">
+                        <div class="text-center py-10 text-gray-400">
+                            <i class="fas fa-receipt text-4xl mb-3"></i>
+                            <p>No transactions yet</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl p-6 border text-center flex flex-col items-center justify-center">
+                    <div class="w-20 h-20 rounded-full bg-gray-50 flex items-center justify-center mb-4">
+                        <i class="fas fa-trophy text-3xl text-gray-300"></i>
+                    </div>
+                    <h4 class="font-bold text-gray-900">Certificates Earned</h4>
+                    <p class="text-gray-500 text-sm mt-2">Finish your courses to earn official certificates recognized by top institutions.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Firebase Logic Placeholder -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
+            authDomain: "course-corner.firebaseapp.com",
+            projectId: "course-corner",
+            appId: "1:961706784572:web:7aa6c24946570ffda59039"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                document.getElementById('userName').innerText = user.displayName || user.email.split('@')[0];
+                // Fetch stats from firestore...
+            } else {
+                // Redirect to login if not authenticated
+                // window.location.href = 'index.html?login=1';
+            }
+        });
+    </script>
+</body>
+</html>

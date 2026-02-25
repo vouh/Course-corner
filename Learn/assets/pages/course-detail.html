@@ -346,14 +346,17 @@ function confirmExternal(e, a) {
 
     async function loadDetail() {
         try {
-            const resp = await fetch('data/courses.json');
+            const resp = await fetch('../../data/courses.json');
             const courses = await resp.json();
             const c = courses.find(x => x.id === courseId) || courses[0];
-            
+
             if(!c) return;
 
             document.title = `${c.title} - Course Corner Learn`;
-            document.getElementById('courseTitle').innerHTML = `${c.title.split('&')[0]} & <span class="text-[#16a34a]">${c.title.split('&')[1] || ''}</span>`;
+            // Render title with last word highlighted green
+            const words = c.title.trim().split(' ');
+            const last = words.pop();
+            document.getElementById('courseTitle').innerHTML = `${words.join(' ')} <span class="text-[#16a34a]">${last}</span>`;
             document.getElementById('courseDesc').innerText = c.description;
             document.getElementById('courseLevel').innerText = c.level;
             document.getElementById('courseDuration').innerText = c.duration;
@@ -381,39 +384,25 @@ function confirmExternal(e, a) {
                 </div>
             `;
 
-            // Syllabus
+            // Syllabus — uses actual courses.json structure: { week, title, topics[] }
             document.getElementById('syllabusContainer').innerHTML = c.syllabus.map((s, idx) => `
                 <div class="syllabus-card" style="border-left-color: ${idx % 2 === 0 ? '#16a34a' : '#0ea5e9'}">
-                    <span class="week-badge" style="background: ${idx % 2 === 0 ? '#16a34a' : '#0ea5e9'}">${s.week}: ${s.title}</span>
-                    <div class="mb-6">
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">${s.subtitle}</h3>
-                        <p class="text-gray-600 italic text-sm">${s.sessions}</p>
-                    </div>
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <div>
-                            <h4 class="font-bold text-sm uppercase tracking-wider mb-4 opacity-70">Core Topics</h4>
-                            <ul class="space-y-3 text-gray-700">
-                                ${s.topics.map(t => `<li class="flex items-start gap-2 text-sm"><i class="fas fa-check-circle mt-0.5 text-green-500"></i> ${t}</li>`).join('')}
-                            </ul>
-                        </div>
-                        <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
-                            <h4 class="font-bold text-sm text-gray-500 uppercase tracking-wider mb-3">Practical Outcomes</h4>
-                            <ul class="space-y-2">
-                                ${s.outcomes.map(o => `<li class="text-sm font-medium"><i class="fas fa-arrow-right text-xs text-blue-500 mr-2"></i> ${o}</li>`).join('')}
-                            </ul>
-                        </div>
-                    </div>
+                    <span class="week-badge" style="background: ${idx % 2 === 0 ? '#16a34a' : '#0ea5e9'}">${s.week}</span>
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">${s.title}</h3>
+                    <ul class="space-y-3 text-gray-700">
+                        ${(s.topics||[]).map(t => `<li class="flex items-start gap-2 text-sm"><i class="fas fa-check-circle mt-0.5 text-green-500"></i> ${t}</li>`).join('')}
+                    </ul>
                 </div>
             `).join('');
 
         } catch (err) { console.error(err); }
     }
 
-    // Modal logic
+    // Apply  — redirect to full application page with correct course ID
     window.openApplyModalFromDetail = () => {
-        document.getElementById('applyModal').style.display = 'flex';
+        const id = new URLSearchParams(window.location.search).get('id') || 'starter';
+        window.location.href = `application.html?course=${encodeURIComponent(id)}`;
     };
-    window.closeApplyModal = () => document.getElementById('applyModal').style.display = 'none';
 
     window.handleApplySubmit = async (e) => {
         e.preventDefault();

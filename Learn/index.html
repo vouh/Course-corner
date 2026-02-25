@@ -187,23 +187,23 @@
         .feature-item p  { font-size:.9rem; opacity:.85; line-height:1.6; }
 
         /* ── Footer ──────────────────────────────────────────── */
-        .learn-footer { background:#0f172a; color:#94a3b8; padding:4rem 2rem 2rem; border-top:3px solid #16a34a; }
+        .learn-footer { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding:4rem 2rem 2rem; border-top:3px solid #16a34a; }
         .footer-inner { max-width:1240px; margin:0 auto; }
         .footer-top { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:3rem; padding-bottom:3rem; border-bottom:1px solid rgba(255,255,255,.08); margin-bottom:2rem; }
         .footer-brand .brand-logo-row { display:flex; align-items:center; gap:.75rem; margin-bottom:1.25rem; }
         .footer-brand .brand-logo-row img { width:44px; height:44px; object-fit:contain; }
         .footer-brand .brand-logo-row .fn { font-size:1.125rem; font-weight:800; color:#fff; line-height:1.1; }
-        .footer-brand .brand-logo-row .fs { font-size:.625rem; font-weight:700; color:#0ea5e9; letter-spacing:.08em; text-transform:uppercase; }
-        .footer-brand p { font-size:.9375rem; color:#64748b; line-height:1.7; max-width:260px; }
+        .footer-brand .brand-logo-row .fs { font-size:.625rem; font-weight:700; color:#ffffff; letter-spacing:.08em; text-transform:uppercase; }
+        .footer-brand p { font-size:.9375rem; color: rgba(255,255,255,0.9); line-height:1.7; max-width:260px; }
         .footer-brand .social-row { display:flex; gap:.75rem; margin-top:1.25rem; }
-        .footer-brand .social-row a { width:36px; height:36px; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); border-radius:.625rem; display:flex; align-items:center; justify-content:center; color:#94a3b8; font-size:.9rem; text-decoration:none; transition:all .2s; }
+        .footer-brand .social-row a { width:36px; height:36px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2); border-radius:.625rem; display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,.8); font-size:.9rem; text-decoration:none; transition:all .2s; }
         .footer-brand .social-row a:hover { background:#16a34a; border-color:#16a34a; color:white; }
-        .footer-col h4 { font-size:.75rem; font-weight:700; color:#e2e8f0; margin-bottom:1.25rem; letter-spacing:.1em; text-transform:uppercase; }
+        .footer-col h4 { font-size:.75rem; font-weight:700; color:white; margin-bottom:1.25rem; letter-spacing:.1em; text-transform:uppercase; }
         .footer-col ul { list-style:none; padding:0; margin:0; }
         .footer-col ul li { margin-bottom:.75rem; }
-        .footer-col ul li a { color:#64748b; text-decoration:none; font-size:.9375rem; transition:all .2s; }
-        .footer-col ul li a:hover { color:#22c55e; padding-left:4px; }
-        .footer-bottom { text-align:center; font-size:.875rem; color:#334155; padding-top:1.5rem; }
+        .footer-col ul li a { color: rgba(255,255,255,0.85); text-decoration:none; font-size:.9375rem; transition:all .2s; }
+        .footer-col ul li a:hover { color:white; padding-left:4px; font-weight:600; }
+        .footer-bottom { text-align:center; font-size:.875rem; color: rgba(255,255,255,0.7); padding-top:1.5rem; }
 
         /* ── Learn nav pill ──────────────────────────────────── */
         .learn-pill {
@@ -299,15 +299,16 @@
         <div class="flex flex-col h-full p-6">
             <nav class="mobile-nav-links flex flex-col gap-2">
                 <a href="index.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Home</a>
-                <a href="index.html#courses" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Courses</a>
-                <a href="whats-new.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">What's New</a>
-                <a href="about.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">About</a>
+                <a href="assets/pages/courses.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">All Courses</a>
+                <a href="index.html#courses" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Featured</a>
+                <a href="assets/pages/whats-new.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">What's New</a>
+                <a href="assets/pages/about.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">About</a>
             </nav>
             
             <div class="mt-auto pt-6 border-t border-gray-100">
                 <div id="mobileAuthArea">
                     <button class="w-full py-4 bg-[#16a34a] text-white rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg shadow-green-600/20" onclick="openAuthModal(); closeMobileMenu()">
-                        <i class="fas fa-sign-in-alt"></i> Sign In / Sign Up
+                        <i class="fas fa-sign-in-alt"></i> Sign In
                     </button>
                 </div>
                 <div id="mobileUserArea" style="display: none;" class="flex flex-col gap-3">
@@ -789,8 +790,7 @@
             const grid = document.getElementById('coursesGrid');
             grid.innerHTML = courses.map(c => `
                 <div class="course-card group">
-                    <div class="course-thumb" style="background: ${c.gradient || 'linear-gradient(135deg, #16a34a, #15803d)'};">
-                        <i class="${c.icon}" style="font-size: 3.5rem;"></i>
+                    <div class="course-thumb" style="background-image: url('${c.image}'); background-size: cover; background-position: center;">
                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
                     </div>
                     <div class="course-body p-6 flex flex-col h-full">

@@ -100,7 +100,7 @@
 <!-- ═══ NAV ════════════════════════════════════════════════════════════ -->
 <header class="modern-header" id="wnHeader">
     <div class="header-container flex items-center justify-between py-2 px-4 max-w-7xl mx-auto">
-        <a href="index.html" class="logo-container flex items-center gap-2.5 no-underline">
+        <a href="../../index.html" class="logo-container flex items-center gap-2.5 no-underline">
             <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Course Corner Logo" class="h-8 md:h-10 w-auto">
             <div class="logo-text-group flex flex-col justify-center leading-none gap-[2px]">
                 <span class="text-[1.15rem] md:text-[1.35rem] font-extrabold text-[#16a34a] tracking-tight leading-none">Course Corner</span>
@@ -110,14 +110,14 @@
 
         <nav class="desktop-nav flex items-center gap-10">
             <div class="nav-links flex items-center gap-6">
-                <a href="index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Home</a>
+                <a href="../../index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Home</a>
                 <a href="courses.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">All Courses</a>
-                <a href="about.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">About</a>
+                <a href="../../index.html#courses" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Featured</a>
                 <a href="whats-new.html" class="modern-nav-link text-[0.9rem] font-semibold text-[#16a34a] no-underline">What's New</a>
+                <a href="about.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">About</a>
             </div>
             <div class="nav-auth-buttons flex items-center gap-3">
-                <button id="signInNavBtn" class="px-4 py-2 text-[0.9rem] font-bold text-[#16a34a] hover:bg-[#16a34a]/10 rounded-lg transition-all" onclick="openSignInModal()">Sign In</button>
-                <button id="signUpNavBtn" class="px-4 py-2 text-[0.9rem] font-bold text-white bg-[#16a34a] hover:bg-[#15803d] rounded-lg shadow-sm transition-all" onclick="openSignUpModal()">Get Started</button>
+                <button id="signInNavBtn" class="px-6 py-2.5 bg-[#16a34a] text-white rounded-full text-sm font-bold flex items-center gap-2 hover:bg-[#15803d] transition-all shadow-lg shadow-green-600/20" onclick="openAuthModal()">Sign In</button>
                 <div id="userNavArea" style="display:none;align-items:center;gap:.75rem;">
                     <div id="userInitial" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#0ea5e9);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:.9rem;">?</div>
                     <button class="btn-nav-profile" onclick="handleSignOut()"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
@@ -132,13 +132,13 @@
     </div>
     <!-- Mobile menu -->
     <nav id="mobileMenu" class="mobile-menu">
-        <a href="index.html" class="mobile-nav-link">Home</a>
-        <a href="index.html#courses" class="mobile-nav-link">Courses</a>
-        <a href="about.html" class="mobile-nav-link">About</a>
+        <a href="../../index.html" class="mobile-nav-link">Home</a>
+        <a href="courses.html" class="mobile-nav-link">All Courses</a>
+        <a href="../../index.html#courses" class="mobile-nav-link">Featured</a>
         <a href="whats-new.html" class="mobile-nav-link" style="color:#16a34a;font-weight:700;">What's New</a>
+        <a href="about.html" class="mobile-nav-link">About</a>
         <div class="mobile-auth-section">
-            <button class="mv-btn-outline" onclick="openSignInModal();closeMobileMenu()">Sign In</button>
-            <button class="mv-btn-primary" onclick="openSignUpModal();closeMobileMenu()">Get Started</button>
+            <button class="mv-btn-primary" onclick="openAuthModal();closeMobileMenu()">Sign In</button>
         </div>
     </nav>
 </header>

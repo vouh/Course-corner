@@ -3,493 +3,645 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting - Course Corner</title>
-    <script>
-        // Use relative path to go to core admin
-        window.location.href = '../../admin/index.html?page=learn';
-    </script>
+    <title>Learn Admin – Course Corner</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',sans-serif;background:#f9fafb}
+        .sidebar{transition:transform .3s}
+        .nav-item{transition:all .2s}
+        .nav-item:hover{background:#f0fdf4;color:#16a34a}
+        .nav-item.active{background:#f0fdf4;color:#16a34a;font-weight:700}
+        @media(max-width:1024px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+    </style>
 </head>
-<body style="background:#f8fafc; display:flex; align-items:center; justify-content:center; min-height:100vh; font-family:sans-serif;">
-    <div style="text-align:center;">
-        <div style="width:40px; height:40px; border:3px solid #16a34a; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 20px;"></div>
-        <p style="color:#64748b; font-weight:600;">Moving to Unified Admin Dashboard...</p>
+<body class="bg-gray-50">
+
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div id="login-screen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-green-950 to-gray-900 p-4">
+    <div class="w-full max-w-sm">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center gap-2 mb-4">
+                <img src="https://coursecornerkenya.com/assets/images/logo.png" class="h-10 w-auto" alt="Logo">
+                <div class="text-left">
+                    <div class="text-white font-extrabold text-lg leading-none">Course Corner</div>
+                    <div class="text-green-400 text-[0.6rem] font-bold uppercase tracking-wider">Learn Admin</div>
+                </div>
+            </div>
+            <p class="text-gray-400 text-sm">Sign in to manage the Learn portal</p>
+        </div>
+        <form id="login-form" class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-gray-300 mb-1.5 uppercase tracking-wider">Email</label>
+                <input id="login-email" type="email" required class="w-full p-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-green-500" placeholder="admin@email.com">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-300 mb-1.5 uppercase tracking-wider">Password</label>
+                <input id="login-password" type="password" required class="w-full p-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-green-500" placeholder="••••••••">
+            </div>
+            <p id="login-error" class="text-red-400 text-xs font-bold hidden"></p>
+            <button id="login-btn" type="submit" class="w-full py-3 bg-[#16a34a] text-white rounded-xl font-bold hover:bg-[#15803d] transition-all">Sign In</button>
+        </form>
     </div>
-    <style>@keyframes spin { to { transform:rotate(360deg); } }</style>
-</body>
-</html>
+</div>
 
-    <!-- Dashboard Content -->
-    <div id="dashboard" class="hidden">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-40 sidebar">
-            <div class="h-20 flex items-center gap-3 px-6 border-b border-gray-200">
-                <img src="../../assets/images/logo.png" class="w-10 h-10 rounded-lg">
-                <div>
-                    <h1 class="text-lg font-bold">Course Corner</h1>
-                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Learn Dashboard</p>
+<!-- ═══ DASHBOARD ═══ -->
+<div id="dashboard" class="hidden">
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed left-0 top-0 h-full w-72 bg-white border-r border-gray-200 z-40">
+        <div class="h-20 flex items-center gap-3 px-6 border-b border-gray-200">
+            <img src="https://coursecornerkenya.com/assets/images/logo.png" class="w-10 h-10 rounded-lg" alt="Logo">
+            <div>
+                <h1 class="text-lg font-extrabold text-gray-900">Course Corner</h1>
+                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Learn Dashboard</p>
+            </div>
+        </div>
+        <nav class="p-4 space-y-1">
+            <a href="#" onclick="switchPage('learn-analytics')" id="nav-learn-analytics" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-chart-line w-6"></i><span>Dashboard</span>
+            </a>
+            <a href="#" onclick="switchPage('learn-courses')" id="nav-learn-courses" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-graduation-cap w-6"></i><span>Course Catalog</span>
+            </a>
+            <a href="#" onclick="switchPage('learn-applications')" id="nav-learn-applications" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-user-graduate w-6"></i><span>Applications</span>
+            </a>
+            <a href="#" onclick="switchPage('learn-transactions')" id="nav-learn-transactions" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-receipt w-6"></i><span>Transactions</span>
+            </a>
+            <a href="#" onclick="switchPage('learn-modules')" id="nav-learn-modules" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-list-ul w-6"></i><span>Modules & Progress</span>
+            </a>
+            <a href="#" onclick="switchPage('learn-notifications')" id="nav-learn-notifications" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-bell w-6"></i><span>Notifications</span>
+            </a>
+            <a href="#" onclick="switchPage('learn-blog')" id="nav-learn-blog" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-blog w-6"></i><span>What's New / Blog</span>
+            </a>
+            <div class="pt-4 mt-4 border-t border-gray-100">
+                <a href="../../admin/index.html" class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-600 transition-colors">
+                    <i class="fas fa-arrow-left w-6"></i><span>Back to Main Admin</span>
+                </a>
+            </div>
+        </nav>
+        <div class="absolute bottom-0 left-0 right-0 p-4 border-t bg-white">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-[#16a34a] rounded-full flex items-center justify-center text-white font-bold" id="userInitial">?</div>
+                <div class="flex-1 min-w-0">
+                    <p id="sidebar-email" class="text-xs font-bold truncate text-gray-900">Admin</p>
+                </div>
+                <button onclick="logout()" class="p-2 text-gray-400 hover:text-red-500 transition-colors"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Mobile sidebar toggle -->
+    <button id="sidebarToggle" class="lg:hidden fixed top-5 left-4 z-50 w-10 h-10 bg-white border rounded-xl shadow-lg flex items-center justify-center" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <i class="fas fa-bars text-gray-600"></i>
+    </button>
+
+    <!-- Main Content -->
+    <div class="lg:ml-72 min-h-screen">
+        <header class="h-20 bg-white border-b border-gray-200 px-8 flex items-center justify-between sticky top-0 z-30">
+            <h2 id="page-title" class="text-xl font-extrabold text-gray-900">Dashboard</h2>
+            <div class="flex gap-2">
+                <button onclick="location.reload()" class="p-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100 transition-colors"><i class="fas fa-sync-alt"></i></button>
+            </div>
+        </header>
+
+        <main class="p-4 md:p-6">
+
+            <!-- ═══ Analytics ═══ -->
+            <div id="page-learn-analytics">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border"><i class="fas fa-users text-[#16a34a] text-xl mb-2"></i><h4 class="text-sm text-gray-500 font-bold">Total Applications</h4><p class="text-3xl font-extrabold" id="stat-enrolled">–</p></div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border"><i class="fas fa-wallet text-green-600 text-xl mb-2"></i><h4 class="text-sm text-gray-500 font-bold">Total Paid</h4><p class="text-3xl font-extrabold" id="stat-paid">–</p></div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border"><i class="fas fa-hourglass-half text-amber-600 text-xl mb-2"></i><h4 class="text-sm text-gray-500 font-bold">Pending Apps</h4><p class="text-3xl font-extrabold" id="stat-pending">–</p></div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border"><i class="fas fa-calendar-check text-blue-600 text-xl mb-2"></i><h4 class="text-sm text-gray-500 font-bold">Blog Posts</h4><p class="text-3xl font-extrabold" id="stat-posts">–</p></div>
+                </div>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-2xl border p-6"><h3 class="font-bold mb-4">Recent Applications</h3><div id="recent-apps" class="space-y-3 text-sm text-gray-500">Loading...</div></div>
+                    <div class="bg-white rounded-2xl border p-6"><h3 class="font-bold mb-4">Recent Payments</h3><div id="recent-payments" class="space-y-3 text-sm text-gray-500">Loading...</div></div>
                 </div>
             </div>
-            <nav class="p-4 space-y-1">
-                <a href="#" onclick="switchPage('learn-analytics')" id="nav-learn-analytics" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
-                    <i class="fas fa-chart-line w-6"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="#" onclick="switchPage('learn-courses')" id="nav-learn-courses" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
-                    <i class="fas fa-graduation-cap w-6"></i>
-                    <span>Course Catalog</span>
-                </a>
-                <a href="#" onclick="switchPage('learn-applications')" id="nav-learn-applications" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
-                    <i class="fas fa-user-graduate w-6"></i>
-                    <span>Applications</span>
-                </a>
-                <a href="#" onclick="switchPage('learn-transactions')" id="nav-learn-transactions" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
-                    <i class="fas fa-receipt w-6"></i>
-                    <span>Transactions</span>
-                </a>
-                <a href="#" onclick="switchPage('learn-modules')" id="nav-learn-modules" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
-                    <i class="fas fa-list-ul w-6"></i>
-                    <span>Modules & Progress</span>
-                </a>
-                <a href="#" onclick="switchPage('learn-notifications')" id="nav-learn-notifications" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
-                    <i class="fas fa-bell w-6"></i>
-                    <span>Notifications</span>
-                </a>
-                <a href="#" onclick="switchPage('learn-blog')" id="nav-learn-blog" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
-                    <i class="fas fa-blog w-6"></i>
-                    <span>Blog Posts</span>
-                </a>
-                <div class="pt-4 mt-4 border-t border-gray-100">
-                    <a href="../../admin/index.html" class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-arrow-left w-6"></i>
-                        <span>Back to Main Admin</span>
-                    </a>
+
+            <!-- ═══ Course Catalog ═══ -->
+            <div id="page-learn-courses" class="hidden">
+                <div class="flex items-center justify-between mb-8">
+                    <div><h3 class="text-lg font-extrabold text-gray-900">Course Tiers</h3><p class="text-sm text-gray-500">Managed from courses.json</p></div>
                 </div>
-            </nav>
-            <div class="absolute bottom-0 left-0 right-0 p-4 border-t">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center text-white font-bold" id="userInitial">?</div>
-                    <div class="flex-1 min-w-0">
-                        <p id="sidebar-email" class="text-xs font-bold truncate text-gray-900 dark:text-white">Admin</p>
+                <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+
+            <!-- ═══ Applications ═══ -->
+            <div id="page-learn-applications" class="hidden">
+                <div class="bg-white rounded-2xl border overflow-hidden shadow-sm">
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                        <h3 class="font-bold">Student Applications</h3>
+                        <select id="app-status-filter" onchange="filterLearnApps()" class="bg-white border rounded-lg px-3 py-1 text-sm">
+                            <option value="all">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option>
+                        </select>
                     </div>
-                    <button onclick="logout()" class="p-2 text-gray-400 hover:text-red-500"><i class="fas fa-sign-out-alt"></i></button>
+                    <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            <tr><th class="px-6 py-4">Student</th><th class="px-6 py-4">Package</th><th class="px-6 py-4">Date</th><th class="px-6 py-4 text-center">Status</th><th class="px-6 py-4 text-right">Action</th></tr>
+                        </thead>
+                        <tbody id="learn-apps-table-body"></tbody>
+                    </table>
+                    </div>
                 </div>
             </div>
-        </aside>
 
-        <!-- Main -->
-        <div class="lg:ml-72 min-h-screen">
-            <header class="h-20 bg-white dark:bg-gray-800 border-b border-gray-200 px-8 flex items-center justify-between sticky top-0 z-30">
-                <h2 id="page-title" class="text-xl font-bold">Course Catalog</h2>
-                <div class="flex gap-2">
-                    <button onclick="switchPage('learn-courses')" class="p-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100"><i class="fas fa-sync-alt"></i></button>
-                    <button onclick="toggleTheme()" class="p-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100"><i class="fas fa-moon"></i></button>
-                </div>
-            </header>
-            
-            <main class="p-6">
-                <!-- Dashboard Analytics -->
-                <div id="page-learn-analytics">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border">
-                            <i class="fas fa-users text-primary-600 mb-2"></i>
-                            <h4 class="text-sm text-gray-500 font-bold">Total Enrolled</h4>
-                            <p class="text-3xl font-extrabold" id="stat-enrolled">-</p>
-                        </div>
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border">
-                            <i class="fas fa-wallet text-green-600 mb-2"></i>
-                            <h4 class="text-sm text-gray-500 font-bold">Total Paid</h4>
-                            <p class="text-3xl font-extrabold" id="stat-paid">-</p>
-                        </div>
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border">
-                            <i class="fas fa-hourglass-half text-amber-600 mb-2"></i>
-                            <h4 class="text-sm text-gray-500 font-bold">Pending Amount</h4>
-                            <p class="text-3xl font-extrabold" id="stat-pending">-</p>
-                        </div>
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border">
-                            <i class="fas fa-calendar-check text-blue-600 mb-2"></i>
-                            <h4 class="text-sm text-gray-500 font-bold">New This Month</h4>
-                            <p class="text-3xl font-extrabold" id="stat-monthly">-</p>
-                        </div>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl border p-6">
-                        <h3 class="font-bold mb-4">Enrollment Trends</h3>
-                        <div class="h-64 flex items-center justify-center text-gray-400">Chart Placeholder</div>
+            <!-- ═══ Transactions ═══ -->
+            <div id="page-learn-transactions" class="hidden">
+                <div class="bg-white rounded-2xl border overflow-hidden shadow-sm">
+                    <div class="p-6 border-b border-gray-100 bg-gray-50/50"><h3 class="font-bold">Course Payments</h3></div>
+                    <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            <tr><th class="px-6 py-4">Student</th><th class="px-6 py-4">Course</th><th class="px-6 py-4">Amount</th><th class="px-6 py-4">Date</th><th class="px-6 py-4 text-center">Status</th></tr>
+                        </thead>
+                        <tbody id="learn-tx-table-body"></tbody>
+                    </table>
                     </div>
                 </div>
+            </div>
 
-                <!-- Course Management Page -->
-                <div id="page-learn-courses" class="hidden">
-                    <div class="flex items-center justify-between mb-8">
+            <!-- ═══ Modules ═══ -->
+            <div id="page-learn-modules" class="hidden">
+                <div class="bg-white p-12 rounded-3xl border text-center flex flex-col items-center">
+                    <div class="w-20 h-20 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-3xl mb-6"><i class="fas fa-layer-group"></i></div>
+                    <h3 class="font-extrabold text-gray-900 mb-2">Curriculum Builder</h3>
+                    <p class="text-sm text-gray-500 max-w-sm leading-relaxed mb-6">Manage modules and lessons for each course. Currently linked to courses.json — can be migrated to Firestore for dynamic editing.</p>
+                    <button onclick="Swal.fire({icon:'info',title:'Coming Soon',text:'Dynamic module management will be available in the next update.', confirmButtonColor:'#16a34a'})" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition-all">Configure Modules</button>
+                </div>
+            </div>
+
+            <!-- ═══ Notifications ═══ -->
+            <div id="page-learn-notifications" class="hidden">
+                <div class="max-w-2xl">
+                    <h3 class="text-lg font-extrabold text-gray-900 mb-4">Send Notification</h3>
+                    <div class="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
                         <div>
-                            <h3 class="text-lg font-extrabold text-gray-900">Course Tiers</h3>
-                            <p class="text-sm text-gray-500">Starter (2k), Intermediate (4k), Pro (6k)</p>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Message</label>
+                            <textarea id="notifyText" class="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 h-32 focus:outline-none focus:border-green-500" placeholder="Course update: Module 2 is now available..."></textarea>
                         </div>
-                        <button onclick="openAddCourseModal()" class="px-5 py-2.5 bg-primary-600 text-white font-bold rounded-xl shadow-lg">Add New Course</button>
-                    </div>
-                    <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-                </div>
-
-                <!-- Applications Page -->
-                <div id="page-learn-applications" class="hidden">
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-                        <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                            <h3 class="font-bold">Student Applications</h3>
-                            <select id="app-status-filter" onchange="filterLearnApps()" class="bg-white border rounded-lg px-3 py-1 text-sm">
-                                <option value="all">All</option>
-                                <option value="pending">Pending</option>
-                                <option value="approved">Approved</option>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Target Audience</label>
+                            <select id="notifyTarget" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-green-500">
+                                <option value="all">All Enrolled Users</option><option value="paid">Paid Users Only</option>
                             </select>
                         </div>
-                        <table class="w-full text-left">
-                            <thead class="bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                <tr>
-                                    <th class="px-6 py-4">Student</th>
-                                    <th class="px-6 py-4">Desired Package</th>
-                                    <th class="px-6 py-4">Date</th>
-                                    <th class="px-6 py-4 text-center">Status</th>
-                                    <th class="px-6 py-4 text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="learn-apps-table-body"></tbody>
-                        </table>
+                        <button onclick="sendNotification()" class="w-full bg-[#16a34a] text-white py-3 rounded-xl font-bold shadow-lg hover:bg-[#15803d] transition-all">Send Broadcast</button>
                     </div>
                 </div>
+            </div>
 
-                <!-- Transactions Page -->
-                <div id="page-learn-transactions" class="hidden">
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-                        <div class="p-6 border-b border-gray-100 bg-gray-50/50">
-                            <h3 class="font-bold">Course Payments</h3>
-                        </div>
-                        <table class="w-full text-left">
-                            <thead class="bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                <tr>
-                                    <th class="px-6 py-4">User</th>
-                                    <th class="px-6 py-4">Total Paid</th>
-                                    <th class="px-6 py-4">Remaining Balance</th>
-                                    <th class="px-6 py-4">Last Payment</th>
-                                    <th class="px-6 py-4 text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="learn-tx-table-body"></tbody>
-                        </table>
+            <!-- ═══ Blog / What's New ═══ -->
+            <div id="page-learn-blog" class="hidden">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+                    <div>
+                        <h3 class="text-lg font-extrabold text-gray-900">What's New Management</h3>
+                        <p class="text-sm text-gray-500">Create and manage blog posts shown on the What's New page</p>
                     </div>
+                    <button onclick="openBlogEditor()" class="px-5 py-2.5 bg-purple-600 text-white font-bold rounded-xl shadow-lg hover:bg-purple-700 transition-all flex items-center gap-2">
+                        <i class="fas fa-plus"></i> New Post
+                    </button>
                 </div>
+                <div id="blog-posts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </div>
 
-                <!-- Modules & Progress Page -->
-                <div id="page-learn-modules" class="hidden">
-                    <div class="flex items-center justify-between mb-8">
-                        <div>
-                            <h3 class="text-lg font-extrabold text-gray-900">Modules & Progress</h3>
-                            <p class="text-sm text-gray-500">Update curriculum for active users</p>
-                        </div>
-                        <button onclick="openAddModuleModal()" class="px-5 py-2.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg">New Module</button>
-                    </div>
-                    <div id="modules-list" class="space-y-4"></div>
-                </div>
-
-                <!-- Notifications Page -->
-                <div id="page-learn-notifications" class="hidden">
-                    <div class="max-w-2xl">
-                        <h3 class="text-lg font-extrabold text-gray-900 mb-4">Send Notification</h3>
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl border shadow-sm">
-                            <form id="notifyForm" class="space-y-4">
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Message</label>
-                                    <textarea id="notifyText" class="w-full p-4 bg-gray-50 dark:bg-gray-700 rounded-xl border-none h-32" placeholder="Course update: Module 2 is now available..."></textarea>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Target Audience</label>
-                                    <select class="w-full p-3 bg-gray-50 dark:bg-gray-700 rounded-xl border-none">
-                                        <option value="all">All Logged-in Users</option>
-                                        <option value="paid">Paid Users Only</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="w-full bg-primary-600 text-white py-3 rounded-xl font-bold shadow-lg">Send Broadcast</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Blog Page -->
-                <div id="page-learn-blog" class="hidden">
-                    <div class="flex items-center justify-between mb-8">
-                        <div>
-                            <h3 class="text-lg font-extrabold text-gray-900">Blog Management</h3>
-                            <p class="text-sm text-gray-500">Post new articles and updates</p>
-                        </div>
-                        <button onclick="openAddBlogModal()" class="px-5 py-2.5 bg-purple-600 text-white font-bold rounded-xl shadow-lg">Create Post</button>
-                    </div>
-                    <div id="blog-posts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
-                </div>
-            </main>
-        </div>
+        </main>
     </div>
+</div>
 
-    <script>
-        const app = firebase.initializeApp({
-            apiKey:"AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
-            authDomain:"course-corner.firebaseapp.com",
-            projectId:"course-corner",
-            appId:"1:961706784572:web:7aa6c24946570ffda59039"
-        });
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+<!-- ═══ Blog Editor Modal ═══ -->
+<div id="blogEditorModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div class="p-6 border-b border-gray-100 flex items-center justify-between">
+            <h3 class="text-lg font-extrabold text-gray-900" id="blogEditorTitle">New Post</h3>
+            <button onclick="closeBlogEditor()" class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"><i class="fas fa-times text-gray-500"></i></button>
+        </div>
+        <form id="blogForm" class="p-6 space-y-5">
+            <input type="hidden" id="blogEditId">
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1.5">Title *</label>
+                <input id="blogTitle" type="text" required class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-green-500" placeholder="Exciting Update: New Module Released!">
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Category *</label>
+                    <select id="blogCategory" required class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-green-500">
+                        <option value="story">Success Story</option>
+                        <option value="update">Platform Update</option>
+                        <option value="tip">Learning Tip</option>
+                        <option value="news">News</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Author</label>
+                    <input id="blogAuthor" type="text" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-green-500" placeholder="Course Corner Team">
+                </div>
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1.5">Excerpt / Summary *</label>
+                <textarea id="blogExcerpt" required class="w-full p-3 border border-gray-200 rounded-xl h-20 focus:outline-none focus:border-green-500" placeholder="A brief summary for the card..."></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1.5">Full Content *</label>
+                <textarea id="blogContent" required class="w-full p-3 border border-gray-200 rounded-xl h-40 focus:outline-none focus:border-green-500" placeholder="Write the full article content here..."></textarea>
+            </div>
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-1.5">Image URL (optional)</label>
+                <input id="blogImage" type="url" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-green-500" placeholder="https://images.unsplash.com/...">
+            </div>
+            <div class="flex items-center gap-3">
+                <input id="blogPublished" type="checkbox" checked class="w-4 h-4 accent-green-600">
+                <label for="blogPublished" class="text-sm font-bold text-gray-700">Publish immediately</label>
+            </div>
+            <div class="flex gap-3 pt-2">
+                <button type="button" onclick="closeBlogEditor()" class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-all">Cancel</button>
+                <button type="submit" class="flex-1 py-3 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700 transition-all shadow-lg flex items-center justify-center gap-2">
+                    <i class="fas fa-save"></i> <span id="blogSaveLabel">Publish Post</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
-        auth.onAuthStateChanged(user => {
-            if (user && isAuthorizedAdmin(user)) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-                document.getElementById('sidebar-email').textContent = user.email;
-                document.getElementById('userInitial').textContent = user.email[0].toUpperCase();
-                loadLearnCourses();
-            } else {
-                document.getElementById('login-screen').classList.remove('hidden');
-                document.getElementById('dashboard').classList.add('hidden');
-            }
-        });
+<script>
+    // ═══════════════════════════════════════════════════════════
+    //  Firebase init & Auth
+    // ═══════════════════════════════════════════════════════════
+    const app = firebase.initializeApp({
+        apiKey: "AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
+        authDomain: "course-corner.firebaseapp.com",
+        projectId: "course-corner",
+        storageBucket: "course-corner.firebasestorage.app",
+        messagingSenderId: "961706784572",
+        appId: "1:961706784572:web:7aa6c24946570ffda59039"
+    });
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-password').value;
-            const btn = document.getElementById('login-btn');
-            btn.disabled = true;
-            try {
-                await auth.signInWithEmailAndPassword(email, pass);
-            } catch (err) {
-                document.getElementById('login-error').textContent = err.message;
-                document.getElementById('login-error').classList.remove('hidden');
-                btn.disabled = false;
-            }
-        });
+    const ADMIN_EMAILS = ['peterkelvinkibiru1532@gmail.com', 'macharia074m@gmail.com'];
+    function isAuthorizedAdmin(user) { return user && ADMIN_EMAILS.includes(user.email); }
 
-        function switchPage(page) {
-            const pages = ['learn-analytics', 'learn-courses', 'learn-applications', 'learn-transactions', 'learn-modules', 'learn-notifications', 'learn-blog'];
-            pages.forEach(p => {
-                const el = document.getElementById(`page-${p}`);
-                if (el) el.classList.add('hidden');
-            });
-            
-            const target = document.getElementById(`page-${page}`);
-            if (target) target.classList.remove('hidden');
-
-            document.getElementById('page-title').textContent = {
-                'learn-analytics': 'Dashboard Analytics',
-                'learn-courses': 'Course Catalog',
-                'learn-applications': 'Student Applications',
-                'learn-transactions': 'Course Payments',
-                'learn-modules': 'Modules & Progress',
-                'learn-notifications': 'Broadcast Notifications',
-                'learn-blog': 'Blog Management'
-            }[page] || 'Learn Dashboard';
-            
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('bg-primary-50', 'text-primary-600'));
-            const nav = document.getElementById(`nav-${page}`);
-            if (nav) nav.classList.add('bg-primary-50', 'text-primary-600');
-            
-            if(page === 'learn-applications') loadLearnApplications();
-            if(page === 'learn-courses') loadLearnCourses();
-            if(page === 'learn-analytics') loadLearnAnalytics();
-            if(page === 'learn-transactions') loadLearnTransactions();
-            if(page === 'learn-modules') loadLearnModules();
-            if(page === 'learn-blog') loadLearnBlogs();
-        }
-
-        async function loadLearnApplications() {
-            const tbody = document.getElementById('learn-apps-table-body');
-            tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400 font-bold uppercase tracking-widest"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr>';
-            try {
-                const snapshot = await db.collection('learnApplications')
-                    .orderBy('timestamp', 'desc')
-                    .limit(50).get();
-                
-                if (snapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="p-20 text-center"><div class="flex flex-col items-center opacity-20"><i class="fas fa-inbox text-5xl mb-4"></i><p class="font-black text-xs uppercase tracking-[0.2em]">No Applications Yet</p></div></td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = snapshot.docs.map(doc => {
-                    const data = doc.data();
-                    const date = data.timestamp ? data.timestamp.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : 'Unknown';
-                    const statusClass = {
-                        'pending': 'bg-amber-100 text-amber-700',
-                        'approved': 'bg-emerald-100 text-emerald-700',
-                        'rejected': 'bg-rose-100 text-rose-700'
-                    }[data.status] || 'bg-slate-100 text-slate-700';
-
-                    return `
-                        <tr class="border-b border-gray-100/50 hover:bg-gray-50/80 transition-all duration-200">
-                            <td class="px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-gray-100 border flex items-center justify-center font-bold text-gray-400 capitalize">${data.fullName ? data.fullName[0] : '?'}</div>
-                                    <div>
-                                        <p class="text-xs font-black text-gray-900 uppercase tracking-tight">${data.fullName || 'Anonymous'}</p>
-                                        <p class="text-[10px] text-gray-400 font-bold">${data.whatsapp || data.email || 'No Contact'}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="px-3 py-1 rounded-lg bg-primary-50 text-primary-600 text-[10px] font-black uppercase tracking-wider border border-primary-100/50">${data.courseId || 'Masterclass'}</span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">${date}</span>
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${statusClass}">${data.status || 'pending'}</span>
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <div class="flex justify-end gap-2">
-                                    <button onclick="updateAppStatus('${doc.id}', 'approved')" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all duration-300 flex items-center justify-center"><i class="fas fa-check text-[10px]"></i></button>
-                                    <button onclick="updateAppStatus('${doc.id}', 'rejected')" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all duration-300 flex items-center justify-center"><i class="fas fa-times text-[10px]"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            } catch (e) { console.error("Error loading apps:", e); }
-        }
-
-        async function updateAppStatus(id, status) {
-            try {
-                await db.collection('learnApplications').doc(id).update({ status });
-                loadLearnApplications();
-                Swal.fire({ icon: 'success', title: `Application ${status}!`, toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
-            } catch (e) {
-                Swal.fire({ icon: 'error', title: 'Update failed', text: e.message });
+    auth.onAuthStateChanged(user => {
+        if (user && isAuthorizedAdmin(user)) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('sidebar-email').textContent = user.email;
+            document.getElementById('userInitial').textContent = user.email[0].toUpperCase();
+            const urlPage = new URLSearchParams(window.location.search).get('page');
+            switchPage(urlPage && PAGES.includes(urlPage) ? urlPage : 'learn-analytics');
+        } else {
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            if (user && !isAuthorizedAdmin(user)) {
+                Swal.fire({ icon: 'error', title: 'Access Denied', text: 'You are not an authorized admin.', confirmButtonColor: '#16a34a' });
+                auth.signOut();
             }
         }
+    });
 
-        async function loadLearnTransactions() {
-            const tbody = document.getElementById('learn-tx-table-body');
-            tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400 font-bold uppercase tracking-widest"><i class="fas fa-spinner fa-spin mr-2"></i>Calculating...</td></tr>';
-            
-            try {
-                // Get all applications to know the package fees
-                const appsSnap = await db.collection('learnApplications').get();
-                const studentPackages = {};
-                appsSnap.forEach(doc => {
-                    const data = doc.data();
-                    const email = data.email || data.whatsapp;
-                    if (email) studentPackages[email] = data.courseId || 'starter';
-                });
-
-                // Tiers mapping
-                const fees = { 'starter': 2000, 'intermediate': 4000, 'pro': 6000 };
-
-                // Get all course-related transactions
-                const txSnap = await db.collection('transactions')
-                    .where('status', '==', 'completed')
-                    .get();
-
-                const userLedger = {};
-                txSnap.forEach(doc => {
-                    const data = doc.data();
-                    const id = data.userEmail || data.phoneNumber; // Link by email or phone
-                    if (!userLedger[id]) {
-                        userLedger[id] = { 
-                            name: data.fullName || id, 
-                            paid: 0, 
-                            lastDate: null, 
-                            package: studentPackages[id] || 'starter' 
-                        };
-                    }
-                    userLedger[id].paid += (data.amount || 0);
-                    if (!userLedger[id].lastDate || data.createdAt?.toDate() > userLedger[id].lastDate) {
-                        userLedger[id].lastDate = data.createdAt?.toDate();
-                    }
-                });
-
-                if (Object.keys(userLedger).length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="p-20 text-center"><div class="flex flex-col items-center opacity-20"><i class="fas fa-receipt text-5xl mb-4"></i><p class="font-black text-xs uppercase tracking-[0.2em]">No Payments Recorded</p></div></td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = Object.entries(userLedger).map(([id, info]) => {
-                    const totalFee = fees[info.package] || 2000;
-                    const remaining = Math.max(0, totalFee - info.paid);
-                    return `
-                        <tr class="border-b border-gray-100/50 hover:bg-gray-50/80 transition-all duration-200">
-                            <td class="px-6 py-4">
-                                <div>
-                                    <p class="text-xs font-black text-gray-900 uppercase tracking-tight">${info.name}</p>
-                                    <p class="text-[10px] text-gray-500 font-bold">${info.package.toUpperCase()} PACKAGE</p>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <p class="text-xs font-black text-emerald-600 uppercase tracking-widest">KSH ${info.paid.toLocaleString()}</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <p class="text-xs font-black ${remaining > 0 ? 'text-rose-500' : 'text-emerald-500'} uppercase tracking-widest">KSH ${remaining.toLocaleString()}</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">${info.lastDate ? info.lastDate.toLocaleDateString() : '-'}</span>
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <button class="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:bg-primary-600 hover:text-white transition-all duration-300 flex items-center justify-center"><i class="fas fa-ellipsis-v text-[10px]"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            } catch (e) {
-                console.error("Tx load error:", e);
-                tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-rose-500">Failed to load transactions</td></tr>';
-            }
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-password').value;
+        const btn = document.getElementById('login-btn');
+        const errEl = document.getElementById('login-error');
+        btn.disabled = true;
+        errEl.classList.add('hidden');
+        try {
+            await auth.signInWithEmailAndPassword(email, pass);
+        } catch (err) {
+            errEl.textContent = err.message;
+            errEl.classList.remove('hidden');
+            btn.disabled = false;
         }
+    });
 
-        async function loadLearnCourses() {
-            const grid = document.getElementById('courses-grid');
-            grid.innerHTML = '<div class="col-span-full py-20 flex justify-center"><i class="fas fa-spinner fa-spin text-3xl text-primary-200"></i></div>';
-            try {
-                const resp = await fetch('../data/courses.json');
-                const courses = await resp.json();
-                grid.innerHTML = courses.map(c => `
-                    <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 overflow-hidden group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-                        <div class="h-40 relative flex items-center justify-center overflow-hidden" style="background: ${c.gradient}">
-                            <i class="${c.icon} text-5xl text-white drop-shadow-2xl group-hover:scale-110 transition-transform duration-500"></i>
-                            <div class="absolute top-4 right-4 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold text-white uppercase tracking-widest border border-white/30">${c.level}</div>
+    function logout() { auth.signOut(); }
+
+    // ═══════════════════════════════════════════════════════════
+    //  Page Switching
+    // ═══════════════════════════════════════════════════════════
+    const PAGES = ['learn-analytics','learn-courses','learn-applications','learn-transactions','learn-modules','learn-notifications','learn-blog'];
+    const PAGE_TITLES = {
+        'learn-analytics': 'Dashboard Analytics',
+        'learn-courses': 'Course Catalog',
+        'learn-applications': 'Student Applications',
+        'learn-transactions': 'Course Payments',
+        'learn-modules': 'Modules & Progress',
+        'learn-notifications': 'Broadcast Notifications',
+        'learn-blog': 'What\'s New / Blog'
+    };
+
+    function switchPage(page) {
+        PAGES.forEach(p => { const el = document.getElementById('page-' + p); if (el) el.classList.add('hidden'); });
+        const target = document.getElementById('page-' + page);
+        if (target) target.classList.remove('hidden');
+        document.getElementById('page-title').textContent = PAGE_TITLES[page] || 'Dashboard';
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        const nav = document.getElementById('nav-' + page);
+        if (nav) nav.classList.add('active');
+        document.getElementById('sidebar').classList.remove('open');
+
+        if (page === 'learn-analytics') loadAnalytics();
+        if (page === 'learn-courses') loadCourses();
+        if (page === 'learn-applications') loadApplications();
+        if (page === 'learn-transactions') loadTransactions();
+        if (page === 'learn-blog') loadBlogPosts();
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  Analytics
+    // ═══════════════════════════════════════════════════════════
+    async function loadAnalytics() {
+        try {
+            const [appsSnap, paymentsSnap, postsSnap] = await Promise.all([
+                db.collection('learnApplications').get(),
+                db.collection('learnPayments').get(),
+                db.collection('learnPosts').get()
+            ]);
+
+            document.getElementById('stat-enrolled').textContent = appsSnap.size;
+            const pendingCount = appsSnap.docs.filter(d => (d.data().status || 'pending') === 'pending').length;
+            document.getElementById('stat-pending').textContent = pendingCount;
+
+            let totalPaid = 0;
+            paymentsSnap.forEach(d => { totalPaid += (d.data().amountPaid || 0); });
+            document.getElementById('stat-paid').textContent = 'KSH ' + totalPaid.toLocaleString();
+            document.getElementById('stat-posts').textContent = postsSnap.size;
+
+            // Recent apps
+            const recentApps = appsSnap.docs
+                .map(d => ({ id: d.id, ...d.data() }))
+                .sort((a, b) => (b.timestamp || '') > (a.timestamp || '') ? 1 : -1)
+                .slice(0, 5);
+            document.getElementById('recent-apps').innerHTML = recentApps.length
+                ? recentApps.map(a => `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl"><div><p class="text-sm font-bold text-gray-900">${a.fullName || 'Anonymous'}</p><p class="text-xs text-gray-400">${a.courseTitle || a.courseId || '—'}</p></div><span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${a.status === 'approved' ? 'bg-green-100 text-green-700' : a.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}">${a.status || 'pending'}</span></div>`).join('')
+                : '<p class="text-gray-400 text-center py-8">No applications yet</p>';
+
+            // Recent payments
+            const recentPay = paymentsSnap.docs
+                .map(d => ({ id: d.id, ...d.data() }))
+                .sort((a, b) => (b.timestamp || '') > (a.timestamp || '') ? 1 : -1)
+                .slice(0, 5);
+            document.getElementById('recent-payments').innerHTML = recentPay.length
+                ? recentPay.map(p => `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl"><div><p class="text-sm font-bold text-gray-900">${p.email || p.phone || '—'}</p><p class="text-xs text-gray-400">${p.courseTitle || '—'}</p></div><span class="text-sm font-extrabold text-green-600">KSH ${(p.amountPaid || 0).toLocaleString()}</span></div>`).join('')
+                : '<p class="text-gray-400 text-center py-8">No payments yet</p>';
+
+        } catch (e) { console.error('Analytics error:', e); }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  Course Catalog
+    // ═══════════════════════════════════════════════════════════
+    async function loadCourses() {
+        const grid = document.getElementById('courses-grid');
+        grid.innerHTML = '<div class="col-span-full py-20 flex justify-center"><i class="fas fa-spinner fa-spin text-3xl text-green-200"></i></div>';
+        try {
+            const resp = await fetch('../data/courses.json');
+            const courses = await resp.json();
+            grid.innerHTML = courses.map(c => `
+                <div class="bg-white rounded-2xl border overflow-hidden group hover:shadow-xl transition-all duration-300">
+                    <div class="h-40 relative flex items-center justify-center" style="background:${c.gradient}">
+                        <i class="${c.icon} text-5xl text-white drop-shadow-xl group-hover:scale-110 transition-transform duration-300"></i>
+                        <div class="absolute top-4 right-4 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold text-white uppercase tracking-widest border border-white/30">${c.level}</div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-xs font-extrabold text-gray-400 uppercase tracking-widest mb-1">KSH ${c.fee.toLocaleString()}</p>
+                        <h3 class="text-lg font-extrabold text-gray-900 mb-2">${c.title}</h3>
+                        <p class="text-xs text-gray-500 leading-relaxed mb-4 line-clamp-2">${c.description}</p>
+                        <div class="flex gap-2 text-xs">
+                            <span class="px-3 py-1 rounded-full bg-green-50 text-green-700 font-bold">${c.duration}</span>
+                            <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-bold">${c.modulesCount} modules</span>
                         </div>
-                        <div class="p-6">
-                            <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">KSH ${c.fee.toLocaleString()}</h4>
-                            <h3 class="text-lg font-black text-gray-900 mb-2 leading-tight">${c.title}</h3>
-                            <p class="text-xs text-gray-500 font-medium leading-relaxed mb-4 line-clamp-2">${c.description}</p>
-                            <div class="flex items-center gap-2 pt-4 border-t border-gray-50">
-                                <button class="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-900 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Edit</button>
-                                <button class="w-10 h-10 bg-rose-50 text-rose-500 flex items-center justify-center rounded-xl hover:bg-rose-500 hover:text-white transition-all"><i class="fas fa-trash-alt text-[10px]"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        } catch (e) { console.error(e); grid.innerHTML = '<p class="col-span-full text-center text-red-500">Failed to load courses</p>'; }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  Applications
+    // ═══════════════════════════════════════════════════════════
+    let allApps = [];
+    async function loadApplications() {
+        const tbody = document.getElementById('learn-apps-table-body');
+        tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr>';
+        try {
+            const snap = await db.collection('learnApplications').orderBy('timestamp', 'desc').limit(100).get();
+            allApps = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderApps(allApps);
+        } catch (e) { console.error(e); tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-red-500">Error loading applications</td></tr>'; }
+    }
+
+    function filterLearnApps() {
+        const f = document.getElementById('app-status-filter').value;
+        renderApps(f === 'all' ? allApps : allApps.filter(a => (a.status || 'pending') === f));
+    }
+
+    function renderApps(apps) {
+        const tbody = document.getElementById('learn-apps-table-body');
+        if (!apps.length) {
+            tbody.innerHTML = '<tr><td colspan="5" class="p-20 text-center text-gray-300"><i class="fas fa-inbox text-4xl mb-3 block"></i><p class="font-bold text-xs uppercase tracking-widest">No Applications</p></td></tr>';
+            return;
+        }
+        tbody.innerHTML = apps.map(a => {
+            const ts = a.timestamp;
+            const date = typeof ts === 'string' ? new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : (ts && ts.toDate ? ts.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : '—');
+            const sc = { pending: 'bg-amber-100 text-amber-700', approved: 'bg-green-100 text-green-700', rejected: 'bg-red-100 text-red-700' }[a.status] || 'bg-gray-100 text-gray-700';
+            return `<tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                <td class="px-6 py-4"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center font-bold text-gray-400 capitalize text-sm">${(a.fullName || '?')[0]}</div><div><p class="text-sm font-bold text-gray-900">${a.fullName || 'Anonymous'}</p><p class="text-[10px] text-gray-400">${a.whatsapp || a.email || '—'}</p></div></div></td>
+                <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase">${a.courseTitle || a.courseId || '—'}</span></td>
+                <td class="px-6 py-4 text-xs font-bold text-gray-400">${date}</td>
+                <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${sc}">${a.status || 'pending'}</span></td>
+                <td class="px-6 py-4 text-right"><div class="flex justify-end gap-1.5">
+                    <button onclick="updateAppStatus('${a.id}','approved')" class="w-7 h-7 rounded-lg bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all flex items-center justify-center" title="Approve"><i class="fas fa-check text-[10px]"></i></button>
+                    <button onclick="updateAppStatus('${a.id}','rejected')" class="w-7 h-7 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center" title="Reject"><i class="fas fa-times text-[10px]"></i></button>
+                </div></td></tr>`;
+        }).join('');
+    }
+
+    async function updateAppStatus(id, status) {
+        try {
+            await db.collection('learnApplications').doc(id).update({ status });
+            const app = allApps.find(a => a.id === id);
+            if (app) app.status = status;
+            filterLearnApps();
+            Swal.fire({ icon: 'success', title: `Application ${status}!`, toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+        } catch (e) { Swal.fire({ icon: 'error', title: 'Update failed', text: e.message, confirmButtonColor: '#16a34a' }); }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  Transactions (from learnPayments collection)
+    // ═══════════════════════════════════════════════════════════
+    async function loadTransactions() {
+        const tbody = document.getElementById('learn-tx-table-body');
+        tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr>';
+        try {
+            const snap = await db.collection('learnPayments').orderBy('timestamp', 'desc').limit(100).get();
+            if (snap.empty) {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-20 text-center text-gray-300"><i class="fas fa-receipt text-4xl mb-3 block"></i><p class="font-bold text-xs uppercase tracking-widest">No Payments Yet</p></td></tr>';
+                return;
+            }
+            tbody.innerHTML = snap.docs.map(d => {
+                const p = d.data();
+                const ts = p.timestamp;
+                const date = typeof ts === 'string' ? new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : (ts && ts.toDate ? ts.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
+                return `<tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                    <td class="px-6 py-4 text-sm font-bold text-gray-900">${p.email || p.phone || '—'}</td>
+                    <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase">${p.courseTitle || p.courseId || '—'}</span></td>
+                    <td class="px-6 py-4 text-sm font-extrabold text-green-600">KSH ${(p.amountPaid || 0).toLocaleString()}</td>
+                    <td class="px-6 py-4 text-xs font-bold text-gray-400">${date}</td>
+                    <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider bg-green-100 text-green-700">${p.status || 'completed'}</span></td>
+                </tr>`;
+            }).join('');
+        } catch (e) { console.error(e); tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-red-500">Failed to load payments</td></tr>'; }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  Blog / What's New — Full CRUD
+    // ═══════════════════════════════════════════════════════════
+    async function loadBlogPosts() {
+        const grid = document.getElementById('blog-posts-grid');
+        grid.innerHTML = '<div class="col-span-full py-12 flex justify-center"><i class="fas fa-spinner fa-spin text-3xl text-purple-200"></i></div>';
+        try {
+            const snap = await db.collection('learnPosts').orderBy('createdAt', 'desc').get();
+            if (snap.empty) {
+                grid.innerHTML = `<div class="col-span-full bg-white p-12 rounded-2xl border text-center">
+                    <div class="w-16 h-16 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4"><i class="fas fa-pen-fancy"></i></div>
+                    <h3 class="font-extrabold text-gray-900 mb-2">No Posts Yet</h3>
+                    <p class="text-sm text-gray-500 mb-6">Create your first post to show on the What's New page.</p>
+                    <button onclick="openBlogEditor()" class="px-5 py-2.5 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700 transition-all">Create First Post</button>
+                </div>`;
+                return;
+            }
+            grid.innerHTML = snap.docs.map(d => {
+                const p = d.data();
+                const catColors = { story: 'bg-pink-100 text-pink-700', update: 'bg-blue-100 text-blue-700', tip: 'bg-amber-100 text-amber-700', news: 'bg-green-100 text-green-700' };
+                const cc = catColors[p.category] || 'bg-gray-100 text-gray-700';
+                const ts = p.createdAt && p.createdAt.toDate ? p.createdAt.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+                return `<div class="bg-white rounded-2xl border overflow-hidden hover:shadow-lg transition-all">
+                    ${p.image ? `<img src="${p.image}" class="w-full h-40 object-cover" alt="">` : `<div class="h-40 bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center"><i class="fas fa-newspaper text-4xl text-purple-300"></i></div>`}
+                    <div class="p-5">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${cc}">${p.category || 'post'}</span>
+                            ${!p.published ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-gray-100 text-gray-500">Draft</span>' : ''}
+                        </div>
+                        <h4 class="font-extrabold text-gray-900 mb-1 line-clamp-2">${p.title}</h4>
+                        <p class="text-xs text-gray-500 line-clamp-2 mb-3">${p.excerpt || ''}</p>
+                        <div class="flex items-center justify-between pt-3 border-t border-gray-50">
+                            <span class="text-[10px] font-bold text-gray-400">${ts}</span>
+                            <div class="flex gap-1.5">
+                                <button onclick="editBlogPost('${d.id}')" class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center" title="Edit"><i class="fas fa-pen text-[10px]"></i></button>
+                                <button onclick="deleteBlogPost('${d.id}')" class="w-7 h-7 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center" title="Delete"><i class="fas fa-trash text-[10px]"></i></button>
                             </div>
                         </div>
                     </div>
-                `).join('');
-            } catch (e) { console.error(e); }
-        }
+                </div>`;
+            }).join('');
+        } catch (e) { console.error(e); grid.innerHTML = '<p class="col-span-full text-center text-red-500">Failed to load posts</p>'; }
+    }
 
-        async function loadLearnModules() {
-            const list = document.getElementById('modules-list');
-            list.innerHTML = `
-                <div class="bg-white p-12 rounded-3xl border border-gray-100 text-center flex flex-col items-center">
-                    <div class="w-20 h-20 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-3xl mb-6"><i class="fas fa-layer-group"></i></div>
-                    <h3 class="font-black text-gray-900 uppercase tracking-tight mb-2">Curriculum Builder</h3>
-                    <p class="text-xs text-gray-500 font-medium max-w-xs leading-relaxed mb-8">Manage modules and lessons for each course package. Currently linked to static JSON but can be switched to dynamic Firestore storage.</p>
-                    <div class="flex gap-4">
-                        <button onclick="Swal.fire('Feature Coming Soon')" class="px-6 py-3 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-blue-200">Configure Modules</button>
-                    </div>
-                </div>
-            `;
+    function openBlogEditor(data = null) {
+        document.getElementById('blogEditorModal').classList.remove('hidden');
+        document.getElementById('blogEditorTitle').textContent = data ? 'Edit Post' : 'New Post';
+        document.getElementById('blogSaveLabel').textContent = data ? 'Update Post' : 'Publish Post';
+        if (data) {
+            document.getElementById('blogEditId').value = data.id || '';
+            document.getElementById('blogTitle').value = data.title || '';
+            document.getElementById('blogCategory').value = data.category || 'story';
+            document.getElementById('blogAuthor').value = data.author || '';
+            document.getElementById('blogExcerpt').value = data.excerpt || '';
+            document.getElementById('blogContent').value = data.content || '';
+            document.getElementById('blogImage').value = data.image || '';
+            document.getElementById('blogPublished').checked = data.published !== false;
+        } else {
+            document.getElementById('blogForm').reset();
+            document.getElementById('blogEditId').value = '';
+            document.getElementById('blogPublished').checked = true;
         }
+    }
 
-        async function loadLearnBlogs() {
-            const grid = document.getElementById('blog-posts-grid');
-            grid.innerHTML = `
-                <div class="col-span-full bg-white p-12 rounded-3xl border border-gray-100 text-center flex flex-col items-center">
-                    <div class="w-20 h-20 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center text-3xl mb-6"><i class="fas fa-pen-fancy"></i></div>
-                    <h3 class="font-black text-gray-900 uppercase tracking-tight mb-2">What's New Editor</h3>
-                    <p class="text-xs text-gray-500 font-medium max-w-xs leading-relaxed mb-8">Post news, updates, and success stories to the portal feed.</p>
-                    <button onclick="Swal.fire('Feature Coming Soon')" class="px-6 py-3 bg-purple-600 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-purple-200">Write Article</button>
-                </div>
-            `;
+    function closeBlogEditor() { document.getElementById('blogEditorModal').classList.add('hidden'); }
+
+    async function editBlogPost(id) {
+        try {
+            const docSnap = await db.collection('learnPosts').doc(id).get();
+            if (docSnap.exists) openBlogEditor({ id: docSnap.id, ...docSnap.data() });
+        } catch (e) { Swal.fire({ icon: 'error', title: 'Error', text: e.message, confirmButtonColor: '#16a34a' }); }
+    }
+
+    async function deleteBlogPost(id) {
+        const result = await Swal.fire({
+            icon: 'warning', title: 'Delete Post?', text: 'This cannot be undone.',
+            showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Delete'
+        });
+        if (!result.isConfirmed) return;
+        try {
+            await db.collection('learnPosts').doc(id).delete();
+            Swal.fire({ icon: 'success', title: 'Deleted!', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+            loadBlogPosts();
+        } catch (e) { Swal.fire({ icon: 'error', title: 'Error', text: e.message, confirmButtonColor: '#16a34a' }); }
+    }
+
+    document.getElementById('blogForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const editId = document.getElementById('blogEditId').value;
+        const postData = {
+            title: document.getElementById('blogTitle').value.trim(),
+            category: document.getElementById('blogCategory').value,
+            author: document.getElementById('blogAuthor').value.trim() || 'Course Corner Team',
+            excerpt: document.getElementById('blogExcerpt').value.trim(),
+            content: document.getElementById('blogContent').value.trim(),
+            image: document.getElementById('blogImage').value.trim() || null,
+            published: document.getElementById('blogPublished').checked,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        try {
+            if (editId) {
+                await db.collection('learnPosts').doc(editId).update(postData);
+            } else {
+                postData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                await db.collection('learnPosts').add(postData);
+            }
+            closeBlogEditor();
+            Swal.fire({ icon: 'success', title: editId ? 'Post Updated!' : 'Post Published!', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+            loadBlogPosts();
+        } catch (e) {
+            Swal.fire({ icon: 'error', title: 'Save Failed', text: e.message, confirmButtonColor: '#16a34a' });
         }
+    });
 
-        // Initialize first page
-        switchPage('learn-analytics');
+    // ═══════════════════════════════════════════════════════════
+    //  Notifications
+    // ═══════════════════════════════════════════════════════════
+    async function sendNotification() {
+        const text = document.getElementById('notifyText').value.trim();
+        const target = document.getElementById('notifyTarget').value;
+        if (!text) { Swal.fire({ icon: 'warning', title: 'Enter a message', confirmButtonColor: '#16a34a' }); return; }
+        try {
+            await db.collection('learnNotifications').add({
+                message: text, target, createdAt: firebase.firestore.FieldValue.serverTimestamp(), readBy: []
+            });
+            document.getElementById('notifyText').value = '';
+            Swal.fire({ icon: 'success', title: 'Notification Sent!', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+        } catch (e) { Swal.fire({ icon: 'error', title: 'Failed', text: e.message, confirmButtonColor: '#16a34a' }); }
+    }
+</script>
 </body>
 </html>

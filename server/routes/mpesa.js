@@ -28,7 +28,7 @@ const PAYMENT_AMOUNTS = {
 // Initiate STK Push Payment
 router.post('/stkpush', async (req, res) => {
   try {
-    const { phoneNumber, category, amount: requestedAmount, referralCode } = req.body;
+    const { phoneNumber, category, amount: requestedAmount, referralCode, learnAmount, email } = req.body;
 
     console.log('📱 STK Push Request:', { phoneNumber, category, referralCode });
 
@@ -40,15 +40,29 @@ router.post('/stkpush', async (req, res) => {
       });
     }
 
-    if (!category || !PAYMENT_AMOUNTS[category]) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid category. Must be one of: ' + Object.keys(PAYMENT_AMOUNTS).join(', ')
-      });
+    // Support Learn portal payments (category starts with "learn-")
+    const isLearnPayment = category && category.startsWith('learn-');
+    let amount;
+
+    if (isLearnPayment) {
+      amount = parseInt(learnAmount);
+      if (!amount || amount < 1) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid learn payment amount'
+        });
+      }
+    } else {
+      if (!category || !PAYMENT_AMOUNTS[category]) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid category. Must be one of: ' + Object.keys(PAYMENT_AMOUNTS).join(', ')
+        });
+      }
+      // Use requested amount if provided (for testing), otherwise use default
+      amount = requestedAmount || PAYMENT_AMOUNTS[category];
     }
 
-    // Use requested amount if provided (for testing), otherwise use default
-    const amount = requestedAmount || PAYMENT_AMOUNTS[category];
     const sessionId = generateSessionId();
 
     // Create payment record WITHOUT referral validation

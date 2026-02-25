@@ -1,5 +1,13 @@
 {
   "version": 2,
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/learn/dashboard", "destination": "/Learn/assets/pages/dashboard.html" },
+    { "source": "/learn/dashboard.html", "destination": "/Learn/assets/pages/dashboard.html" },
+    { "source": "/learn/courses", "destination": "/Learn/assets/pages/courses.html" },
+    { "source": "/learn/about", "destination": "/Learn/assets/pages/about.html" },
+    { "source": "/learn/course-detail", "destination": "/Learn/assets/pages/course-detail.html" }
+  ],
   "routes": [
     {
       "src": "/api/(.*)",

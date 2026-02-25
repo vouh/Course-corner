@@ -1,10 +1,10 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Corner Learn – Online Learning Portal</title>
+    <title>Course Corner Learn � Online Learning Portal</title>
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -21,16 +21,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Site Stylesheets -->
-    <link rel="stylesheet" href="https://coursecornerkenya.com/assets/css/style.css">
     <link rel="stylesheet" href="https://coursecornerkenya.com/assets/css/modern-ui.css">
     <link rel="stylesheet" href="https://coursecornerkenya.com/assets/css/auth.css">
 
     <style>
         body { font-family: 'Inter','Poppins',sans-serif; background:#f9fafb; color:#1f2937; }
 
-        /* ── Hero ───────────────────────────────────────────── */
+        /* -- Hero --------------------------------------------- */
         .learn-hero {
-            min-height:92vh; padding-top:80px;
+            min-height:80vh; padding-top:40px;
             background:linear-gradient(135deg,#ffffff 0%,#f9fafb 50%,#f3f4f6 100%);
             display:flex; align-items:center; position:relative; overflow:hidden;
         }
@@ -47,7 +46,7 @@
             pointer-events:none;
         }
         .hero-inner {
-            max-width:1280px; margin:0 auto; width:100%; padding:4rem 2rem;
+            max-width:1280px; margin:0 auto; width:100%; padding:2.5rem 2rem;
             display:grid; grid-template-columns:1fr 1.15fr; gap:4rem;
             align-items:center; position:relative; z-index:1;
         }
@@ -123,7 +122,7 @@
         .float-badge.bottom-left { bottom:-20px; left:-20px; animation-delay:1.5s; }
         @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
 
-        /* ── Shared section ──────────────────────────────────── */
+        /* -- Shared section ------------------------------------ */
         .section-wrap { max-width:1240px; margin:0 auto; padding:0 2rem; }
         .section-label {
             display:inline-flex; align-items:center; gap:.5rem;
@@ -134,7 +133,7 @@
         .section-title { font-size:clamp(1.75rem,3vw,2.5rem); font-weight:800; color:#111827; letter-spacing:-.02em; margin-bottom:.75rem; line-height:1.2; }
         .section-desc  { font-size:1.0625rem; color:#6b7280; line-height:1.7; max-width:580px; }
 
-        /* ── Courses ─────────────────────────────────────────── */
+        /* -- Courses ------------------------------------------- */
         .courses-section { padding:5rem 2rem; background:white; }
         .courses-header  { margin-bottom:3rem; }
         .courses-grid    { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1.75rem; }
@@ -162,7 +161,7 @@
         }
         .btn-enrol:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(22,163,74,.3); }
 
-        <!-- ── Features band ───────────────────────────────────── -->
+        /* -- Features band ----------------------------------- */
         .features-band {
             padding: 6rem 2rem;
             background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
@@ -186,7 +185,7 @@
         .feature-item h3 { font-size:1.125rem; font-weight:700; margin-bottom:.5rem; }
         .feature-item p  { font-size:.9rem; opacity:.85; line-height:1.6; }
 
-        /* ── Footer ──────────────────────────────────────────── */
+        /* -- Footer -------------------------------------------- */
         .learn-footer { background: linear-gradient(135deg, #16a34a 0%, #15803d 100%); color: white; padding:4rem 2rem 2rem; border-top:3px solid #16a34a; }
         .footer-inner { max-width:1240px; margin:0 auto; }
         .footer-top { display:grid; grid-template-columns:2fr 1fr 1fr 1fr; gap:3rem; padding-bottom:3rem; border-bottom:1px solid rgba(255,255,255,.08); margin-bottom:2rem; }
@@ -205,7 +204,7 @@
         .footer-col ul li a:hover { color:white; padding-left:4px; font-weight:600; }
         .footer-bottom { text-align:center; font-size:.875rem; color: rgba(255,255,255,0.7); padding-top:1.5rem; }
 
-        /* ── Learn nav pill ──────────────────────────────────── */
+        /* -- Learn nav pill ------------------------------------ */
         .learn-pill {
             display:inline-flex; align-items:center; gap:.375rem;
             background:linear-gradient(135deg,#16a34a 0%,#0ea5e9 100%);
@@ -214,12 +213,20 @@
             letter-spacing:.04em; margin-left:.4rem; vertical-align:middle;
         }
 
-        /* ── Responsive ──────────────────────────────────────── */
+        /* -- Responsive ---------------------------------------- */
+        /* Ensure nav shows on desktop */
+        @media(min-width:1025px){
+            .desktop-nav{display:flex!important;align-items:center;}
+            .mobile-menu-btn{display:none!important;}
+        }
         @media(max-width:1024px){
             .hero-inner{grid-template-columns:1fr;gap:3rem;}
             .hero-visual{display:none;}
             .hero-heading{font-size:2.5rem;}
             .footer-top{grid-template-columns:1fr 1fr;gap:2rem;}
+            .desktop-nav{display:none!important;}
+            .mobile-menu-btn{display:flex!important;}
+            .cc-footer-grid{grid-template-columns:1fr 1fr!important;gap:2rem!important;}
         }
         @media(max-width:640px){
             .hero-inner{padding:2rem 1.25rem;}
@@ -229,24 +236,21 @@
             .hero-stats{gap:1.5rem;}
             .courses-section,.features-band{padding:3rem 1.25rem;}
             .footer-top{grid-template-columns:1fr;gap:1.5rem;}
+            .cc-footer-grid{grid-template-columns:1fr!important;}
+            .courses-grid{grid-template-columns:1fr!important;}
         }
-
-        /* Mobile Menu Animation */
-        .mobile-menu.show {
-            height: auto;
-            max-height: 100vh;
-            opacity: 1;
-            padding-bottom: 2rem;
-        }
-        .mobile-menu-btn.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-        .mobile-menu-btn.active span:nth-child(2) { opacity: 0; }
-        .mobile-menu-btn.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+        /* -- Mobile menu show state -- */
+        .mobile-menu.show{height:auto!important;max-height:calc(100vh - 64px);opacity:1!important;overflow-y:auto;border-bottom:1px solid #e5e7eb;box-shadow:0 10px 40px rgba(0,0,0,.1);}
+        .mobile-menu-btn.active span:nth-child(1){transform:translateY(6px) rotate(45deg);}
+        .mobile-menu-btn.active span:nth-child(2){opacity:0;}
+        .mobile-menu-btn.active span:nth-child(3){transform:translateY(-6px) rotate(-45deg);}
+        .mobile-menu-btn span{display:block;transition:all .3s;}
     </style>
 </head>
 
 <body>
 
-<!-- ═══ NAVIGATION ════════════════════════════════════════════ -->
+<!-- --- NAVIGATION -------------------------------------------- -->
 <header class="modern-header fixed top-0 left-0 right-0 w-full z-[1000] bg-white/95 backdrop-blur-md border-b border-transparent transition-all duration-300" id="learnHeader">
     <div class="header-container flex items-center justify-between max-w-[1400px] mx-auto px-4 md:px-8 py-3">
         <!-- Logo -->
@@ -265,6 +269,7 @@
                 <a href="assets/pages/courses.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Courses</a>
                 <a href="assets/pages/whats-new.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">What's New</a>
                 <a href="assets/pages/about.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">About</a>
+                <a href="assets/pages/payment.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors flex items-center gap-1"><i class="fas fa-credit-card text-xs"></i> Pay</a>
             </div>
 
             <!-- Auth Area -->
@@ -308,10 +313,11 @@
     <div class="mobile-menu lg:hidden fixed top-[64px] left-0 right-0 h-0 opacity-0 overflow-hidden bg-white/98 backdrop-blur-xl transition-all duration-300 z-[999]" id="mobileMenu">
         <div class="flex flex-col h-full p-6">
             <nav class="mobile-nav-links flex flex-col gap-2">
-                <a href="index.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Home</a>
+                <a href="index.html" class="p-4 text-lg font-bold text-[#16a34a] no-underline rounded-xl bg-green-50 transition-all" onclick="closeMobileMenu()">Home</a>
                 <a href="assets/pages/courses.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Courses</a>
                 <a href="assets/pages/whats-new.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">What's New</a>
                 <a href="assets/pages/about.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">About</a>
+                <a href="assets/pages/payment.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all flex items-center gap-2" onclick="closeMobileMenu()"><i class="fas fa-credit-card text-[#16a34a]"></i> Pay</a>
             </nav>
             
             <div class="mt-auto pt-6 border-t border-gray-100">
@@ -334,7 +340,7 @@
 </header>
 
 
-<!-- ═══ HERO ══════════════════════════════════════════════════ -->
+<!-- --- HERO -------------------------------------------------- -->
 <section class="learn-hero">
     <div class="hero-inner">
 
@@ -369,24 +375,25 @@
                          alt="Students Learning"
                          class="w-full h-full object-cover">
                     <!-- Dark overlay bottom -->
-                    <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(10,31,16,.85) 0%,transparent 50%);"></div>
+                    <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(10,31,16,0.8) 0%,transparent 50%);"></div>
+                    
                     <!-- Stat chips at bottom -->
-                    <div class="absolute bottom-0 left-0 right-0 p-6 flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2.5 rounded-2xl">
+                    <div class="absolute bottom-0 left-0 right-0 p-6 flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1.5 rounded-xl">
                             <div class="flex -space-x-2">
-                                <img src="https://i.pravatar.cc/40?u=a1" class="w-7 h-7 rounded-full ring-2 ring-white/30" alt="">
-                                <img src="https://i.pravatar.cc/40?u=a2" class="w-7 h-7 rounded-full ring-2 ring-white/30" alt="">
-                                <img src="https://i.pravatar.cc/40?u=a3" class="w-7 h-7 rounded-full ring-2 ring-white/30" alt="">
+                                <img src="https://i.pravatar.cc/40?u=a1" class="w-6 h-6 rounded-full ring-2 ring-white/30" alt="">
+                                <img src="https://i.pravatar.cc/40?u=a2" class="w-6 h-6 rounded-full ring-2 ring-white/30" alt="">
+                                <img src="https://i.pravatar.cc/40?u=a3" class="w-6 h-6 rounded-full ring-2 ring-white/30" alt="">
                             </div>
-                            <span class="text-white text-xs font-semibold">500+ Enrolled</span>
+                            <span class="text-white text-[10px] font-semibold">500+ Enrolled</span>
                         </div>
-                        <div class="flex items-center gap-1.5 bg-amber-400/20 backdrop-blur-md border border-amber-400/30 px-4 py-2.5 rounded-2xl">
-                            <i class="fas fa-star text-amber-400 text-xs"></i>
-                            <span class="text-amber-300 text-xs font-bold">4.9 Rating</span>
+                        <div class="flex items-center gap-1.5 bg-amber-400/20 backdrop-blur-md border border-amber-400/30 px-3 py-1.5 rounded-xl">
+                            <i class="fas fa-star text-amber-400 text-[10px]"></i>
+                            <span class="text-amber-300 text-[10px] font-bold">4.9 Rating</span>
                         </div>
-                        <div class="flex items-center gap-1.5 bg-green-400/20 backdrop-blur-md border border-green-400/30 px-4 py-2.5 rounded-2xl">
-                            <i class="fas fa-certificate text-green-400 text-xs"></i>
-                            <span class="text-green-300 text-xs font-bold">Certified</span>
+                        <div class="flex items-center gap-1.5 bg-green-400/20 backdrop-blur-md border border-green-400/30 px-3 py-1.5 rounded-xl">
+                            <i class="fas fa-certificate text-green-400 text-[10px]"></i>
+                            <span class="text-green-300 text-[10px] font-bold">Certified</span>
                         </div>
                     </div>
                 </div>
@@ -397,7 +404,7 @@
 </section>
 
 
-<!-- ═══ COURSES ═══════════════════════════════════════════════ -->
+<!-- --- COURSES ----------------------------------------------- -->
 <section class="courses-section" id="courses">
     <div class="section-wrap">
         <div class="courses-grid" id="coursesGrid"></div>
@@ -405,7 +412,7 @@
 </section>
 
 
-<!-- ═══ FEATURES ══════════════════════════════════════════════ -->
+<!-- --- FEATURES ---------------------------------------------- -->
 <section class="features-band" id="features">
     <div class="features-grid">
         <div class="feature-item">
@@ -431,7 +438,7 @@
     </div>
 </section>
 
-<!-- ═══ WHAT'S NEW TEASER ════════════════════════════════ -->
+<!-- --- WHAT'S NEW TEASER -------------------------------- -->
 <section class="py-16 bg-gray-50">
     <div class="section-wrap">
         <div class="flex flex-col md:flex-row items-center justify-between gap-6 bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
@@ -452,7 +459,7 @@
 </section>
 
 
-<!-- ═══ FOOTER ════════════════════════════════════════════════ -->
+<!-- --- FOOTER ------------------------------------------------ -->
 <footer class="cc-footer">
     <div class="cc-footer-container">
         <div class="cc-footer-grid">
@@ -511,7 +518,7 @@
 </footer>
 
 
-<!-- ═══ AUTH MODAL ════════════════════════════════════════════ -->
+<!-- --- AUTH MODAL -------------------------------------------- -->
 <div id="authModal" class="auth-modal-overlay" style="display:none;">
     <div class="auth-modal">
         <div class="modal-header">
@@ -535,7 +542,7 @@
                 </div>
                 <div class="form-group">
                     <label for="auPassword">Password</label>
-                    <input id="auPassword" type="password" class="form-input" placeholder="••••••••" required>
+                    <input id="auPassword" type="password" class="form-input" placeholder="��������" required>
                 </div>
                 <button type="submit" class="btn-primary" id="authBtn">
                     <i class="fas fa-sign-in-alt"></i> <span id="authBtnText">Sign In</span>
@@ -558,47 +565,9 @@
 <!-- Modals cleaned up -->
 
 
-<!-- ═══ APPLY MODAL ═══════════════════════════════════════════ -->
-<div id="applyModal" class="auth-modal-overlay" style="display:none;">
-    <div class="auth-modal" style="max-width: 500px;">
-        <div class="modal-header">
-            <div style="display:flex;align-items:center;gap:.75rem;">
-                <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Logo" style="width:32px;height:32px;object-fit:contain;">
-                <h2 id="applyCourseTitle">Enroll in Course</h2>
-            </div>
-            <button class="modal-close-btn" onclick="closeApplyModal()"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="modal-body">
-            <form id="applyForm" class="auth-form" onsubmit="handleApplySubmit(event)">
-                <input type="hidden" id="appliedCourseId" name="courseId">
-                <div class="form-group">
-                    <label for="appName">Full Name</label>
-                    <input id="appName" name="fullName" type="text" class="form-input" placeholder="Jane Doe" required>
-                </div>
-                <div class="form-group">
-                    <label for="appEmail">Email Address</label>
-                    <input id="appEmail" name="email" type="email" class="form-input" placeholder="you@example.com" required>
-                </div>
-                <div class="form-group">
-                    <label for="appWhatsApp">WhatsApp Number</label>
-                    <input id="appWhatsApp" name="whatsapp" type="tel" class="form-input" placeholder="0712 345 678" required>
-                </div>
-                <div class="form-group">
-                    <label for="appMessage">Why are you interested in this course? (Optional)</label>
-                    <textarea id="appMessage" name="message" class="form-input" placeholder="Tell us a bit about your goals..."></textarea>
-                </div>
-                <button type="submit" class="btn-primary">
-                    <i class="fas fa-paper-plane"></i> Submit Application
-                </button>
-            </form>
-            <p style="text-align:center;margin-top:1.25rem;font-size:.8125rem;color:#6b7280;line-height:1.5;">
-                By submitting, you agree to receive training updates via WhatsApp and Email. You can opt out anytime.
-            </p>
-        </div>
-    </div>
-</div>
+<!-- --- APPLY MODAL � Removed (redirect to apply page) --- -->
 
-<!-- ═══ SCRIPTS ═══════════════════════════════════════════════ -->
+<!-- --- SCRIPTS ----------------------------------------------- -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
@@ -727,43 +696,11 @@
         location.reload();
     };
 
-    // Apply — redirect to application page
+    // Apply � redirect to apply page
     window.openApplyModal = (courseId) => {
-        window.location.href = `assets/pages/application.html?course=${encodeURIComponent(courseId)}`;
+        window.location.href = `assets/pages/apply.html?course=${courseId}`;
     };
     window.closeApplyModal = () => {};
-
-    // Submit Application
-    window.handleApplySubmit = async (e) => {
-        e.preventDefault();
-        const btn = e.target.querySelector('button[type="submit"]');
-        const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData.entries());
-        data.timestamp = new Date();
-        data.status = 'pending';
-        data.userId = auth.currentUser ? auth.currentUser.uid : 'anonymous';
-
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
-
-        try {
-            await setDoc(doc(db, "learnApplications", `${Date.now()}_${data.whatsapp}`), data);
-            Swal.fire({
-                icon: 'success',
-                title: 'Application Received!',
-                text: 'We will contact you on WhatsApp with joining instructions shortly.',
-                confirmButtonColor: '#16a34a'
-            });
-            closeApplyModal();
-            e.target.reset();
-        } catch (err) {
-            console.error(err);
-            Swal.fire({ icon: 'error', title: 'Submission Failed', text: 'Please try again later.' });
-        } finally {
-            btn.disabled = false;
-            btn.innerText = 'Submit Application';
-        }
-    };
 
     // Load Courses from JSON
     async function loadCourses() {
@@ -780,7 +717,7 @@
                         <div class="flex justify-between items-start mb-3">
                             <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                                 c.level === 'Beginner' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
-                            }">${c.level} · ${c.duration}</span>
+                            }">${c.level} � ${c.duration}</span>
                             <span class="text-xs font-bold text-gray-400">#${c.id}</span>
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-2 leading-tight">${c.title}</h3>
@@ -828,21 +765,28 @@
     document.addEventListener('DOMContentLoaded', () => {
         const mmBtn = document.getElementById('mobileMenuBtn');
         const mm = document.getElementById('mobileMenu');
-        
         if (mmBtn && mm) {
-            mmBtn.addEventListener('click', () => {
+            mmBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
                 mm.classList.toggle('show');
                 mmBtn.classList.toggle('active');
             });
         }
+        // Close on outside click
+        document.addEventListener('click', (e) => {
+            const mm = document.getElementById('mobileMenu');
+            const mmBtn = document.getElementById('mobileMenuBtn');
+            if (mm && mm.classList.contains('show') && !mm.contains(e.target) && !mmBtn.contains(e.target)) {
+                mm.classList.remove('show');
+                mmBtn.classList.remove('active');
+            }
+        });
     });
 
     // Handle scroll shadow for header
     window.addEventListener('scroll', () => {
         const header = document.getElementById('learnHeader');
-        if (header) {
-            header.classList.toggle('scrolled', window.scrollY > 10);
-        }
+        if (header) header.classList.toggle('scrolled', window.scrollY > 10);
     });
 
     // Close mobile menu helper
@@ -853,7 +797,7 @@
         if (mmBtn) mmBtn.classList.remove('active');
     };
 
-    // ── External link redirect prompt ─────────────────────────
+    // -- External link redirect prompt -------------------------
     window.confirmExternal = function(e, el) {
         e.preventDefault();
         const url  = el.href;
@@ -867,7 +811,6 @@
             cancelButtonText: 'Stay Here',
             confirmButtonColor: '#16a34a',
             cancelButtonColor: '#6b7280',
-            borderRadius: '1rem',
         }).then(r => { if (r.isConfirmed) window.location.href = url; });
         return false;
     };

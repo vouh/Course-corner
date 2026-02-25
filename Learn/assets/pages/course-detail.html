@@ -61,11 +61,6 @@
 
             <!-- Auth Area -->
             <div class="nav-auth-buttons flex items-center gap-4">
-                <button id="authNavBtn" class="px-6 py-2.5 bg-[#16a34a] text-white rounded-full text-sm font-bold flex items-center gap-2 hover:bg-[#15803d] transition-all shadow-lg shadow-green-600/20" onclick="openAuthModal()">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Sign In</span>
-                </button>
-
                 <div id="userNavArea" style="display: none; align-items: center; gap: 1rem; position: relative;" class="flex items-center gap-3">
                     <span id="userGreeting" class="text-sm font-semibold text-gray-700">
                         Hi, <span id="userNameText" class="text-[#16a34a]">User</span>
@@ -107,7 +102,7 @@
             </nav>
             
             <div class="mt-auto pt-6 border-t border-gray-100">
-                <div id="mobileAuthArea">
+                <div id="mobileAuthArea" style="display: none;">
                     <button class="w-full py-4 bg-[#16a34a] text-white rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg shadow-green-600/20" onclick="openAuthModal(); closeMobileMenu()">
                         <i class="fas fa-sign-in-alt"></i> Sign In
                     </button>

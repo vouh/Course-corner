@@ -12,6 +12,9 @@
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
         body{font-family:'Inter',sans-serif;background:#f9fafb;color:#1f2937}
+        /* Nav visibility */
+        @media(min-width:1025px){.desktop-nav{display:flex!important;align-items:center;}.mobile-menu-btn{display:none!important;}}
+        @media(max-width:1024px){.desktop-nav{display:none!important;}.mobile-menu-btn{display:flex!important;}}
         .mobile-menu.show{height:auto!important;max-height:calc(100vh - 64px);opacity:1!important;overflow-y:auto;border-bottom:1px solid #e5e7eb;box-shadow:0 10px 40px rgba(0,0,0,.1)}
         .mobile-menu-btn.active span:nth-child(1){transform:translateY(6px) rotate(45deg)}
         .mobile-menu-btn.active span:nth-child(2){opacity:0}
@@ -497,7 +500,15 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    // ═══ PAYMENT FLOW ═══
+    // ═══ PAYMENT FLOW (via dedicated Learn handler) ═══
+    // Dynamic import of the Learn payment handler
+    let payHandler = null;
+    import('../js/learnPaymentHandler.js').then(m => {
+        payHandler = new m.LearnPaymentHandler();
+    }).catch(() => {
+        console.warn('LearnPaymentHandler module not found, using inline fallback');
+    });
+
     window.initiatePayment = async () => {
         const phone = document.getElementById('mpesaPhone').value.trim();
         if (!phone) {
@@ -505,6 +516,7 @@
             return;
         }
 
+        const email = document.getElementById('payEmail').value.trim();
         const payBtn = document.getElementById('payBtn');
         const statusDiv = document.getElementById('paymentStatus');
         payBtn.disabled = true;
@@ -512,20 +524,31 @@
         statusDiv.classList.remove('hidden');
 
         try {
-            // Initiate STK push
-            const resp = await fetch(`${SERVER_URL}/mpesa/stkpush`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    phoneNumber: phone,
-                    category: `learn-${selectedCourse.id}`,
-                    learnAmount: payAmount,
-                    email: document.getElementById('payEmail').value.trim()
-                })
-            });
-
-            const data = await resp.json();
-            if (!resp.ok || !data.success) throw new Error(data.message || 'Failed to initiate payment');
+            let data;
+            if (payHandler) {
+                // Use dedicated Learn payment handler (clean separation)
+                data = await payHandler.initiate({
+                    phone,
+                    email,
+                    course: selectedCourse,
+                    amount: payAmount,
+                    onStatus: updateStatus
+                });
+            } else {
+                // Inline fallback
+                const resp = await fetch(`${SERVER_URL}/mpesa/stkpush`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phoneNumber: phone,
+                        category: `learn-${selectedCourse.id}`,
+                        learnAmount: payAmount,
+                        email
+                    })
+                });
+                data = await resp.json();
+                if (!resp.ok || !data.success) throw new Error(data.message || 'Failed to initiate payment');
+            }
 
             const sessionId = data.data.sessionId;
             const checkoutRequestId = data.data.checkoutRequestId;

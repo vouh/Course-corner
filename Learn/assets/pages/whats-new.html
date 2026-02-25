@@ -93,6 +93,69 @@
             .footer-top .footer-brand{grid-column:1/-1}
         }
         @media(max-width:480px){.footer-top{grid-template-columns:1fr}}
+
+        /* Navbar/Mobile Menu Fixes */
+        .modern-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .modern-header.scrolled {
+            padding: 0.5rem 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+        .mobile-menu {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 0;
+            height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            z-index: 999;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .mobile-menu.show {
+            height: auto;
+            opacity: 1;
+            padding: 1.5rem;
+        }
+        .mobile-nav-link {
+            padding: 1rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #475569;
+            text-decoration: none;
+            border-radius: 0.75rem;
+            transition: all 0.2s;
+        }
+        .mobile-nav-link:hover {
+            background: #f8fafc;
+            color: #16a34a;
+        }
+        .mobile-menu-btn span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: #1e293b;
+            margin: 5px 0;
+            transition: 0.3s;
+        }
+        .mobile-menu-btn.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .mobile-menu-btn.active span:nth-child(2) { opacity: 0; }
+        .mobile-menu-btn.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
     </style>
 </head>
 <body>
@@ -108,28 +171,22 @@
             </div>
         </a>
 
-        <nav class="desktop-nav flex items-center gap-10">
+        <nav class="desktop-nav hidden lg:flex items-center gap-10">
             <div class="nav-links flex items-center gap-6">
                 <a href="../../index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Home</a>
                 <a href="courses.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Courses</a>
                 <a href="whats-new.html" class="modern-nav-link text-[0.9rem] font-semibold text-[#16a34a] no-underline">What's New</a>
                 <a href="about.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">About</a>
             </div>
-            <div class="nav-auth-buttons flex items-center gap-3">
-                <div id="userNavArea" style="display:none;align-items:center;gap:.75rem;">
-                    <div id="userInitial" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#16a34a,#0ea5e9);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:.9rem;">?</div>
-                    <button class="btn-nav-profile" onclick="handleSignOut()"><i class="fas fa-sign-out-alt"></i> Sign Out</button>
-                </div>
-            </div>
         </nav>
 
         <!-- Mobile menu btn -->
-        <button id="mobileMenuBtn" class="mobile-menu-btn md:hidden" onclick="toggleMobileMenu()" aria-label="Menu">
+        <button id="mobileMenuBtn" class="mobile-menu-btn lg:hidden flex flex-col justify-center items-center w-10 h-10 border-none bg-transparent cursor-pointer" onclick="toggleMobileMenu()" aria-label="Menu">
             <span></span><span></span><span></span>
         </button>
     </div>
     <!-- Mobile menu -->
-    <nav id="mobileMenu" class="mobile-menu">
+    <nav id="mobileMenu" class="mobile-menu lg:hidden">
         <a href="../../index.html" class="mobile-nav-link">Home</a>
         <a href="courses.html" class="mobile-nav-link">Courses</a>
         <a href="whats-new.html" class="mobile-nav-link" style="color:#16a34a;font-weight:700;">What's New</a>
@@ -300,63 +357,11 @@
     </div>
 </footer>
 
-<!-- Auth Modals -->
-<div id="signInModal" class="auth-modal-overlay" style="display:none;">
-    <div class="auth-modal">
-        <div class="modal-header">
-            <div style="display:flex;align-items:center;gap:.75rem;"><img src="https://coursecornerkenya.com/assets/images/logo.png" style="width:32px;height:32px;object-fit:contain;" alt=""><h2>Sign In</h2></div>
-            <button class="modal-close-btn" onclick="closeSignInModal()"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="modal-body">
-            <form id="signInForm" class="auth-form" onsubmit="handleSignIn(event)">
-                <div class="form-group"><label>Email</label><input id="siEmail" type="email" class="form-input" placeholder="you@example.com" required></div>
-                <div class="form-group"><label>Password</label><input id="siPassword" type="password" class="form-input" placeholder="Your password" required></div>
-                <button type="submit" class="btn-primary"><i class="fas fa-sign-in-alt"></i> Sign In</button>
-            </form>
-            <p style="text-align:center;margin-top:1rem;font-size:.875rem;color:#6b7280;">No account? <button style="background:none;border:none;color:#16a34a;font-weight:600;cursor:pointer;" onclick="switchToSignUp()">Create one</button></p>
-        </div>
-    </div>
-</div>
-<div id="signUpModal" class="auth-modal-overlay" style="display:none;">
-    <div class="auth-modal">
-        <div class="modal-header">
-            <div style="display:flex;align-items:center;gap:.75rem;"><img src="https://coursecornerkenya.com/assets/images/logo.png" style="width:32px;height:32px;object-fit:contain;" alt=""><h2>Create Account</h2></div>
-            <button class="modal-close-btn" onclick="closeSignUpModal()"><i class="fas fa-times"></i></button>
-        </div>
-        <div class="modal-body">
-            <form id="signUpForm" class="auth-form" onsubmit="handleSignUp(event)">
-                <div class="form-group"><label>Full Name</label><input id="suName" type="text" class="form-input" placeholder="Jane Doe" required></div>
-                <div class="form-group"><label>Email</label><input id="suEmail" type="email" class="form-input" placeholder="you@example.com" required></div>
-                <div class="form-group"><label>Password</label><input id="suPassword" type="password" class="form-input" placeholder="Min 6 chars" required minlength="6"></div>
-                <div class="form-group"><label>Confirm Password</label><input id="suConfirm" type="password" class="form-input" placeholder="Repeat password" required></div>
-                <button type="submit" class="btn-primary"><i class="fas fa-user-plus"></i> Create Account</button>
-            </form>
-            <p style="text-align:center;margin-top:1rem;font-size:.875rem;color:#6b7280;">Have an account? <button style="background:none;border:none;color:#16a34a;font-weight:600;cursor:pointer;" onclick="switchToSignIn()">Sign In</button></p>
-        </div>
-    </div>
-</div>
-
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
     const app=initializeApp({apiKey:"AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",authDomain:"course-corner.firebaseapp.com",projectId:"course-corner",storageBucket:"course-corner.firebasestorage.app",messagingSenderId:"961706784572",appId:"1:961706784572:web:7aa6c24946570ffda59039"});
-    const auth=getAuth(app); const db=getFirestore(app);
-    onAuthStateChanged(auth,user=>{
-        const si=document.getElementById('signInNavBtn'),su=document.getElementById('signUpNavBtn'),area=document.getElementById('userNavArea'),init=document.getElementById('userInitial');
-        if(user){if(si)si.style.display='none';if(su)su.style.display='none';if(area)area.style.display='flex';if(init)init.textContent=(user.displayName||user.email||'?')[0].toUpperCase();}
-        else{if(si)si.style.display='';if(su)su.style.display='';if(area)area.style.display='none';}
-    });
-    window.openSignInModal=()=>document.getElementById('signInModal').style.display='flex';
-    window.closeSignInModal=()=>document.getElementById('signInModal').style.display='none';
-    window.openSignUpModal=()=>document.getElementById('signUpModal').style.display='flex';
-    window.closeSignUpModal=()=>document.getElementById('signUpModal').style.display='none';
-    window.switchToSignUp=()=>{closeSignInModal();openSignUpModal();};
-    window.switchToSignIn=()=>{closeSignUpModal();openSignInModal();};
-    window.handleSignIn=async e=>{e.preventDefault();try{await signInWithEmailAndPassword(auth,document.getElementById('siEmail').value,document.getElementById('siPassword').value);closeSignInModal();Swal.fire({icon:'success',title:'Welcome back!',timer:2000,showConfirmButton:false});}catch(err){Swal.fire({icon:'error',title:'Error',text:err.message,confirmButtonColor:'#16a34a'});}};
-    window.handleSignUp=async e=>{e.preventDefault();const name=document.getElementById('suName').value,email=document.getElementById('suEmail').value,pw=document.getElementById('suPassword').value,pw2=document.getElementById('suConfirm').value;if(pw!==pw2){Swal.fire({icon:'warning',title:'Passwords do not match',confirmButtonColor:'#16a34a'});return;}try{const{user}=await createUserWithEmailAndPassword(auth,email,pw);await updateProfile(user,{displayName:name});await setDoc(doc(db,'learn_users',user.uid),{uid:user.uid,name,email,createdAt:serverTimestamp()},{merge:true});closeSignUpModal();Swal.fire({icon:'success',title:'Account Created!',confirmButtonColor:'#16a34a'});}catch(err){Swal.fire({icon:'error',title:'Error',text:err.message,confirmButtonColor:'#16a34a'});}};
-    window.handleSignOut=async()=>{await signOut(auth);Swal.fire({icon:'info',title:'Signed out',timer:1500,showConfirmButton:false});};
-    ['signInModal','signUpModal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)e.target.style.display='none';});});
+    const auth=getAuth(app);
 </script>
 
 <script>
@@ -365,12 +370,18 @@
 
     // Mobile menu
     window.toggleMobileMenu=()=>{
-        document.getElementById('mobileMenu').classList.toggle('show');
-        document.getElementById('mobileMenuBtn').classList.toggle('active');
+        const mm = document.getElementById('mobileMenu');
+        const mmBtn = document.getElementById('mobileMenuBtn');
+        if (mm && mmBtn) {
+            mm.classList.toggle('show');
+            mmBtn.classList.toggle('active');
+        }
     };
     window.closeMobileMenu=()=>{
-        document.getElementById('mobileMenu').classList.remove('show');
-        document.getElementById('mobileMenuBtn').classList.remove('active');
+        const mm = document.getElementById('mobileMenu');
+        const mmBtn = document.getElementById('mobileMenuBtn');
+        if (mm) mm.classList.remove('show');
+        if (mmBtn) mmBtn.classList.remove('active');
     };
 
     // Post filtering
@@ -384,7 +395,8 @@
             c.style.display = show ? '' : 'none';
             if (show) visible++;
         });
-        document.getElementById('emptyState').style.display = visible === 0 ? 'block' : 'none';
+        const emptyState = document.getElementById('emptyState');
+        if (emptyState) emptyState.style.display = visible === 0 ? 'block' : 'none';
     };
 
     // Newsletter
@@ -392,7 +404,8 @@
         const phone = document.getElementById('nlPhone').value.trim();
         if (!phone) { Swal.fire({icon:'warning',title:'Enter your phone number',confirmButtonColor:'#16a34a'}); return; }
         Swal.fire({icon:'success',title:'Subscribed!',text:`We'll send updates to ${phone} on WhatsApp.`,confirmButtonColor:'#16a34a'});
-        document.getElementById('nlPhone').value='';
+        const nlPhoneInput = document.getElementById('nlPhone');
+        if (nlPhoneInput) nlPhoneInput.value='';
     };
 
     // External link redirect prompt

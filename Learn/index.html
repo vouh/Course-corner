@@ -230,6 +230,17 @@
             .courses-section,.features-band{padding:3rem 1.25rem;}
             .footer-top{grid-template-columns:1fr;gap:1.5rem;}
         }
+
+        /* Mobile Menu Animation */
+        .mobile-menu.show {
+            height: auto;
+            max-height: 100vh;
+            opacity: 1;
+            padding-bottom: 2rem;
+        }
+        .mobile-menu-btn.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .mobile-menu-btn.active span:nth-child(2) { opacity: 0; }
+        .mobile-menu-btn.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
     </style>
 </head>
 
@@ -248,7 +259,7 @@
         </a>
 
         <!-- Desktop Navigation -->
-        <nav class="desktop-nav flex items-center gap-10">
+        <nav class="desktop-nav hidden lg:flex items-center gap-10">
             <div class="nav-links flex items-center gap-6">
                 <a href="index.html" class="modern-nav-link text-[0.9rem] font-semibold text-[#16a34a] no-underline">Home</a>
                 <a href="assets/pages/courses.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Courses</a>

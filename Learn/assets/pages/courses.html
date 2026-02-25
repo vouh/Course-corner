@@ -179,127 +179,118 @@
 
         .cc-footer-bottom { text-align: center; font-size: 0.875rem; color: rgba(255,255,255,0.75); padding-top: 1.5rem; }
 
-        /* Modal */
-        .auth-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-            display: none; align-items: center; justify-content: center; z-index: 1000;
+        /* Mobile Menu Fixes */
+        .modern-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
         }
-        .auth-modal-overlay.show { display: flex; }
-        .auth-modal { background: white; max-width: 480px; width: 90%;
-            border-radius: 1.5rem; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
-        .modal-header { padding: 1.5rem; border-bottom: 1px solid #f3f4f6;
-            display: flex; justify-content: space-between; align-items: center;
+        .mobile-menu {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            background: white;
+            height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            z-index: 999;
+            border-bottom: 1px solid #f1f5f9;
         }
-        .modal-header h2 { font-size: 1.25rem; font-weight: 800; }
-        .modal-close { background: none; border: none; font-size: 1.5rem;
-            color: #9ca3af; cursor: pointer;
+        .mobile-menu.show {
+            height: auto;
+            opacity: 1;
+            padding: 1.5rem;
         }
-        .modal-body { padding: 1.5rem; }
-        .form-group { margin-bottom: 1rem; }
-        .form-label { display: block; font-size: 0.875rem; font-weight: 700;
-            color: #374151; margin-bottom: 0.5rem;
-        }
-        .form-input { width: 100%; padding: 0.75rem 1rem;
-            border: 1.5px solid #e5e7eb; border-radius: 0.75rem;
-            font-size: 0.9375rem; transition: all 0.2s;
-        }
-        .form-input:focus { outline: none; border-color: #16a34a;
-            box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
-        }
-        .btn-primary { width: 100%; padding: 0.875rem;
-            background: #16a34a; color: white; border: none;
-            border-radius: 0.75rem; font-weight: 700; cursor: pointer;
+        .mobile-nav-link {
+            padding: 1rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #475569;
+            text-decoration: none;
+            border-radius: 0.75rem;
             transition: all 0.2s;
         }
-        .btn-primary:hover { background: #15803d; }
-
-        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem;
-            color: #111827; cursor: pointer; padding: 0.5rem; flex-shrink: 0; }
-        .mobile-menu-btn:hover { color: #16a34a; }
-        
-        /* Mobile Menu Drawer */
-        #mobileMenu { display: none; position: fixed; left: -300px; top: 0; width: 300px; height: 100vh;
-            background: white; z-index: 1000; flex-direction: column; box-shadow: 2px 0 10px rgba(0,0,0,0.2);
-            transition: left 0.3s ease; padding-top: 70px; overflow-y: auto; }
-        #mobileMenu.show { left: 0; }
-        
-        #mobileMenuOverlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5); z-index: 999; }
-        #mobileMenuOverlay.show { display: block; }
-        
-        #mobileMenu a, #mobileMenu button { padding: 1.25rem 1.5rem; text-align: left; border: none;
-            background: transparent; color: #111827; font-weight: 600; width: 100%;
-            border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: all 0.2s; font-size: 0.95rem;
-            text-decoration: none; }
-        #mobileMenu a:hover, #mobileMenu button:hover { background: #f0fdf4; color: #16a34a; padding-left: 2rem; }
-        #mobileMenu a.active { color: #16a34a; border-left: 4px solid #16a34a; padding-left: calc(1.5rem - 4px); }
-
-        @media(max-width: 768px) {
-            .header-container { flex-wrap: nowrap; }
-            .logo-text-group span:last-child { display: none; }
-            .nav-links { display: none !important; }
-            .mobile-menu-btn { display: flex !important; align-items: center; justify-content: center; z-index: 1001; }
-            .courses-grid { grid-template-columns: 1fr; }
-            .courses-controls { flex-direction: column; align-items: stretch; gap: 1rem; }
-            .filter-tabs { flex-wrap: wrap; justify-content: flex-start; }
-            .filter-btn { padding: 0.5rem 1rem; font-size: 0.875rem; }
-            .cc-footer-grid { grid-template-columns: 1fr; }
-            .courses-hero h1 { font-size: 1.75rem; }
-            .courses-hero p { font-size: 0.95rem; }
+        .mobile-nav-link:hover {
+            background: #f0fdf4;
+            color: #16a34a;
         }
-        
-        @media(max-width: 480px) {
-            .header-container { padding: 0.65rem 0.75rem; }
-            .logo-container { gap: 0.4rem; }
-            .logo-container img { height: 2rem; }
-            .logo-text-group span:first-child { font-size: 0.9rem; }
-            .btn-signup { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
-            .course-title { font-size: 1rem; }
-            .course-desc { font-size: 0.8rem; }
-            .filter-tabs { gap: 0.5rem; }
-            .filter-btn { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
-            .course-footer { flex-direction: column; align-items: flex-start; gap: 1rem; }
-            .btn-apply { width: 100%; }
-            .courses-hero { padding: 4rem 1rem 2.5rem; }
-            .courses-hero h1 { font-size: 1.35rem; }
-            .courses-hero p { font-size: 0.85rem; }
-            .courses-container { padding: 2rem 1rem; }
-            #mobileMenu { width: 280px; }
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
+        .mobile-menu-btn span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: #1e293b;
+            transition: 0.3s;
+        }
+        .mobile-menu-btn.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .mobile-menu-btn.active span:nth-child(2) { opacity: 0; }
+        .mobile-menu-btn.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        @media(max-width: 1024px) {
+            .nav-links { display: none !important; }
+            .mobile-menu-btn { display: flex !important; }
         }
     </style>
 </head>
 <body>
 
 <!-- Header -->
-<header class="modern-header">
-    <div class="header-container">
-        <a href="../../index.html" class="logo-container">
-            <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Course Corner" />
-            <div class="logo-text-group">
-                <span>Course Corner</span>
-                <span>Learn Portal</span>
+<header class="modern-header" id="learnHeader">
+    <div class="header-container flex items-center justify-between max-w-[1400px] mx-auto px-4 md:px-8 py-3">
+        <a href="../../index.html" class="logo-container flex items-center gap-2.5 no-underline">
+            <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Course Corner Logo" class="h-8 md:h-10 w-auto">
+            <div class="logo-text-group flex flex-col justify-center leading-none gap-[2px]">
+                <span class="text-[1.15rem] md:text-[1.35rem] font-extrabold text-[#16a34a] tracking-tight leading-none">Course Corner</span>
+                <span class="text-[0.55rem] md:text-[0.65rem] font-semibold text-[#0ea5e9] tracking-wide leading-none">Learn Portal</span>
             </div>
         </a>
-        <nav class="nav-links">
-            <a href="../../index.html">Home</a>
-            <a href="courses.html" class="active">Courses</a>
-            <a href="whats-new.html">What's New</a>
-            <a href="about.html">About</a>
+        <nav class="nav-links hidden lg:flex items-center gap-10">
+            <div class="flex items-center gap-6">
+                <a href="../../index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Home</a>
+                <a href="courses.html" class="modern-nav-link text-[0.9rem] font-semibold text-[#16a34a] no-underline transition-colors">Courses</a>
+                <a href="whats-new.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">What's New</a>
+                <a href="about.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">About</a>
+            </div>
         </nav>
-        <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+        <button class="mobile-menu-btn lg:hidden" id="mobileMenuBtn">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+
+    <!-- Mobile Menu Overlay (for consistency) -->
+    <div class="mobile-menu lg:hidden" id="mobileMenu">
+        <nav class="flex flex-col gap-2">
+            <a href="../../index.html" class="mobile-nav-link" onclick="closeMenu()">Home</a>
+            <a href="courses.html" class="mobile-nav-link active" onclick="closeMenu()">Courses</a>
+            <a href="whats-new.html" class="mobile-nav-link" onclick="closeMenu()">What's New</a>
+            <a href="about.html" class="mobile-nav-link" onclick="closeMenu()">About</a>
+        </nav>
     </div>
 </header>
-
-<!-- Mobile Menu Overlay -->
-<div id="mobileMenuOverlay"></div>
-
-<!-- Mobile Menu Drawer -->
-<nav id="mobileMenu">
-    <a href="../../index.html" onclick="closeMenu()">Home</a>
-    <a href="courses.html" class="active" onclick="closeMenu()">Courses</a>
-    <a href="whats-new.html" onclick="closeMenu()">What's New</a>
-    <a href="about.html" onclick="closeMenu()">About</a>
-</nav>
 
 <!-- Hero -->
 <section class="courses-hero">
@@ -408,38 +399,36 @@
 </div>
 
 <script>
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+        const header = document.getElementById('learnHeader');
+        if (header) {
+            header.classList.toggle('scrolled', window.scrollY > 10);
+        }
+    });
+
     // Mobile menu functions
     function toggleMenu() {
         const mobileMenu = document.getElementById('mobileMenu');
-        const overlay = document.getElementById('mobileMenuOverlay');
         const btn = document.getElementById('mobileMenuBtn');
-        
-        mobileMenu.classList.toggle('show');
-        overlay.classList.toggle('show');
-        btn.classList.toggle('active');
+        if (mobileMenu && btn) {
+            mobileMenu.classList.toggle('show');
+            btn.classList.toggle('active');
+        }
     }
     
     function closeMenu() {
         const mobileMenu = document.getElementById('mobileMenu');
-        const overlay = document.getElementById('mobileMenuOverlay');
         const btn = document.getElementById('mobileMenuBtn');
-        
-        mobileMenu.classList.remove('show');
-        overlay.classList.remove('show');
-        btn.classList.remove('active');
+        if (mobileMenu) mobileMenu.classList.remove('show');
+        if (btn) btn.classList.remove('active');
     }
     
     // Initialize mobile menu button
     document.addEventListener('DOMContentLoaded', () => {
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const overlay = document.getElementById('mobileMenuOverlay');
-        
         if (mobileMenuBtn) {
             mobileMenuBtn.addEventListener('click', toggleMenu);
-        }
-        
-        if (overlay) {
-            overlay.addEventListener('click', closeMenu);
         }
     });
 

@@ -153,6 +153,83 @@
         .cc-footer-links a:hover { color: white; padding-left: 4px; }
         .cc-footer-bottom { text-align: center; font-size: 0.875rem; color: rgba(255,255,255,0.75); padding-top: 1.5rem; }
 
+        /* Mobile Menu Fixes */
+        .modern-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .header-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .mobile-menu {
+            position: fixed;
+            top: 64px;
+            left: 0;
+            right: 0;
+            background: white;
+            height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            z-index: 999;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        .mobile-menu.show {
+            height: auto;
+            opacity: 1;
+            padding: 1.5rem;
+        }
+        .mobile-nav-link {
+            padding: 1rem;
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #475569;
+            text-decoration: none;
+            border-radius: 0.75rem;
+            transition: all 0.2s;
+        }
+        .mobile-nav-link:hover {
+            background: #f0fdf4;
+            color: #16a34a;
+        }
+        .mobile-menu-btn {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+        }
+        .mobile-menu-btn span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: #1e293b;
+            transition: 0.3s;
+        }
+        .mobile-menu-btn.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .mobile-menu-btn.active span:nth-child(2) { opacity: 0; }
+        .mobile-menu-btn.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        @media(max-width: 1024px) {
+            .nav-links { display: none !important; }
+            .mobile-menu-btn { display: flex !important; }
+            .hamburger-btn { display: none !important; }
+        }
+
         @media (max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; }
             .form-full { grid-column: 1; }
@@ -164,45 +241,38 @@
 <body>
 
 <!-- ═══ HEADER ═══════════════════════════════════════════ -->
-<header class="modern-header">
-    <div class="header-container">
-        <a href="../../index.html" class="logo-container">
-            <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Course Corner Logo" />
-            <div class="logo-text-group">
-                <span>Course Corner</span>
-                <span>Learn Portal</span>
+<header class="modern-header" id="learnHeader">
+    <div class="header-container flex items-center justify-between max-w-[1400px] mx-auto px-4 md:px-8 py-3">
+        <a href="../../index.html" class="logo-container flex items-center gap-2.5 no-underline">
+            <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Course Corner Logo" class="h-8 md:h-10 w-auto">
+            <div class="logo-text-group flex flex-col justify-center leading-none gap-[2px]">
+                <span class="text-[1.15rem] md:text-[1.35rem] font-extrabold text-[#16a34a] tracking-tight leading-none">Course Corner</span>
+                <span class="text-[0.55rem] md:text-[0.65rem] font-semibold text-[#0ea5e9] tracking-wide leading-none">Learn Portal</span>
             </div>
         </a>
-        <nav class="nav-links">
-            <a href="../../index.html">Home</a>
-            <a href="courses.html">Courses</a>
-            <a href="whats-new.html">What's New</a>
-            <a href="about.html">About</a>
+        <nav class="nav-links hidden lg:flex items-center gap-10">
+            <div class="flex items-center gap-6">
+                <a href="../../index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Home</a>
+                <a href="courses.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Courses</a>
+                <a href="whats-new.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">What's New</a>
+                <a href="about.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">About</a>
+            </div>
         </nav>
-        <button class="hamburger-btn" onclick="toggleMobileMenu()" aria-label="Open menu">
-            <i class="fas fa-bars"></i>
+        <button class="mobile-menu-btn lg:hidden" id="mobileMenuBtn">
+            <span></span><span></span><span></span>
         </button>
     </div>
-</header>
 
-<!-- Mobile menu overlay -->
-<div id="mobileMenuOverlay" onclick="closeMobileMenu()"></div>
-<!-- Mobile slide-in menu -->
-<div id="mobileMenu">
-    <div class="mobile-menu-brand">
-        <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Logo">
-        <div class="flex flex-col leading-tight">
-            <span class="fn">Course Corner</span>
-            <span class="fs">Learn Portal</span>
-        </div>
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu lg:hidden" id="mobileMenu">
+        <nav class="flex flex-col gap-2">
+            <a href="../../index.html" class="mobile-nav-link" onclick="closeMobileMenu()">Home</a>
+            <a href="courses.html" class="mobile-nav-link" onclick="closeMobileMenu()">Courses</a>
+            <a href="whats-new.html" class="mobile-nav-link" onclick="closeMobileMenu()">What's New</a>
+            <a href="about.html" class="mobile-nav-link" onclick="closeMobileMenu()">About</a>
+        </nav>
     </div>
-    <nav>
-        <a href="../../index.html">Home</a>
-        <a href="courses.html">Courses</a>
-        <a href="whats-new.html">What's New</a>
-        <a href="about.html">About</a>
-    </nav>
-</div>
+</header>
 
 <!-- ═══ HERO ═══════════════════════════════════════════ -->
 <section class="apply-hero">
@@ -558,15 +628,30 @@
 </script>
 
 <script>
-    // Mobile menu toggle
-    function toggleMobileMenu() {
-        document.getElementById('mobileMenu').classList.toggle('show');
-        document.getElementById('mobileMenuOverlay').classList.toggle('show');
-    }
-    function closeMobileMenu() {
-        document.getElementById('mobileMenu').classList.remove('show');
-        document.getElementById('mobileMenuOverlay').classList.remove('show');
-    }
+    // Mobile menu toggle logic
+    document.addEventListener('DOMContentLoaded', () => {
+        const mmBtn = document.getElementById('mobileMenuBtn');
+        const mm = document.getElementById('mobileMenu');
+        
+        if (mmBtn && mm) {
+            mmBtn.addEventListener('click', () => {
+                mm.classList.toggle('show');
+                mmBtn.classList.toggle('active');
+            });
+        }
+    });
+
+    window.closeMobileMenu = () => {
+        const mm = document.getElementById('mobileMenu');
+        const mmBtn = document.getElementById('mobileMenuBtn');
+        if (mm) mm.classList.remove('show');
+        if (mmBtn) mmBtn.classList.remove('active');
+    };
+
+    window.addEventListener('scroll', () => {
+        const header = document.getElementById('learnHeader');
+        if (header) header.classList.toggle('scrolled', window.scrollY > 10);
+    });
 </script>
 
 </body>

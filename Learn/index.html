@@ -30,7 +30,7 @@
 
         /* ── Hero ───────────────────────────────────────────── */
         .learn-hero {
-            min-height:92vh; padding-top:80px;
+            min-height:80vh; padding-top:40px;
             background:linear-gradient(135deg,#ffffff 0%,#f9fafb 50%,#f3f4f6 100%);
             display:flex; align-items:center; position:relative; overflow:hidden;
         }
@@ -47,7 +47,7 @@
             pointer-events:none;
         }
         .hero-inner {
-            max-width:1280px; margin:0 auto; width:100%; padding:4rem 2rem;
+            max-width:1280px; margin:0 auto; width:100%; padding:2.5rem 2rem;
             display:grid; grid-template-columns:1fr 1.15fr; gap:4rem;
             align-items:center; position:relative; z-index:1;
         }
@@ -250,12 +250,10 @@
         <!-- Desktop Navigation -->
         <nav class="desktop-nav flex items-center gap-10">
             <div class="nav-links flex items-center gap-6">
-                <a href="../index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Site Home</a>
-                <a href="index.html" class="modern-nav-link text-[0.9rem] font-semibold text-[#16a34a] no-underline">Portal Home</a>
+                <a href="index.html" class="modern-nav-link text-[0.9rem] font-semibold text-[#16a34a] no-underline">Home</a>
                 <a href="assets/pages/courses.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Courses</a>
                 <a href="assets/pages/whats-new.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">What's New</a>
-                <a href="../pages/calculator.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Calculator</a>
-                <a href="../pages/referral.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Earn Money</a>
+                <a href="assets/pages/about.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">About</a>
             </div>
 
             <!-- Auth Area -->
@@ -273,7 +271,7 @@
                     
                     <!-- Dropdown -->
                     <div id="userDropdown" style="display: none;" class="absolute top-[calc(100%+15px)] right-0 w-[220px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 z-[1000] animate-in fade-in slide-in-from-top-2 duration-200">
-                        <a href="dashboard.html" class="flex items-center gap-3 p-3 text-gray-700 no-underline rounded-xl text-sm font-bold hover:bg-green-50 hover:text-[#16a34a] transition-all group">
+                        <a href="assets/pages/dashboard.html" class="flex items-center gap-3 p-3 text-gray-700 no-underline rounded-xl text-sm font-bold hover:bg-green-50 hover:text-[#16a34a] transition-all group">
                             <i class="fas fa-graduation-cap text-[#16a34a]/60 group-hover:text-[#16a34a]"></i> 
                             My Courses
                         </a>
@@ -299,12 +297,10 @@
     <div class="mobile-menu lg:hidden fixed top-[64px] left-0 right-0 h-0 opacity-0 overflow-hidden bg-white/98 backdrop-blur-xl transition-all duration-300 z-[999]" id="mobileMenu">
         <div class="flex flex-col h-full p-6">
             <nav class="mobile-nav-links flex flex-col gap-2">
-                <a href="../index.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Site Home</a>
-                <a href="index.html" class="p-4 text-lg font-bold text-[#16a34a] no-underline rounded-xl bg-green-50 transition-all" onclick="closeMobileMenu()">Portal Home</a>
+                <a href="index.html" class="p-4 text-lg font-bold text-[#16a34a] no-underline rounded-xl bg-green-50 transition-all" onclick="closeMobileMenu()">Home</a>
                 <a href="assets/pages/courses.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Courses</a>
                 <a href="assets/pages/whats-new.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">What's New</a>
-                <a href="../pages/calculator.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Calculator</a>
-                <a href="../pages/referral.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Earn Money</a>
+                <a href="assets/pages/about.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">About</a>
             </nav>
             
             <div class="mt-auto pt-6 border-t border-gray-100">
@@ -314,7 +310,7 @@
                     </button>
                 </div>
                 <div id="mobileUserArea" style="display: none;" class="flex flex-col gap-3">
-                    <a href="dashboard.html" class="w-full py-4 bg-green-50 text-[#16a34a] rounded-2xl font-bold flex items-center justify-center gap-3 no-underline" onclick="closeMobileMenu()">
+                    <a href="assets/pages/dashboard.html" class="w-full py-4 bg-green-50 text-[#16a34a] rounded-2xl font-bold flex items-center justify-center gap-3 no-underline" onclick="closeMobileMenu()">
                         <i class="fas fa-graduation-cap"></i> My Dashboard
                     </a>
                     <button onclick="handleSignOut(); closeMobileMenu()" class="w-full py-4 bg-red-50 text-red-500 border-none rounded-2xl font-bold">
@@ -349,6 +345,26 @@
                     <i class="fas fa-search"></i> Browse Courses
                 </button>
             </div>
+
+            <!-- Moved Hero Stats -->
+            <div class="flex flex-wrap items-center gap-4 mt-8">
+                <div class="flex items-center gap-2 bg-green-50 border border-green-100 px-4 py-2 rounded-2xl">
+                    <div class="flex -space-x-2">
+                        <img src="https://i.pravatar.cc/40?u=a1" class="w-6 h-6 rounded-full ring-2 ring-white" alt="">
+                        <img src="https://i.pravatar.cc/40?u=a2" class="w-6 h-6 rounded-full ring-2 ring-white" alt="">
+                        <img src="https://i.pravatar.cc/40?u=a3" class="w-6 h-6 rounded-full ring-2 ring-white" alt="">
+                    </div>
+                    <span class="text-[#16a34a] text-xs font-bold">500+ Enrolled</span>
+                </div>
+                <div class="flex items-center gap-1.5 bg-amber-50 border border-amber-100 px-4 py-2 rounded-2xl">
+                    <i class="fas fa-star text-amber-500 text-xs"></i>
+                    <span class="text-amber-700 text-xs font-bold">4.9 Rating</span>
+                </div>
+                <div class="flex items-center gap-1.5 bg-blue-50 border border-blue-100 px-4 py-2 rounded-2xl">
+                    <i class="fas fa-certificate text-blue-500 text-xs"></i>
+                    <span class="text-blue-700 text-xs font-bold">Certified</span>
+                </div>
+            </div>
         </div>
 
         <!-- Right: visual image -->
@@ -357,31 +373,12 @@
                 <!-- Glow ring -->
                 <div class="absolute -inset-4 rounded-3xl opacity-30" style="background:radial-gradient(ellipse,rgba(22,163,74,.5) 0%,transparent 70%); filter:blur(40px);"></div>
                 <!-- Image frame -->
-                <div class="relative rounded-3xl overflow-hidden shadow-2xl border border-white/10" style="height:520px;">
+                <div class="relative rounded-3xl overflow-hidden shadow-2xl border border-white/10" style="height:480px; transform: translateY(-20px);">
                     <img src="assets/images/image.png"
                          alt="Students Learning"
                          class="w-full h-full object-cover">
                     <!-- Dark overlay bottom -->
-                    <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(10,31,16,.85) 0%,transparent 50%);"></div>
-                    <!-- Stat chips at bottom -->
-                    <div class="absolute bottom-0 left-0 right-0 p-6 flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-2.5 rounded-2xl">
-                            <div class="flex -space-x-2">
-                                <img src="https://i.pravatar.cc/40?u=a1" class="w-7 h-7 rounded-full ring-2 ring-white/30" alt="">
-                                <img src="https://i.pravatar.cc/40?u=a2" class="w-7 h-7 rounded-full ring-2 ring-white/30" alt="">
-                                <img src="https://i.pravatar.cc/40?u=a3" class="w-7 h-7 rounded-full ring-2 ring-white/30" alt="">
-                            </div>
-                            <span class="text-white text-xs font-semibold">500+ Enrolled</span>
-                        </div>
-                        <div class="flex items-center gap-1.5 bg-amber-400/20 backdrop-blur-md border border-amber-400/30 px-4 py-2.5 rounded-2xl">
-                            <i class="fas fa-star text-amber-400 text-xs"></i>
-                            <span class="text-amber-300 text-xs font-bold">4.9 Rating</span>
-                        </div>
-                        <div class="flex items-center gap-1.5 bg-green-400/20 backdrop-blur-md border border-green-400/30 px-4 py-2.5 rounded-2xl">
-                            <i class="fas fa-certificate text-green-400 text-xs"></i>
-                            <span class="text-green-300 text-xs font-bold">Certified</span>
-                        </div>
-                    </div>
+                    <div class="absolute inset-0" style="background:linear-gradient(to top,rgba(10,31,16,.4) 0%,transparent 50%);"></div>
                 </div>
             </div>
         </div>

@@ -271,7 +271,7 @@
 <body>
 
 <!-- Header -->
-<header class="modern-header" id="learnHeader">
+<header class="modern-header fixed top-0 left-0 right-0 w-full z-[1000] bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all duration-300" id="learnHeader">
     <div class="header-container flex items-center justify-between max-w-[1400px] mx-auto px-4 md:px-8 py-3">
         <a href="../../index.html" class="logo-container flex items-center gap-2.5 no-underline">
             <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Course Corner Logo" class="h-8 md:h-10 w-auto">
@@ -282,26 +282,26 @@
         </a>
         <nav class="desktop-nav hidden lg:flex items-center gap-10">
             <div class="nav-links flex items-center gap-6">
-                <a href="../../../index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Site Home</a>
-                <a href="../../index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Portal Home</a>
+                <a href="../../index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Home</a>
                 <a href="courses.html" class="modern-nav-link text-[0.9rem] font-semibold text-[#16a34a] no-underline transition-colors">Courses</a>
                 <a href="whats-new.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">What's New</a>
-                <a href="../../../pages/calculator.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Calculator</a>
+                <a href="about.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">About</a>
             </div>
         </nav>
         <button id="mobileMenuBtn" class="mobile-menu-btn lg:hidden flex flex-col justify-center items-center w-10 h-10 border-none bg-transparent cursor-pointer">
-            <span></span><span></span><span></span>
+            <span class="w-6 h-0.5 bg-gray-800 transition-all duration-300"></span>
+            <span class="w-6 h-0.5 bg-gray-800 transition-all duration-300"></span>
+            <span class="w-6 h-0.5 bg-gray-800 transition-all duration-300"></span>
         </button>
     </div>
 
     <!-- Mobile Menu -->
-    <div class="mobile-menu lg:hidden" id="mobileMenu">
-        <nav class="flex flex-col gap-2">
-            <a href="../../../index.html" class="mobile-nav-link" onclick="closeMenu()">Site Home</a>
-            <a href="../../index.html" class="mobile-nav-link" onclick="closeMenu()">Portal Home</a>
-            <a href="courses.html" class="mobile-nav-link active" onclick="closeMenu()">Courses</a>
-            <a href="whats-new.html" class="mobile-nav-link" onclick="closeMenu()">What's New</a>
-            <a href="../../../pages/calculator.html" class="mobile-nav-link" onclick="closeMenu()">Calculator</a>
+    <div class="mobile-menu lg:hidden fixed top-[64px] left-0 right-0 h-0 opacity-0 overflow-hidden bg-white/98 backdrop-blur-xl transition-all duration-300 z-[999]" id="mobileMenu">
+        <nav class="flex flex-col gap-2 p-6">
+            <a href="../../index.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 transition-all" onclick="closeMenu()">Home</a>
+            <a href="courses.html" class="p-4 text-lg font-bold text-[#16a34a] no-underline rounded-xl bg-green-50 transition-all" onclick="closeMenu()">Courses</a>
+            <a href="whats-new.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 transition-all" onclick="closeMenu()">What's New</a>
+            <a href="about.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 transition-all" onclick="closeMenu()">About</a>
         </nav>
     </div>
 </header>

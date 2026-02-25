@@ -3,347 +3,513 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learning Dashboard - Course Corner Learn</title>
+    <title>Dashboard – Course Corner Learn</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root { --cc-primary: #16a34a; --cc-bg: #f8fafc; }
-        body { background-color: var(--cc-bg); font-family: 'Inter', system-ui, -apple-system, sans-serif; }
-        .sidebar-link { transition: all 0.2s; border-radius: 0.5rem; }
-        .sidebar-link.active { background: #f1f5f9; color: #16a34a !important; font-weight: 700; }
-        .card { background: white; border-radius: 1rem; border: 1px solid #f1f5f9; }
-        .stat-card { padding: 1.25rem; transition: all 0.3s; }
-        .stat-card:hover { transform: translateY(-2px); border-color: #16a34a; }
-        .progress-bar { height: 6px; background: #f1f5f9; border-radius: 999px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #16a34a, #22c55e); border-radius: 999px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        .empty-state { opacity: 0.6; padding: 3rem 1rem; text-align: center; }
-        .badge-pending { background: #fef9c3; color: #854d0e; }
-        .badge-approved { background: #dcfce7; color: #166534; }
-        .shimmer { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
-        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b}
+        .sidebar-link{transition:all .2s;border-radius:.75rem}
+        .sidebar-link:hover{background:#f1f5f9}
+        .sidebar-link.active{background:linear-gradient(135deg,rgba(22,163,74,.08),rgba(22,163,74,.04));color:#16a34a!important;font-weight:700;border-left:3px solid #16a34a}
+        .card{background:white;border-radius:1rem;border:1px solid #f1f5f9;transition:all .2s}
+        .card:hover{border-color:#e2e8f0}
+        .stat-card{padding:1rem;display:flex;align-items:center;gap:.875rem}
+        .stat-card .stat-icon{width:40px;height:40px;border-radius:.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.875rem}
+        .progress-bar{height:5px;background:#f1f5f9;border-radius:999px;overflow:hidden}
+        .progress-fill{height:100%;background:linear-gradient(90deg,#16a34a,#22c55e);border-radius:999px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+        .module-item{display:flex;align-items:center;gap:.75rem;padding:.625rem .75rem;border-radius:.625rem;transition:all .15s}
+        .module-item:hover{background:#f8fafc}
+        .module-item.completed .mod-dot{background:#16a34a;color:white}
+        .module-item.current .mod-dot{background:#16a34a;color:white;animation:pulse-dot 2s infinite}
+        .module-item.locked .mod-dot{background:#e2e8f0;color:#94a3b8}
+        .mod-dot{width:28px;height:28px;border-radius:.5rem;display:flex;align-items:center;justify-content:center;font-size:.625rem;font-weight:700;flex-shrink:0}
+        @keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,.3)}50%{box-shadow:0 0 0 6px rgba(22,163,74,0)}}
+        .tab-btn{padding:.5rem 1rem;border-radius:.625rem;font-size:.8125rem;font-weight:600;border:none;background:transparent;color:#64748b;cursor:pointer;transition:all .2s}
+        .tab-btn.active{background:#16a34a;color:white}
+        .tab-btn:hover:not(.active){background:#f1f5f9}
+        .settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem}
+        .settings-overlay.show{display:flex}
+        .settings-modal{background:white;border-radius:1.25rem;width:100%;max-width:440px;overflow:hidden;box-shadow:0 24px 48px rgba(0,0,0,.12);animation:slideUp .25s ease}
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .settings-modal .form-input{width:100%;padding:.625rem .875rem;border:1.5px solid #e2e8f0;border-radius:.625rem;font-size:.875rem;transition:all .2s;font-family:inherit}
+        .settings-modal .form-input:focus{outline:none;border-color:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.1)}
+        @media(max-width:1023px){
+            .dash-sidebar{display:none!important}
+            .dash-sidebar.mobile-open{display:flex!important;position:fixed;top:0;left:0;width:280px;height:100vh;z-index:999;box-shadow:8px 0 30px rgba(0,0,0,.1)}
+            .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:998}
+            .sidebar-backdrop.show{display:block}
+        }
     </style>
 </head>
-<body class="text-slate-800">
-    <div class="min-h-screen flex flex-col lg:flex-row">
-        <!-- Sidebar -->
-        <aside class="w-full lg:w-72 bg-white border-r lg:min-h-screen p-6 hidden lg:flex flex-col">
-            <div class="mb-10 px-2">
-                <a href="../../index.html" class="flex items-center gap-3 no-underline">
-                    <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Logo" class="h-10 w-auto">
-                    <div class="flex flex-col leading-tight">
-                        <span class="text-lg font-extrabold text-[#16a34a] tracking-tight">Course Corner</span>
-                        <span class="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest -mt-0.5">Learn Portal</span>
-                    </div>
-                </a>
-            </div>
+<body>
 
-            <nav class="space-y-1.5 flex-grow">
-                <a href="#" class="sidebar-link active flex items-center gap-3.5 p-3.5 text-slate-600 font-semibold hover:bg-slate-50">
-                    <i class="fas fa-th-large text-lg"></i> Overview
-                </a>
-                <a href="courses.html" class="sidebar-link flex items-center gap-3.5 p-3.5 text-slate-500 font-medium hover:bg-slate-50">
-                    <i class="fas fa-book-open"></i> All Courses
-                </a>
-                <a href="apply.html" class="sidebar-link flex items-center gap-3.5 p-3.5 text-slate-500 font-medium hover:bg-slate-50">
-                    <i class="fas fa-paper-plane"></i> Applications
-                </a>
-                <div class="my-6 border-t border-slate-50"></div>
-                <a href="../../index.html" class="sidebar-link flex items-center gap-3.5 p-3.5 text-slate-400 font-medium hover:bg-slate-50">
-                    <i class="fas fa-arrow-left text-xs opacity-50"></i> Return to Portal
-                </a>
-            </nav>
-            
-            <div class="mt-auto pt-6 border-t border-slate-100">
-                <button onclick="handleSignOut()" class="flex items-center gap-3.5 p-3.5 w-full rounded-xl text-red-500 hover:bg-red-50 transition-colors font-semibold">
-                    <i class="fas fa-power-off"></i> Sign Out
+<div class="min-h-screen flex">
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="dash-sidebar w-64 bg-white border-r border-slate-100 min-h-screen flex flex-col p-5 flex-shrink-0" id="dashSidebar">
+        <a href="../../index.html" class="flex items-center gap-2.5 no-underline mb-8 px-1">
+            <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Logo" class="h-9 w-auto">
+            <div class="flex flex-col leading-tight">
+                <span class="text-base font-extrabold text-[#16a34a] tracking-tight">Course Corner</span>
+                <span class="text-[0.55rem] font-bold text-slate-400 uppercase tracking-widest">Learn Portal</span>
+            </div>
+        </a>
+        <nav class="space-y-1 flex-grow">
+            <a href="#" onclick="switchTab('overview');return false" id="nav-overview" class="sidebar-link active flex items-center gap-3 p-3 text-slate-600 font-semibold text-sm">
+                <i class="fas fa-th-large w-5 text-center"></i> Overview
+            </a>
+            <a href="#" onclick="switchTab('learning');return false" id="nav-learning" class="sidebar-link flex items-center gap-3 p-3 text-slate-500 font-medium text-sm">
+                <i class="fas fa-book-reader w-5 text-center"></i> My Learning
+            </a>
+            <a href="#" onclick="switchTab('certs');return false" id="nav-certs" class="sidebar-link flex items-center gap-3 p-3 text-slate-500 font-medium text-sm">
+                <i class="fas fa-certificate w-5 text-center"></i> My Certs
+            </a>
+            <a href="#" onclick="switchTab('payments');return false" id="nav-payments" class="sidebar-link flex items-center gap-3 p-3 text-slate-500 font-medium text-sm">
+                <i class="fas fa-receipt w-5 text-center"></i> Payments
+            </a>
+            <div class="my-5 border-t border-slate-50"></div>
+            <a href="courses.html" class="sidebar-link flex items-center gap-3 p-3 text-slate-400 font-medium text-sm">
+                <i class="fas fa-compass w-5 text-center"></i> Browse Courses
+            </a>
+            <a href="payment.html" class="sidebar-link flex items-center gap-3 p-3 text-slate-400 font-medium text-sm">
+                <i class="fas fa-credit-card w-5 text-center"></i> Make Payment
+            </a>
+            <a href="../../index.html" class="sidebar-link flex items-center gap-3 p-3 text-slate-400 font-medium text-sm">
+                <i class="fas fa-arrow-left w-5 text-center opacity-50"></i> Back to Portal
+            </a>
+        </nav>
+    </aside>
+
+    <!-- ═══ MAIN ═══ -->
+    <main class="flex-grow flex flex-col min-h-screen">
+        <!-- Top Bar -->
+        <header class="bg-white border-b border-slate-100 px-4 md:px-8 py-3 flex items-center justify-between sticky top-0 z-50">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="lg:hidden w-9 h-9 rounded-lg bg-slate-50 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors">
+                    <i class="fas fa-bars"></i>
                 </button>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-grow p-5 md:p-10 max-w-[1400px] mx-auto w-full">
-            <!-- Mobile Header -->
-            <div class="lg:hidden flex items-center justify-between mb-8">
-                <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Logo" class="h-8">
-                <button onclick="handleSignOut()" class="text-slate-400 hover:text-red-500"><i class="fas fa-power-off text-xl"></i></button>
-            </div>
-
-            <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
                 <div>
-                    <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-2">My <span class="text-[#16a34a]">Dashboard</span></h1>
-                    <p class="text-slate-500 flex items-center gap-2">
-                        <span id="userStatus" class="w-2 h-2 rounded-full bg-green-500"></span> 
-                        Logged in as <span id="userEmail" class="font-bold text-slate-700">Loading...</span>
-                    </p>
-                </div>
-                <div class="flex items-center gap-3 bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
-                    <div id="userAvatar" class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-[#16a34a] font-bold text-lg">?</div>
-                    <div class="pr-3">
-                        <p id="profileName" class="text-sm font-bold text-slate-900 leading-none mb-1">...</p>
-                        <p class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-tighter">Student Account</p>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Stats -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                <div class="card stat-card">
-                    <div class="w-10 h-10 rounded-lg bg-[#16a34a]/10 flex items-center justify-center text-[#16a34a] mb-4">
-                        <i class="fas fa-scroll"></i>
-                    </div>
-                    <h3 class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Active Courses</h3>
-                    <p id="enrolledCount" class="text-3xl font-black text-slate-900">...</p>
-                </div>
-                <div class="card stat-card">
-                    <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-600 mb-4">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <h3 class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Completion</h3>
-                    <p class="text-3xl font-black text-slate-900"><span id="avgProgress">0</span>%</p>
-                </div>
-                <div class="card stat-card">
-                    <div class="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600 mb-4">
-                        <i class="fas fa-wallet"></i>
-                    </div>
-                    <h3 class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Fees Paid</h3>
-                    <p class="text-3xl font-black text-slate-900" style="font-size: 1.5rem !important;">KES <span id="paidAmt">...</span></p>
-                </div>
-                <div class="card stat-card">
-                    <div class="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-600 mb-4">
-                        <i class="fas fa-medal"></i>
-                    </div>
-                    <h3 class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Certificates</h3>
-                    <p id="certCount" class="text-3xl font-black text-slate-900">0</p>
+                    <h1 class="text-lg font-extrabold text-slate-900 leading-none">Dashboard</h1>
+                    <p class="text-[0.7rem] text-slate-400 font-medium mt-0.5">Welcome back, <span id="topBarName" class="text-[#16a34a] font-bold">Student</span></p>
                 </div>
             </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Main Activity -->
-                <div class="lg:col-span-2 space-y-8">
-                    <!-- Ongoing Courses Section -->
-                    <div>
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 class="text-xl font-bold text-slate-900">My Learning Journey</h2>
-                            <a href="courses.html" class="text-sm font-bold text-[#16a34a] hover:underline">Explore More</a>
-                        </div>
-                        <div id="coursesList" class="space-y-4">
-                            <!-- Shimmer Loading -->
-                            <div class="card p-6 flex flex-col gap-4 animate-pulse">
-                                <div class="h-4 w-1/3 bg-slate-100 rounded"></div>
-                                <div class="h-8 w-full bg-slate-50 rounded"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Payment History -->
-                    <div>
-                        <h2 class="text-xl font-bold text-slate-900 mb-6">Transactions & Receipts</h2>
-                        <div class="card overflow-hidden">
-                            <table class="w-full text-left">
-                                <thead class="bg-slate-50 border-b border-slate-100">
-                                    <tr>
-                                        <th class="p-4 text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest">Description</th>
-                                        <th class="p-4 text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest">Amount</th>
-                                        <th class="p-4 text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest text-right">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="paymentsList" class="divide-y divide-slate-50">
-                                    <tr><td colspan="3" class="p-10 text-center text-slate-400 italic">Connecting to secure billing...</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Updates & Quick Actions -->
-                <div class="space-y-8">
-                    <!-- Notifications -->
-                    <div class="card p-6">
-                        <h2 class="text-lg font-bold text-slate-900 mb-6">Notices</h2>
-                        <div id="noticesArea" class="space-y-4">
-                            <div class="flex gap-4 p-4 rounded-xl bg-blue-50 border border-blue-100/50">
-                                <div class="text-blue-500 mt-0.5"><i class="fas fa-info-circle"></i></div>
-                                <div>
-                                    <p class="text-sm font-bold text-blue-900">Welcome to Learn!</p>
-                                    <p class="text-[0.8rem] text-blue-700/70 mt-1">Complete your profile set up to access premium Slack community channels.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Support Card -->
-                    <div class="card p-6 bg-slate-900 text-white border-0 overflow-hidden relative">
-                        <div class="relative z-10">
-                            <h3 class="font-bold mb-2">Need Guidance?</h3>
-                            <p class="text-slate-400 text-sm mb-6">Our academic advisors are online 8am - 6pm daily.</p>
-                            <a href="https://wa.me/254712345678" target="_blank" class="block w-full text-center py-3 bg-[#16a34a] hover:bg-[#15803d] rounded-xl font-bold transition-all text-sm">
-                                <i class="fab fa-whatsapp mr-1"></i> Chat Support
-                            </a>
-                        </div>
-                        <i class="fab fa-whatsapp absolute -bottom-4 -right-4 text-7xl opacity-10 rotate-12"></i>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- ═══ SCRIPTS ═══════════════════════════════════════════════ -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
-
-        // Production Config
-        const firebaseConfig = {
-            apiKey:"AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
-            authDomain:"course-corner.firebaseapp.com",
-            projectId:"course-corner",
-            appId:"1:961706784572:web:7aa6c24946570ffda59039"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                // UI Header
-                const email = user.email;
-                const name = user.displayName || email.split('@')[0];
-                document.getElementById('userEmail').innerText = email;
-                document.getElementById('profileName').innerText = name;
-                document.getElementById('userAvatar').innerText = name[0].toUpperCase();
-
-                // Fetch Data
-                await loadDashboardData(email);
-            } else {
-                window.location.href = 'index.html?modal=login';
-            }
-        });
-
-        async function loadDashboardData(email) {
-            try {
-                // 1. Fetch Applications (Active Courses)
-                const q = query(collection(db, "learnApplications"), where("email", "==", email));
-                const snap = await getDocs(q);
-                const apps = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
-                
-                // 2. Fetch Course Registry for Metadata
-                const resp = await fetch('data/courses.json');
-                const courseDocs = await resp.json();
-
-                // Stats Update
-                document.getElementById('enrolledCount').innerText = apps.length;
-                
-                // Render Course Cards
-                const list = document.getElementById('coursesList');
-                if (apps.length === 0) {
-                    list.innerHTML = `
-                        <div class="empty-state card">
-                            <i class="fas fa-book-open text-3xl mb-3 text-slate-200"></i>
-                            <p class="text-slate-500 font-medium">You haven't enrolled in any courses yet.</p>
-                            <a href="courses.html" class="text-[#16a34a] font-bold text-sm hover:underline mt-2 inline-block">Enroll in your first course</a>
-                        </div>
-                    `;
-                } else {
-                    list.innerHTML = apps.map(app => {
-                        const course = courseDocs.find(c => c.id === app.courseId) || { title: app.courseId };
-                        const statusColor = app.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
-                        return `
-                            <div class="card p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-[#16a34a]/30 transition-all">
-                                <div class="flex-grow">
-                                    <div class="flex items-center gap-3 mb-2">
-                                        <span class="text-[0.65rem] font-bold uppercase tracking-widest ${statusColor} px-2 py-0.5 rounded-full">${app.status || 'Pending'}</span>
-                                        <p class="text-[0.7rem] text-slate-400 font-medium">${new Date(app.timestamp?.seconds * 1000 || Date.now()).toLocaleDateString()}</p>
-                                    </div>
-                                    <h3 class="text-lg font-bold text-slate-900">${course.title}</h3>
-                                    <div class="mt-4 flex items-center justify-between max-w-sm">
-                                        <span class="text-xs font-bold text-slate-500">Program Progress</span>
-                                        <span class="text-xs font-black text-[#16a34a]">10%</span>
-                                    </div>
-                                    <div class="progress-bar mt-2 max-w-sm">
-                                        <div class="progress-fill" style="width: 10%"></div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <a href="course-detail.html?id=${app.courseId}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-sm transition-all">Syllabus</a>
-                                    <button class="px-5 py-2.5 bg-[#16a34a] text-white rounded-xl font-bold text-sm hover:shadow-lg transition-all">Enter Classroom</button>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-
-                // 3. Payments (Fetch from transactions)
-                const pq = query(collection(db, "transactions"), where("email", "==", email), orderBy("timestamp", "desc"), limit(5));
-                const psnap = await getDocs(pq);
-                const payments = psnap.docs.map(doc => doc.data());
-                
-                const totalPaid = payments.filter(p => p.status === 'COMPLETED' || p.status === 'SUCCESS').reduce((acc, p) => acc + (parseFloat(p.amount) || 0), 0);
-                document.getElementById('paidAmt').innerText = totalPaid.toLocaleString();
-
-                const pList = document.getElementById('paymentsList');
-                if (payments.length === 0) {
-                    pList.innerHTML = `<tr><td colspan="3" class="p-10 text-center text-slate-400 italic">No transaction records found.</td></tr>`;
-                } else {
-                    pList.innerHTML = payments.map(p => `
-                        <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="p-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center text-slate-400"><i class="fas fa-receipt text-xs"></i></div>
-                                    <p class="text-sm font-bold text-slate-700">${p.description || 'Course Fee'}</p>
-                                </div>
-                            </td>
-                            <td class="p-4 text-sm font-black text-slate-900">KES ${parseFloat(p.amount).toLocaleString()}</td>
-                            <td class="p-4 text-right">
-                                <span class="text-[0.6rem] font-black uppercase tracking-widest px-2 py-1 rounded inline-block ${p.status === 'SUCCESS' || p.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${p.status}</span>
-                            </td>
-                        </tr>
-                    `).join('');
-                }
-
-            } catch (err) {
-                console.error("Dashboard Load Error:", err);
-                Swal.fire({ icon: 'error', title: 'Connection Issue', text: 'Some data could not be loaded. Please refresh.' });
-            }
-        }
-
-        window.handleSignOut = async () => {
-            const result = await Swal.fire({
-                title: 'Sign Out?',
-                text: "Are you sure you want to end your session?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#16a34a',
-                cancelButtonColor: '#f1f5f9',
-                confirmButtonText: 'Yes, Sign Out',
-                cancelButtonTextColor: '#334155'
-            });
-
-            if (result.isConfirmed) {
-                await signOut(auth);
-                window.location.href = 'index.html';
-            }
-        };
-
-    </script>
-
-    <!-- Minimalistic Footer -->
-    <footer class="mt-auto py-8 border-t border-slate-100 bg-white">
-        <div class="max-w-[1400px] mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
             <div class="flex items-center gap-2">
-                <img src="https://coursecornerkenya.com/assets/images/logo.png" class="h-6 w-auto" alt="Logo">
-                <p class="text-xs font-bold text-slate-400">&copy; 2026 Course Corner Learn. All rights reserved.</p>
+                <button onclick="openSettings()" class="w-9 h-9 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button onclick="handleSignOut()" class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-400 hover:bg-red-50 hover:text-red-500 transition-all text-sm font-semibold">
+                    <i class="fas fa-sign-out-alt"></i><span class="hidden sm:inline">Sign Out</span>
+                </button>
+                <div id="userAvatar" class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#16a34a] to-[#0ea5e9] text-white flex items-center justify-center font-bold text-sm cursor-pointer" onclick="openSettings()">?</div>
             </div>
-            <div class="flex gap-6">
-                <a href="../../index.html" class="text-xs font-bold text-slate-400 hover:text-[#16a34a] transition-colors">Home</a>
-                <a href="courses.html" class="text-xs font-bold text-slate-400 hover:text-[#16a34a] transition-colors">Courses</a>
-                <a href="https://coursecornerkenya.com/pages/privacy-policy.html" class="text-xs font-bold text-slate-400 hover:text-[#16a34a] transition-colors">Privacy</a>
+        </header>
+
+        <div class="flex-grow p-4 md:p-8 max-w-[1200px] w-full mx-auto">
+
+            <!-- ═══ OVERVIEW TAB ═══ -->
+            <div id="tab-overview">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+                    <div class="card stat-card">
+                        <div class="stat-icon bg-[#16a34a]/10 text-[#16a34a]"><i class="fas fa-scroll"></i></div>
+                        <div><p class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider">Courses</p><p id="enrolledCount" class="text-xl font-extrabold text-slate-900">0</p></div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon bg-blue-500/10 text-blue-600"><i class="fas fa-chart-line"></i></div>
+                        <div><p class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider">Progress</p><p id="avgProgress" class="text-xl font-extrabold text-slate-900">0%</p></div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon bg-amber-500/10 text-amber-600"><i class="fas fa-wallet"></i></div>
+                        <div><p class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider">Paid</p><p id="paidAmt" class="text-xl font-extrabold text-slate-900">KES 0</p></div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon bg-purple-500/10 text-purple-600"><i class="fas fa-medal"></i></div>
+                        <div><p class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider">Certs</p><p id="certCount" class="text-xl font-extrabold text-slate-900">0</p></div>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-base font-bold text-slate-900">My Courses</h2>
+                        <a href="courses.html" class="text-xs font-bold text-[#16a34a] hover:underline no-underline">Browse All</a>
+                    </div>
+                    <div id="coursesList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="card p-5 animate-pulse"><div class="h-3 w-1/3 bg-slate-100 rounded mb-3"></div><div class="h-6 w-full bg-slate-50 rounded"></div></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div class="card p-5">
+                        <h3 class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2"><i class="fas fa-bell text-[#16a34a]"></i> Notices</h3>
+                        <div id="noticesArea" class="space-y-3">
+                            <div class="flex gap-3 p-3 rounded-lg bg-blue-50/80 border border-blue-100/50">
+                                <div class="text-blue-500 mt-0.5 text-sm"><i class="fas fa-info-circle"></i></div>
+                                <div><p class="text-xs font-bold text-blue-900">Welcome to Learn!</p><p class="text-[0.7rem] text-blue-700/70 mt-0.5">Submit an application to get started with your course.</p></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-5 bg-slate-900 text-white border-0 relative overflow-hidden">
+                        <div class="relative z-10">
+                            <h3 class="font-bold text-sm mb-1">Need Help?</h3>
+                            <p class="text-slate-400 text-xs mb-4">Our team is online 8AM – 6PM daily.</p>
+                            <a href="https://wa.me/254718744780" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-[#16a34a] hover:bg-[#15803d] rounded-lg font-bold text-sm transition-all no-underline text-white"><i class="fab fa-whatsapp"></i> Chat Support</a>
+                        </div>
+                        <i class="fab fa-whatsapp absolute -bottom-3 -right-3 text-6xl opacity-10 rotate-12"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ MY LEARNING TAB ═══ -->
+            <div id="tab-learning" class="hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-bold text-slate-900">My Learning Progress</h2>
+                </div>
+                <div id="learningCourseSelector" class="mb-6 hidden">
+                    <div class="flex gap-2 flex-wrap" id="learningCourseTabs"></div>
+                </div>
+                <div id="learningContent" class="space-y-4">
+                    <div class="card p-6 text-center">
+                        <i class="fas fa-book-open text-3xl text-slate-200 mb-3"></i>
+                        <p class="text-slate-400 text-sm font-medium">No courses enrolled yet.</p>
+                        <a href="apply.html" class="inline-block mt-3 text-[#16a34a] font-bold text-sm hover:underline no-underline">Apply for a course</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ MY CERTS TAB ═══ -->
+            <div id="tab-certs" class="hidden">
+                <h2 class="text-lg font-bold text-slate-900 mb-6">My Certificates</h2>
+                <div id="certsContent">
+                    <div class="card p-8 text-center">
+                        <div class="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center mx-auto mb-4"><i class="fas fa-certificate text-2xl text-purple-400"></i></div>
+                        <h3 class="text-base font-bold text-slate-900 mb-1">No Certificates Yet</h3>
+                        <p class="text-sm text-slate-400 max-w-sm mx-auto">Complete a course to earn your verified certificate. Keep learning!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ PAYMENTS TAB ═══ -->
+            <div id="tab-payments" class="hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-bold text-slate-900">Payment History</h2>
+                    <a href="payment.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#16a34a] text-white rounded-lg text-xs font-bold hover:bg-[#15803d] transition-all no-underline"><i class="fas fa-plus"></i> New Payment</a>
+                </div>
+                <div class="card overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b border-slate-100">
+                            <tr>
+                                <th class="p-3 text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">Description</th>
+                                <th class="p-3 text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">Amount</th>
+                                <th class="p-3 text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest text-right">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentsList" class="divide-y divide-slate-50">
+                            <tr><td colspan="3" class="p-8 text-center text-slate-400 italic text-sm">Loading payments...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-    </footer>
 
+        <footer class="mt-auto py-5 border-t border-slate-100 bg-white px-6">
+            <div class="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <img src="https://coursecornerkenya.com/assets/images/logo.png" class="h-5 w-auto" alt="Logo">
+                    <p class="text-[0.65rem] font-bold text-slate-400">&copy; 2026 Course Corner Learn</p>
+                </div>
+                <div class="flex gap-5">
+                    <a href="../../index.html" class="text-[0.65rem] font-bold text-slate-400 hover:text-[#16a34a] transition-colors no-underline">Home</a>
+                    <a href="courses.html" class="text-[0.65rem] font-bold text-slate-400 hover:text-[#16a34a] transition-colors no-underline">Courses</a>
+                    <a href="https://coursecornerkenya.com/pages/privacy-policy.html" class="text-[0.65rem] font-bold text-slate-400 hover:text-[#16a34a] transition-colors no-underline">Privacy</a>
+                </div>
+            </div>
+        </footer>
+    </main>
+</div>
+
+<!-- ═══ SETTINGS MODAL ═══ -->
+<div id="settingsOverlay" class="settings-overlay" onclick="if(event.target===this)closeSettings()">
+    <div class="settings-modal">
+        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+            <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2"><i class="fas fa-cog text-[#16a34a]"></i> Settings</h2>
+            <button onclick="closeSettings()" class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"><i class="fas fa-times"></i></button>
+        </div>
+        <form id="settingsForm" class="p-5 space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Display Name</label>
+                <input id="setName" type="text" class="form-input" placeholder="Your name">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Phone / WhatsApp</label>
+                <input id="setPhone" type="tel" class="form-input" placeholder="0712 345 678">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Location</label>
+                <input id="setLocation" type="text" class="form-input" placeholder="e.g. Nairobi">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Email (read only)</label>
+                <input id="setEmail" type="email" class="form-input bg-slate-50 text-slate-400 cursor-not-allowed" readonly>
+            </div>
+            <button type="submit" class="w-full py-3 bg-[#16a34a] text-white rounded-lg font-bold text-sm hover:bg-[#15803d] transition-all flex items-center justify-center gap-2">
+                <i class="fas fa-check"></i> Save Changes
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ═══ SCRIPTS ═══ -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, orderBy, limit, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+    const app = initializeApp({
+        apiKey:"AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
+        authDomain:"course-corner.firebaseapp.com",
+        projectId:"course-corner",
+        storageBucket:"course-corner.firebasestorage.app",
+        messagingSenderId:"961706784572",
+        appId:"1:961706784572:web:7aa6c24946570ffda59039"
+    });
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let allCourses = [];
+    let userApps = [];
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUser = user;
+            const name = user.displayName || user.email.split('@')[0];
+            document.getElementById('topBarName').textContent = name;
+            document.getElementById('userAvatar').textContent = name[0].toUpperCase();
+            try {
+                const profileSnap = await getDoc(doc(db, 'learn_users', user.uid));
+                if (profileSnap.exists()) {
+                    const profile = profileSnap.data();
+                    document.getElementById('setName').value = profile.name || user.displayName || '';
+                    document.getElementById('setPhone').value = profile.phone || '';
+                    document.getElementById('setLocation').value = profile.location || '';
+                }
+            } catch(e) { console.log('Profile load:', e); }
+            document.getElementById('setEmail').value = user.email;
+            if (!document.getElementById('setName').value) document.getElementById('setName').value = user.displayName || '';
+            await loadDashboardData(user.email);
+        } else {
+            window.location.href = '../../index.html';
+        }
+    });
+
+    async function loadDashboardData(email) {
+        try {
+            const resp = await fetch('../../data/courses.json');
+            allCourses = await resp.json();
+            const q = query(collection(db, "learnApplications"), where("email", "==", email));
+            const snap = await getDocs(q);
+            userApps = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            document.getElementById('enrolledCount').textContent = userApps.length;
+            renderOverviewCourses();
+            await loadPayments(email);
+            renderLearningTab();
+        } catch (err) {
+            console.error("Dashboard load error:", err);
+        }
+    }
+
+    function renderOverviewCourses() {
+        const list = document.getElementById('coursesList');
+        if (userApps.length === 0) {
+            list.innerHTML = '<div class="card p-6 text-center col-span-full"><i class="fas fa-book-open text-2xl text-slate-200 mb-2"></i><p class="text-slate-400 text-sm font-medium">No courses enrolled yet.</p><a href="apply.html" class="text-[#16a34a] font-bold text-xs hover:underline mt-2 inline-block no-underline">Apply Now</a></div>';
+            return;
+        }
+        list.innerHTML = userApps.map(a => {
+            const c = allCourses.find(x => x.id === a.courseId) || { title: a.courseTitle || a.courseId, modulesCount: 0, duration: '' };
+            const sCls = a.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
+            return `<div class="card p-4 flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-[0.6rem] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${sCls}">${a.status || 'Pending'}</span>
+                    <span class="text-[0.6rem] text-slate-400">${formatDate(a.timestamp)}</span>
+                </div>
+                <h3 class="text-sm font-bold text-slate-900">${c.title}</h3>
+                <div class="flex items-center justify-between text-[0.65rem]">
+                    <span class="text-slate-400 font-semibold">${c.modulesCount} modules · ${c.duration}</span>
+                    <span class="text-[#16a34a] font-bold">10%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:10%"></div></div>
+                <div class="flex gap-2 mt-1">
+                    <a href="course-detail.html?id=${a.courseId}" class="flex-1 text-center py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-lg font-bold text-xs transition-all no-underline">Syllabus</a>
+                    <button onclick="switchTab('learning')" class="flex-1 py-2 bg-[#16a34a] text-white rounded-lg font-bold text-xs hover:bg-[#15803d] transition-all">My Progress</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function renderLearningTab() {
+        const content = document.getElementById('learningContent');
+        const selector = document.getElementById('learningCourseSelector');
+        const tabs = document.getElementById('learningCourseTabs');
+        if (userApps.length === 0) {
+            content.innerHTML = '<div class="card p-8 text-center"><i class="fas fa-book-open text-3xl text-slate-200 mb-3"></i><p class="text-slate-400 text-sm font-medium">No courses enrolled yet.</p><a href="apply.html" class="inline-block mt-3 text-[#16a34a] font-bold text-sm hover:underline no-underline">Apply for a course</a></div>';
+            return;
+        }
+        if (userApps.length > 1) {
+            selector.classList.remove('hidden');
+            tabs.innerHTML = userApps.map((a, i) => {
+                const c = allCourses.find(x => x.id === a.courseId) || { title: a.courseTitle || a.courseId };
+                return `<button class="tab-btn ${i === 0 ? 'active' : ''}" onclick="showLearningCourse(${i}, this)">${c.title}</button>`;
+            }).join('');
+        }
+        window.showLearningCourse(0);
+    }
+
+    window.showLearningCourse = (index, btn) => {
+        if (btn) { document.querySelectorAll('#learningCourseTabs .tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+        const a = userApps[index];
+        const c = allCourses.find(x => x.id === a.courseId) || { title: a.courseTitle || a.courseId, modulesCount: 0, duration: '', syllabus: [] };
+        const content = document.getElementById('learningContent');
+        const totalMod = c.modulesCount || 1;
+        const doneMod = Math.min(1, totalMod);
+        const pct = Math.round((doneMod / totalMod) * 100);
+        const enrolled = a.timestamp ? new Date(a.timestamp.seconds ? a.timestamp.seconds * 1000 : a.timestamp) : new Date();
+        const wk = Math.max(1, Math.ceil((Date.now() - enrolled.getTime()) / (7 * 24 * 60 * 60 * 1000)));
+        const totalWk = parseInt(c.duration) || 4;
+
+        content.innerHTML = `
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+                <div class="card p-3 text-center"><p class="text-[0.6rem] font-bold text-slate-400 uppercase mb-1">Current Week</p><p class="text-lg font-extrabold text-[#16a34a]">${Math.min(wk, totalWk)} <span class="text-xs font-bold text-slate-400">/ ${totalWk}</span></p></div>
+                <div class="card p-3 text-center"><p class="text-[0.6rem] font-bold text-slate-400 uppercase mb-1">Covered</p><p class="text-lg font-extrabold text-blue-600">${doneMod} <span class="text-xs font-bold text-slate-400">modules</span></p></div>
+                <div class="card p-3 text-center"><p class="text-[0.6rem] font-bold text-slate-400 uppercase mb-1">Remaining</p><p class="text-lg font-extrabold text-amber-600">${totalMod - doneMod} <span class="text-xs font-bold text-slate-400">modules</span></p></div>
+                <div class="card p-3 text-center"><p class="text-[0.6rem] font-bold text-slate-400 uppercase mb-1">Overall</p><p class="text-lg font-extrabold text-slate-900">${pct}%</p></div>
+            </div>
+            <div class="card p-5 mb-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-sm font-bold text-slate-900">${c.title}</h3>
+                    <span class="text-xs font-extrabold text-[#16a34a]">${pct}% Complete</span>
+                </div>
+                <div class="progress-bar" style="height:8px"><div class="progress-fill" style="width:${pct}%"></div></div>
+                <p class="text-[0.65rem] text-slate-400 mt-2">${doneMod} of ${totalMod} modules completed · Week ${Math.min(wk, totalWk)} of ${totalWk}</p>
+            </div>
+            <div class="card overflow-hidden">
+                <div class="p-4 border-b border-slate-50 bg-slate-50/50"><h3 class="text-sm font-bold text-slate-900 flex items-center gap-2"><i class="fas fa-layer-group text-[#16a34a]"></i> Syllabus & Module Progress</h3></div>
+                <div class="p-4 space-y-1">${renderModules(c, doneMod)}</div>
+            </div>
+            <div class="card overflow-hidden mt-4">
+                <div class="p-4 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between"><h3 class="text-sm font-bold text-slate-900 flex items-center gap-2"><i class="fas fa-clipboard-check text-[#16a34a]"></i> Assignments</h3></div>
+                <div class="p-4" id="assignmentsArea">
+                    <div class="text-center py-6"><i class="fas fa-clipboard text-2xl text-slate-200 mb-2"></i><p class="text-sm text-slate-400">No assignments submitted yet.</p><p class="text-[0.65rem] text-slate-300 mt-1">Assignments will appear here as you progress through modules.</p></div>
+                </div>
+            </div>`;
+
+        document.getElementById('avgProgress').textContent = pct + '%';
+        loadAssignments(a.courseId);
+    };
+
+    function renderModules(course, doneCount) {
+        if (!course.syllabus || !course.syllabus.length) return '<p class="text-sm text-slate-400 text-center py-4">Syllabus details not available yet.</p>';
+        let idx = 0;
+        return course.syllabus.map(s => {
+            const items = s.topics.map(t => {
+                idx++;
+                let state = 'locked', icon = 'fas fa-lock', label = '';
+                if (idx <= doneCount) { state = 'completed'; icon = 'fas fa-check'; label = '<span class="ml-auto text-[0.6rem] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">Done</span>'; }
+                else if (idx === doneCount + 1) { state = 'current'; icon = 'fas fa-play'; label = '<span class="ml-auto text-[0.6rem] font-bold text-[#16a34a] bg-green-50 px-2 py-0.5 rounded animate-pulse">In Progress</span>'; }
+                return `<div class="module-item ${state}"><div class="mod-dot"><i class="${icon}"></i></div><span class="text-sm ${state === 'locked' ? 'text-slate-400' : 'text-slate-700'} font-medium">${t}</span>${label}</div>`;
+            }).join('');
+            return `<div class="mb-3"><p class="text-[0.65rem] font-bold text-[#16a34a] uppercase tracking-wider mb-1 px-1">${s.week}: ${s.title}</p>${items}</div>`;
+        }).join('');
+    }
+
+    async function loadAssignments(courseId) {
+        if (!currentUser) return;
+        try {
+            const q = query(collection(db, "learnAssignments"), where("userId", "==", currentUser.uid), where("courseId", "==", courseId), orderBy("submittedAt", "desc"));
+            const snap = await getDocs(q);
+            const assignments = snap.docs.map(d => d.data());
+            const area = document.getElementById('assignmentsArea');
+            if (assignments.length === 0) return;
+            area.innerHTML = assignments.map(a => `
+                <div class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 mb-2">
+                    <div class="w-9 h-9 rounded-lg ${a.grade ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'} flex items-center justify-center flex-shrink-0"><i class="fas ${a.grade ? 'fa-check-circle' : 'fa-clock'}"></i></div>
+                    <div class="flex-grow min-w-0"><p class="text-sm font-bold text-slate-800 truncate">${a.title || 'Assignment'}</p><p class="text-[0.65rem] text-slate-400">Submitted ${a.submittedAt ? new Date(a.submittedAt.seconds * 1000).toLocaleDateString() : 'N/A'}</p></div>
+                    <div class="text-right flex-shrink-0">${a.grade ? `<span class="text-sm font-extrabold text-green-600">${a.grade}</span><p class="text-[0.6rem] text-slate-400">Graded</p>` : '<span class="text-[0.65rem] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded">Pending Review</span>'}</div>
+                </div>`).join('');
+        } catch(e) { console.log('Assignments:', e.message); }
+    }
+
+    async function loadPayments(email) {
+        try {
+            const pq = query(collection(db, "learnPayments"), where("email", "==", email), orderBy("timestamp", "desc"), limit(10));
+            const psnap = await getDocs(pq);
+            let payments = psnap.docs.map(d => d.data());
+            try {
+                const tq = query(collection(db, "transactions"), where("email", "==", email), orderBy("timestamp", "desc"), limit(10));
+                const tsnap = await getDocs(tq);
+                payments = [...payments, ...tsnap.docs.map(d => d.data())];
+            } catch(e) {}
+            const totalPaid = payments.filter(p => ['COMPLETED','SUCCESS','completed','success'].includes(p.status)).reduce((a, p) => a + (parseFloat(p.amount) || 0), 0);
+            document.getElementById('paidAmt').textContent = `KES ${totalPaid.toLocaleString()}`;
+            const pList = document.getElementById('paymentsList');
+            if (payments.length === 0) { pList.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-slate-400 italic text-sm">No transactions found.</td></tr>'; return; }
+            pList.innerHTML = payments.map(p => {
+                const ok = ['COMPLETED','SUCCESS','completed','success'].includes(p.status);
+                return `<tr class="hover:bg-slate-50 transition-colors"><td class="p-3"><div class="flex items-center gap-2"><div class="w-7 h-7 rounded bg-slate-50 flex items-center justify-center text-slate-400"><i class="fas fa-receipt text-[0.6rem]"></i></div><p class="text-xs font-bold text-slate-700">${p.description || p.courseTitle || 'Course Fee'}</p></div></td><td class="p-3 text-xs font-extrabold text-slate-900">KES ${parseFloat(p.amount).toLocaleString()}</td><td class="p-3 text-right"><span class="text-[0.55rem] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${ok ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${p.status}</span></td></tr>`;
+            }).join('');
+        } catch(e) {
+            console.error('Payments load:', e);
+            document.getElementById('paymentsList').innerHTML = '<tr><td colspan="3" class="p-8 text-center text-slate-400 italic text-sm">Unable to load payments.</td></tr>';
+        }
+    }
+
+    window.openSettings = () => document.getElementById('settingsOverlay').classList.add('show');
+    window.closeSettings = () => document.getElementById('settingsOverlay').classList.remove('show');
+
+    document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('setName').value.trim();
+        const phone = document.getElementById('setPhone').value.trim();
+        const location = document.getElementById('setLocation').value.trim();
+        if (!name) return Swal.fire({ icon:'warning', title:'Name Required', text:'Please enter your display name.' });
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        try {
+            await updateProfile(currentUser, { displayName: name });
+            await setDoc(doc(db, 'learn_users', currentUser.uid), { name, phone, location, email: currentUser.email, updatedAt: new Date() }, { merge: true });
+            document.getElementById('topBarName').textContent = name;
+            document.getElementById('userAvatar').textContent = name[0].toUpperCase();
+            Swal.fire({ icon:'success', title:'Saved!', text:'Your profile has been updated.', confirmButtonColor:'#16a34a', timer:2000 });
+            closeSettings();
+        } catch(err) { console.error(err); Swal.fire({ icon:'error', title:'Save Failed', text:'Please try again.', confirmButtonColor:'#16a34a' }); }
+        finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check"></i> Save Changes'; }
+    });
+
+    window.switchTab = (tab) => {
+        ['overview','learning','certs','payments'].forEach(t => {
+            document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
+            const nav = document.getElementById(`nav-${t}`);
+            if (nav) { nav.classList.toggle('active', t === tab); }
+        });
+        closeSidebar();
+    };
+
+    window.handleSignOut = async () => {
+        const r = await Swal.fire({ title:'Sign Out?', text:'Are you sure you want to end your session?', icon:'question', showCancelButton:true, confirmButtonColor:'#16a34a', confirmButtonText:'Yes, Sign Out', cancelButtonText:'Cancel' });
+        if (r.isConfirmed) { await signOut(auth); window.location.href = '../../index.html'; }
+    };
+
+    window.toggleSidebar = () => { document.getElementById('dashSidebar').classList.toggle('mobile-open'); document.getElementById('sidebarBackdrop').classList.toggle('show'); };
+    window.closeSidebar = () => { document.getElementById('dashSidebar').classList.remove('mobile-open'); document.getElementById('sidebarBackdrop').classList.remove('show'); };
+
+    function formatDate(ts) {
+        if (!ts) return '';
+        const d = ts.seconds ? new Date(ts.seconds * 1000) : new Date(ts);
+        return d.toLocaleDateString('en-KE', { month:'short', day:'numeric', year:'numeric' });
+    }
+</script>
 </body>
 </html>

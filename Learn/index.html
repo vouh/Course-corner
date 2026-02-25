@@ -21,7 +21,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <!-- Site Stylesheets -->
-    <link rel="stylesheet" href="https://coursecornerkenya.com/assets/css/style.css">
     <link rel="stylesheet" href="https://coursecornerkenya.com/assets/css/modern-ui.css">
     <link rel="stylesheet" href="https://coursecornerkenya.com/assets/css/auth.css">
 
@@ -162,7 +161,7 @@
         }
         .btn-enrol:hover { transform:translateY(-1px); box-shadow:0 6px 16px rgba(22,163,74,.3); }
 
-        <!-- ── Features band ───────────────────────────────────── -->
+        /* ── Features band ─────────────────────────────────── */
         .features-band {
             padding: 6rem 2rem;
             background: linear-gradient(135deg, #064e3b 0%, #065f46 100%);
@@ -215,6 +214,11 @@
         }
 
         /* ── Responsive ──────────────────────────────────────── */
+        /* Ensure nav shows on desktop */
+        @media(min-width:1025px){
+            .desktop-nav{display:flex!important;align-items:center;}
+            .mobile-menu-btn{display:none!important;}
+        }
         @media(max-width:1024px){
             .hero-inner{grid-template-columns:1fr;gap:3rem;}
             .hero-visual{display:none;}

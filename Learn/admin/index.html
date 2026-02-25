@@ -1,20 +1,365 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learn Admin - Course Corner</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <title>Learn Admin – Course Corner</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="../../apple-touch-icon.png">
+    <link rel="icon" href="../../favicon.ico" sizes="any">
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
     <script>
-        // Redirect to main admin but with Learn Portal context
-        window.location.href = '../../admin/index.html?section=learn-courses';
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50:'#f0fdf4',100:'#dcfce7',200:'#bbf7d0',300:'#86efac',
+                            400:'#4ade80',500:'#22c55e',600:'#16a34a',700:'#15803d',
+                            800:'#166534',900:'#14532d'
+                        }
+                    }
+                }
+            }
+        }
     </script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #4b5563; }
+        .sidebar { transition: transform 0.3s ease; }
+        .nav-item { transition: all 0.2s ease; }
+        .stat-gradient-1 { background: linear-gradient(135deg,#667eea 0%,#764ba2 100%); }
+        .stat-gradient-2 { background: linear-gradient(135deg,#22c55e 0%,#16a34a 100%); }
+        .stat-gradient-3 { background: linear-gradient(135deg,#f59e0b 0%,#d97706 100%); }
+        .stat-gradient-4 { background: linear-gradient(135deg,#ef4444 0%,#dc2626 100%); }
+    </style>
 </head>
-<body class="bg-gray-50 flex items-center justify-center min-h-screen">
-    <div class="text-center">
-        <div class="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-        <p class="text-gray-500 font-bold">Redirecting to Learn Admin Dashboard...</p>
+
+<body class="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
+
+    <!-- ═══ SIDEBAR ═══════════════════════════════════════════════ -->
+    <aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-40 sidebar -translate-x-full lg:translate-x-0 flex flex-col">
+        <!-- Brand -->
+        <div class="h-20 flex items-center gap-3 px-6 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+            <img src="../../assets/images/logo.png" alt="Course Corner" class="w-12 h-12 rounded-xl shadow-lg">
+            <div>
+                <h1 class="text-xl font-bold text-gray-900 dark:text-white">Course Corner</h1>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Learn Admin</p>
+            </div>
+        </div>
+
+        <!-- Nav -->
+        <nav class="p-4 space-y-1 overflow-y-auto flex-1">
+            <p class="px-4 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.15em] mb-2">Learn Management</p>
+
+            <a href="#" onclick="switchPage('dashboard'); return false;" id="nav-dashboard"
+                class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                <i class="fas fa-chart-pie text-xl w-6"></i><span>Dashboard</span>
+            </a>
+            <a href="#" onclick="switchPage('applications'); return false;" id="nav-applications"
+                class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                <i class="fas fa-clipboard-list text-xl w-6"></i><span>Applications</span>
+            </a>
+            <a href="#" onclick="switchPage('enrollments'); return false;" id="nav-enrollments"
+                class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                <i class="fas fa-user-graduate text-xl w-6"></i><span>Enrollments</span>
+            </a>
+            <a href="#" onclick="switchPage('courses'); return false;" id="nav-courses"
+                class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
+                <i class="fas fa-book text-xl w-6"></i><span>Courses</span>
+            </a>
+
+            <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+                <p class="px-4 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.15em] mb-2">Navigation</p>
+                <a href="../../admin/index.html"
+                    class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all font-medium">
+                    <i class="fas fa-arrow-left text-xl w-6"></i><span>Main Admin</span>
+                </a>
+                <a href="../../Learn/index.html"
+                    class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 transition-all font-medium">
+                    <i class="fas fa-external-link-alt text-xl w-6"></i><span>Learn Portal</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Sign Out -->
+        <div class="p-4 border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
+            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all font-medium text-sm">
+                <i class="fas fa-sign-out-alt"></i><span>Sign Out</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- ═══ MAIN CONTENT ══════════════════════════════════════════ -->
+    <div class="lg:ml-72 min-h-screen">
+        <!-- Top Bar -->
+        <header class="h-20 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-30 px-4 lg:px-8 flex items-center justify-between">
+            <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                <i class="fas fa-bars text-xl"></i>
+            </button>
+            <div class="hidden lg:block">
+                <h2 id="page-title" class="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h2>
+                <p id="page-subtitle" class="text-sm text-gray-500 dark:text-gray-400">Learn portal management</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="toggleTheme()" class="p-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors" title="Toggle Theme">
+                    <i class="fas fa-sun text-lg dark:hidden"></i>
+                    <i class="fas fa-moon text-lg hidden dark:inline"></i>
+                </button>
+                <div class="hidden sm:flex items-center gap-3 pl-3 border-l border-gray-200 dark:border-gray-700 relative" id="learn-account-area">
+                    <button onclick="document.getElementById('learnAccountDropdown').classList.toggle('hidden')" class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                        <div class="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-white text-xs"></i>
+                        </div>
+                        <span id="topbar-email" class="text-sm font-medium text-gray-700 dark:text-gray-300 max-w-[160px] truncate">Admin</span>
+                        <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+                    </button>
+                    <div id="learnAccountDropdown" class="hidden absolute top-[calc(100%+8px)] right-0 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 z-50 py-1">
+                        <div class="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
+                            <p id="dropdown-email" class="text-xs font-semibold text-gray-700 dark:text-gray-300 truncate"></p>
+                            <p class="text-[10px] text-gray-400">Learn Administrator</p>
+                        </div>
+                        <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                            <i class="fas fa-sign-out-alt"></i> Sign Out
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 hidden lg:hidden"></div>
+
+        <!-- Pages -->
+        <main class="p-4 lg:p-8">
+
+            <!-- ── Dashboard ───────────────────────────────── -->
+            <div id="page-dashboard">
+                <div class="grid grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-12 h-12 stat-gradient-2 rounded-2xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-users text-white text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Total Students</p>
+                        <p id="stat-students" class="text-2xl font-bold text-gray-900 dark:text-white">…</p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-12 h-12 stat-gradient-1 rounded-2xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-clipboard-list text-white text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Applications</p>
+                        <p id="stat-applications" class="text-2xl font-bold text-gray-900 dark:text-white">…</p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-12 h-12 stat-gradient-3 rounded-2xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-hourglass-half text-white text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Pending Review</p>
+                        <p id="stat-pending" class="text-2xl font-bold text-amber-600">…</p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="w-12 h-12 stat-gradient-2 rounded-2xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-check-circle text-white text-xl"></i>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-1">Approved</p>
+                        <p id="stat-approved" class="text-2xl font-bold text-primary-600">…</p>
+                    </div>
+                </div>
+
+                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Recent Applications</h3>
+                    <div id="recent-apps"><p class="text-sm text-gray-400">Loading…</p></div>
+                </div>
+            </div>
+
+            <!-- ── Applications ────────────────────────────── -->
+            <div id="page-applications" class="hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm">
+                    <div class="flex items-center justify-between mb-5">
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white">All Applications</h3>
+                        <select id="filter-status" onchange="loadApplications()" class="text-sm border border-gray-200 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-xl px-3 py-2 focus:ring-2 focus:ring-primary-500 outline-none">
+                            <option value="all">All Status</option>
+                            <option value="pending">Pending</option>
+                            <option value="approved">Approved</option>
+                            <option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div id="applications-table"><p class="text-sm text-gray-400">Loading…</p></div>
+                </div>
+            </div>
+
+            <!-- ── Enrollments ─────────────────────────────── -->
+            <div id="page-enrollments" class="hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Student Enrollments</h3>
+                    <div id="enrollments-table"><p class="text-sm text-gray-400">Loading…</p></div>
+                </div>
+            </div>
+
+            <!-- ── Courses ─────────────────────────────────── -->
+            <div id="page-courses" class="hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-5">Courses</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:border-primary-300 transition-colors">
+                            <p class="text-[10px] font-bold text-primary-600 uppercase tracking-widest mb-1">Beginner · 4 wks</p>
+                            <h4 class="font-semibold text-gray-900 dark:text-white">Digital Skills Bootcamp</h4>
+                        </div>
+                        <div class="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:border-primary-300 transition-colors">
+                            <p class="text-[10px] font-bold text-primary-600 uppercase tracking-widest mb-1">Beginner · 3 wks</p>
+                            <h4 class="font-semibold text-gray-900 dark:text-white">Microsoft Office Suite</h4>
+                        </div>
+                        <div class="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:border-primary-300 transition-colors">
+                            <p class="text-[10px] font-bold text-primary-600 uppercase tracking-widest mb-1">Intermediate · 6 wks</p>
+                            <h4 class="font-semibold text-gray-900 dark:text-white">Graphics Design</h4>
+                        </div>
+                        <div class="border border-gray-200 dark:border-gray-700 rounded-xl p-4 hover:border-primary-300 transition-colors">
+                            <p class="text-[10px] font-bold text-primary-600 uppercase tracking-widest mb-1">Intermediate · 5 wks</p>
+                            <h4 class="font-semibold text-gray-900 dark:text-white">AI Tools for Professionals</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
     </div>
+
+    <script>
+        firebase.initializeApp({
+            apiKey:"AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
+            authDomain:"course-corner.firebaseapp.com",
+            projectId:"course-corner",
+            storageBucket:"course-corner.firebasestorage.app",
+            messagingSenderId:"961706784572",
+            appId:"1:961706784572:web:7aa6c24946570ffda59039"
+        });
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // Theme
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+        }
+        if (localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+
+        // Sidebar
+        function toggleSidebar() {
+            const s = document.getElementById('sidebar');
+            const o = document.getElementById('sidebar-overlay');
+            s.classList.toggle('-translate-x-full');
+            o.classList.toggle('hidden');
+        }
+
+        // Close dropdowns on outside click
+        document.addEventListener('click', (e) => {
+            if (!document.getElementById('learn-account-area')?.contains(e.target))
+                document.getElementById('learnAccountDropdown')?.classList.add('hidden');
+        });
+
+        // Auth check
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById('topbar-email').textContent = user.email;
+                document.getElementById('dropdown-email').textContent = user.email;
+            }
+        });
+
+        function logout() {
+            auth.signOut().then(() => window.location.href = '../../admin/index.html');
+        }
+
+        // Pages
+        const PAGES = ['dashboard','applications','enrollments','courses'];
+        const TITLES = { dashboard:'Dashboard', applications:'Applications', enrollments:'Enrollments', courses:'Courses' };
+        const SUBTITLES = { dashboard:'Overview and quick stats', applications:'Review and manage student applications', enrollments:'Registered students', courses:'All available courses' };
+
+        function switchPage(name) {
+            PAGES.forEach(p => {
+                document.getElementById(`page-${p}`)?.classList.add('hidden');
+                const link = document.getElementById(`nav-${p}`);
+                if (link) {
+                    link.classList.remove('bg-primary-50','dark:bg-primary-900/20','text-primary-600','dark:text-primary-400');
+                    link.classList.add('text-gray-700','dark:text-gray-300');
+                }
+            });
+            document.getElementById(`page-${name}`)?.classList.remove('hidden');
+            document.getElementById('page-title').textContent = TITLES[name] || name;
+            document.getElementById('page-subtitle').textContent = SUBTITLES[name] || '';
+            const activeLink = document.getElementById(`nav-${name}`);
+            if (activeLink) {
+                activeLink.classList.add('bg-primary-50','text-primary-600');
+                activeLink.classList.remove('text-gray-700','dark:text-gray-300');
+            }
+            if (name === 'applications') loadApplications();
+            if (name === 'enrollments') loadEnrollments();
+            if (name === 'dashboard') loadDashboardStats();
+        }
+
+        async function loadDashboardStats() {
+            try {
+                const [appsSnap, usersSnap] = await Promise.all([
+                    db.collection('applications').get(),
+                    db.collection('learn_users').get()
+                ]);
+                const apps = appsSnap.docs.map(d => d.data());
+                document.getElementById('stat-students').textContent = usersSnap.size;
+                document.getElementById('stat-applications').textContent = apps.length;
+                document.getElementById('stat-pending').textContent = apps.filter(a => a.status === 'pending').length;
+                document.getElementById('stat-approved').textContent = apps.filter(a => a.status === 'approved').length;
+                const recent = apps.slice(-5).reverse();
+                document.getElementById('recent-apps').innerHTML = recent.length === 0
+                    ? '<p class="text-sm text-gray-400">No applications yet.</p>'
+                    : `<div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="border-b border-gray-100 dark:border-gray-700 text-left text-xs text-gray-400 uppercase tracking-wider"><th class="pb-3 pr-4">Name</th><th class="pb-3 pr-4">Course</th><th class="pb-3 pr-4">Date</th><th class="pb-3">Status</th></tr></thead><tbody class="divide-y divide-gray-50 dark:divide-gray-700">${recent.map(a=>`<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"><td class="py-3 pr-4 font-medium text-gray-900 dark:text-white">${a.fullName||'-'}</td><td class="py-3 pr-4 text-gray-500 dark:text-gray-400">${a.courseName||a.courseId||'-'}</td><td class="py-3 pr-4 text-gray-400 text-xs">${a.applicationDate||'-'}</td><td class="py-3"><span class="px-2 py-0.5 rounded-full text-xs font-semibold ${a.status==='approved'?'bg-green-100 text-green-700':a.status==='rejected'?'bg-red-100 text-red-700':'bg-amber-100 text-amber-700'}">${a.status||'pending'}</span></td></tr>`).join('')}</tbody></table></div>`;
+            } catch(e) { document.getElementById('recent-apps').innerHTML='<p class="text-sm text-red-400">Failed to load.</p>'; }
+        }
+
+        async function loadApplications() {
+            const filter = document.getElementById('filter-status')?.value || 'all';
+            try {
+                const snap = await db.collection('applications').get();
+                let apps = snap.docs.map(d=>({id:d.id,...d.data()}));
+                if (filter !== 'all') apps = apps.filter(a=>a.status===filter);
+                document.getElementById('applications-table').innerHTML = apps.length === 0
+                    ? '<p class="text-sm text-gray-400">No applications found.</p>'
+                    : `<div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="border-b border-gray-100 dark:border-gray-700 text-left text-xs text-gray-400 uppercase tracking-wider"><th class="pb-3 pr-3">Name</th><th class="pb-3 pr-3">Email</th><th class="pb-3 pr-3">Course</th><th class="pb-3 pr-3">Date</th><th class="pb-3 pr-3">Status</th><th class="pb-3">Action</th></tr></thead><tbody class="divide-y divide-gray-50 dark:divide-gray-700">${apps.map(a=>`<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"><td class="py-3 pr-3 font-medium text-gray-900 dark:text-white">${a.fullName||'-'}</td><td class="py-3 pr-3 text-gray-400 text-xs">${a.email||'-'}</td><td class="py-3 pr-3 text-gray-600 dark:text-gray-300">${a.courseName||a.courseId||'-'}</td><td class="py-3 pr-3 text-gray-400 text-xs">${a.applicationDate||'-'}</td><td class="py-3 pr-3"><span class="px-2 py-0.5 rounded-full text-xs font-semibold ${a.status==='approved'?'bg-green-100 text-green-700':a.status==='rejected'?'bg-red-100 text-red-700':'bg-amber-100 text-amber-700'}">${a.status||'pending'}</span></td><td class="py-3 flex gap-1"><button onclick="updateStatus('${a.id}','approved')" class="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-lg hover:bg-green-200 transition-colors">Approve</button><button onclick="updateStatus('${a.id}','rejected')" class="px-2 py-1 text-xs bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors">Reject</button></td></tr>`).join('')}</tbody></table></div>`;
+            } catch(e) { document.getElementById('applications-table').innerHTML='<p class="text-sm text-red-400">Failed to load.</p>'; }
+        }
+
+        async function updateStatus(id, status) {
+            await db.collection('applications').doc(id).update({ status });
+            loadApplications();
+        }
+
+        async function loadEnrollments() {
+            try {
+                const snap = await db.collection('learn_users').get();
+                const users = snap.docs.map(d=>d.data());
+                document.getElementById('enrollments-table').innerHTML = users.length === 0
+                    ? '<p class="text-sm text-gray-400">No students yet.</p>'
+                    : `<div class="overflow-x-auto"><table class="w-full text-sm"><thead><tr class="border-b border-gray-100 dark:border-gray-700 text-left text-xs text-gray-400 uppercase tracking-wider"><th class="pb-3 pr-4">Name</th><th class="pb-3 pr-4">Email</th><th class="pb-3">Joined</th></tr></thead><tbody class="divide-y divide-gray-50 dark:divide-gray-700">${users.map(u=>`<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors"><td class="py-3 pr-4 font-medium text-gray-900 dark:text-white">${u.name||'-'}</td><td class="py-3 pr-4 text-gray-500 dark:text-gray-400">${u.email||'-'}</td><td class="py-3 text-gray-400 text-xs">${u.createdAt?.toDate?.()?.toLocaleDateString()||'-'}</td></tr>`).join('')}</tbody></table></div>`;
+            } catch(e) { document.getElementById('enrollments-table').innerHTML='<p class="text-sm text-red-400">Failed to load.</p>'; }
+        }
+
+        // Init
+        switchPage('dashboard');
+    </script>
 </body>
 </html>

@@ -271,7 +271,7 @@
                     
                     <!-- Dropdown -->
                     <div id="userDropdown" style="display: none;" class="absolute top-[calc(100%+15px)] right-0 w-[220px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 z-[1000] animate-in fade-in slide-in-from-top-2 duration-200">
-                        <a href="dashboard.html" class="flex items-center gap-3 p-3 text-gray-700 no-underline rounded-xl text-sm font-bold hover:bg-green-50 hover:text-[#16a34a] transition-all group">
+                        <a href="assets/pages/dashboard.html" class="flex items-center gap-3 p-3 text-gray-700 no-underline rounded-xl text-sm font-bold hover:bg-green-50 hover:text-[#16a34a] transition-all group">
                             <i class="fas fa-graduation-cap text-[#16a34a]/60 group-hover:text-[#16a34a]"></i> 
                             My Courses
                         </a>
@@ -310,7 +310,7 @@
                     </button>
                 </div>
                 <div id="mobileUserArea" style="display: none;" class="flex flex-col gap-3">
-                    <a href="dashboard.html" class="w-full py-4 bg-green-50 text-[#16a34a] rounded-2xl font-bold flex items-center justify-center gap-3 no-underline" onclick="closeMobileMenu()">
+                    <a href="assets/pages/dashboard.html" class="w-full py-4 bg-green-50 text-[#16a34a] rounded-2xl font-bold flex items-center justify-center gap-3 no-underline" onclick="closeMobileMenu()">
                         <i class="fas fa-graduation-cap"></i> My Dashboard
                     </a>
                     <button onclick="handleSignOut(); closeMobileMenu()" class="w-full py-4 bg-red-50 text-red-500 border-none rounded-2xl font-bold">
@@ -678,8 +678,6 @@
         const email = document.getElementById('auEmail').value;
         const pass = document.getElementById('auPassword').value;
         const btn = document.getElementById('authBtn');
-        const adminEmails = ['peterkelvinkibiru1532@gmail.com', 'macharia074m@gmail.com'];
-
         btn.disabled = true;
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
 
@@ -692,9 +690,6 @@
                 Swal.fire({ icon: 'success', title: 'Welcome!', text: `Account created, ${name}!` });
             } else {
                 await signInWithEmailAndPassword(auth, email, pass);
-                if (adminEmails.includes(email.toLowerCase())) {
-                    window.location.href = 'admin/dashboard.html';
-                }
             }
             closeAuthModal();
         } catch (err) {
@@ -706,14 +701,10 @@
     };
 
     window.handleGoogleAuth = async () => {
-        const adminEmails = ['peterkelvinkibiru1532@gmail.com', 'macharia074m@gmail.com'];
         try {
             const { user } = await signInWithPopup(auth, gProvider);
             await setDoc(doc(db, 'learn_users', user.uid), { uid: user.uid, name: user.displayName, email: user.email, lastLogin: new Date() }, { merge: true });
             closeAuthModal();
-            if (adminEmails.includes(user.email.toLowerCase())) {
-                window.location.href = 'admin/dashboard.html';
-            }
         } catch (err) {
             if (err.code !== 'auth/popup-closed-by-user')
                 Swal.fire({ icon: 'error', title: 'Google Sign-in Failed', text: authErr(err.code) });
@@ -725,28 +716,11 @@
         location.reload();
     };
 
-    // Apply Modal
-    window.openApplyModal = async (courseId) => {
-        const modal = document.getElementById('applyModal');
-        const courseTitle = document.getElementById('applyCourseTitle');
-        const pkgTitle = document.getElementById('pkgTitle');
-        const pkgPrice = document.getElementById('pkgPrice');
-        document.getElementById('appliedCourseId').value = courseId;
-        
-        try {
-            const resp = await fetch('data/courses.json');
-            const courses = await resp.json();
-            const course = courses.find(c => c.id === courseId);
-            if(course) {
-                courseTitle.innerText = `Enroll in ${course.title}`;
-                pkgTitle.innerText = `${course.title}`;
-                pkgPrice.innerText = `${course.currency} ${course.fee.toLocaleString()}`;
-            }
-        } catch(e) { console.error(e); }
-        
-        modal.style.display = 'flex';
+    // Apply — redirect to application page
+    window.openApplyModal = (courseId) => {
+        window.location.href = `assets/pages/application.html?course=${encodeURIComponent(courseId)}`;
     };
-    window.closeApplyModal = () => document.getElementById('applyModal').style.display = 'none';
+    window.closeApplyModal = () => {};
 
     // Submit Application
     window.handleApplySubmit = async (e) => {
@@ -788,7 +762,7 @@
             const grid = document.getElementById('coursesGrid');
             grid.innerHTML = courses.map(c => `
                 <div class="course-card group">
-                    <div class="course-thumb" style="background-image: url('${c.image.replace(/&/g, '&amp;')}'); background-size: cover; background-position: center;">
+                    <div class="course-thumb" style="background: url('${c.image}') center/cover, ${c.gradient};">
                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
                     </div>
                     <div class="course-body p-6 flex flex-col h-full">

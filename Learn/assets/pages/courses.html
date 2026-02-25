@@ -512,8 +512,7 @@
     }
 
     function openApplyModal(courseId, courseTitle) {
-        alert(`Apply for: ${courseTitle}\n\nRedirecting to application form...`);
-        window.location.href = `../../index.html?apply=${courseId}`;
+        window.location.href = `application.html?course=${courseId}`;
     }
 
     function handleSignIn(e) {

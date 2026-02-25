@@ -22,9 +22,52 @@
         .badge-approved { background: #dcfce7; color: #166534; }
         .shimmer { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
         @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+        /* Mobile sidebar */
+        #mobSidebarOverlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:200; }
+        #mobSidebarOverlay.show { display:block; }
+        #mobSidebar { position:fixed; left:-300px; top:0; width:280px; height:100vh; background:white;
+            z-index:201; transition:left .28s ease; overflow-y:auto; display:flex; flex-direction:column;
+            padding:1.5rem 1rem; box-shadow:4px 0 24px rgba(0,0,0,0.12); border-right:1px solid #f1f5f9; }
+        #mobSidebar.show { left:0; }
+        .mob-sidebar-link { display:flex; align-items:center; gap:0.875rem; padding:0.875rem 0.875rem;
+            border-radius:0.75rem; font-weight:600; font-size:0.9rem; color:#475569; text-decoration:none; transition:all .15s; }
+        .mob-sidebar-link:hover { background:#f0fdf4; color:#16a34a; }
+        .mob-sidebar-link.active { background:#16a34a; color:white; box-shadow:0 4px 12px rgba(22,163,74,.25); }
     </style>
 </head>
 <body class="text-slate-800">
+
+<!-- Mobile sidebar overlay & drawer -->
+<div id="mobSidebarOverlay" onclick="closeMobSidebar()"></div>
+<div id="mobSidebar">
+    <div class="flex items-center justify-between mb-8">
+        <a href="../../index.html" class="flex items-center gap-2.5 no-underline">
+            <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Logo" class="h-9 w-auto">
+            <div class="flex flex-col leading-tight">
+                <span class="text-base font-extrabold text-[#16a34a]">Course Corner</span>
+                <span class="text-[0.55rem] font-bold text-slate-400 uppercase tracking-widest">Learn Portal</span>
+            </div>
+        </a>
+        <button onclick="closeMobSidebar()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <nav class="space-y-1 flex-grow">
+        <a href="#" class="mob-sidebar-link active"><i class="fas fa-grid-2"></i> Overview</a>
+        <a href="courses.html" class="mob-sidebar-link"><i class="fas fa-book-open"></i> All Courses</a>
+        <a href="whats-new.html" class="mob-sidebar-link"><i class="fas fa-bullhorn"></i> What&#39;s New</a>
+        <a href="application.html" class="mob-sidebar-link"><i class="fas fa-paper-plane"></i> Apply Now</a>
+        <div class="my-4 border-t border-slate-100"></div>
+        <a href="https://coursecornerkenya.com" class="mob-sidebar-link"><i class="fas fa-external-link-alt text-xs opacity-50"></i> Main Platform</a>
+    </nav>
+    <div class="mt-auto pt-6 border-t border-slate-100">
+        <button onclick="handleSignOut()" class="flex items-center gap-3 p-3.5 w-full rounded-xl text-red-500 hover:bg-red-50 transition-colors font-semibold text-sm">
+            <i class="fas fa-power-off"></i> Sign Out
+        </button>
+    </div>
+</div>
+
     <div class="min-h-screen flex flex-col lg:flex-row">
         <!-- Sidebar -->
         <aside class="w-full lg:w-72 bg-white border-r lg:min-h-screen p-6 hidden lg:flex flex-col">
@@ -48,8 +91,8 @@
                 <a href="whats-new.html" class="sidebar-link flex items-center gap-3.5 p-3.5 text-slate-500 font-medium hover:bg-slate-50">
                     <i class="fas fa-bullhorn"></i> What's New
                 </a>
-                <a href="apply.html" class="sidebar-link flex items-center gap-3.5 p-3.5 text-slate-500 font-medium hover:bg-slate-50">
-                    <i class="fas fa-paper-plane"></i> Applications
+                <a href="application.html" class="sidebar-link flex items-center gap-3.5 p-3.5 text-slate-500 font-medium hover:bg-slate-50">
+                    <i class="fas fa-paper-plane"></i> Apply Now
                 </a>
                 <div class="my-6 border-t border-slate-100"></div>
                 <a href="https://coursecornerkenya.com" class="sidebar-link flex items-center gap-3.5 p-3.5 text-slate-500 font-medium hover:bg-slate-50">
@@ -68,29 +111,46 @@
         <main class="flex-grow p-5 md:p-10 max-w-[1400px] mx-auto w-full">
             <!-- Mobile Header -->
             <div class="lg:hidden flex items-center justify-between mb-8">
+                <button onclick="openMobSidebar()" class="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50">
+                    <i class="fas fa-bars text-lg"></i>
+                </button>
                 <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Logo" class="h-8">
-                <button onclick="handleSignOut()" class="text-slate-400 hover:text-red-500"><i class="fas fa-power-off text-xl"></i></button>
+                <button onclick="handleSignOut()" class="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 text-slate-400 hover:bg-red-50 hover:text-red-500 hover:border-red-200">
+                    <i class="fas fa-power-off"></i>
+                </button>
             </div>
 
-            <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
+            <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
                 <div>
-                    <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-2">My <span class="text-[#16a34a]">Dashboard</span></h1>
-                    <p class="text-slate-500 flex items-center gap-2">
+                    <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-1.5">My <span class="text-[#16a34a]">Dashboard</span></h1>
+                    <p class="text-slate-500 flex items-center gap-2 text-sm">
                         <span id="userStatus" class="w-2 h-2 rounded-full bg-green-500"></span> 
-                        Logged in as <span id="userEmail" class="font-bold text-slate-700">Loading...</span>
+                        Welcome back, <span id="userEmail" class="font-bold text-slate-700">Loading...</span>
                     </p>
                 </div>
-                <div class="flex items-center gap-3 bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
-                    <div id="userAvatar" class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-[#16a34a] font-bold text-lg">?</div>
-                    <div class="pr-3">
-                        <p id="profileName" class="text-sm font-bold text-slate-900 leading-none mb-1">...</p>
-                        <p class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-tighter">Student Account</p>
-                    </div>
+                <div class="flex items-center gap-3">
+                    <!-- Notifications Bell -->
+                    <button onclick="openNotifModal()" class="relative w-10 h-10 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:border-slate-300 transition-all" title="Notifications">
+                        <i class="fas fa-bell"></i>
+                        <span id="notifBadge" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-black rounded-full items-center justify-center hidden">1</span>
+                    </button>
+                    <!-- Settings Gear -->
+                    <button onclick="openSettingsModal()" class="w-10 h-10 rounded-xl border border-slate-200 bg-white flex items-center justify-center text-slate-500 hover:bg-slate-50 hover:border-slate-300 transition-all" title="Account Settings">
+                        <i class="fas fa-gear"></i>
+                    </button>
+                    <!-- Profile Card -->
+                    <button onclick="openSettingsModal()" class="flex items-center gap-3 bg-white p-2 pr-4 rounded-2xl shadow-sm border border-slate-100 hover:border-[#16a34a]/30 transition-all">
+                        <div id="userAvatar" class="w-10 h-10 rounded-xl bg-[#16a34a]/10 flex items-center justify-center text-[#16a34a] font-bold text-lg">?</div>
+                        <div class="text-left">
+                            <p id="profileName" class="text-sm font-bold text-slate-900 leading-none mb-0.5">...</p>
+                            <p class="text-[0.6rem] font-bold text-slate-400 uppercase tracking-tighter">Student Account</p>
+                        </div>
+                    </button>
                 </div>
             </header>
 
             <!-- Stats -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-10">
                 <div class="card stat-card">
                     <div class="w-10 h-10 rounded-lg bg-[#16a34a]/10 flex items-center justify-center text-[#16a34a] mb-4">
                         <i class="fas fa-scroll"></i>
@@ -104,13 +164,6 @@
                     </div>
                     <h3 class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Completion</h3>
                     <p class="text-3xl font-black text-slate-900"><span id="avgProgress">0</span>%</p>
-                </div>
-                <div class="card stat-card">
-                    <div class="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600 mb-4">
-                        <i class="fas fa-wallet"></i>
-                    </div>
-                    <h3 class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Fees Paid</h3>
-                    <p class="text-3xl font-black text-slate-900" style="font-size: 1.5rem !important;">KES <span id="paidAmt">...</span></p>
                 </div>
                 <div class="card stat-card">
                     <div class="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-600 mb-4">
@@ -139,40 +192,52 @@
                         </div>
                     </div>
 
-                    <!-- Payment History -->
+                    <!-- Certificates Section -->
                     <div>
-                        <h2 class="text-xl font-bold text-slate-900 mb-6">Transactions & Receipts</h2>
-                        <div class="card overflow-hidden">
-                            <table class="w-full text-left">
-                                <thead class="bg-slate-50 border-b border-slate-100">
-                                    <tr>
-                                        <th class="p-4 text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest">Description</th>
-                                        <th class="p-4 text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest">Amount</th>
-                                        <th class="p-4 text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest text-right">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="paymentsList" class="divide-y divide-slate-50">
-                                    <tr><td colspan="3" class="p-10 text-center text-slate-400 italic">Connecting to secure billing...</td></tr>
-                                </tbody>
-                            </table>
+                        <div class="flex items-center justify-between mb-5">
+                            <h2 class="text-xl font-bold text-slate-900">My Certificates</h2>
+                            <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Earned on course completion</span>
+                        </div>
+                        <div id="certsList" class="space-y-3">
+                            <div class="card p-6 text-center">
+                                <div class="w-14 h-14 rounded-2xl bg-pink-50 flex items-center justify-center text-pink-400 text-xl mx-auto mb-3">
+                                    <i class="fas fa-medal"></i>
+                                </div>
+                                <p class="text-sm font-semibold text-slate-500">No certificates yet</p>
+                                <p class="text-xs text-slate-400 mt-1">Complete an enrolled course to earn your certificate</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <!-- Updates & Quick Actions -->
-                <div class="space-y-8">
-                    <!-- Notifications -->
-                    <div class="card p-6">
-                        <h2 class="text-lg font-bold text-slate-900 mb-6">Notices</h2>
-                        <div id="noticesArea" class="space-y-4">
-                            <div class="flex gap-4 p-4 rounded-xl bg-blue-50 border border-blue-100/50">
-                                <div class="text-blue-500 mt-0.5"><i class="fas fa-info-circle"></i></div>
-                                <div>
-                                    <p class="text-sm font-bold text-blue-900">Welcome to Learn!</p>
-                                    <p class="text-[0.8rem] text-blue-700/70 mt-1">Complete your profile set up to access premium Slack community channels.</p>
-                                </div>
+                <div class="space-y-6">
+                    <!-- Notifications trigger -->
+                    <div class="card p-5 flex items-center justify-between cursor-pointer hover:border-[#16a34a]/30 transition-all group" onclick="openNotifModal()">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-500">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-800">Notifications</p>
+                                <p class="text-xs text-slate-400">View your notices & updates</p>
                             </div>
                         </div>
+                        <i class="fas fa-chevron-right text-slate-300 group-hover:text-[#16a34a] transition-colors"></i>
+                    </div>
+
+                    <!-- Account Settings trigger -->
+                    <div class="card p-5 flex items-center justify-between cursor-pointer hover:border-[#16a34a]/30 transition-all group" onclick="openSettingsModal()">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#16a34a]/10 flex items-center justify-center text-[#16a34a]">
+                                <i class="fas fa-gear"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-800">Account Settings</p>
+                                <p class="text-xs text-slate-400">Update profile, phone & billing</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-slate-300 group-hover:text-[#16a34a] transition-colors"></i>
                     </div>
 
                     <!-- Support Card -->
@@ -189,6 +254,101 @@
                 </div>
             </div>
         </main>
+    </div>
+
+    <!-- ═══ MODALS ════════════════════════════════════════════════ -->
+
+    <!-- Notifications Modal -->
+    <div id="notifModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4" style="z-index:300;" onclick="if(event.target===this)closeNotifModal()">
+        <div class="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden">
+            <div class="flex items-center justify-between p-5 border-b border-slate-100">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2"><i class="fas fa-bell text-blue-500"></i> Notifications</h3>
+                <button onclick="closeNotifModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-700"><i class="fas fa-times"></i></button>
+            </div>
+            <div id="notifList" class="p-5 space-y-3 max-h-96 overflow-y-auto">
+                <div class="flex gap-3 p-4 rounded-xl bg-blue-50 border border-blue-100">
+                    <div class="text-blue-500 mt-0.5 flex-shrink-0"><i class="fas fa-info-circle"></i></div>
+                    <div>
+                        <p class="text-sm font-bold text-blue-900">Welcome to Course Corner Learn!</p>
+                        <p class="text-xs text-blue-700/80 mt-1">Your student portal is ready. Enroll in a course to start your journey.</p>
+                    </div>
+                </div>
+                <div class="flex gap-3 p-4 rounded-xl bg-green-50 border border-green-100">
+                    <div class="text-green-600 mt-0.5 flex-shrink-0"><i class="fas fa-check-circle"></i></div>
+                    <div>
+                        <p class="text-sm font-bold text-green-900">Classes are running</p>
+                        <p class="text-xs text-green-700/80 mt-1">Live sessions run Mon–Fri 6–8pm. Check your WhatsApp group for links.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4" style="z-index:300;" onclick="if(event.target===this)closeSettingsModal()">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden">
+            <div class="flex items-center justify-between p-5 border-b border-slate-100">
+                <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2"><i class="fas fa-gear text-[#16a34a]"></i> Account Settings</h3>
+                <button onclick="closeSettingsModal()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-700"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-5 space-y-5 max-h-[80vh] overflow-y-auto">
+                <!-- Profile Info -->
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Profile Information</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-xs font-bold text-slate-600 mb-1 block">Display Name</label>
+                            <input type="text" id="settingsName" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10" placeholder="Your name">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-600 mb-1 block">Email Address</label>
+                            <input type="email" id="settingsEmail" class="w-full px-3 py-2.5 rounded-xl border border-slate-100 text-sm bg-slate-50 cursor-not-allowed" disabled placeholder="Email (cannot be changed here)">
+                        </div>
+                        <div>
+                            <label class="text-xs font-bold text-slate-600 mb-1 block">Phone / WhatsApp</label>
+                            <input type="tel" id="settingsPhone" class="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:border-[#16a34a] focus:ring-2 focus:ring-[#16a34a]/10" placeholder="+254 700 000 000">
+                        </div>
+                    </div>
+                    <button onclick="saveProfileSettings()" class="mt-4 w-full py-2.5 rounded-xl bg-[#16a34a] text-white font-bold text-sm hover:bg-[#15803d] transition-all">
+                        <i class="fas fa-save mr-1.5"></i> Save Changes
+                    </button>
+                </div>
+
+                <div class="border-t border-slate-100 pt-5">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Billing & Payments</p>
+                    <div class="p-4 rounded-xl bg-slate-50 border border-slate-100 space-y-2">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-slate-500 font-medium">Total Fees Paid</span>
+                            <span class="font-black text-slate-900">KES <span id="settingsPaidAmt">—</span></span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-slate-500 font-medium">Enrolled Courses</span>
+                            <span class="font-black text-slate-900" id="settingsEnrolled">—</span>
+                        </div>
+                    </div>
+                    <div class="mt-3 overflow-hidden rounded-xl border border-slate-100">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 border-b border-slate-100">
+                                <tr>
+                                    <th class="p-3 font-bold text-slate-400 uppercase tracking-widest">Description</th>
+                                    <th class="p-3 font-bold text-slate-400 uppercase tracking-widest">Amount</th>
+                                    <th class="p-3 font-bold text-slate-400 uppercase tracking-widest text-right">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="settingsPaymentsList" class="divide-y divide-slate-50">
+                                <tr><td colspan="3" class="p-6 text-center text-slate-400 italic">Loading billing history...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-100 pt-5">
+                    <button onclick="handleSignOut()" class="w-full py-2.5 rounded-xl border border-red-200 text-red-500 font-bold text-sm hover:bg-red-50 transition-all">
+                        <i class="fas fa-power-off mr-1.5"></i> Sign Out
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- ═══ SCRIPTS ═══════════════════════════════════════════════ -->
@@ -226,92 +386,170 @@
             }
         });
 
+        // Store payment data for settings modal
+        let _payments = [];
+        let _apps = [];
+
         async function loadDashboardData(email) {
             try {
                 // 1. Fetch Applications (Active Courses)
                 const q = query(collection(db, "learnApplications"), where("email", "==", email));
                 const snap = await getDocs(q);
-                const apps = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
+                _apps = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
                 
                 // 2. Fetch Course Registry for Metadata
-                const resp = await fetch('data/courses.json');
+                const resp = await fetch('../../data/courses.json').catch(() => fetch('data/courses.json'));
                 const courseDocs = await resp.json();
 
                 // Stats Update
-                document.getElementById('enrolledCount').innerText = apps.length;
-                
+                document.getElementById('enrolledCount').innerText = _apps.length;
+
                 // Render Course Cards
                 const list = document.getElementById('coursesList');
-                if (apps.length === 0) {
+                if (_apps.length === 0) {
                     list.innerHTML = `
                         <div class="empty-state card">
                             <i class="fas fa-book-open text-3xl mb-3 text-slate-200"></i>
                             <p class="text-slate-500 font-medium">You haven't enrolled in any courses yet.</p>
-                            <a href="courses.html" class="text-[#16a34a] font-bold text-sm hover:underline mt-2 inline-block">Enroll in your first course</a>
+                            <a href="application.html" class="text-[#16a34a] font-bold text-sm hover:underline mt-2 inline-block">Apply for a course &rarr;</a>
                         </div>
                     `;
                 } else {
-                    list.innerHTML = apps.map(app => {
+                    list.innerHTML = _apps.map(app => {
                         const course = courseDocs.find(c => c.id === app.courseId) || { title: app.courseId };
-                        const statusColor = app.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
+                        const isApproved = app.status === 'approved';
+                        const statusColor = isApproved ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
+                        const progress = isApproved ? 10 : 0;
                         return `
-                            <div class="card p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-[#16a34a]/30 transition-all">
-                                <div class="flex-grow">
-                                    <div class="flex items-center gap-3 mb-2">
-                                        <span class="text-[0.65rem] font-bold uppercase tracking-widest ${statusColor} px-2 py-0.5 rounded-full">${app.status || 'Pending'}</span>
-                                        <p class="text-[0.7rem] text-slate-400 font-medium">${new Date(app.timestamp?.seconds * 1000 || Date.now()).toLocaleDateString()}</p>
+                            <div class="card p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-[#16a34a]/30 transition-all">
+                                <div class="flex-grow min-w-0">
+                                    <div class="flex items-center gap-2 mb-1.5">
+                                        <span class="text-[0.6rem] font-bold uppercase tracking-widest ${statusColor} px-2.5 py-0.5 rounded-full">${app.status || 'Pending'}</span>
+                                        <p class="text-[0.7rem] text-slate-400">${app.whatsapp || ''}</p>
                                     </div>
-                                    <h3 class="text-lg font-bold text-slate-900">${course.title}</h3>
-                                    <div class="mt-4 flex items-center justify-between max-w-sm">
-                                        <span class="text-xs font-bold text-slate-500">Program Progress</span>
-                                        <span class="text-xs font-black text-[#16a34a]">10%</span>
-                                    </div>
-                                    <div class="progress-bar mt-2 max-w-sm">
-                                        <div class="progress-fill" style="width: 10%"></div>
-                                    </div>
+                                    <h3 class="text-base font-bold text-slate-900 truncate">${course.title}</h3>
+                                    ${isApproved ? `
+                                    <div class="mt-3 max-w-xs">
+                                        <div class="flex items-center justify-between mb-1">
+                                            <span class="text-[0.65rem] font-bold text-slate-500">Progress</span>
+                                            <span class="text-[0.65rem] font-black text-[#16a34a]">${progress}%</span>
+                                        </div>
+                                        <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+                                    </div>` : ''}
                                 </div>
-                                <div class="flex items-center gap-3">
-                                    <a href="course-detail.html?id=${app.courseId}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-sm transition-all">Syllabus</a>
-                                    <button class="px-5 py-2.5 bg-[#16a34a] text-white rounded-xl font-bold text-sm hover:shadow-lg transition-all">Enter Classroom</button>
+                                <div class="flex items-center gap-2 flex-shrink-0">
+                                    <a href="course-detail.html?id=${app.courseId}" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-xs transition-all">Syllabus</a>
+                                    ${isApproved ? `<button class="px-4 py-2 bg-[#16a34a] text-white rounded-xl font-bold text-xs hover:shadow-md hover:bg-[#15803d] transition-all">Classroom</button>` : ''}
                                 </div>
                             </div>
                         `;
                     }).join('');
                 }
 
-                // 3. Payments (Fetch from transactions)
-                const pq = query(collection(db, "transactions"), where("email", "==", email), orderBy("timestamp", "desc"), limit(5));
-                const psnap = await getDocs(pq);
-                const payments = psnap.docs.map(doc => doc.data());
-                
-                const totalPaid = payments.filter(p => p.status === 'COMPLETED' || p.status === 'SUCCESS').reduce((acc, p) => acc + (parseFloat(p.amount) || 0), 0);
-                document.getElementById('paidAmt').innerText = totalPaid.toLocaleString();
-
-                const pList = document.getElementById('paymentsList');
-                if (payments.length === 0) {
-                    pList.innerHTML = `<tr><td colspan="3" class="p-10 text-center text-slate-400 italic">No transaction records found.</td></tr>`;
-                } else {
-                    pList.innerHTML = payments.map(p => `
-                        <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="p-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center text-slate-400"><i class="fas fa-receipt text-xs"></i></div>
-                                    <p class="text-sm font-bold text-slate-700">${p.description || 'Course Fee'}</p>
+                // Certificates section (approved courses treated as certs when progress complete)
+                const certsList = document.getElementById('certsList');
+                const approvedApps = _apps.filter(a => a.status === 'approved');
+                document.getElementById('certCount').innerText = approvedApps.length;
+                if (approvedApps.length > 0) {
+                    certsList.innerHTML = approvedApps.map(app => {
+                        const course = courseDocs.find(c => c.id === app.courseId) || { title: app.courseId };
+                        return `
+                        <div class="card p-4 flex items-center justify-between gap-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center text-pink-500 flex-shrink-0"><i class="fas fa-medal"></i></div>
+                                <div>
+                                    <p class="text-sm font-bold text-slate-900">${course.title}</p>
+                                    <p class="text-xs text-slate-400">Certificate of Completion</p>
                                 </div>
-                            </td>
-                            <td class="p-4 text-sm font-black text-slate-900">KES ${parseFloat(p.amount).toLocaleString()}</td>
-                            <td class="p-4 text-right">
-                                <span class="text-[0.6rem] font-black uppercase tracking-widest px-2 py-1 rounded inline-block ${p.status === 'SUCCESS' || p.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${p.status}</span>
-                            </td>
-                        </tr>
-                    `).join('');
+                            </div>
+                            <button onclick="downloadCert('${course.title}')" class="px-3 py-2 rounded-xl border border-[#16a34a] text-[#16a34a] text-xs font-bold hover:bg-[#16a34a] hover:text-white transition-all flex items-center gap-1.5">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                        </div>
+                        `;
+                    }).join('');
                 }
+
+                // 3. Payments (for settings modal)
+                try {
+                    const pq = query(collection(db, "transactions"), where("email", "==", email), orderBy("timestamp", "desc"), limit(10));
+                    const psnap = await getDocs(pq);
+                    _payments = psnap.docs.map(doc => doc.data());
+                } catch(e) { _payments = []; }
 
             } catch (err) {
                 console.error("Dashboard Load Error:", err);
-                Swal.fire({ icon: 'error', title: 'Connection Issue', text: 'Some data could not be loaded. Please refresh.' });
             }
         }
+
+        // Populate settings modal with live data
+        function populateSettings(email, name) {
+            document.getElementById('settingsEmail').value = email || '';
+            document.getElementById('settingsName').value = name || '';
+            // Billing summary
+            const totalPaid = _payments.filter(p => p.status === 'COMPLETED' || p.status === 'SUCCESS').reduce((acc, p) => acc + (parseFloat(p.amount)||0), 0);
+            const settPaid = document.getElementById('settingsPaidAmt');
+            if (settPaid) settPaid.innerText = totalPaid.toLocaleString() || '—';
+            const settEnrolled = document.getElementById('settingsEnrolled');
+            if (settEnrolled) settEnrolled.innerText = _apps.length;
+            // Payment table
+            const pList = document.getElementById('settingsPaymentsList');
+            if (_payments.length === 0) {
+                pList.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-slate-400 italic text-xs">No billing records found.</td></tr>`;
+            } else {
+                pList.innerHTML = _payments.map(p => `
+                    <tr class="hover:bg-slate-50 transition-colors">
+                        <td class="p-2.5 text-xs text-slate-700 font-semibold">${p.description || 'Course Fee'}</td>
+                        <td class="p-2.5 text-xs font-black text-slate-900">KES ${parseFloat(p.amount||0).toLocaleString()}</td>
+                        <td class="p-2.5 text-right"><span class="text-[0.55rem] font-black uppercase tracking-widest px-1.5 py-0.5 rounded ${p.status === 'SUCCESS'||p.status === 'COMPLETED' ? 'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${p.status}</span></td>
+                    </tr>
+                `).join('');
+            }
+        }
+
+        window.openNotifModal = () => { document.getElementById('notifModal').classList.replace('hidden','flex'); };
+        window.closeNotifModal = () => { document.getElementById('notifModal').classList.replace('flex','hidden'); };
+        window.openSettingsModal = () => {
+            const user = auth.currentUser;
+            if (user) populateSettings(user.email, user.displayName || user.email.split('@')[0]);
+            document.getElementById('settingsModal').classList.replace('hidden','flex');
+        };
+        window.closeSettingsModal = () => { document.getElementById('settingsModal').classList.replace('flex','hidden'); };
+
+        window.saveProfileSettings = async () => {
+            const name = document.getElementById('settingsName').value.trim();
+            const phone = document.getElementById('settingsPhone').value.trim();
+            if (!name) { Swal.fire({ icon: 'warning', title: 'Name required', confirmButtonColor: '#16a34a' }); return; }
+            // Update display name in Firebase Auth
+            const { updateProfile } = await import('https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js');
+            try {
+                await updateProfile(auth.currentUser, { displayName: name });
+                document.getElementById('profileName').innerText = name;
+                document.getElementById('userAvatar').innerText = name[0].toUpperCase();
+                Swal.fire({ icon: 'success', title: 'Saved!', text: 'Your profile has been updated.', confirmButtonColor: '#16a34a', timer: 2000, showConfirmButton: false });
+            } catch(e) {
+                Swal.fire({ icon: 'error', title: 'Error', text: e.message, confirmButtonColor: '#16a34a' });
+            }
+        };
+
+        window.downloadCert = (courseName) => {
+            Swal.fire({
+                icon: 'info',
+                title: 'Certificate',
+                html: `Your <strong>${courseName}</strong> certificate will be emailed to you within 24 hours.<br><small style="color:#6b7280">Contact support if you need it urgently.</small>`,
+                confirmButtonColor: '#16a34a',
+                confirmButtonText: 'OK'
+            });
+        };
+
+        window.openMobSidebar = () => {
+            document.getElementById('mobSidebar').classList.add('show');
+            document.getElementById('mobSidebarOverlay').classList.add('show');
+        };
+        window.closeMobSidebar = () => {
+            document.getElementById('mobSidebar').classList.remove('show');
+            document.getElementById('mobSidebarOverlay').classList.remove('show');
+        };
 
         window.handleSignOut = async () => {
             const result = await Swal.fire({
@@ -321,13 +559,11 @@
                 showCancelButton: true,
                 confirmButtonColor: '#16a34a',
                 cancelButtonColor: '#f1f5f9',
-                confirmButtonText: 'Yes, Sign Out',
-                cancelButtonTextColor: '#334155'
+                confirmButtonText: 'Yes, Sign Out'
             });
-
             if (result.isConfirmed) {
                 await signOut(auth);
-                window.location.href = 'index.html';
+                window.location.href = '../../Learn/index.html';
             }
         };
 

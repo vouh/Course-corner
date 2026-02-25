@@ -368,8 +368,8 @@
                 </div>
                 <div class="course-body">
                     <div class="course-meta">
-                        <span class="course-badge badge-${c.level.toLowerCase()}">${c.level}</span>
-                        <span style="font-size: 0.75rem; color: #9ca3af; font-weight: 700;">${c.duration}</span>
+                        <span class="course-badge badge-${c.level.toLowerCase()}">${c.level} · ${c.duration}</span>
+                        <span style="font-size: 0.75rem; color: #9ca3af; font-weight: 700;">#${c.id}</span>
                     </div>
                     <h3 class="course-title">${c.title}</h3>
                     <p class="course-desc">${c.description}</p>
@@ -378,7 +378,7 @@
                     </div>
                     <div class="course-footer">
                         <div class="course-price">
-                            <span class="price-label">Fee</span>
+                            <span class="price-label">Course Fee</span>
                             <span class="price-amount">${c.currency} ${c.fee.toLocaleString()}</span>
                         </div>
                         <div class="course-actions">
@@ -386,7 +386,7 @@
                                 <i class="fas fa-eye"></i>
                             </a>
                             <button class="btn-apply" onclick="openApplyModal('${c.id}', '${c.title}')" title="Apply Now">
-                                Apply
+                                Apply Now
                             </button>
                         </div>
                     </div>

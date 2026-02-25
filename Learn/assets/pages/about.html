@@ -89,6 +89,17 @@
 
         /* Gray bg section */
         .gray-bg{background:#f9fafb}
+
+        /* Mobile menu show state */
+        .mobile-menu.show{height:auto!important;max-height:calc(100vh - 64px);opacity:1!important;overflow-y:auto;border-bottom:1px solid #e5e7eb;box-shadow:0 10px 40px rgba(0,0,0,.1)}
+        .mobile-menu-btn.active span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+        .mobile-menu-btn.active span:nth-child(2){opacity:0}
+        .mobile-menu-btn.active span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+        .mobile-menu-btn span{display:block;transition:all .3s}
+
+        @media(max-width:768px){
+            .cc-footer-grid{grid-template-columns:1fr!important}
+        }
     </style>
 </head>
 <body>
@@ -110,12 +121,13 @@
                 <a href="courses.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Courses</a>
                 <a href="whats-new.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">What's New</a>
                 <a href="about.html" class="modern-nav-link text-[0.9rem] font-semibold text-[#16a34a] no-underline transition-colors">About</a>
+                <a href="payment.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors flex items-center gap-1"><i class="fas fa-credit-card text-xs"></i> Pay</a>
             </div>
         </nav>
-        <button id="mobileMenuBtn" class="mobile-menu-btn lg:hidden flex flex-col justify-center items-center w-10 h-10 border-none bg-transparent cursor-pointer">
-            <span class="w-6 h-0.5 bg-gray-800 transition-all duration-300"></span>
-            <span class="w-6 h-0.5 bg-gray-800 transition-all duration-300"></span>
-            <span class="w-6 h-0.5 bg-gray-800 transition-all duration-300"></span>
+        <button id="mobileMenuBtn" class="mobile-menu-btn lg:hidden flex flex-col justify-center items-center gap-1.5 w-10 h-10 border-none bg-transparent cursor-pointer" aria-label="Toggle menu">
+            <span class="w-6 h-0.5 bg-gray-800"></span>
+            <span class="w-6 h-0.5 bg-gray-800"></span>
+            <span class="w-6 h-0.5 bg-gray-800"></span>
         </button>
     </div>
 
@@ -126,6 +138,7 @@
             <a href="courses.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 transition-all" onclick="closeMenu()">Courses</a>
             <a href="whats-new.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 transition-all" onclick="closeMenu()">What's New</a>
             <a href="about.html" class="p-4 text-lg font-bold text-[#16a34a] no-underline rounded-xl bg-green-50 transition-all" onclick="closeMenu()">About</a>
+            <a href="payment.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 transition-all flex items-center gap-2" onclick="closeMenu()"><i class="fas fa-credit-card text-[#16a34a]"></i> Pay</a>
         </nav>
     </div>
 </header>
@@ -374,7 +387,38 @@
     ['signInModal','signUpModal'].forEach(id=>{document.getElementById(id).addEventListener('click',e=>{if(e.target.id===id)e.target.style.display='none';});});
 </script>
 <script>
-    window.addEventListener('scroll',()=>document.getElementById('aboutHeader').classList.toggle('scrolled',scrollY>10));
+    window.addEventListener('scroll',()=>{
+        const h=document.getElementById('learnHeader');
+        if(h) h.classList.toggle('scrolled',scrollY>10);
+    });
+
+    // Mobile menu
+    document.addEventListener('DOMContentLoaded', () => {
+        const mmBtn = document.getElementById('mobileMenuBtn');
+        const mm = document.getElementById('mobileMenu');
+        if (mmBtn && mm) {
+            mmBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                mm.classList.toggle('show');
+                mmBtn.classList.toggle('active');
+            });
+        }
+        document.addEventListener('click', (e) => {
+            const mm = document.getElementById('mobileMenu');
+            const mmBtn = document.getElementById('mobileMenuBtn');
+            if (mm && mm.classList.contains('show') && !mm.contains(e.target) && !mmBtn.contains(e.target)) {
+                mm.classList.remove('show');
+                mmBtn.classList.remove('active');
+            }
+        });
+    });
+    window.closeMobileMenu = () => {
+        const mm = document.getElementById('mobileMenu');
+        const mmBtn = document.getElementById('mobileMenuBtn');
+        if (mm) mm.classList.remove('show');
+        if (mmBtn) mmBtn.classList.remove('active');
+    };
+    window.closeMenu = window.closeMobileMenu;
 
     // External link redirect prompt
     window.confirmExternal = function(e, el) {

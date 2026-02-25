@@ -74,22 +74,26 @@
         /* Courses Grid */
         .courses-container { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem; }
         .courses-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-            gap: 2rem; margin-bottom: 3rem;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.75rem; margin-bottom: 3rem;
         }
 
         .course-card {
-            background: white; border: 1px solid #e5e7eb; border-radius: 1.5rem;
+            background: white; border: 1px solid #e5e7eb; border-left: 4px solid #16a34a; border-radius: 1.5rem;
             overflow: hidden; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex; flex-direction: column;
         }
+        .course-card[data-level="intermediate"] { border-left-color: #3b82f6; }
+        .course-card[data-level="advanced"] { border-left-color: #8b5cf6; }
         .course-card:hover {
             transform: translateY(-8px); border-color: #16a34a; box-shadow: 0 12px 35px rgba(22,163,74,0.12);
         }
         .course-thumb {
-            height: 200px; display: flex; align-items: center; justify-content: center;
-            color: white; font-size: 3.5rem; overflow: hidden; position: relative; background-size: cover; background-position: center;
+            height: 160px; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 3.5rem; overflow: hidden; position: relative; 
+            background-size: cover; background-position: center; background-color: #e5e7eb;
         }
-        .course-body { padding: 1.5rem; display: flex; flex-direction: column; height: 100%; }
+        .course-body { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
         .course-meta {
             display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; margin-bottom: 1rem;
         }
@@ -119,7 +123,7 @@
         }
         .course-footer {
             padding-top: 1rem; border-top: 1px solid #f3f4f6;
-            display: flex; items-align: flex-end; justify-content: space-between;
+            display: flex; align-items: flex-end; justify-content: space-between;
             gap: 0.75rem;
         }
         .course-price {
@@ -209,11 +213,40 @@
         }
         .btn-primary:hover { background: #15803d; }
 
+        .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem;
+            color: #111827; cursor: pointer; padding: 0.5rem; }
+        .mobile-menu-btn.active i::before { content: '\f00d'; }
+        
+        #mobileMenu { display: none; position: fixed; top: 70px; left: 0; right: 0;
+            background: white; border-bottom: 1px solid #e5e7eb; z-index: 999;
+            flex-direction: column; gap: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        #mobileMenu.show { display: flex; }
+        #mobileMenu a, #mobileMenu button { padding: 1rem; text-align: left; border: none;
+            background: white; color: #111827; font-weight: 500; width: 100%;
+            border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: all 0.2s; }
+        #mobileMenu a:hover, #mobileMenu button:hover { background: #f9fafb; color: #16a34a; }
+
         @media(max-width: 768px) {
             .courses-grid { grid-template-columns: 1fr; }
             .nav-links { display: none; }
-            .courses-controls { flex-direction: column; align-items: flex-start; }
+            .mobile-menu-btn { display: block; }
+            .courses-controls { flex-direction: column; align-items: stretch; gap: 1rem; }
+            .filter-tabs { flex-wrap: wrap; justify-content: flex-start; }
+            .filter-btn { padding: 0.5rem 1rem; font-size: 0.875rem; }
             .cc-footer-grid { grid-template-columns: 1fr; }
+            .courses-hero h1 { font-size: 1.75rem; }
+            .courses-hero p { font-size: 0.95rem; }
+        }
+        
+        @media(max-width: 480px) {
+            .header-container { padding: 1rem; }
+            .logo-text-group span:last-child { display: none; }
+            .course-title { font-size: 1rem; }
+            .course-desc { font-size: 0.8rem; }
+            .filter-tabs { gap: 0.5rem; }
+            .filter-btn { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
+            .course-footer { flex-direction: column; align-items: flex-start; gap: 1rem; }
+            .btn-apply { width: 100%; }
         }
     </style>
 </head>
@@ -238,8 +271,18 @@
         <div class="nav-auth-buttons">
             <button class="btn-auth btn-signup" onclick="openAuthModal()">Sign In</button>
         </div>
+        <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
     </div>
 </header>
+
+<!-- Mobile Menu -->
+<nav id="mobileMenu">
+    <a href="../../index.html">Home</a>
+    <a href="courses.html" class="active">Courses</a>
+    <a href="whats-new.html">What's New</a>
+    <a href="about.html">About</a>
+    <button class="btn-auth btn-signup" onclick="openAuthModal()">Sign In</button>
+</nav>
 
 <!-- Hero -->
 <section class="courses-hero">
@@ -348,6 +391,27 @@
 </div>
 
 <script>
+    // Mobile menu toggle
+    document.addEventListener('DOMContentLoaded', () => {
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('show');
+                mobileMenuBtn.classList.toggle('active');
+            });
+            
+            // Close menu when a link is clicked
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('show');
+                    mobileMenuBtn.classList.remove('active');
+                });
+            });
+        }
+    });
+
     async function loadCourses() {
         try {
             const resp = await fetch('../../data/courses.json');
@@ -364,7 +428,7 @@
         const grid = document.getElementById('coursesGrid');
         grid.innerHTML = courses.map(c => `
             <div class="course-card" data-level="${c.level.toLowerCase()}">
-                <div class="course-thumb" style="background-image: url('${c.image}'); background-size: cover; background-position: center;">
+                <div class="course-thumb" style="background-image: url('${c.image.replace(/&/g, '&amp;')}'); background-size: cover; background-position: center;">
                 </div>
                 <div class="course-body">
                     <div class="course-meta">

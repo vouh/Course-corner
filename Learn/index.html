@@ -788,7 +788,7 @@
             const grid = document.getElementById('coursesGrid');
             grid.innerHTML = courses.map(c => `
                 <div class="course-card group">
-                    <div class="course-thumb" style="background-image: url('${c.image}'); background-size: cover; background-position: center;">
+                    <div class="course-thumb" style="background-image: url('${c.image.replace(/&/g, '&amp;')}'); background-size: cover; background-position: center;">
                         <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
                     </div>
                     <div class="course-body p-6 flex flex-col h-full">

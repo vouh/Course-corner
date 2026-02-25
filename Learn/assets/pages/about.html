@@ -94,9 +94,9 @@
 <body>
 
 <!-- ═══ NAVIGATION ════════════════════════════════════════════ -->
-<header class="modern-header fixed top-0 left-0 right-0 w-full z-[1000] bg-white/95 backdrop-blur-md border-b border-transparent transition-all duration-300" id="learnHeader">
+<!-- Header -->
+<header class="modern-header" id="learnHeader">
     <div class="header-container flex items-center justify-between max-w-[1400px] mx-auto px-4 md:px-8 py-3">
-        <!-- Logo -->
         <a href="../../index.html" class="logo-container flex items-center gap-2.5 no-underline">
             <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Course Corner Logo" class="h-8 md:h-10 w-auto">
             <div class="logo-text-group flex flex-col justify-center leading-none gap-[2px]">
@@ -104,79 +104,29 @@
                 <span class="text-[0.55rem] md:text-[0.65rem] font-semibold text-[#0ea5e9] tracking-wide leading-none">Learn Portal</span>
             </div>
         </a>
-
-        <!-- Desktop Navigation -->
-        <nav class="desktop-nav flex items-center gap-10">
+        <nav class="desktop-nav hidden lg:flex items-center gap-10">
             <div class="nav-links flex items-center gap-6">
-                <a href="../../index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors focus:text-[#16a34a]">Home</a>
-                <a href="courses.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors focus:text-[#16a34a]">Courses</a>
-                <a href="whats-new.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors focus:text-[#16a34a]">What's New</a>
-                <a href="about.html" class="modern-nav-link text-[0.9rem] font-semibold text-[#16a34a] no-underline">About</a>
-            </div>
-
-            <!-- Auth Area -->
-            <div class="nav-auth-buttons flex items-center gap-4">
-                <button id="authNavBtn" class="px-6 py-2.5 bg-[#16a34a] text-white rounded-full text-sm font-bold flex items-center gap-2 hover:bg-[#15803d] transition-all shadow-lg shadow-green-600/20" onclick="openAuthModal()">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Sign In</span>
-                </button>
-
-                <div id="userNavArea" style="display: none; align-items: center; gap: 1rem; position: relative;" class="flex items-center gap-3">
-                    <span id="userGreeting" class="text-sm font-semibold text-gray-700">
-                        Hi, <span id="userNameText" class="text-[#16a34a]">User</span>
-                    </span>
-                    <div id="userInitial" onclick="toggleUserDropdown()" class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#16a34a] to-[#0ea5e9] text-white flex items-center justify-center font-bold cursor-pointer shadow-lg shadow-green-600/10 transition-transform active:scale-95">?</div>
-                    
-                    <!-- Dropdown -->
-                    <div id="userDropdown" style="display: none;" class="absolute top-[calc(100%+15px)] right-0 w-[220px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-2 z-[1000] animate-in fade-in slide-in-from-top-2 duration-200">
-                        <a href="dashboard.html" class="flex items-center gap-3 p-3 text-gray-700 no-underline rounded-xl text-sm font-bold hover:bg-green-50 hover:text-[#16a34a] transition-all group">
-                            <i class="fas fa-graduation-cap text-[#16a34a]/60 group-hover:text-[#16a34a]"></i> 
-                            My Courses
-                        </a>
-                        <hr class="my-1 border-gray-100">
-                        <button onclick="handleSignOut()" class="w-full flex items-center gap-3 p-3 text-red-500 bg-transparent border-none rounded-xl text-sm font-bold cursor-pointer hover:bg-red-50 transition-all">
-                            <i class="fas fa-sign-out-alt opacity-70"></i> 
-                            Sign Out
-                        </button>
-                    </div>
-                </div>
+                <a href="../../../index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Site Home</a>
+                <a href="../../index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Portal Home</a>
+                <a href="courses.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Courses</a>
+                <a href="whats-new.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">What's New</a>
+                <a href="../../../pages/calculator.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Calculator</a>
             </div>
         </nav>
-
-        <!-- Mobile Toggle -->
-        <button class="mobile-menu-btn lg:hidden flex flex-col justify-center items-center gap-1.5 w-10 h-10 border-none bg-transparent cursor-pointer" id="mobileMenuBtn" aria-label="Toggle menu">
-            <span class="w-6 h-0.5 bg-gray-800 transition-all duration-300"></span>
-            <span class="w-6 h-0.5 bg-gray-800 transition-all duration-300"></span>
-            <span class="w-6 h-0.5 bg-gray-800 transition-all duration-300"></span>
+        <button id="mobileMenuBtn" class="mobile-menu-btn lg:hidden flex flex-col justify-center items-center w-10 h-10 border-none bg-transparent cursor-pointer">
+            <span></span><span></span><span></span>
         </button>
     </div>
 
-    <!-- Mobile Menu Overlay -->
-    <div class="mobile-menu lg:hidden fixed top-[64px] left-0 right-0 h-0 opacity-0 overflow-hidden bg-white/98 backdrop-blur-xl transition-all duration-300 z-[999]" id="mobileMenu">
-        <div class="flex flex-col h-full p-6">
-            <nav class="mobile-nav-links flex flex-col gap-2">
-                <a href="../../index.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Home</a>
-                <a href="courses.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Courses</a>
-                <a href="whats-new.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">What's New</a>
-                <a href="about.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">About</a>
-            </nav>
-            
-            <div class="mt-auto pt-6 border-t border-gray-100">
-                <div id="mobileAuthArea">
-                    <button class="w-full py-4 bg-[#16a34a] text-white rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg shadow-green-600/20" onclick="openAuthModal(); closeMobileMenu()">
-                        <i class="fas fa-sign-in-alt"></i> Sign In / Sign Up
-                    </button>
-                </div>
-                <div id="mobileUserArea" style="display: none;" class="flex flex-col gap-3">
-                    <a href="dashboard.html" class="w-full py-4 bg-green-50 text-[#16a34a] rounded-2xl font-bold flex items-center justify-center gap-3 no-underline" onclick="closeMobileMenu()">
-                        <i class="fas fa-graduation-cap"></i> My Dashboard
-                    </a>
-                    <button onclick="handleSignOut(); closeMobileMenu()" class="w-full py-4 bg-red-50 text-red-500 border-none rounded-2xl font-bold">
-                        Logout
-                    </button>
-                </div>
-            </div>
-        </div>
+    <!-- Mobile Menu -->
+    <div class="mobile-menu lg:hidden" id="mobileMenu">
+        <nav class="flex flex-col gap-2">
+            <a href="../../../index.html" class="mobile-nav-link" onclick="closeMenu()">Site Home</a>
+            <a href="../../index.html" class="mobile-nav-link" onclick="closeMenu()">Portal Home</a>
+            <a href="courses.html" class="mobile-nav-link" onclick="closeMenu()">Courses</a>
+            <a href="whats-new.html" class="mobile-nav-link" onclick="closeMenu()">What's New</a>
+            <a href="../../../pages/calculator.html" class="mobile-nav-link" onclick="closeMenu()">Calculator</a>
+        </nav>
     </div>
 </header>
 

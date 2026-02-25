@@ -271,39 +271,40 @@
 <body>
 
 <!-- Header -->
-<header class="modern-header">
-    <div class="header-container">
-        <a href="../../index.html" class="logo-container">
-            <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Course Corner" />
-            <div class="logo-text-group">
-                <span>Course Corner</span>
-                <span>Learn Portal</span>
+<header class="modern-header" id="learnHeader">
+    <div class="header-container flex items-center justify-between max-w-[1400px] mx-auto px-4 md:px-8 py-3">
+        <a href="../../index.html" class="logo-container flex items-center gap-2.5 no-underline">
+            <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Course Corner Logo" class="h-8 md:h-10 w-auto">
+            <div class="logo-text-group flex flex-col justify-center leading-none gap-[2px]">
+                <span class="text-[1.15rem] md:text-[1.35rem] font-extrabold text-[#16a34a] tracking-tight leading-none">Course Corner</span>
+                <span class="text-[0.55rem] md:text-[0.65rem] font-semibold text-[#0ea5e9] tracking-wide leading-none">Learn Portal</span>
             </div>
         </a>
-        <nav class="nav-links">
-            <a href="../../index.html">Home</a>
-            <a href="courses.html" class="active">Courses</a>
-            <a href="whats-new.html">What's New</a>
-            <a href="about.html">About</a>
+        <nav class="desktop-nav hidden lg:flex items-center gap-10">
+            <div class="nav-links flex items-center gap-6">
+                <a href="../../../index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Site Home</a>
+                <a href="../../index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Portal Home</a>
+                <a href="courses.html" class="modern-nav-link text-[0.9rem] font-semibold text-[#16a34a] no-underline transition-colors">Courses</a>
+                <a href="whats-new.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">What's New</a>
+                <a href="../../../pages/calculator.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Calculator</a>
+            </div>
         </nav>
-        <div class="nav-auth-buttons">
-            <button class="btn-auth btn-signup" onclick="openAuthModal()">Sign In</button>
-        </div>
-        <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
+        <button id="mobileMenuBtn" class="mobile-menu-btn lg:hidden flex flex-col justify-center items-center w-10 h-10 border-none bg-transparent cursor-pointer">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu lg:hidden" id="mobileMenu">
+        <nav class="flex flex-col gap-2">
+            <a href="../../../index.html" class="mobile-nav-link" onclick="closeMenu()">Site Home</a>
+            <a href="../../index.html" class="mobile-nav-link" onclick="closeMenu()">Portal Home</a>
+            <a href="courses.html" class="mobile-nav-link active" onclick="closeMenu()">Courses</a>
+            <a href="whats-new.html" class="mobile-nav-link" onclick="closeMenu()">What's New</a>
+            <a href="../../../pages/calculator.html" class="mobile-nav-link" onclick="closeMenu()">Calculator</a>
+        </nav>
     </div>
 </header>
-
-<!-- Mobile Menu Overlay -->
-<div id="mobileMenuOverlay"></div>
-
-<!-- Mobile Menu Drawer -->
-<nav id="mobileMenu">
-    <a href="../../index.html" onclick="closeMenu()">Home</a>
-    <a href="courses.html" class="active" onclick="closeMenu()">Courses</a>
-    <a href="whats-new.html" onclick="closeMenu()">What's New</a>
-    <a href="about.html" onclick="closeMenu()">About</a>
-    <button class="btn-auth btn-signup" onclick="openAuthModal(); closeMenu()">Sign In</button>
-</nav>
 
 <!-- Hero -->
 <section class="courses-hero">

@@ -42,7 +42,7 @@
 <header class="modern-header fixed top-0 left-0 right-0 w-full z-[1000] bg-white/95 backdrop-blur-md border-b border-transparent transition-all duration-300" id="learnHeader">
     <div class="header-container flex items-center justify-between max-w-[1400px] mx-auto px-4 md:px-8 py-3">
         <!-- Logo -->
-        <a href="index.html" class="logo-container flex items-center gap-2.5 no-underline">
+        <a href="../../index.html" class="logo-container flex items-center gap-2.5 no-underline">
             <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Course Corner Logo" class="h-8 md:h-10 w-auto">
             <div class="logo-text-group flex flex-col justify-center leading-none gap-[2px]">
                 <span class="text-[1.15rem] md:text-[1.35rem] font-extrabold text-[#16a34a] tracking-tight leading-none">Course Corner</span>
@@ -53,8 +53,8 @@
         <!-- Desktop Navigation -->
         <nav class="desktop-nav flex items-center gap-10">
             <div class="nav-links flex items-center gap-6">
-                <a href="index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors focus:text-[#16a34a]">Home</a>
-                <a href="index.html#courses" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors focus:text-[#16a34a]">Courses</a>
+                <a href="../../index.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors focus:text-[#16a34a]">Home</a>
+                <a href="courses.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors focus:text-[#16a34a]">Courses</a>
                 <a href="whats-new.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors focus:text-[#16a34a]">What's New</a>
                 <a href="about.html" class="modern-nav-link text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors focus:text-[#16a34a]">About</a>
             </div>
@@ -100,8 +100,8 @@
     <div class="mobile-menu lg:hidden fixed top-[64px] left-0 right-0 h-0 opacity-0 overflow-hidden bg-white/98 backdrop-blur-xl transition-all duration-300 z-[999]" id="mobileMenu">
         <div class="flex flex-col h-full p-6">
             <nav class="mobile-nav-links flex flex-col gap-2">
-                <a href="index.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Home</a>
-                <a href="index.html#courses" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Courses</a>
+                <a href="../../index.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Home</a>
+                <a href="courses.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">Courses</a>
                 <a href="whats-new.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">What's New</a>
                 <a href="about.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 active:bg-green-50 transition-all" onclick="closeMobileMenu()">About</a>
             </nav>
@@ -109,7 +109,7 @@
             <div class="mt-auto pt-6 border-t border-gray-100">
                 <div id="mobileAuthArea">
                     <button class="w-full py-4 bg-[#16a34a] text-white rounded-2xl font-bold flex items-center justify-center gap-3 shadow-lg shadow-green-600/20" onclick="openAuthModal(); closeMobileMenu()">
-                        <i class="fas fa-sign-in-alt"></i> Sign In / Sign Up
+                        <i class="fas fa-sign-in-alt"></i> Sign In
                     </button>
                 </div>
                 <div id="mobileUserArea" style="display: none;" class="flex flex-col gap-3">
@@ -165,7 +165,7 @@
             </p>
             <div class="flex flex-col sm:flex-row justify-center gap-4">
                 <button onclick="openApplyModalFromDetail()" class="bg-white text-[#16a34a] px-10 py-4 rounded-xl font-bold text-lg hover:bg-gray-100 transition-all">Enroll Now (<span id="ctaFee2">...</span>)</button>
-                <a href="index.html#contact" class="bg-green-700 text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-green-800 transition-all">Ask a Question</a>
+                <a href="../../index.html#contact" class="bg-green-700 text-white px-10 py-4 rounded-xl font-bold text-lg hover:bg-green-800 transition-all">Ask a Question</a>
             </div>
         </div>
     </main>
@@ -208,58 +208,60 @@
     </div>
 </div>
 
-<!-- footer class="learn-footer" replacement -->
-    <footer class="cc-footer">
-        <div class="cc-footer-container">
-            <div class="cc-footer-grid">
-                <div class="cc-footer-brand">
-                    <div class="cc-footer-logo">
-                        <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Logo">
-                        <span>Course Corner</span>
-                    </div>
-                    <p>Empowering Kenyan students to gain practical digital skills for the modern economy. Join our community of learners and start your journey today.</p>
-                    <div class="cc-footer-social">
-                        <a href="https://wa.me/254703554765" target="_blank"><i class="fab fa-whatsapp"></i></a>
-                        <a href="https://tiktok.com/@course.corner" target="_blank"><i class="fab fa-tiktok"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-facebook"></i></a>
+<footer class="cc-footer">
+    <div class="cc-footer-container">
+        <div class="cc-footer-grid">
+            <div class="cc-footer-brand">
+                <div class="flex items-center gap-2 mb-4">
+                    <img src="https://coursecornerkenya.com/assets/images/logo.png" class="h-10 w-auto" alt="Course Corner logo" />
+                    <div class="flex flex-col leading-none">
+                        <span class="text-white font-extrabold text-lg">Course Corner</span>
+                        <span class="text-blue-400 font-bold text-[0.6rem] uppercase tracking-wider">Learn Portal</span>
                     </div>
                 </div>
-                
-                <div class="cc-footer-links">
-                    <h4>Learn Portal</h4>
-                    <ul>
-                        <li><a href="index.html#courses">Browse Courses</a></li>
-                        <li><a href="whats-new.html">What's New</a></li>
-                        <li><a href="about.html">About Portal</a></li>
-                        <li><a href="apply.html">Application</a></li>
-                    </ul>
-                </div>
-
-                <div class="cc-footer-links">
-                    <h4>Main Resources</h4>
-                    <ul>
-                        <li><a href="https://coursecornerkenya.com/pages/calculator.html" onclick="confirmExternal(event, this)">Cluster Calculator</a></li>
-                        <li><a href="https://coursecornerkenya.com/pages/packages.html" onclick="confirmExternal(event, this)">Placement Packages</a></li>
-                        <li><a href="https://coursecornerkenya.com/pages/guide.html" onclick="confirmExternal(event, this)">Career Guide</a></li>
-                        <li><a href="https://coursecornerkenya.com/pages/contact.html" onclick="confirmExternal(event, this)">Contact Us</a></li>
-                    </ul>
-                </div>
-
-                <div class="cc-footer-contact">
-                    <h4>Contact Support</h4>
-                    <ul>
-                        <li><i class="fas fa-envelope"></i> support@coursecornerkenya.com</li>
-                        <li><i class="fas fa-phone"></i> +254 703 554 765</li>
-                        <li><i class="fas fa-map-marker-alt"></i> Nairobi, Kenya</li>
-                    </ul>
+                <p>Empowering Kenyan students to gain practical digital skills for the modern economy.</p>
+                <div class="cc-social-links flex gap-3 mt-6">
+                    <a href="#" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#16a34a] transition-all"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#16a34a] transition-all"><i class="fab fa-tiktok"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#16a34a] transition-all"><i class="fab fa-twitter"></i></a>
                 </div>
             </div>
-            <div class="cc-footer-bottom">
-                <p>&copy; 2024 Course Corner Learn Portal. All rights reserved.</p>
+
+            <div class="cc-footer-links">
+                <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Learn Portal</h4>
+                <ul class="space-y-3">
+                    <li><a href="../../index.html" class="text-gray-400 hover:text-white transition-all text-sm">Home</a></li>
+                    <li><a href="../../index.html#courses" class="text-gray-400 hover:text-white transition-all text-sm">Our Courses</a></li>
+                    <li><a href="../../apply.html" class="text-gray-400 hover:text-white transition-all text-sm">Apply Now</a></li>
+                    <li><a href="dashboard.html" class="text-gray-400 hover:text-white transition-all text-sm">Student Dashboard</a></li>
+                    <li><a href="whats-new.html" class="text-gray-400 hover:text-white transition-all text-sm">What's New</a></li>
+                </ul>
+            </div>
+
+            <div class="cc-footer-links">
+                <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Main Resources</h4>
+                <ul class="space-y-3">
+                    <li><a href="https://coursecornerkenya.com" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Main Site</a></li>
+                    <li><a href="https://coursecornerkenya.com/pages/calculator.html" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Cluster Calculator</a></li>
+                    <li><a href="https://coursecornerkenya.com/pages/privacy-policy.html" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Privacy Policy</a></li>
+                    <li><a href="https://coursecornerkenya.com/pages/terms-of-service.html" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Terms of Service</a></li>
+                </ul>
+            </div>
+
+            <div class="cc-footer-contact">
+                <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Contact Support</h4>
+                <ul class="space-y-4">
+                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-envelope text-[#16a34a]"></i> info.coursecorner@gmail.com</li>
+                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-phone text-[#16a34a]"></i> 0718 744780</li>
+                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-phone text-[#16a34a]"></i> 0741 739262</li>
+                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-map-marker-alt text-[#16a34a]"></i> Nairobi, Kenya</li>
+                </ul>
             </div>
         </div>
-    </footer>
+
+        <div class="cc-footer-bottom border-t border-white/5 pt-8 mt-8 text-center">
+            <p class="text-gray-500 text-sm">&copy; 2026 Course Corner. All rights reserved. &nbsp;&middot;&nbsp; Empowering Students Through Quality Education</p>
+        </div>
     </div>
 </footer>
 

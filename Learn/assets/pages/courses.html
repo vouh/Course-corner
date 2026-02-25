@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Courses – Course Corner Learn</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #f9fafb; color: #1f2937; }
+
+        /* Header */
+        .modern-header { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 100; }
+        .header-container { max-width: 1400px; margin: 0 auto; padding: 0.75rem 2rem; display: flex; align-items: center; justify-content: space-between; }
+        .logo-container { display: flex; align-items: center; gap: 0.625rem; text-decoration: none; }
+        .logo-container img { height: 2.5rem; width: auto; }
+        .logo-text-group { display: flex; flex-direction: column; gap: 0.125rem; }
+        .logo-text-group span:first-child { font-size: 1.125rem; font-weight: 800; color: #16a34a; }
+        .logo-text-group span:last-child { font-size: 0.5rem; color: #0ea5e9; font-weight: 600; }
+
+        .nav-links { display: flex; gap: 1.5rem; }
+        .nav-links a { font-size: 0.9rem; font-weight: 600; color: #6b7280; text-decoration: none; transition: color 0.2s; }
+        .nav-links a:hover { color: #16a34a; }
+        .nav-links a.active { color: #16a34a; }
+
+        .nav-auth-buttons { display: flex; gap: 1rem; align-items: center; }
+        .btn-auth { padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .btn-signin { color: #16a34a; background: transparent; }
+        .btn-signin:hover { background: rgba(22,163,74,0.1); }
+        .btn-signup { background: #16a34a; color: white; }
+        .btn-signup:hover { background: #15803d; }
+
+        /* Hero */
+        .courses-hero {
+            padding: 6rem 2rem 4rem;
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 50%, #f3f4f6 100%);
+            text-align: center;
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+        .hero-pill {
+            display: inline-flex; gap: 0.5rem; background: #f0fdf4; color: #16a34a;
+            padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.8rem;
+            font-weight: 700; margin-bottom: 1rem; text-transform: uppercase;
+        }
+        .courses-hero h1 {
+            font-size: clamp(2rem, 3.5vw, 3.25rem);
+            font-weight: 800; color: #111827; margin-bottom: 1rem; letter-spacing: -0.025em;
+        }
+        .courses-hero p {
+            font-size: 1.0625rem; color: #6b7280; max-width: 600px; margin: 0 auto 0.25rem; line-height: 1.6;
+        }
+
+        /* Filter & Sort */
+        .courses-controls {
+            max-width: 1200px; margin: 0 auto; padding: 2rem;
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;
+        }
+        .filter-tabs { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .filter-btn {
+            padding: 0.5rem 1.25rem; border: 1.5px solid #e5e7eb;
+            background: white; color: #6b7280; border-radius: 9999px;
+            font-size: 0.875rem; font-weight: 600; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .filter-btn.active {
+            background: #16a34a; border-color: #16a34a; color: white;
+        }
+        .filter-btn:hover { border-color: #16a34a; color: #16a34a; }
+
+        /* Courses Grid */
+        .courses-container { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem; }
+        .courses-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 2rem; margin-bottom: 3rem;
+        }
+
+        .course-card {
+            background: white; border: 1px solid #e5e7eb; border-radius: 1.5rem;
+            overflow: hidden; transition: all 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .course-card:hover {
+            transform: translateY(-8px); border-color: #16a34a; box-shadow: 0 12px 35px rgba(22,163,74,0.12);
+        }
+        .course-thumb {
+            height: 200px; display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 3.5rem; overflow: hidden; position: relative;
+        }
+        .course-body { padding: 1.5rem; display: flex; flex-direction: column; height: 100%; }
+        .course-meta {
+            display: flex; justify-content: space-between; align-items: flex-start; gap: 0.75rem; margin-bottom: 1rem;
+        }
+        .course-badge {
+            padding: 0.35rem 0.75rem; border-radius: 0.5rem; font-size: 0.7rem;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .badge-beginner { background: #dcfce7; color: #166534; }
+        .badge-intermediate { background: #dbeafe; color: #1e40af; }
+        .badge-advanced { background: #ede9fe; color: #6b21a8; }
+
+        .course-title {
+            font-size: 1.125rem; font-weight: 700; color: #111827;
+            margin-bottom: 0.5rem; line-height: 1.3;
+        }
+        .course-desc {
+            font-size: 0.875rem; color: #6b7280; line-height: 1.5;
+            margin-bottom: auto; display: -webkit-box; -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .course-tags {
+            display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1rem 0;
+        }
+        .course-tag {
+            font-size: 0.75rem; background: #f3f4f6; color: #6b7280;
+            padding: 0.3rem 0.65rem; border-radius: 0.4rem; font-weight: 600;
+        }
+        .course-footer {
+            padding-top: 1rem; border-top: 1px solid #f3f4f6;
+            display: flex; items-align: flex-end; justify-content: space-between;
+            gap: 0.75rem;
+        }
+        .course-price {
+            display: flex; flex-direction: column;
+        }
+        .price-label { font-size: 0.65rem; color: #9ca3af; text-transform: uppercase; font-weight: 700; }
+        .price-amount { font-size: 1.25rem; font-weight: 800; color: #16a34a; line-height: 1; }
+
+        .course-actions { display: flex; gap: 0.5rem; }
+        .btn-view { width: 40px; height: 40px; border-radius: 0.75rem;
+            border: none; background: #f3f4f6; color: #6b7280;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .btn-view:hover { background: #e5e7eb; color: #16a34a; }
+
+        .btn-apply {
+            flex: 1; padding: 0.5rem 1rem; background: #16a34a; color: white;
+            border: none; border-radius: 0.75rem; font-size: 0.875rem;
+            font-weight: 700; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-apply:hover { background: #15803d; box-shadow: 0 4px 12px rgba(22,163,74,0.25); }
+
+        /* Footer */
+        .cc-footer { background: #0f172a; color: #94a3b8; padding: 4rem 2rem 2rem; border-top: 3px solid #16a34a; }
+        .cc-footer-container { max-width: 1240px; margin: 0 auto; }
+        .cc-footer-grid {
+            display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 3rem;
+            padding-bottom: 3rem; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 2rem;
+        }
+        .cc-footer-brand { }
+        .cc-footer-brand img { width: 44px; height: 44px; object-fit: contain; margin-bottom: 1rem; }
+        .cc-footer-brand p { font-size: 0.9375rem; line-height: 1.7; max-width: 260px; margin-top: 1rem; }
+        .cc-footer-social { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+        .cc-footer-social a {
+            width: 36px; height: 36px; border-radius: 0.625rem; display: flex;
+            align-items: center; justify-content: center; background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; text-decoration: none; transition: all 0.2s;
+        }
+        .cc-footer-social a:hover { background: #16a34a; border-color: #16a34a; color: white; }
+
+        .cc-footer-links h4 {
+            font-size: 0.75rem; font-weight: 700; color: #e2e8f0;
+            margin-bottom: 1.25rem; letter-spacing: 0.1em; text-transform: uppercase;
+        }
+        .cc-footer-links ul { list-style: none; }
+        .cc-footer-links li { margin-bottom: 0.75rem; }
+        .cc-footer-links a {
+            color: #64748b; text-decoration: none; font-size: 0.9375rem;
+            transition: all 0.2s;
+        }
+        .cc-footer-links a:hover { color: #22c55e; padding-left: 4px; }
+
+        .cc-footer-bottom { text-align: center; font-size: 0.875rem; color: #334155; padding-top: 1.5rem; }
+
+        /* Modal */
+        .auth-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .auth-modal-overlay.show { display: flex; }
+        .auth-modal { background: white; max-width: 480px; width: 90%;
+            border-radius: 1.5rem; overflow: hidden; box-shadow: 0 25px 50px rgba(0,0,0,0.25);
+        }
+        .modal-header { padding: 1.5rem; border-bottom: 1px solid #f3f4f6;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-header h2 { font-size: 1.25rem; font-weight: 800; }
+        .modal-close { background: none; border: none; font-size: 1.5rem;
+            color: #9ca3af; cursor: pointer;
+        }
+        .modal-body { padding: 1.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .form-label { display: block; font-size: 0.875rem; font-weight: 700;
+            color: #374151; margin-bottom: 0.5rem;
+        }
+        .form-input { width: 100%; padding: 0.75rem 1rem;
+            border: 1.5px solid #e5e7eb; border-radius: 0.75rem;
+            font-size: 0.9375rem; transition: all 0.2s;
+        }
+        .form-input:focus { outline: none; border-color: #16a34a;
+            box-shadow: 0 0 0 3px rgba(22,163,74,0.1);
+        }
+        .btn-primary { width: 100%; padding: 0.875rem;
+            background: #16a34a; color: white; border: none;
+            border-radius: 0.75rem; font-weight: 700; cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-primary:hover { background: #15803d; }
+
+        @media(max-width: 768px) {
+            .courses-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+            .courses-controls { flex-direction: column; align-items: flex-start; }
+            .cc-footer-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<header class="modern-header">
+    <div class="header-container">
+        <a href="../../index.html" class="logo-container">
+            <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Course Corner" />
+            <div class="logo-text-group">
+                <span>Course Corner</span>
+                <span>Learn Portal</span>
+            </div>
+        </a>
+        <nav class="nav-links">
+            <a href="../../index.html">Home</a>
+            <a href="../../index.html#courses" class="active">Courses</a>
+            <a href="whats-new.html">What's New</a>
+            <a href="about.html">About</a>
+        </nav>
+        <div class="nav-auth-buttons">
+            <button class="btn-auth btn-signin" onclick="openAuthModal()">Sign In</button>
+            <button class="btn-auth btn-signup" onclick="openAuthModal()">Get Started</button>
+        </div>
+    </div>
+</header>
+
+<!-- Hero -->
+<section class="courses-hero">
+    <div class="hero-pill"><i class="fas fa-graduation-cap"></i> Browse All Courses</div>
+    <h1>Explore Our Learning Packages</h1>
+    <p>Choose the perfect course level for your skill development journey. From beginner basics to advanced professional mastery.</p>
+</section>
+
+<!-- Controls -->
+<div class="courses-controls">
+    <div class="filter-tabs">
+        <button class="filter-btn active" onclick="filterCourses('all', this)">All Courses</button>
+        <button class="filter-btn" onclick="filterCourses('beginner', this)">Beginner</button>
+        <button class="filter-btn" onclick="filterCourses('intermediate', this)">Intermediate</button>
+        <button class="filter-btn" onclick="filterCourses('advanced', this)">Advanced</button>
+    </div>
+    <div>
+        <span id="courseCount" class="text-sm text-gray-500">Loading courses...</span>
+    </div>
+</div>
+
+<!-- Courses Grid -->
+<div class="courses-container">
+    <div class="courses-grid" id="coursesGrid"></div>
+</div>
+
+<!-- ═══ FOOTER ════════════════════════════════════════════════ -->
+<footer class="cc-footer">
+    <div class="cc-footer-container">
+        <div class="cc-footer-grid">
+            <div class="cc-footer-brand">
+                <div class="flex items-center gap-2 mb-4">
+                    <img src="https://coursecornerkenya.com/assets/images/logo.png" class="h-10 w-auto" alt="Course Corner logo" />
+                    <div class="flex flex-col leading-none">
+                        <span class="text-white font-extrabold text-lg">Course Corner</span>
+                        <span class="text-blue-400 font-bold text-[0.6rem] uppercase tracking-wider">Learn Portal</span>
+                    </div>
+                </div>
+                <p>Empowering Kenyan students to gain practical digital skills for the modern economy.</p>
+                <div class="cc-social-links flex gap-3 mt-6">
+                    <a href="#" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#16a34a] transition-all"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#16a34a] transition-all"><i class="fab fa-tiktok"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#16a34a] transition-all"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+
+            <div class="cc-footer-links">
+                <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Learn Portal</h4>
+                <ul class="space-y-3">
+                    <li><a href="../../index.html" class="text-gray-400 hover:text-white transition-all text-sm">Home</a></li>
+                    <li><a href="courses.html" class="text-gray-400 hover:text-white transition-all text-sm">All Courses</a></li>
+                    <li><a href="../../index.html#courses" class="text-gray-400 hover:text-white transition-all text-sm">Featured Courses</a></li>
+                    <li><a href="dashboard.html" class="text-gray-400 hover:text-white transition-all text-sm">Student Dashboard</a></li>
+                    <li><a href="whats-new.html" class="text-gray-400 hover:text-white transition-all text-sm">What's New</a></li>
+                </ul>
+            </div>
+
+            <div class="cc-footer-links">
+                <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Main Resources</h4>
+                <ul class="space-y-3">
+                    <li><a href="https://coursecornerkenya.com" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Main Site</a></li>
+                    <li><a href="https://coursecornerkenya.com/pages/calculator.html" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Cluster Calculator</a></li>
+                    <li><a href="https://coursecornerkenya.com/pages/privacy-policy.html" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Privacy Policy</a></li>
+                    <li><a href="https://coursecornerkenya.com/pages/terms-of-service.html" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Terms of Service</a></li>
+                </ul>
+            </div>
+
+            <div class="cc-footer-contact">
+                <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Contact Support</h4>
+                <ul class="space-y-4">
+                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-envelope text-[#16a34a]"></i> info.coursecorner@gmail.com</li>
+                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-phone text-[#16a34a]"></i> 0718 744780</li>
+                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-phone text-[#16a34a]"></i> 0741 739262</li>
+                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-map-marker-alt text-[#16a34a]"></i> Nairobi, Kenya</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="cc-footer-bottom border-t border-white/5 pt-8 mt-8 text-center">
+            <p class="text-gray-500 text-sm">&copy; 2026 Course Corner. All rights reserved. &nbsp;&middot;&nbsp; Empowering Students Through Quality Education</p>
+        </div>
+    </div>
+</footer>
+
+<!-- Auth Modal -->
+<div class="auth-modal-overlay" id="authModal">
+    <div class="auth-modal">
+        <div class="modal-header">
+            <h2>Sign In</h2>
+            <button class="modal-close" onclick="closeAuthModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <form onsubmit="handleSignIn(event)">
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" class="form-input" placeholder="you@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary">Sign In</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function loadCourses() {
+        try {
+            const resp = await fetch('../../data/courses.json');
+            const courses = await resp.json();
+            document.getElementById('courseCount').textContent = `Showing ${courses.length} course${courses.length !== 1 ? 's' : ''}`;
+            renderCourses(courses);
+        } catch (err) {
+            console.error('Failed to load courses:', err);
+            document.getElementById('coursesGrid').innerHTML = '<p class="text-center text-gray-400">Failed to load courses.</p>';
+        }
+    }
+
+    function renderCourses(courses) {
+        const grid = document.getElementById('coursesGrid');
+        grid.innerHTML = courses.map(c => `
+            <div class="course-card" data-level="${c.level.toLowerCase()}">
+                <div class="course-thumb" style="background: ${c.gradient};">
+                    <i class="${c.icon}"></i>
+                </div>
+                <div class="course-body">
+                    <div class="course-meta">
+                        <span class="course-badge badge-${c.level.toLowerCase()}">${c.level}</span>
+                        <span style="font-size: 0.75rem; color: #9ca3af; font-weight: 700;">${c.duration}</span>
+                    </div>
+                    <h3 class="course-title">${c.title}</h3>
+                    <p class="course-desc">${c.description}</p>
+                    <div class="course-tags">
+                        ${c.tags.map(t => `<span class="course-tag">${t}</span>`).join('')}
+                    </div>
+                    <div class="course-footer">
+                        <div class="course-price">
+                            <span class="price-label">Fee</span>
+                            <span class="price-amount">${c.currency} ${c.fee.toLocaleString()}</span>
+                        </div>
+                        <div class="course-actions">
+                            <a href="course-detail.html?id=${c.id}" class="btn-view" title="View Details">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <button class="btn-apply" onclick="openApplyModal('${c.id}', '${c.title}')" title="Apply Now">
+                                Apply
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function filterCourses(level, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        document.querySelectorAll('.course-card').forEach(card => {
+            if (level === 'all' || card.dataset.level === level) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    }
+
+    function openAuthModal() {
+        document.getElementById('authModal').classList.add('show');
+    }
+
+    function closeAuthModal() {
+        document.getElementById('authModal').classList.remove('show');
+    }
+
+    function openApplyModal(courseId, courseTitle) {
+        alert(`Apply for: ${courseTitle}\n\nRedirecting to application form...`);
+        window.location.href = `../../index.html?apply=${courseId}`;
+    }
+
+    function handleSignIn(e) {
+        e.preventDefault();
+        alert('Redirecting to sign in...');
+        window.location.href = '../../index.html';
+    }
+
+    document.getElementById('authModal').onclick = (e) => {
+        if (e.target.id === 'authModal') closeAuthModal();
+    };
+
+    function confirmExternal(e, el) {
+        e.preventDefault();
+        const url = el.href;
+        const host = new URL(url).hostname.replace('www.', '');
+        alert(`Redirecting to ${host}...`);
+        window.location.href = url;
+        return false;
+    }
+
+    // Load courses on page load
+    loadCourses();
+</script>
+</body>
+</html>

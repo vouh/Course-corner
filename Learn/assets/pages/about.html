@@ -314,58 +314,62 @@
     </div>
 </section>
 
-<!-- footer class="learn-footer" replacement -->
-    <footer class="cc-footer">
-        <div class="cc-footer-container">
-            <div class="cc-footer-grid">
-                <div class="cc-footer-brand">
-                    <div class="cc-footer-logo">
-                        <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Logo">
-                        <span>Course Corner</span>
-                    </div>
-                    <p>Empowering Kenyan students to gain practical digital skills for the modern economy. Join our community of learners and start your journey today.</p>
-                    <div class="cc-footer-social">
-                        <a href="https://wa.me/254703554765" target="_blank"><i class="fab fa-whatsapp"></i></a>
-                        <a href="https://tiktok.com/@course.corner" target="_blank"><i class="fab fa-tiktok"></i></a>
-                        <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-facebook"></i></a>
+<footer class="cc-footer">
+    <div class="cc-footer-container">
+        <div class="cc-footer-grid">
+            <div class="cc-footer-brand">
+                <div class="flex items-center gap-2 mb-4">
+                    <img src="https://coursecornerkenya.com/assets/images/logo.png" class="h-10 w-auto" alt="Course Corner logo" />
+                    <div class="flex flex-col leading-none">
+                        <span class="text-white font-extrabold text-lg">Course Corner</span>
+                        <span class="text-blue-400 font-bold text-[0.6rem] uppercase tracking-wider">Learn Portal</span>
                     </div>
                 </div>
-                
-                <div class="cc-footer-links">
-                    <h4>Learn Portal</h4>
-                    <ul>
-                        <li><a href="index.html#courses">Browse Courses</a></li>
-                        <li><a href="whats-new.html">What's New</a></li>
-                        <li><a href="about.html">About Portal</a></li>
-                        <li><a href="apply.html">Application</a></li>
-                    </ul>
-                </div>
-
-                <div class="cc-footer-links">
-                    <h4>Main Resources</h4>
-                    <ul>
-                        <li><a href="https://coursecornerkenya.com/pages/calculator.html" onclick="confirmExternal(event, this)">Cluster Calculator</a></li>
-                        <li><a href="https://coursecornerkenya.com/pages/packages.html" onclick="confirmExternal(event, this)">Placement Packages</a></li>
-                        <li><a href="https://coursecornerkenya.com/pages/guide.html" onclick="confirmExternal(event, this)">Career Guide</a></li>
-                        <li><a href="https://coursecornerkenya.com/pages/contact.html" onclick="confirmExternal(event, this)">Contact Us</a></li>
-                    </ul>
-                </div>
-
-                <div class="cc-footer-contact">
-                    <h4>Contact Support</h4>
-                    <ul>
-                        <li><i class="fas fa-envelope"></i> support@coursecornerkenya.com</li>
-                        <li><i class="fas fa-phone"></i> +254 703 554 765</li>
-                        <li><i class="fas fa-map-marker-alt"></i> Nairobi, Kenya</li>
-                    </ul>
+                <p>Empowering Kenyan students to gain practical digital skills for the modern economy.</p>
+                <div class="cc-social-links flex gap-3 mt-6">
+                    <a href="#" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#16a34a] transition-all"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#16a34a] transition-all"><i class="fab fa-tiktok"></i></a>
+                    <a href="#" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#16a34a] transition-all"><i class="fab fa-twitter"></i></a>
                 </div>
             </div>
-            <div class="cc-footer-bottom">
-                <p>&copy; 2024 Course Corner Learn Portal. All rights reserved.</p>
+
+            <div class="cc-footer-links">
+                <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Learn Portal</h4>
+                <ul class="space-y-3">
+                    <li><a href="../../index.html" class="text-gray-400 hover:text-white transition-all text-sm">Home</a></li>
+                    <li><a href="../../index.html#courses" class="text-gray-400 hover:text-white transition-all text-sm">Our Courses</a></li>
+                    <li><a href="../../apply.html" class="text-gray-400 hover:text-white transition-all text-sm">Apply Now</a></li>
+                    <li><a href="dashboard.html" class="text-gray-400 hover:text-white transition-all text-sm">Student Dashboard</a></li>
+                    <li><a href="whats-new.html" class="text-gray-400 hover:text-white transition-all text-sm">What's New</a></li>
+                </ul>
+            </div>
+
+            <div class="cc-footer-links">
+                <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Main Resources</h4>
+                <ul class="space-y-3">
+                    <li><a href="https://coursecornerkenya.com" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Main Site</a></li>
+                    <li><a href="https://coursecornerkenya.com/pages/calculator.html" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Cluster Calculator</a></li>
+                    <li><a href="https://coursecornerkenya.com/pages/privacy-policy.html" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Privacy Policy</a></li>
+                    <li><a href="https://coursecornerkenya.com/pages/terms-of-service.html" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Terms of Service</a></li>
+                </ul>
+            </div>
+
+            <div class="cc-footer-contact">
+                <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Contact Support</h4>
+                <ul class="space-y-4">
+                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-envelope text-[#16a34a]"></i> info.coursecorner@gmail.com</li>
+                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-phone text-[#16a34a]"></i> 0718 744780</li>
+                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-phone text-[#16a34a]"></i> 0741 739262</li>
+                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-map-marker-alt text-[#16a34a]"></i> Nairobi, Kenya</li>
+                </ul>
             </div>
         </div>
-    </footer>
+
+        <div class="cc-footer-bottom border-t border-white/5 pt-8 mt-8 text-center">
+            <p class="text-gray-500 text-sm">&copy; 2026 Course Corner. All rights reserved. &nbsp;&middot;&nbsp; Empowering Students Through Quality Education</p>
+        </div>
+    </div>
+</footer>
 
 <!-- Modals -->
 <div id="signInModal" class="auth-modal-overlay" style="display:none;">

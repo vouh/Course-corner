@@ -15,23 +15,23 @@
 
         /* Header */
         .modern-header { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 100; }
-        .header-container { max-width: 1400px; margin: 0 auto; padding: 0.75rem 2rem; display: flex; align-items: center; justify-content: space-between; }
-        .logo-container { display: flex; align-items: center; gap: 0.625rem; text-decoration: none; }
-        .logo-container img { height: 2.5rem; width: auto; }
+        .header-container { max-width: 1400px; margin: 0 auto; padding: 0.75rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+        .logo-container { display: flex; align-items: center; gap: 0.625rem; text-decoration: none; flex-shrink: 0; }
+        .logo-container img { height: 2.25rem; width: auto; }
         .logo-text-group { display: flex; flex-direction: column; gap: 0.125rem; }
-        .logo-text-group span:first-child { font-size: 1.125rem; font-weight: 800; color: #16a34a; }
-        .logo-text-group span:last-child { font-size: 0.5rem; color: #0ea5e9; font-weight: 600; }
+        .logo-text-group span:first-child { font-size: 1rem; font-weight: 800; color: #16a34a; }
+        .logo-text-group span:last-child { font-size: 0.45rem; color: #0ea5e9; font-weight: 600; }
 
-        .nav-links { display: flex; gap: 1.5rem; }
-        .nav-links a { font-size: 0.9rem; font-weight: 600; color: #6b7280; text-decoration: none; transition: color 0.2s; }
+        .nav-links { display: flex; gap: 1.25rem; align-items: center; flex: 1; justify-content: center; }
+        .nav-links a { font-size: 0.85rem; font-weight: 600; color: #6b7280; text-decoration: none; transition: color 0.2s; white-space: nowrap; }
         .nav-links a:hover { color: #16a34a; }
         .nav-links a.active { color: #16a34a; }
 
-        .nav-auth-buttons { display: flex; gap: 1rem; align-items: center; }
-        .btn-auth { padding: 0.5rem 1rem; border: none; border-radius: 0.5rem; font-size: 0.875rem; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .nav-auth-buttons { display: flex; gap: 0.75rem; align-items: center; flex-shrink: 0; }
+        .btn-auth { padding: 0.45rem 0.9rem; border: none; border-radius: 0.5rem; font-size: 0.8rem; font-weight: 700; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
         .btn-signin { color: #16a34a; background: transparent; }
         .btn-signin:hover { background: rgba(22,163,74,0.1); }
-        .btn-signup { background: #16a34a; color: white; }
+        .btn-signup { background: #16a34a; color: white; padding: 0.5rem 1rem; }
         .btn-signup:hover { background: #15803d; }
 
         /* Hero */
@@ -214,22 +214,32 @@
         .btn-primary:hover { background: #15803d; }
 
         .mobile-menu-btn { display: none; background: none; border: none; font-size: 1.5rem;
-            color: #111827; cursor: pointer; padding: 0.5rem; }
-        .mobile-menu-btn.active i::before { content: '\f00d'; }
+            color: #111827; cursor: pointer; padding: 0.5rem; flex-shrink: 0; }
+        .mobile-menu-btn:hover { color: #16a34a; }
         
-        #mobileMenu { display: none; position: fixed; top: 70px; left: 0; right: 0;
-            background: white; border-bottom: 1px solid #e5e7eb; z-index: 999;
-            flex-direction: column; gap: 0; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        #mobileMenu.show { display: flex; }
-        #mobileMenu a, #mobileMenu button { padding: 1rem; text-align: left; border: none;
-            background: white; color: #111827; font-weight: 500; width: 100%;
-            border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: all 0.2s; }
-        #mobileMenu a:hover, #mobileMenu button:hover { background: #f9fafb; color: #16a34a; }
+        /* Mobile Menu Drawer */
+        #mobileMenu { display: none; position: fixed; left: -300px; top: 0; width: 300px; height: 100vh;
+            background: white; z-index: 1000; flex-direction: column; box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            transition: left 0.3s ease; padding-top: 70px; overflow-y: auto; }
+        #mobileMenu.show { left: 0; }
+        
+        #mobileMenuOverlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 999; }
+        #mobileMenuOverlay.show { display: block; }
+        
+        #mobileMenu a, #mobileMenu button { padding: 1.25rem 1.5rem; text-align: left; border: none;
+            background: transparent; color: #111827; font-weight: 600; width: 100%;
+            border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: all 0.2s; font-size: 0.95rem;
+            text-decoration: none; }
+        #mobileMenu a:hover, #mobileMenu button:hover { background: #f0fdf4; color: #16a34a; padding-left: 2rem; }
+        #mobileMenu a.active { color: #16a34a; border-left: 4px solid #16a34a; padding-left: calc(1.5rem - 4px); }
 
         @media(max-width: 768px) {
+            .header-container { flex-wrap: nowrap; }
+            .logo-text-group span:last-child { display: none; }
+            .nav-links { display: none !important; }
+            .mobile-menu-btn { display: flex !important; align-items: center; justify-content: center; z-index: 1001; }
             .courses-grid { grid-template-columns: 1fr; }
-            .nav-links { display: none; }
-            .mobile-menu-btn { display: block; }
             .courses-controls { flex-direction: column; align-items: stretch; gap: 1rem; }
             .filter-tabs { flex-wrap: wrap; justify-content: flex-start; }
             .filter-btn { padding: 0.5rem 1rem; font-size: 0.875rem; }
@@ -239,14 +249,22 @@
         }
         
         @media(max-width: 480px) {
-            .header-container { padding: 1rem; }
-            .logo-text-group span:last-child { display: none; }
+            .header-container { padding: 0.65rem 0.75rem; }
+            .logo-container { gap: 0.4rem; }
+            .logo-container img { height: 2rem; }
+            .logo-text-group span:first-child { font-size: 0.9rem; }
+            .btn-signup { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
             .course-title { font-size: 1rem; }
             .course-desc { font-size: 0.8rem; }
             .filter-tabs { gap: 0.5rem; }
             .filter-btn { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
             .course-footer { flex-direction: column; align-items: flex-start; gap: 1rem; }
             .btn-apply { width: 100%; }
+            .courses-hero { padding: 4rem 1rem 2.5rem; }
+            .courses-hero h1 { font-size: 1.35rem; }
+            .courses-hero p { font-size: 0.85rem; }
+            .courses-container { padding: 2rem 1rem; }
+            #mobileMenu { width: 280px; }
         }
     </style>
 </head>
@@ -271,17 +289,20 @@
         <div class="nav-auth-buttons">
             <button class="btn-auth btn-signup" onclick="openAuthModal()">Sign In</button>
         </div>
-        <button class="mobile-menu-btn" id="mobileMenuBtn"><i class="fas fa-bars"></i></button>
+        <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMenu()"><i class="fas fa-bars"></i></button>
     </div>
 </header>
 
-<!-- Mobile Menu -->
+<!-- Mobile Menu Overlay -->
+<div id="mobileMenuOverlay"></div>
+
+<!-- Mobile Menu Drawer -->
 <nav id="mobileMenu">
-    <a href="../../index.html">Home</a>
-    <a href="courses.html" class="active">Courses</a>
-    <a href="whats-new.html">What's New</a>
-    <a href="about.html">About</a>
-    <button class="btn-auth btn-signup" onclick="openAuthModal()">Sign In</button>
+    <a href="../../index.html" onclick="closeMenu()">Home</a>
+    <a href="courses.html" class="active" onclick="closeMenu()">Courses</a>
+    <a href="whats-new.html" onclick="closeMenu()">What's New</a>
+    <a href="about.html" onclick="closeMenu()">About</a>
+    <button class="btn-auth btn-signup" onclick="openAuthModal(); closeMenu()">Sign In</button>
 </nav>
 
 <!-- Hero -->
@@ -391,24 +412,38 @@
 </div>
 
 <script>
-    // Mobile menu toggle
+    // Mobile menu functions
+    function toggleMenu() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        const overlay = document.getElementById('mobileMenuOverlay');
+        const btn = document.getElementById('mobileMenuBtn');
+        
+        mobileMenu.classList.toggle('show');
+        overlay.classList.toggle('show');
+        btn.classList.toggle('active');
+    }
+    
+    function closeMenu() {
+        const mobileMenu = document.getElementById('mobileMenu');
+        const overlay = document.getElementById('mobileMenuOverlay');
+        const btn = document.getElementById('mobileMenuBtn');
+        
+        mobileMenu.classList.remove('show');
+        overlay.classList.remove('show');
+        btn.classList.remove('active');
+    }
+    
+    // Initialize mobile menu button
     document.addEventListener('DOMContentLoaded', () => {
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
+        const overlay = document.getElementById('mobileMenuOverlay');
         
-        if (mobileMenuBtn && mobileMenu) {
-            mobileMenuBtn.addEventListener('click', () => {
-                mobileMenu.classList.toggle('show');
-                mobileMenuBtn.classList.toggle('active');
-            });
-            
-            // Close menu when a link is clicked
-            mobileMenu.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.remove('show');
-                    mobileMenuBtn.classList.remove('active');
-                });
-            });
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', toggleMenu);
+        }
+        
+        if (overlay) {
+            overlay.addEventListener('click', closeMenu);
         }
     });
 

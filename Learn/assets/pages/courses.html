@@ -29,7 +29,10 @@
         .courses-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.75rem}
         .course-card{background:white;border-radius:1.25rem;border:1px solid #e5e7eb;overflow:hidden;transition:all .3s;display:flex;flex-direction:column}
         .course-card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(22,163,74,.1),0 8px 20px rgba(0,0,0,.06);border-color:#bbf7d0}
-        .course-thumb{height:160px;background-size:cover;background-position:center;position:relative}
+        .course-thumb{height:180px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+        .course-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;}
+        .course-thumb .thumb-overlay{position:absolute;inset:0;}
+        .course-thumb i{position:relative;z-index:1;font-size:2.5rem;color:white;filter:drop-shadow(0 4px 8px rgba(0,0,0,.3));}
         .course-body{padding:1.5rem;flex:1;display:flex;flex-direction:column}
         .course-badge{padding:.35rem .75rem;border-radius:.5rem;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
         .badge-beginner{background:#dcfce7;color:#166534}
@@ -240,7 +243,11 @@
     function renderCourses(courses) {
         document.getElementById('coursesGrid').innerHTML = courses.map(c => `
             <div class="course-card" data-level="${c.level.toLowerCase()}">
-                <div class="course-thumb" style="background-image:url('${c.image.replace(/&/g,'&amp;')}')"></div>
+                <div class="course-thumb">
+                    <img src="../images/image.png" alt="${c.title}">
+                    <div class="thumb-overlay" style="background:${c.gradient};opacity:0.72;"></div>
+                    <i class="${c.icon}"></i>
+                </div>
                 <div class="course-body">
                     <div class="flex justify-between items-start mb-3">
                         <span class="course-badge badge-${c.level.toLowerCase()}">${c.level} · ${c.duration}</span>

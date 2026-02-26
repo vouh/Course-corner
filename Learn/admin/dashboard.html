@@ -14,12 +14,48 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'Inter',sans-serif;background:#f9fafb}
+        body{font-family:'Inter',sans-serif;background:#f9fafb;transition:background .2s,color .2s}
         .sidebar{transition:transform .3s}
         .nav-item{transition:all .2s}
         .nav-item:hover{background:#f0fdf4;color:#16a34a}
         .nav-item.active{background:#f0fdf4;color:#16a34a;font-weight:700}
         @media(max-width:1024px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+
+        /* ── Dark Theme ───────────────────────────────────────── */
+        .dark body,.dark{background:#0f172a!important;color:#e2e8f0}
+        .dark .sidebar{background:#1e293b!important;border-color:#334155!important}
+        .dark .sidebar h1{color:#f1f5f9!important}
+        .dark .sidebar p{color:#94a3b8!important}
+        .dark .nav-item{color:#94a3b8!important}
+        .dark .nav-item:hover{background:#0f4a27!important;color:#4ade80!important}
+        .dark .nav-item.active{background:#0f4a27!important;color:#4ade80!important}
+        .dark .sidebar>div:last-child{background:#1e293b!important;border-color:#334155!important}
+        .dark header{background:#1e293b!important;border-color:#334155!important}
+        .dark header h2{color:#f1f5f9!important}
+        .dark .bg-white{background:#1e293b!important}
+        .dark .bg-gray-50{background:#0f172a!important}
+        .dark .bg-gray-50\/50{background:rgba(15,23,42,.5)!important}
+        .dark .border{border-color:#334155!important}
+        .dark .border-b,.dark .border-t{border-color:#334155!important}
+        .dark .text-gray-900{color:#f1f5f9!important}
+        .dark .text-gray-700{color:#cbd5e1!important}
+        .dark .text-gray-600{color:#94a3b8!important}
+        .dark .text-gray-500{color:#64748b!important}
+        .dark .text-gray-400{color:#475569!important}
+        .dark .text-gray-300{color:#334155!important}
+        .dark .shadow-sm{box-shadow:0 1px 2px rgba(0,0,0,.4)!important}
+        .dark table thead{background:#1e293b!important}
+        .dark tr.border-b{border-color:#334155!important}
+        .dark tr:hover{background:rgba(30,41,59,.6)!important}
+        .dark select,.dark textarea,.dark input{background:#0f172a!important;border-color:#334155!important;color:#e2e8f0!important}
+        .dark .bg-green-50{background:#0f4a27!important}
+        .dark .bg-gray-100{background:#334155!important}
+        .dark #sidebarToggle{background:#1e293b!important;border-color:#334155!important}
+        .dark #sidebarToggle i{color:#94a3b8!important}
+        /* Stat cards */
+        .dark [id^="stat-"]{color:#4ade80!important}
+        /* Blog post cards dark fix */
+        .dark .rounded-2xl.border{background:#1e293b!important}
     </style>
 </head>
 <body class="bg-gray-50">
@@ -113,7 +149,10 @@
         <header class="h-20 bg-white border-b border-gray-200 px-8 flex items-center justify-between sticky top-0 z-30">
             <h2 id="page-title" class="text-xl font-extrabold text-gray-900">Dashboard</h2>
             <div class="flex gap-2">
-                <button onclick="location.reload()" class="p-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100 transition-colors"><i class="fas fa-sync-alt"></i></button>
+                <button onclick="location.reload()" class="p-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100 transition-colors" title="Refresh"><i class="fas fa-sync-alt"></i></button>
+                <button id="darkToggleBtn" onclick="toggleDark()" class="p-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100 transition-colors" title="Toggle dark mode">
+                    <i id="darkToggleIcon" class="fas fa-moon"></i>
+                </button>
             </div>
         </header>
 
@@ -347,6 +386,16 @@
         'learn-blog': 'What\'s New / Blog'
     };
 
+    // ── Dark mode toggle ─────────────────────────────────────
+    function applyDark(on) {
+        document.documentElement.classList.toggle('dark', on);
+        const icon = document.getElementById('darkToggleIcon');
+        if (icon) icon.className = on ? 'fas fa-sun' : 'fas fa-moon';
+        localStorage.setItem('learnAdminDark', on ? '1' : '0');
+    }
+    window.toggleDark = () => applyDark(!document.documentElement.classList.contains('dark'));
+    applyDark(localStorage.getItem('learnAdminDark') === '1');
+
     function switchPage(page) {
         PAGES.forEach(p => { const el = document.getElementById('page-' + p); if (el) el.classList.add('hidden'); });
         const target = document.getElementById('page-' + page);
@@ -463,8 +512,11 @@
             const ts = a.timestamp;
             const date = typeof ts === 'string' ? new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : (ts && ts.toDate ? ts.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : '—');
             const sc = { pending: 'bg-amber-100 text-amber-700', approved: 'bg-green-100 text-green-700', rejected: 'bg-red-100 text-red-700' }[a.status] || 'bg-gray-100 text-gray-700';
+            const email = a.email || '—';
+            const name  = a.fullName || a.name || 'Anonymous';
+            const phone = a.whatsapp || a.phone || '';
             return `<tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                <td class="px-6 py-4"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center font-bold text-gray-400 capitalize text-sm">${(a.fullName || '?')[0]}</div><div><p class="text-sm font-bold text-gray-900">${a.fullName || 'Anonymous'}</p><p class="text-[10px] text-gray-400">${a.whatsapp || a.email || '—'}</p></div></div></td>
+                <td class="px-6 py-4"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center font-bold text-gray-400 capitalize text-sm">${email[0].toUpperCase()}</div><div><p class="text-xs font-extrabold text-green-700" style="letter-spacing:-.01em">${email}</p><p class="text-[11px] font-semibold text-gray-700 mt-0.5">${name}</p>${phone ? `<p class="text-[10px] text-gray-400">${phone}</p>` : ''}</div></div></td>
                 <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase">${a.courseTitle || a.courseId || '—'}</span></td>
                 <td class="px-6 py-4 text-xs font-bold text-gray-400">${date}</td>
                 <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${sc}">${a.status || 'pending'}</span></td>

@@ -86,6 +86,21 @@
         .stat-number { font-size:1.625rem; font-weight:800; color:#16a34a; line-height:1; }
         .stat-label { font-size:.8125rem; color:#6b7280; margin-top:.2rem; }
 
+        /* --- Featured Google button (top of auth modal) ------- */
+        .btn-google-featured {
+            padding:.875rem 1rem !important;
+            font-size:1rem !important;
+            font-weight:700 !important;
+            border:1.5px solid #e5e7eb !important;
+            border-radius:.75rem !important;
+            box-shadow:0 2px 8px rgba(0,0,0,.07);
+            transition:box-shadow .2s, border-color .2s;
+        }
+        .btn-google-featured:hover {
+            border-color:#4285F4 !important;
+            box-shadow:0 4px 16px rgba(66,133,244,.18) !important;
+        }
+
         /* Hero visual card */
         .hero-visual { position:relative; display:flex; align-items:center; justify-content:center; }
         .hero-visual-card {
@@ -143,9 +158,8 @@
             display:flex; flex-direction:column;
         }
         .course-card:hover { transform:translateY(-6px); box-shadow:0 20px 50px rgba(22,163,74,.1),0 8px 20px rgba(0,0,0,.06); border-color:#bbf7d0; }
-        .course-thumb { height:160px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
-        .course-thumb i { font-size:3rem; color:white; position:relative; z-index:1; filter:drop-shadow(0 4px 8px rgba(0,0,0,.15)); }
-        .course-thumb::after { content:''; position:absolute; inset:0; background:linear-gradient(45deg,rgba(255,255,255,.08) 0%,transparent 100%); }
+        .course-thumb { height:180px; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; }
+        .course-thumb i { font-size:2.5rem; color:white; position:relative; z-index:1; filter:drop-shadow(0 4px 8px rgba(0,0,0,.25)); }
         .course-body { padding:1.5rem; flex:1; display:flex; flex-direction:column; }
         .course-level-tag { display:inline-flex; align-items:center; gap:.3rem; font-size:.75rem; font-weight:600; padding:.25rem .625rem; border-radius:9999px; margin-bottom:.875rem; width:fit-content; }
         .course-name  { font-size:1.125rem; font-weight:700; color:#111827; margin-bottom:.5rem; line-height:1.35; }
@@ -220,43 +234,81 @@
             .mobile-menu-btn{display:none!important;}
         }
         @media(max-width:1024px){
-            /* Hero image becomes full-section background on tablet/mobile */
-            .learn-hero { background:none; min-height:100vh; }
-            .learn-hero::before {
-                content:''; position:absolute; inset:0;
-                top:0; right:0; bottom:0; left:0; width:auto; height:auto;
-                background:linear-gradient(135deg,rgba(2,20,10,.78) 0%,rgba(3,30,15,.62) 100%);
-                z-index:1; border-radius:0; pointer-events:none;
+            /* Let the section shrink to fit its content — no dark bars top/bottom */
+            .learn-hero {
+                background:transparent;
+                min-height:0;
+                padding-top:0;
+                padding-bottom:0;
             }
-            /* Stretch hero-visual to fill section as background layer */
+            /* Reset the desktop glow blobs; ::before becomes the overlay, ::after disappears */
+            .learn-hero::before, .learn-hero::after {
+                content:''; position:absolute;
+                top:0; right:0; bottom:0; left:0;
+                width:100%; height:100%;
+                border-radius:0; pointer-events:none;
+            }
+            .learn-hero::before {
+                background: linear-gradient(
+                    to bottom,
+                    rgba(0,0,0,.75) 0%,
+                    rgba(0,0,0,.55) 45%,
+                    rgba(0,0,0,.65) 100%
+                );
+                z-index:1;
+            }
+            .learn-hero::after { background:none; z-index:0; }
+
+            /* hero-visual becomes the bg layer, sized by the hero-inner content */
             .hero-visual {
                 display:block!important;
-                position:absolute; inset:0; z-index:0; overflow:hidden;
+                position:absolute;
+                top:0; left:0; right:0; bottom:0;
+                z-index:0; overflow:hidden;
             }
-            .hero-visual > div { width:100%; height:100%; position:static; }
-            .hero-visual > div > div:first-child { display:none; } /* hide glow ring */
+            .hero-visual > div { width:100%; height:100%; position:relative; }
+            .hero-visual > div > div:first-child { display:none; }
             .hero-visual > div > div:last-child {
-                height:100%!important; border-radius:0!important;
-                box-shadow:none!important; border:none!important;
+                position:absolute; top:0; left:0; right:0; bottom:0;
+                height:100%!important; width:100%!important;
+                border-radius:0!important; box-shadow:none!important; border:none!important;
             }
-            .hero-visual img { width:100%; height:100%; object-fit:cover; object-position:center top; }
-            /* Hide image stat chips on mobile – they clash with the overlay */
+            .hero-visual img {
+                width:100%; height:100%;
+                object-fit:cover; object-position:center 15%;
+            }
             .hero-visual > div > div:last-child > div:last-child { display:none; }
-            /* Text layer sits above the overlay */
+
+            /* Text content layer */
             .hero-inner {
                 grid-template-columns:1fr; gap:0;
                 position:relative; z-index:2;
+                padding-top:6rem; padding-bottom:4rem;
             }
-            /* Adapt text colours for dark image background */
-            .hero-heading { color:#fff; font-size:2.5rem; }
-            .hero-sub     { color:rgba(255,255,255,.85); }
-            .hero-badge   { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.25); }
+            /* Text colours & shadows for legibility over photo */
+            .hero-heading {
+                color:#fff; font-size:2.5rem;
+                text-shadow:0 2px 16px rgba(0,0,0,.7), 0 1px 4px rgba(0,0,0,.9);
+            }
+            /* Keep the green gradient on desktop; lock to bright white on mobile */
+            .hero-heading .green {
+                background:none;
+                -webkit-background-clip:unset; background-clip:unset;
+                -webkit-text-fill-color:#4ade80;
+                color:#4ade80;
+                text-shadow:0 2px 16px rgba(0,0,0,.7);
+            }
+            .hero-sub {
+                color:#fff;
+                text-shadow:0 1px 8px rgba(0,0,0,.8);
+            }
+            .hero-badge   { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.25); color:#bbf7d0; }
             .hero-stats   { border-top-color:rgba(255,255,255,.2); }
             .stat-number  { color:#4ade80; }
             .stat-label   { color:rgba(255,255,255,.72); }
             .btn-hero-outline {
-                background:rgba(255,255,255,.1); color:#fff;
-                border-color:rgba(255,255,255,.5); backdrop-filter:blur(8px);
+                background:rgba(255,255,255,.12); color:#fff;
+                border-color:rgba(255,255,255,.55); backdrop-filter:blur(8px);
             }
             .btn-hero-outline:hover { background:#16a34a; border-color:#16a34a; color:#fff; }
             .footer-top{grid-template-columns:1fr 1fr;gap:2rem;}
@@ -265,10 +317,17 @@
             .cc-footer-grid{grid-template-columns:1fr 1fr!important;gap:2rem!important;}
         }
         @media(max-width:640px){
-            .hero-inner{padding:2rem 1.25rem;}
+            .hero-inner{padding-top:5rem; padding-bottom:3rem; padding-left:1.25rem; padding-right:1.25rem;}
             .hero-heading{font-size:2rem;}
-            .hero-ctas{flex-direction:column;}
-            .btn-hero-primary,.btn-hero-outline{width:100%;justify-content:center;}
+            .hero-ctas{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;}
+            .btn-hero-primary,.btn-hero-outline{
+                width:100%;justify-content:center;
+                padding:.55rem .625rem;
+                font-size:.78rem;
+                white-space:nowrap;
+                border-radius:.625rem;
+            }
+            .btn-hero-primary i, .btn-hero-outline i { font-size:.75rem; }
             .hero-stats{gap:1.5rem;}
             .courses-section,.features-band{padding:3rem 1.25rem;}
             .footer-top{grid-template-columns:1fr;gap:1.5rem;}
@@ -555,16 +614,27 @@
 
 
 <!-- --- AUTH MODAL -------------------------------------------- -->
-<div id="authModal" class="auth-modal-overlay" style="display:none;">
+<div id="authModal" class="auth-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="authTitle" style="display:none;">
     <div class="auth-modal">
         <div class="modal-header">
             <div id="modalTitleGroup" style="display:flex;align-items:center;gap:.75rem;">
                 <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Logo" style="width:32px;height:32px;object-fit:contain;">
                 <h2 id="authTitle">Sign In</h2>
             </div>
-            <button class="modal-close-btn" onclick="closeAuthModal()"><i class="fas fa-times"></i></button>
+            <button class="modal-close-btn" onclick="closeAuthModal()" aria-label="Close"><i class="fas fa-times"></i></button>
         </div>
         <div class="modal-body">
+
+            <!-- ① Google — primary, one-tap action -->
+            <button class="btn-google btn-google-featured" id="googleAuthBtn" onclick="handleGoogleAuth()">
+                <svg width="20" height="20" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/></svg>
+                Continue with Google
+            </button>
+
+            <!-- ② Divider -->
+            <div class="auth-divider" style="margin:1.25rem 0;"><span>or use email</span></div>
+
+            <!-- ③ Email / password form -->
             <form id="authForm" class="auth-form" onsubmit="handleAuthSubmit(event)">
                 <div id="signUpFields" style="display:none;">
                     <div class="form-group">
@@ -578,17 +648,13 @@
                 </div>
                 <div class="form-group">
                     <label for="auPassword">Password</label>
-                    <input id="auPassword" type="password" class="form-input" placeholder="��������" required>
+                    <input id="auPassword" type="password" class="form-input" placeholder="••••••••" required>
                 </div>
                 <button type="submit" class="btn-primary" id="authBtn">
                     <i class="fas fa-sign-in-alt"></i> <span id="authBtnText">Sign In</span>
                 </button>
             </form>
-            <div class="auth-divider"><span>or</span></div>
-            <button class="btn-google" onclick="handleGoogleAuth()">
-                <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.908-2.258c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/></svg>
-                Continue with Google
-            </button>
+
             <p id="toggleAuthMode" style="text-align:center;margin-top:1.25rem;font-size:.875rem;color:#6b7280;cursor:pointer;">
                 Don't have an account? <span style="color:#16a34a;font-weight:700;">Sign Up</span>
             </p>
@@ -665,11 +731,26 @@
 
     // Unified Auth Modal Logic
     let isSignUp = false;
+    let _authModalOpener = null;
     window.openAuthModal = () => {
-        document.getElementById('authModal').style.display = 'flex';
+        _authModalOpener = document.activeElement;
+        const modal = document.getElementById('authModal');
+        modal.style.display = 'flex';
         setAuthMode(false);
+        // Move focus into modal so no aria-hidden ancestor retains focus
+        setTimeout(() => {
+            const btn = document.getElementById('googleAuthBtn');
+            if (btn) btn.focus();
+        }, 50);
     };
-    window.closeAuthModal = () => document.getElementById('authModal').style.display = 'none';
+    window.closeAuthModal = () => {
+        document.getElementById('authModal').style.display = 'none';
+        // Return focus to the element that opened the modal
+        if (_authModalOpener && typeof _authModalOpener.focus === 'function') {
+            _authModalOpener.focus();
+            _authModalOpener = null;
+        }
+    };
     
     window.setAuthMode = (signup) => {
         isSignUp = signup;
@@ -746,8 +827,11 @@
             const grid = document.getElementById('coursesGrid');
             grid.innerHTML = courses.map(c => `
                 <div class="course-card group">
-                    <div class="course-thumb" style="background: url('${c.image}') center/cover, ${c.gradient};">
-                        <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
+                    <div class="course-thumb" style="position:relative;">
+                        <img src="${c.image}" alt="${c.title}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center top;">
+                        <div style="position:absolute;inset:0;background:${c.gradient};opacity:0.72;"></div>
+                        <div style="position:absolute;inset:0;background:rgba(0,0,0,0);transition:background .2s;" class="group-hover:bg-black/10"></div>
+                        <i class="${c.icon}" style="position:relative;z-index:1;font-size:2.5rem;color:white;filter:drop-shadow(0 4px 8px rgba(0,0,0,.25));"></i>
                     </div>
                     <div class="course-body p-6 flex flex-col h-full">
                         <div class="flex justify-between items-start mb-3">

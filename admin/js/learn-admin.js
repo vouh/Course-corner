@@ -46,11 +46,12 @@ function renderApplications(apps) {
                 <td class="px-4 py-4">
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-xl bg-primary-100 text-primary-600 dark:bg-primary-900/40 dark:text-primary-400 flex items-center justify-center font-bold">
-                            ${(app.name || '?')[0].toUpperCase()}
+                            ${(app.email || app.name || '?')[0].toUpperCase()}
                         </div>
                         <div>
-                            <p class="font-bold text-gray-900 dark:text-white leading-tight">${app.name}</p>
-                            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1 leading-tight">${app.whatsapp}</p>
+                            <p class="text-xs font-extrabold text-primary-600 dark:text-primary-400 leading-tight">${app.email || '—'}</p>
+                            <p class="text-sm font-semibold text-gray-800 dark:text-white leading-tight mt-0.5">${app.name || app.fullName || 'Anonymous'}</p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 leading-tight">${app.whatsapp || app.phone || ''}</p>
                         </div>
                     </div>
                 </td>

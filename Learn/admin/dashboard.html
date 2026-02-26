@@ -15,6 +15,15 @@
     <style>
         *{box-sizing:border-box;margin:0;padding:0}
         body{font-family:'Inter',sans-serif;background:#f9fafb;transition:background .2s,color .2s}
+
+        /* ── Custom thin scrollbar (admin theme) ──────────────── */
+        ::-webkit-scrollbar{width:5px;height:5px}
+        ::-webkit-scrollbar-track{background:transparent}
+        ::-webkit-scrollbar-thumb{background:#d1fae5;border-radius:99px}
+        ::-webkit-scrollbar-thumb:hover{background:#86efac}
+        .dark ::-webkit-scrollbar-thumb{background:#1e4a2f}
+        .dark ::-webkit-scrollbar-thumb:hover{background:#16a34a}
+        *{scrollbar-width:thin;scrollbar-color:#d1fae5 transparent}
         .sidebar{transition:transform .3s}
         .nav-item{transition:all .2s}
         .nav-item:hover{background:#f0fdf4;color:#16a34a}
@@ -1361,15 +1370,25 @@
         const countEl = document.getElementById('users-count');
         tbody.innerHTML = '<tr><td colspan="7" class="p-12 text-center text-gray-300"><i class="fas fa-spinner fa-spin text-2xl mb-2 block"></i><p class="text-xs uppercase font-bold tracking-widest">Loading…</p></td></tr>';
         try {
-            const snap = await db.collection('learnApplications').orderBy('timestamp', 'desc').get();
-            // Deduplicate by email - keep latest application per user
+            // Fetch ALL docs without orderBy — orderBy silently drops docs missing the field
+            const snap = await db.collection('learnApplications').get();
+            // Deduplicate by email — keep the entry with the latest timestamp
             const emailMap = new Map();
             snap.docs.forEach(d => {
                 const data = { id: d.id, ...d.data() };
-                const key = data.email || data.phoneNumber || d.id;
-                if (!emailMap.has(key)) emailMap.set(key, data);
+                const key = (data.email || data.phoneNumber || d.id).toLowerCase();
+                const existing = emailMap.get(key);
+                // Keep whichever has a newer timestamp
+                const ts = data.timestamp?.seconds || data.submittedAt?.seconds || 0;
+                const existingTs = existing ? (existing.timestamp?.seconds || existing.submittedAt?.seconds || 0) : -1;
+                if (!existing || ts > existingTs) emailMap.set(key, data);
             });
-            allUsersData = Array.from(emailMap.values());
+            // Sort by timestamp descending in JS
+            allUsersData = Array.from(emailMap.values()).sort((a, b) => {
+                const ta = a.timestamp?.seconds || a.submittedAt?.seconds || 0;
+                const tb = b.timestamp?.seconds || b.submittedAt?.seconds || 0;
+                return tb - ta;
+            });
             filteredUsersData = [...allUsersData];
             if (countEl) countEl.textContent = allUsersData.length + ' user' + (allUsersData.length !== 1 ? 's' : '');
             renderUsersTable();

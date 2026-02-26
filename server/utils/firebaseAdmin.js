@@ -316,6 +316,58 @@ const getTransactionByMpesaCode = async (mpesaCode) => {
   }
 };
 
+// Get transaction by checkout request ID
+const getTransactionByCheckoutRequestId = async (checkoutRequestId) => {
+  try {
+    const db = getFirestore();
+    const snapshot = await db.collection('transactions')
+      .where('checkoutRequestId', '==', checkoutRequestId)
+      .limit(1)
+      .get();
+
+    if (!snapshot.empty) {
+      const doc = snapshot.docs[0];
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate?.() || data.createdAt,
+        updatedAt: data.updatedAt?.toDate?.() || data.updatedAt
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting transaction by checkoutRequestId:', error.message);
+    return null;
+  }
+};
+
+// Get transaction by session ID
+const getTransactionBySessionId = async (sessionId) => {
+  try {
+    const db = getFirestore();
+    const snapshot = await db.collection('transactions')
+      .where('sessionId', '==', sessionId)
+      .limit(1)
+      .get();
+
+    if (!snapshot.empty) {
+      const doc = snapshot.docs[0];
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate?.() || data.createdAt,
+        updatedAt: data.updatedAt?.toDate?.() || data.updatedAt
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error getting transaction by sessionId:', error.message);
+    return null;
+  }
+};
+
 // Mark transaction as used (one-time use)
 const markTransactionAsUsed = async (transactionId) => {
   try {
@@ -435,6 +487,8 @@ module.exports = {
   deleteTransaction,
   getTransactionsByPhone,
   getTransactionByMpesaCode,
+  getTransactionByCheckoutRequestId,
+  getTransactionBySessionId,
   markTransactionAsUsed,
   creditReferrer,
   bulkDeleteTransactions

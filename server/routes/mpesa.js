@@ -9,6 +9,8 @@ const {
   getAllTransactions,
   getTransactionStats,
   getTransactionByMpesaCode,
+  getTransactionByCheckoutRequestId,
+  getTransactionBySessionId,
   markTransactionAsUsed,
   creditReferrer,
   bulkDeleteTransactions,
@@ -115,6 +117,7 @@ router.post('/stkpush', async (req, res) => {
 router.get('/status/:sessionId?', async (req, res) => {
   try {
     const sessionId = req.params.sessionId || req.query.sessionId;
+    const checkoutRequestId = req.query.checkoutRequestId;
 
     if (!sessionId) {
       return res.status(400).json({
@@ -123,9 +126,33 @@ router.get('/status/:sessionId?', async (req, res) => {
       });
     }
 
-    const payment = PaymentStore.getPaymentBySessionId(sessionId);
+    let payment = PaymentStore.getPaymentBySessionId(sessionId);
 
     if (!payment) {
+      // Fallback: recover status from Firebase if memory session is gone (serverless restarts)
+      const firebaseTx = checkoutRequestId
+        ? await getTransactionByCheckoutRequestId(checkoutRequestId)
+        : await getTransactionBySessionId(sessionId);
+
+      if (firebaseTx) {
+        return res.json({
+          success: true,
+          data: {
+            sessionId: firebaseTx.sessionId || sessionId,
+            category: firebaseTx.category,
+            amount: firebaseTx.amount,
+            status: firebaseTx.status || 'pending',
+            resultDesc: firebaseTx.resultDesc || firebaseTx.failureReason || null,
+            errorMessage: firebaseTx.resultDesc || firebaseTx.failureReason || null,
+            mpesaReceiptNumber: firebaseTx.mpesaReceiptNumber || null,
+            transactionCode: firebaseTx.transactionCode || firebaseTx.mpesaReceiptNumber || null,
+            createdAt: firebaseTx.createdAt,
+            updatedAt: firebaseTx.updatedAt,
+            metadata: firebaseTx.metadata || null
+          }
+        });
+      }
+
       return res.status(404).json({
         success: false,
         message: 'Payment session not found'

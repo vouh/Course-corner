@@ -574,6 +574,35 @@
                     if (checkoutRequestId) url += `&checkoutRequestId=${checkoutRequestId}`;
                     const sr = await fetch(url);
                     const sd = await sr.json();
+
+                    if (!sr.ok) {
+                        const rawMsg = sd?.data?.resultDesc || sd?.message || 'Payment status check failed.';
+                        const msg = String(rawMsg);
+                        const lm = msg.toLowerCase();
+
+                        // If backend has no session yet, keep polling briefly
+                        if (sr.status === 404 && attempts < maxAttempts) {
+                            return;
+                        }
+
+                        clearInterval(poll);
+                        let userMsg = msg;
+                        if (lm.includes('wrong pin') || lm.includes('2001') || lm.includes('1025')) {
+                            userMsg = 'Wrong M-Pesa PIN entered. Please retry and enter the correct PIN.';
+                        } else if (lm.includes('insufficient') || lm.includes('balance')) {
+                            userMsg = 'Insufficient M-Pesa balance. Please top up then retry payment.';
+                        } else if (lm.includes('timed out') || lm.includes('timeout') || lm.includes('1037')) {
+                            userMsg = 'Payment request timed out. Please retry and approve quickly on your phone.';
+                        } else if (lm.includes('cancel') || lm.includes('1032')) {
+                            userMsg = 'Payment was cancelled on your phone.';
+                        }
+
+                        updateStatus('error', 'Payment Failed', userMsg, 100);
+                        payBtn.disabled = false;
+                        payBtn.innerHTML = '<i class="fas fa-lock"></i> Retry Payment';
+                        return;
+                    }
+
                     const st = sd?.data?.status;
 
                     if (st === 'completed') {

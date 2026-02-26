@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Course Corner Learn – Online Learning Portal</title>
+    <title>Course Corner Learn ï¿½ Online Learning Portal</title>
 
     <!-- Favicon -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -220,9 +220,45 @@
             .mobile-menu-btn{display:none!important;}
         }
         @media(max-width:1024px){
-            .hero-inner{grid-template-columns:1fr;gap:3rem;}
-            .hero-visual{display:none;}
-            .hero-heading{font-size:2.5rem;}
+            /* Hero image becomes full-section background on tablet/mobile */
+            .learn-hero { background:none; min-height:100vh; }
+            .learn-hero::before {
+                content:''; position:absolute; inset:0;
+                top:0; right:0; bottom:0; left:0; width:auto; height:auto;
+                background:linear-gradient(135deg,rgba(2,20,10,.78) 0%,rgba(3,30,15,.62) 100%);
+                z-index:1; border-radius:0; pointer-events:none;
+            }
+            /* Stretch hero-visual to fill section as background layer */
+            .hero-visual {
+                display:block!important;
+                position:absolute; inset:0; z-index:0; overflow:hidden;
+            }
+            .hero-visual > div { width:100%; height:100%; position:static; }
+            .hero-visual > div > div:first-child { display:none; } /* hide glow ring */
+            .hero-visual > div > div:last-child {
+                height:100%!important; border-radius:0!important;
+                box-shadow:none!important; border:none!important;
+            }
+            .hero-visual img { width:100%; height:100%; object-fit:cover; object-position:center top; }
+            /* Hide image stat chips on mobile â€“ they clash with the overlay */
+            .hero-visual > div > div:last-child > div:last-child { display:none; }
+            /* Text layer sits above the overlay */
+            .hero-inner {
+                grid-template-columns:1fr; gap:0;
+                position:relative; z-index:2;
+            }
+            /* Adapt text colours for dark image background */
+            .hero-heading { color:#fff; font-size:2.5rem; }
+            .hero-sub     { color:rgba(255,255,255,.85); }
+            .hero-badge   { background:rgba(255,255,255,.12); border-color:rgba(255,255,255,.25); }
+            .hero-stats   { border-top-color:rgba(255,255,255,.2); }
+            .stat-number  { color:#4ade80; }
+            .stat-label   { color:rgba(255,255,255,.72); }
+            .btn-hero-outline {
+                background:rgba(255,255,255,.1); color:#fff;
+                border-color:rgba(255,255,255,.5); backdrop-filter:blur(8px);
+            }
+            .btn-hero-outline:hover { background:#16a34a; border-color:#16a34a; color:#fff; }
             .footer-top{grid-template-columns:1fr 1fr;gap:2rem;}
             .desktop-nav{display:none!important;}
             .mobile-menu-btn{display:flex!important;}
@@ -355,7 +391,7 @@
                 AI productivity, and professional skills designed for the modern job market.
             </p>
             <div class="hero-ctas">
-                <button class="btn-hero-primary" onclick="openSignUpModal()">
+                <button class="btn-hero-primary" onclick="document.getElementById('courses').scrollIntoView({behavior:'smooth'})">
                     <i class="fas fa-rocket"></i> Start Learning Today
                 </button>
                 <button class="btn-hero-outline" onclick="document.getElementById('courses').scrollIntoView({behavior:'smooth'})">
@@ -542,7 +578,7 @@
                 </div>
                 <div class="form-group">
                     <label for="auPassword">Password</label>
-                    <input id="auPassword" type="password" class="form-input" placeholder="••••••••" required>
+                    <input id="auPassword" type="password" class="form-input" placeholder="ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½" required>
                 </div>
                 <button type="submit" class="btn-primary" id="authBtn">
                     <i class="fas fa-sign-in-alt"></i> <span id="authBtnText">Sign In</span>
@@ -565,7 +601,7 @@
 <!-- Modals cleaned up -->
 
 
-<!-- --- APPLY MODAL — Removed (redirect to apply page) --- -->
+<!-- --- APPLY MODAL ï¿½ Removed (redirect to apply page) --- -->
 
 <!-- --- SCRIPTS ----------------------------------------------- -->
 <script type="module">
@@ -696,7 +732,7 @@
         location.reload();
     };
 
-    // Apply — redirect to apply page
+    // Apply ï¿½ redirect to apply page
     window.openApplyModal = (courseId) => {
         window.location.href = `assets/pages/apply.html?course=${courseId}`;
     };
@@ -717,7 +753,7 @@
                         <div class="flex justify-between items-start mb-3">
                             <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                                 c.level === 'Beginner' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'
-                            }">${c.level} · ${c.duration}</span>
+                            }">${c.level} ï¿½ ${c.duration}</span>
                             <span class="text-xs font-bold text-gray-400">#${c.id}</span>
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-2 leading-tight">${c.title}</h3>

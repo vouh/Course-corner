@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading post… – Course Corner Learn</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://coursecornerkenya.com/assets/css/modern-ui.css">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1f2937;min-height:100vh}
+
+        /* ── Header ── */
+        .modern-header{position:fixed;top:0;left:0;right:0;width:100%;z-index:1000;background:rgba(255,255,255,0.97)!important;backdrop-filter:blur(12px)!important;border-bottom:1px solid rgba(0,0,0,.06);transition:all .3s}
+        @media(min-width:1025px){.desktop-nav{display:flex!important;align-items:center;}.mobile-menu-btn{display:none!important;}}
+        @media(max-width:1024px){.desktop-nav{display:none!important;}.mobile-menu-btn{display:flex!important;}}
+        .mobile-menu{position:fixed;top:64px;left:0;right:0;background:white;padding:0;height:0;opacity:0;overflow:hidden;transition:all .3s;z-index:999;border-bottom:1px solid #f1f5f9}
+        .mobile-menu.show{height:auto;opacity:1;padding:1.5rem}
+        .mobile-menu-btn span{display:block!important;background-color:#1f2937!important;height:2px!important;width:24px!important;transition:all .3s}
+        .mobile-menu-btn.active span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+        .mobile-menu-btn.active span:nth-child(2){opacity:0}
+        .mobile-menu-btn.active span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+
+        /* ── Page shell ── */
+        .page-wrap{max-width:780px;margin:0 auto;padding:100px 1.5rem 5rem}
+
+        /* ── Skeleton loader ── */
+        .skeleton{background:linear-gradient(90deg,#f1f5f9 25%,#e2e8f0 50%,#f1f5f9 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:.5rem}
+        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+        /* ── Post hero ── */
+        .post-hero-img{width:100%;height:360px;object-fit:cover;border-radius:1.25rem;margin-bottom:2rem;display:block}
+        .post-hero-placeholder{width:100%;height:360px;border-radius:1.25rem;margin-bottom:2rem;background:linear-gradient(135deg,#e0e7ff,#dbeafe);display:flex;align-items:center;justify-content:center}
+
+        /* ── Category pill ── */
+        .cat-pill{display:inline-flex;align-items:center;gap:.4rem;padding:.3rem .85rem;border-radius:9999px;font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:1.25rem}
+
+        /* ── Title ── */
+        .post-title{font-size:clamp(1.6rem,3.5vw,2.5rem);font-weight:800;color:#111827;line-height:1.25;letter-spacing:-.025em;margin-bottom:1rem}
+
+        /* ── Meta row ── */
+        .post-meta{display:flex;flex-wrap:wrap;align-items:center;gap:.6rem 1rem;font-size:.875rem;color:#6b7280;margin-bottom:2.5rem;padding-bottom:1.5rem;border-bottom:1px solid #e5e7eb}
+        .post-meta .dot{width:3px;height:3px;border-radius:50%;background:#d1d5db}
+
+        /* ── Body content ── */
+        .post-content{font-size:1.0625rem;line-height:1.85;color:#374151}
+        .post-content p{margin-bottom:1.25rem}
+        .post-content h2{font-size:1.375rem;font-weight:800;color:#111827;margin:2rem 0 .75rem}
+        .post-content h3{font-size:1.15rem;font-weight:700;color:#111827;margin:1.75rem 0 .6rem}
+        .post-content ul, .post-content ol{padding-left:1.5rem;margin-bottom:1.25rem}
+        .post-content li{margin-bottom:.4rem}
+        .post-content strong{color:#111827;font-weight:700}
+        .post-content a{color:#16a34a;font-weight:600;text-decoration:underline}
+        .post-content blockquote{border-left:4px solid #16a34a;padding:.75rem 1.25rem;background:#f0fdf4;border-radius:0 .5rem .5rem 0;margin:1.5rem 0;font-style:italic;color:#166534}
+
+        /* ── Back button ── */
+        .back-btn{display:inline-flex;align-items:center;gap:.5rem;color:#16a34a;font-weight:700;font-size:.9rem;text-decoration:none;margin-bottom:2rem;padding:.5rem 1rem .5rem .5rem;border-radius:.65rem;transition:background .2s}
+        .back-btn:hover{background:#f0fdf4}
+
+        /* ── Error state ── */
+        .error-state{text-align:center;padding:5rem 0}
+
+        /* ── Footer ── */
+        .learn-footer{background:#0f172a;color:#94a3b8;padding:3rem 2rem 2rem;border-top:3px solid #16a34a;margin-top:4rem}
+        .footer-inner{max-width:1240px;margin:0 auto;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1.5rem}
+        .footer-bottom{text-align:center;font-size:.85rem;color:#334155;padding-top:1.5rem;border-top:1px solid rgba(255,255,255,.05);margin-top:1.5rem}
+    </style>
+</head>
+<body>
+
+<!-- ═══ NAV ═══════════════════════════════════════════════════ -->
+<header class="modern-header" id="postHeader">
+    <div class="flex items-center justify-between max-w-[1400px] mx-auto px-4 md:px-8 py-3">
+        <a href="../../index.html" class="flex items-center gap-2.5 no-underline">
+            <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Course Corner Logo" class="h-8 md:h-10 w-auto">
+            <div class="flex flex-col justify-center leading-none gap-[2px]">
+                <span class="text-[1.15rem] md:text-[1.35rem] font-extrabold text-[#16a34a] tracking-tight leading-none">Course Corner</span>
+                <span class="text-[0.55rem] md:text-[0.65rem] font-semibold text-[#0ea5e9] tracking-wide leading-none">Learn Portal</span>
+            </div>
+        </a>
+        <nav class="desktop-nav hidden lg:flex items-center gap-6">
+            <a href="../../index.html" class="text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Home</a>
+            <a href="courses.html" class="text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Courses</a>
+            <a href="whats-new.html" class="text-[0.9rem] font-semibold text-[#16a34a] no-underline">What's New</a>
+            <a href="about.html" class="text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">About</a>
+            <a href="payment.html" class="text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors flex items-center gap-1"><i class="fas fa-credit-card text-xs"></i> Pay</a>
+        </nav>
+        <button id="mobileMenuBtn" class="mobile-menu-btn lg:hidden flex flex-col justify-center items-center gap-1.5 w-10 h-10 border-none bg-transparent cursor-pointer" aria-label="Toggle menu">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+    <div id="mobileMenu" class="mobile-menu lg:hidden">
+        <nav class="flex flex-col gap-2">
+            <a href="../../index.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50">Home</a>
+            <a href="courses.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50">Courses</a>
+            <a href="whats-new.html" class="p-4 text-lg font-bold text-[#16a34a] no-underline rounded-xl bg-green-50">What's New</a>
+            <a href="about.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50">About</a>
+            <a href="payment.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 flex items-center gap-2"><i class="fas fa-credit-card text-[#16a34a]"></i> Pay</a>
+        </nav>
+    </div>
+</header>
+
+<!-- ═══ PAGE ═══════════════════════════════════════════════════ -->
+<div class="page-wrap">
+
+    <a href="whats-new.html" class="back-btn"><i class="fas fa-arrow-left text-sm"></i> Back to What's New</a>
+
+    <!-- Skeleton (shown while loading) -->
+    <div id="skeleton">
+        <div class="skeleton w-24 h-7 mb-5"></div>
+        <div class="skeleton w-full h-10 mb-3"></div>
+        <div class="skeleton w-3/4 h-10 mb-6"></div>
+        <div class="skeleton w-full h-5 mb-2"></div>
+        <div class="skeleton w-4/5 h-5 mb-8"></div>
+        <div class="skeleton w-full h-[320px] rounded-2xl mb-8"></div>
+        <div class="skeleton w-full h-4 mb-2"></div>
+        <div class="skeleton w-full h-4 mb-2"></div>
+        <div class="skeleton w-5/6 h-4 mb-2"></div>
+        <div class="skeleton w-full h-4 mb-2"></div>
+        <div class="skeleton w-3/4 h-4"></div>
+    </div>
+
+    <!-- Post content (hidden until loaded) -->
+    <article id="postContent" style="display:none">
+        <div id="catPill" class="cat-pill"></div>
+        <h1 id="postTitle" class="post-title"></h1>
+        <div id="postMeta" class="post-meta"></div>
+        <div id="postImage"></div>
+        <div id="postBody" class="post-content"></div>
+    </article>
+
+    <!-- Error state -->
+    <div id="errorState" style="display:none" class="error-state">
+        <div style="display:inline-flex;align-items:center;justify-content:center;width:72px;height:72px;background:#fef2f2;border-radius:50%;margin-bottom:1.25rem">
+            <i class="fas fa-exclamation-circle" style="font-size:1.75rem;color:#fca5a5"></i>
+        </div>
+        <h3 style="font-size:1.15rem;font-weight:700;color:#111827;margin-bottom:.5rem">Post not found</h3>
+        <p style="color:#6b7280;font-size:.9375rem;margin-bottom:1.5rem">This post may have been removed or the link is invalid.</p>
+        <a href="whats-new.html" class="back-btn" style="margin:0 auto"><i class="fas fa-arrow-left text-sm"></i> Back to What's New</a>
+    </div>
+
+</div>
+
+<!-- ═══ FOOTER ═══════════════════════════════════════════════ -->
+<footer class="learn-footer">
+    <div class="footer-inner">
+        <div class="flex items-center gap-2.5">
+            <img src="https://coursecornerkenya.com/assets/images/logo.png" class="h-9 w-auto" alt="Logo">
+            <div class="flex flex-col leading-none">
+                <span class="text-white font-extrabold text-base">Course Corner</span>
+                <span class="text-blue-400 font-bold text-[0.6rem] uppercase tracking-wider">Learn Portal</span>
+            </div>
+        </div>
+        <div class="flex flex-wrap gap-5">
+            <a href="../../index.html" class="text-slate-400 hover:text-white text-sm font-semibold no-underline transition-colors">Home</a>
+            <a href="courses.html" class="text-slate-400 hover:text-white text-sm font-semibold no-underline transition-colors">Courses</a>
+            <a href="whats-new.html" class="text-slate-400 hover:text-white text-sm font-semibold no-underline transition-colors">What's New</a>
+            <a href="about.html" class="text-slate-400 hover:text-white text-sm font-semibold no-underline transition-colors">About</a>
+        </div>
+        <p class="text-slate-500 text-sm">info.coursecorner@gmail.com &nbsp;&middot;&nbsp; 0718 744780</p>
+    </div>
+    <div class="footer-bottom">&copy; 2026 Course Corner. All rights reserved.</div>
+</footer>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+    const app = initializeApp({
+        apiKey:"AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
+        authDomain:"course-corner.firebaseapp.com",
+        projectId:"course-corner",
+        storageBucket:"course-corner.firebasestorage.app",
+        messagingSenderId:"961706784572",
+        appId:"1:961706784572:web:7aa6c24946570ffda59039"
+    }, 'post-reader');
+    const db = getFirestore(app);
+
+    const catStyles = {
+        story:  { bg:'#3b82f6', label:'Success Story' },
+        update: { bg:'#16a34a', label:'Platform Update' },
+        tip:    { bg:'#8b5cf6', label:'Learning Tip' },
+        news:   { bg:'#f59e0b', label:'News' }
+    };
+
+    async function loadPost() {
+        const id = new URLSearchParams(window.location.search).get('id');
+        if (!id) { showError(); return; }
+
+        try {
+            const snap = await getDoc(doc(db, 'learnPosts', id));
+            if (!snap.exists() || snap.data().published === false) { showError(); return; }
+
+            const p = snap.data();
+            document.title = `${p.title || 'Post'} – Course Corner Learn`;
+
+            // Category pill
+            const cat = catStyles[p.category] || { bg:'#6b7280', label: p.category || 'Post' };
+            document.getElementById('catPill').style.cssText = `background:${cat.bg};color:white`;
+            document.getElementById('catPill').innerHTML = `<i class="fas fa-tag"></i> ${cat.label}`;
+
+            // Title
+            document.getElementById('postTitle').textContent = p.title || 'Untitled';
+
+            // Meta row
+            const ts = p.createdAt && p.createdAt.toDate
+                ? p.createdAt.toDate().toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' })
+                : '';
+            document.getElementById('postMeta').innerHTML = `
+                ${ts ? `<span><i class="fas fa-calendar-alt text-[#16a34a] mr-1"></i>${ts}</span><span class="dot"></span>` : ''}
+                <span><i class="fas fa-user text-[#16a34a] mr-1"></i>${p.author || 'Course Corner Team'}</span>
+                ${p.category ? `<span class="dot"></span><span style="color:${cat.bg};font-weight:700">${cat.label}</span>` : ''}
+            `;
+
+            // Hero image
+            const imgEl = document.getElementById('postImage');
+            if (p.image) {
+                imgEl.innerHTML = `<img src="${p.image}" alt="${p.title || ''}" class="post-hero-img" onerror="this.parentNode.innerHTML=''">`;
+            } else {
+                imgEl.innerHTML = `<div class="post-hero-placeholder"><i class="fas fa-newspaper" style="font-size:4rem;color:#bfdbfe"></i></div>`;
+            }
+
+            // Body — render newlines as paragraphs
+            const raw = p.content || p.excerpt || '';
+            const html = raw
+                .split(/\n{2,}/)
+                .map(para => para.trim())
+                .filter(Boolean)
+                .map(para => `<p>${para.replace(/\n/g, '<br>')}</p>`)
+                .join('');
+            document.getElementById('postBody').innerHTML = html || `<p>${raw}</p>`;
+
+            // Show content
+            document.getElementById('skeleton').style.display = 'none';
+            document.getElementById('postContent').style.display = 'block';
+
+        } catch (e) {
+            console.error('Post load error:', e);
+            showError();
+        }
+    }
+
+    function showError() {
+        document.getElementById('skeleton').style.display = 'none';
+        document.getElementById('errorState').style.display = 'block';
+    }
+
+    loadPost();
+</script>
+
+<script>
+    // Mobile menu
+    document.getElementById('mobileMenuBtn').addEventListener('click', function(e) {
+        e.stopPropagation();
+        document.getElementById('mobileMenu').classList.toggle('show');
+        this.classList.toggle('active');
+    });
+    document.addEventListener('click', () => {
+        document.getElementById('mobileMenu').classList.remove('show');
+        document.getElementById('mobileMenuBtn').classList.remove('active');
+    });
+    // Scroll header shadow
+    window.addEventListener('scroll', () => {
+        document.getElementById('postHeader').style.boxShadow = scrollY > 10 ? '0 4px 24px rgba(0,0,0,.07)' : '';
+    });
+</script>
+</body>
+</html>

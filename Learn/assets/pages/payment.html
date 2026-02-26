@@ -19,7 +19,8 @@
         .mobile-menu-btn.active span:nth-child(1){transform:translateY(6px) rotate(45deg)}
         .mobile-menu-btn.active span:nth-child(2){opacity:0}
         .mobile-menu-btn.active span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-        .mobile-menu-btn span{display:block;transition:all .3s}
+        .mobile-menu-btn span{display:block;transition:all .3s;background-color:#1f2937!important}
+        .modern-header{background:rgba(255,255,255,0.97)!important;backdrop-filter:blur(12px)!important}
         .form-input{width:100%;padding:.75rem 1rem;border:1.5px solid #e5e7eb;border-radius:.75rem;font-size:.9375rem;transition:all .2s;font-family:inherit}
         .form-input:focus{outline:none;border-color:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.1)}
         .pct-btn{position:relative;cursor:pointer;border:2px solid #e5e7eb;border-radius:1rem;padding:1.25rem 1rem;text-align:center;transition:all .25s;background:white}
@@ -124,8 +125,11 @@
             <div class="p-6 space-y-5">
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1.5">Email Address *</label>
-                    <input id="payEmail" type="email" class="form-input" placeholder="you@example.com" required>
-                    <p class="text-xs text-gray-400 mt-1">Use the same email you registered with</p>
+                    <div class="relative">
+                        <input id="payEmail" type="email" class="form-input pr-10" placeholder="you@example.com" required>
+                        <span id="emailLockIcon" class="absolute right-3 top-1/2 -translate-y-1/2 hidden"><i class="fas fa-lock text-[#16a34a] text-sm"></i></span>
+                    </div>
+                    <p id="emailHint" class="text-xs text-gray-400 mt-1">Use the same email you registered with</p>
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-1.5">Select Course *</label>
@@ -186,17 +190,6 @@
                         <div class="pct-label">Full</div>
                         <div class="pct-amount" id="amt100">...</div>
                     </div>
-                </div>
-
-                <!-- Custom amount -->
-                <div class="flex items-center gap-3">
-                    <div class="h-px flex-1 bg-gray-200"></div>
-                    <span class="text-xs font-bold text-gray-400 uppercase">or enter a custom amount</span>
-                    <div class="h-px flex-1 bg-gray-200"></div>
-                </div>
-                <div class="relative">
-                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">KSH</span>
-                    <input id="customAmount" type="number" class="form-input pl-14" placeholder="e.g. 1500" min="1" oninput="onCustomAmount(this.value)">
                 </div>
 
                 <!-- Amount summary -->
@@ -344,11 +337,24 @@
     window._auth = auth;
     window._db = db;
 
-    // Auto-fill email
+    // Auto-fill and LOCK email to the signed-in account
     onAuthStateChanged(auth, u => {
         if (u) {
-            const e = document.getElementById('payEmail');
-            if (e && !e.value) e.value = u.email || '';
+            const emailEl = document.getElementById('payEmail');
+            const lockIcon = document.getElementById('emailLockIcon');
+            const hint = document.getElementById('emailHint');
+            if (emailEl) {
+                emailEl.value = u.email || '';
+                emailEl.readOnly = true;
+                emailEl.style.background = '#f0fdf4';
+                emailEl.style.borderColor = '#86efac';
+                emailEl.style.cursor = 'not-allowed';
+            }
+            if (lockIcon) lockIcon.classList.remove('hidden');
+            if (hint) {
+                hint.innerHTML = '<i class="fas fa-check-circle text-[#16a34a] mr-1"></i><span class="text-[#16a34a] font-semibold">Linked to your account</span>';
+            }
+            validateStep1();
         }
     });
 
@@ -420,7 +426,6 @@
 
     window.selectPct = (pct) => {
         selectedPct = pct;
-        document.getElementById('customAmount').value = '';
         document.querySelectorAll('.pct-btn').forEach(b => {
             const bPct = parseInt(b.dataset.pct);
             b.classList.toggle('selected', bPct === pct);
@@ -435,20 +440,6 @@
             payAmount = Math.ceil(selectedCourse.fee * pct / 100);
             document.getElementById('payAmountDisplay').textContent = `KSH ${payAmount.toLocaleString()}`;
         }
-    };
-
-    window.onCustomAmount = (val) => {
-        const v = parseInt(val);
-        if (!v || !selectedCourse) return;
-        payAmount = Math.min(v, selectedCourse.fee);
-        document.getElementById('payAmountDisplay').textContent = `KSH ${payAmount.toLocaleString()}`;
-        // Deselect percentage buttons
-        document.querySelectorAll('.pct-btn').forEach(b => {
-            b.classList.remove('selected');
-            const ring = b.querySelector('.pct-ring');
-            ring.style.background = '#f3f4f6'; ring.style.color = '#6b7280';
-        });
-        selectedPct = null;
     };
 
     // Step navigation

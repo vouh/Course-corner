@@ -10,77 +10,344 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        /* ═══ RESET ═══ */
         *{box-sizing:border-box;margin:0;padding:0}
-        body{font-family:'Inter',sans-serif;background:#f8fafc;color:#1e293b}
-        .sidebar-link{transition:all .2s;border-radius:.75rem}
-        .sidebar-link:hover{background:#f1f5f9}
-        .sidebar-link.active{background:linear-gradient(135deg,rgba(22,163,74,.08),rgba(22,163,74,.04));color:#16a34a!important;font-weight:700;border-left:3px solid #16a34a}
-        .card{background:white;border-radius:1rem;border:1px solid #f1f5f9;transition:all .2s}
-        .card:hover{border-color:#e2e8f0}
+
+        /* ═══ THEME VARIABLES ═══ */
+        :root{
+            --bg:#f0f4f8;
+            --surface:#ffffff;
+            --surface2:#f8fafc;
+            --surface3:#f1f5f9;
+            --border:rgba(0,0,0,.07);
+            --border2:rgba(0,0,0,.11);
+            --text1:#1e293b;
+            --text2:#64748b;
+            --text3:#94a3b8;
+            --accent:#16a34a;
+            --accent2:#15803d;
+            --accent-bg:rgba(22,163,74,.1);
+            --shadow:rgba(0,0,0,.06);
+            --shadow2:rgba(0,0,0,.12);
+            --notif-bg:rgba(239,246,255,.9);
+            --notif-border:rgba(191,219,254,.6);
+            --notif-text:#1d4ed8;
+            --notif-icon:#3b82f6;
+            --blue-soft:rgba(59,130,246,.1);
+            --amber-soft:rgba(245,158,11,.1);
+            --purple-soft:rgba(168,85,247,.1);
+            --input-bg:#ffffff;
+        }
+        body.dark{
+            --bg:#0a0f1e;
+            --surface:#141c2f;
+            --surface2:#0f172a;
+            --surface3:#1e2d45;
+            --border:rgba(255,255,255,.07);
+            --border2:rgba(255,255,255,.13);
+            --text1:#e2e8f0;
+            --text2:#94a3b8;
+            --text3:#475569;
+            --accent:#22c55e;
+            --accent2:#16a34a;
+            --accent-bg:rgba(34,197,94,.12);
+            --shadow:rgba(0,0,0,.3);
+            --shadow2:rgba(0,0,0,.5);
+            --notif-bg:rgba(30,58,138,.2);
+            --notif-border:rgba(59,130,246,.25);
+            --notif-text:#93c5fd;
+            --notif-icon:#60a5fa;
+            --blue-soft:rgba(59,130,246,.12);
+            --amber-soft:rgba(245,158,11,.12);
+            --purple-soft:rgba(168,85,247,.12);
+            --input-bg:#1e293b;
+        }
+
+        /* ═══ BASE ═══ */
+        body{
+            font-family:'Inter',sans-serif;
+            background:var(--bg);
+            color:var(--text1);
+            transition:background .25s,color .25s;
+            -webkit-tap-highlight-color:transparent;
+            /* safe area for notched phones */
+            padding-bottom:env(safe-area-inset-bottom);
+        }
+        a{text-decoration:none;color:inherit}
+
+        /* ═══ SIDEBAR ═══ */
+        .dash-sidebar{
+            background:var(--surface);
+            border-right:1px solid var(--border);
+            transition:background .25s,border-color .25s;
+        }
+        .sidebar-link{transition:all .18s;border-radius:.75rem;color:var(--text2)}
+        .sidebar-link:hover{background:var(--surface3)}
+        .sidebar-link.active{
+            background:var(--accent-bg);
+            color:var(--accent)!important;
+            font-weight:700;
+            border-left:3px solid var(--accent)
+        }
+
+        /* ═══ CARDS ═══ */
+        .card{
+            background:var(--surface);
+            border-radius:1rem;
+            border:1px solid var(--border);
+            transition:all .2s;
+        }
+        .card:hover{border-color:var(--border2);box-shadow:0 4px 16px var(--shadow)}
+
+        /* ═══ STATS ═══ */
         .stat-card{padding:1rem;display:flex;align-items:center;gap:.875rem}
         .stat-card .stat-icon{width:40px;height:40px;border-radius:.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.875rem}
-        .progress-bar{height:5px;background:#f1f5f9;border-radius:999px;overflow:hidden}
-        .progress-fill{height:100%;background:linear-gradient(90deg,#16a34a,#22c55e);border-radius:999px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+
+        /* ═══ HEADER / FOOTER ═══ */
+        header.top-bar{
+            background:var(--surface);
+            border-bottom:1px solid var(--border);
+            transition:background .25s,border-color .25s;
+        }
+        footer.bot-bar{
+            background:var(--surface);
+            border-top:1px solid var(--border);
+            transition:background .25s,border-color .25s;
+        }
+
+        /* ═══ TABLE ═══ */
+        .card table thead{background:var(--surface3)}
+        .card table thead th{color:var(--text3);border-bottom:1px solid var(--border)}
+        .card table tbody tr:hover{background:var(--surface3)}
+        .card table tbody td{color:var(--text1);border-bottom:1px solid var(--border)}
+
+        /* ═══ PROGRESS ═══ */
+        .progress-bar{height:5px;background:var(--surface3);border-radius:999px;overflow:hidden}
+        .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),#22c55e);border-radius:999px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+
+        /* ═══ MODULES ═══ */
         .module-item{display:flex;align-items:center;gap:.75rem;padding:.625rem .75rem;border-radius:.625rem;transition:all .15s}
-        .module-item:hover{background:#f8fafc}
-        .module-item.completed .mod-dot{background:#16a34a;color:white}
-        .module-item.current .mod-dot{background:#16a34a;color:white;animation:pulse-dot 2s infinite}
-        .module-item.locked .mod-dot{background:#e2e8f0;color:#94a3b8}
+        .module-item:hover{background:var(--surface3)}
+        .module-item.completed .mod-dot{background:var(--accent);color:white}
+        .module-item.current .mod-dot{background:var(--accent);color:white;animation:pulse-dot 2s infinite}
+        .module-item.locked .mod-dot{background:var(--surface3);color:var(--text3)}
         .mod-dot{width:28px;height:28px;border-radius:.5rem;display:flex;align-items:center;justify-content:center;font-size:.625rem;font-weight:700;flex-shrink:0}
-        @keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(22,163,74,.3)}50%{box-shadow:0 0 0 6px rgba(22,163,74,0)}}
-        .tab-btn{padding:.5rem 1rem;border-radius:.625rem;font-size:.8125rem;font-weight:600;border:none;background:transparent;color:#64748b;cursor:pointer;transition:all .2s}
-        .tab-btn.active{background:#16a34a;color:white}
-        .tab-btn:hover:not(.active){background:#f1f5f9}
-        .settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem}
+        @keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.35)}50%{box-shadow:0 0 0 6px rgba(34,197,94,0)}}
+
+        /* ═══ TAB BUTTONS ═══ */
+        .tab-btn{padding:.5rem 1rem;border-radius:.625rem;font-size:.8125rem;font-weight:600;border:none;background:transparent;color:var(--text2);cursor:pointer;transition:all .2s}
+        .tab-btn.active{background:var(--accent);color:white}
+        .tab-btn:hover:not(.active){background:var(--surface3)}
+
+        /* ═══ SETTINGS MODAL ═══ */
+        .settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem}
         .settings-overlay.show{display:flex}
-        .settings-modal{background:white;border-radius:1.25rem;width:100%;max-width:440px;overflow:hidden;box-shadow:0 24px 48px rgba(0,0,0,.12);animation:slideUp .25s ease}
+        .settings-modal{
+            background:var(--surface);
+            border-radius:1.25rem;
+            width:100%;
+            max-width:440px;
+            overflow:hidden;
+            box-shadow:0 24px 48px var(--shadow2);
+            animation:slideUp .25s ease;
+        }
         @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
-        .settings-modal .form-input{width:100%;padding:.625rem .875rem;border:1.5px solid #e2e8f0;border-radius:.625rem;font-size:.875rem;transition:all .2s;font-family:inherit}
-        .settings-modal .form-input:focus{outline:none;border-color:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.1)}
+        .settings-modal .form-input{
+            width:100%;
+            padding:.625rem .875rem;
+            border:1.5px solid var(--border2);
+            border-radius:.625rem;
+            font-size:.875rem;
+            transition:all .2s;
+            font-family:inherit;
+            background:var(--input-bg);
+            color:var(--text1);
+        }
+        .settings-modal .form-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+        .settings-modal .form-input:read-only{background:var(--surface3);color:var(--text3);cursor:not-allowed}
+        .settings-modal label{color:var(--text2)}
+
+        /* ═══ THEME TOGGLE BUTTON ═══ */
+        .theme-btn{
+            width:36px;height:36px;border-radius:.75rem;
+            border:1px solid var(--border2);
+            background:var(--surface3);
+            color:var(--text2);
+            display:flex;align-items:center;justify-content:center;
+            cursor:pointer;transition:all .2s;
+            font-size:.875rem;
+        }
+        .theme-btn:hover{background:var(--accent-bg);color:var(--accent);border-color:var(--accent)}
+
+        /* ═══ NOTIFICATION ITEMS ═══ */
+        .notif-item{
+            background:var(--notif-bg);
+            border:1px solid var(--notif-border);
+            border-radius:.875rem;
+            padding:.875rem 1rem;
+            display:flex;gap:.75rem;
+        }
+        .notif-item .notif-icon{color:var(--notif-icon)}
+        .notif-item .notif-text{color:var(--text1)}
+        .notif-item .notif-date{color:var(--text3)}
+
+        /* ═══ STATUS BADGES ═══ */
+        .badge-green{background:rgba(22,163,74,.12);color:#15803d}
+        .badge-amber{background:rgba(245,158,11,.12);color:#b45309}
+        .badge-red{background:rgba(239,68,68,.12);color:#dc2626}
+        .badge-blue{background:rgba(59,130,246,.12);color:#1d4ed8}
+        body.dark .badge-green{background:rgba(34,197,94,.15);color:#4ade80}
+        body.dark .badge-amber{background:rgba(251,191,36,.15);color:#fbbf24}
+        body.dark .badge-red{background:rgba(248,113,113,.15);color:#f87171}
+        body.dark .badge-blue{background:rgba(96,165,250,.15);color:#60a5fa}
+
+        /* ═══ MOBILE SIDEBAR ═══ */
         @media(max-width:1023px){
-            .dash-sidebar{display:none!important}
-            .dash-sidebar.mobile-open{display:flex!important;position:fixed;top:0;left:0;width:280px;height:100vh;z-index:999;box-shadow:8px 0 30px rgba(0,0,0,.1)}
-            .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:998}
+            .dash-sidebar{
+                display:none!important;
+            }
+            .dash-sidebar.mobile-open{
+                display:flex!important;
+                position:fixed;top:0;left:0;width:82vw;max-width:300px;
+                height:100vh;z-index:999;
+                box-shadow:4px 0 32px var(--shadow2);
+                animation:slideInLeft .22s ease;
+                overflow-y:auto;
+                border-right:1px solid var(--border);
+            }
+            @keyframes slideInLeft{from{transform:translateX(-100%);opacity:.5}to{transform:translateX(0);opacity:1}}
+            .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998;backdrop-filter:blur(2px)}
             .sidebar-backdrop.show{display:block}
         }
+
+        /* ═══ MOBILE BOTTOM NAV ═══ */
+        .mobile-bottom-nav{
+            display:none;
+            position:fixed;bottom:0;left:0;right:0;
+            height:calc(56px + env(safe-area-inset-bottom));
+            padding-bottom:env(safe-area-inset-bottom);
+            background:var(--surface);
+            border-top:1px solid var(--border);
+            z-index:90;
+            align-items:stretch;
+            box-shadow:0 -4px 20px var(--shadow);
+        }
+        @media(max-width:1023px){
+            .mobile-bottom-nav{display:flex!important}
+            .main-content-area{padding-bottom:calc(64px + env(safe-area-inset-bottom))!important;}
+            footer.bot-bar{display:none}
+        }
+        .bnav-item{
+            flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+            gap:3px;padding:.4rem 0;
+            color:var(--text3);font-size:.5625rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+            cursor:pointer;border:none;background:transparent;
+            transition:color .18s;
+            -webkit-tap-highlight-color:transparent;
+            position:relative;
+        }
+        .bnav-item i{font-size:1.125rem;transition:transform .18s}
+        .bnav-item.active{color:var(--accent)}
+        .bnav-item.active i{transform:translateY(-1px)}
+        .bnav-item.active::before{
+            content:'';
+            position:absolute;top:0;left:50%;transform:translateX(-50%);
+            width:32px;height:3px;border-radius:0 0 4px 4px;
+            background:var(--accent);
+        }
+        .bnav-badge{
+            position:absolute;top:4px;
+            background:#ef4444;color:white;
+            font-size:.45rem;font-weight:800;
+            padding:.1rem .3rem;border-radius:99px;
+            min-width:14px;text-align:center;
+            line-height:1.4;
+        }
+
+        /* ═══ MOBILE HEADER ═══ */
+        @media(max-width:639px){
+            .main-page-title{font-size:1rem!important}
+            .top-bar-inner{padding:.625rem 1rem!important}
+        }
+
+        /* ═══ DARK MODE OVERRIDES for Tailwind-generated content ═══ */
+        body.dark .bg-slate-50{background:var(--surface3)!important}
+        body.dark .bg-slate-100{background:var(--surface3)!important}
+        body.dark .text-slate-900{color:var(--text1)!important}
+        body.dark .text-slate-800{color:var(--text1)!important}
+        body.dark .text-slate-700{color:var(--text1)!important}
+        body.dark .text-slate-600{color:var(--text2)!important}
+        body.dark .text-slate-500{color:var(--text2)!important}
+        body.dark .text-slate-400{color:var(--text3)!important}
+        body.dark .text-slate-300{color:var(--text3)!important}
+        body.dark .text-slate-200{color:#334155!important;opacity:1!important}
+        body.dark .border-slate-100,.dark .border-b,.dark .divide-slate-50>*{border-color:var(--border)!important}
+        body.dark .bg-slate-900{background:#0a0f1e!important}
+        body.dark .text-white{color:#f1f5f9!important}
+        body.dark .hover\:bg-slate-50:hover,.dark .hover\:bg-slate-100:hover{background:var(--surface3)!important}
+        body.dark .bg-blue-50\/80,.dark .bg-blue-50{background:var(--notif-bg)!important;border-color:var(--notif-border)!important}
+        body.dark .text-blue-700,.dark .text-blue-800,.dark .text-blue-900{color:var(--notif-text)!important}
+        body.dark .text-blue-500{color:var(--notif-icon)!important}
+        body.dark .bg-green-100{background:rgba(34,197,94,.15)!important}
+        body.dark .text-green-700{color:#4ade80!important}
+        body.dark .bg-amber-100{background:rgba(251,191,36,.15)!important}
+        body.dark .text-amber-600{color:#fbbf24!important}
+        body.dark .bg-red-100{background:rgba(248,113,113,.15)!important}
+        body.dark .text-red-700{color:#f87171!important}
+        body.dark .bg-purple-50{background:var(--purple-soft)!important}
+        body.dark .text-blue-600{color:#60a5fa!important}
+        body.dark .bg-\[\#16a34a\]\/10{background:var(--accent-bg)!important}
+        body.dark .border-blue-100\/50{border-color:var(--notif-border)!important}
+        body.dark .border-blue-100\/60{border-color:var(--notif-border)!important}
+        body.dark input,body.dark select,body.dark textarea{
+            background:var(--input-bg)!important;
+            color:var(--text1)!important;
+            border-color:var(--border2)!important;
+        }
+        body.dark .animate-pulse .bg-slate-100{background:var(--surface3)!important}
+        body.dark .animate-pulse .bg-slate-50{background:var(--surface2)!important}
     </style>
 </head>
-<body>
+<body id="appBody">
 
 <div class="min-h-screen flex">
     <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
 
     <!-- ═══ SIDEBAR ═══ -->
-    <aside class="dash-sidebar w-64 bg-white border-r border-slate-100 min-h-screen flex flex-col p-5 flex-shrink-0" id="dashSidebar">
+    <aside class="dash-sidebar w-64 min-h-screen flex flex-col p-5 flex-shrink-0" id="dashSidebar">
         <a href="../../index.html" class="flex items-center gap-2.5 no-underline mb-8 px-1">
             <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Logo" class="h-9 w-auto">
             <div class="flex flex-col leading-tight">
-                <span class="text-base font-extrabold text-[#16a34a] tracking-tight">Course Corner</span>
-                <span class="text-[0.55rem] font-bold text-slate-400 uppercase tracking-widest">Learn Portal</span>
+                <span class="text-base font-extrabold tracking-tight" style="color:var(--accent)">Course Corner</span>
+                <span class="text-[0.55rem] font-bold uppercase tracking-widest" style="color:var(--text3)">Learn Portal</span>
             </div>
         </a>
         <nav class="space-y-1 flex-grow">
-            <a href="#" onclick="switchTab('overview');return false" id="nav-overview" class="sidebar-link active flex items-center gap-3 p-3 text-slate-600 font-semibold text-sm">
+            <a href="#" onclick="switchTab('overview');return false" id="nav-overview" class="sidebar-link active flex items-center gap-3 p-3 font-semibold text-sm">
                 <i class="fas fa-th-large w-5 text-center"></i> Overview
             </a>
-            <a href="#" onclick="switchTab('learning');return false" id="nav-learning" class="sidebar-link flex items-center gap-3 p-3 text-slate-500 font-medium text-sm">
+            <a href="#" onclick="switchTab('learning');return false" id="nav-learning" class="sidebar-link flex items-center gap-3 p-3 font-medium text-sm">
                 <i class="fas fa-book-reader w-5 text-center"></i> My Learning
             </a>
-            <a href="#" onclick="switchTab('certs');return false" id="nav-certs" class="sidebar-link flex items-center gap-3 p-3 text-slate-500 font-medium text-sm">
+            <a href="#" onclick="switchTab('certs');return false" id="nav-certs" class="sidebar-link flex items-center gap-3 p-3 font-medium text-sm">
                 <i class="fas fa-certificate w-5 text-center"></i> My Certs
             </a>
-            <a href="#" onclick="switchTab('payments');return false" id="nav-payments" class="sidebar-link flex items-center gap-3 p-3 text-slate-500 font-medium text-sm">
+            <a href="#" onclick="switchTab('payments');return false" id="nav-payments" class="sidebar-link flex items-center gap-3 p-3 font-medium text-sm">
                 <i class="fas fa-receipt w-5 text-center"></i> Payments
             </a>
-            <div class="my-5 border-t border-slate-50"></div>
-            <a href="courses.html" class="sidebar-link flex items-center gap-3 p-3 text-slate-400 font-medium text-sm">
+            <a href="#" onclick="switchTab('notifications');return false" id="nav-notifications" class="sidebar-link flex items-center gap-3 p-3 font-medium text-sm">
+                <i class="fas fa-bell w-5 text-center"></i> Notifications
+                <span id="notifBadge" class="ml-auto text-[0.55rem] font-bold bg-red-500 text-white rounded-full px-1.5 py-0.5 hidden">0</span>
+            </a>
+            <div class="my-5" style="border-top:1px solid var(--border)"></div>
+            <a href="courses.html" class="sidebar-link flex items-center gap-3 p-3 font-medium text-sm">
                 <i class="fas fa-compass w-5 text-center"></i> Browse Courses
             </a>
-            <a href="payment.html" class="sidebar-link flex items-center gap-3 p-3 text-slate-400 font-medium text-sm">
+            <a href="payment.html" class="sidebar-link flex items-center gap-3 p-3 font-medium text-sm">
                 <i class="fas fa-credit-card w-5 text-center"></i> Make Payment
             </a>
-            <a href="../../index.html" class="sidebar-link flex items-center gap-3 p-3 text-slate-400 font-medium text-sm">
-                <i class="fas fa-arrow-left w-5 text-center opacity-50"></i> Back to Portal
+            <a href="../../index.html" class="sidebar-link flex items-center gap-3 p-3 font-medium text-sm" style="opacity:.6">
+                <i class="fas fa-arrow-left w-5 text-center"></i> Back to Portal
             </a>
         </nav>
     </aside>
@@ -88,32 +355,36 @@
     <!-- ═══ MAIN ═══ -->
     <main class="flex-grow flex flex-col min-h-screen">
         <!-- Top Bar -->
-        <header class="bg-white border-b border-slate-100 px-4 md:px-8 py-3 flex items-center justify-between sticky top-0 z-50">
-            <div class="flex items-center gap-3">
-                <button onclick="toggleSidebar()" class="lg:hidden w-9 h-9 rounded-lg bg-slate-50 flex items-center justify-center text-slate-500 hover:bg-slate-100 transition-colors">
+        <header class="top-bar px-4 md:px-8 py-0 flex items-center justify-between sticky top-0 z-50 min-h-[56px]">
+            <div class="flex items-center gap-2.5 top-bar-inner">
+                <button onclick="toggleSidebar()" class="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center transition-colors" style="background:var(--surface3);color:var(--text2)">
                     <i class="fas fa-bars"></i>
                 </button>
                 <div>
-                    <h1 class="text-lg font-extrabold text-slate-900 leading-none">Dashboard</h1>
-                    <p class="text-[0.7rem] text-slate-400 font-medium mt-0.5">Welcome back, <span id="topBarName" class="text-[#16a34a] font-bold">Student</span></p>
+                    <h1 class="main-page-title font-extrabold leading-none" style="color:var(--text1)">Dashboard</h1>
+                    <p class="text-[0.68rem] font-medium mt-0.5" style="color:var(--text3)">Welcome back, <span id="topBarName" class="font-bold" style="color:var(--accent)">Student</span></p>
                 </div>
             </div>
-            <div class="flex items-center gap-2">
-                <button onclick="openSettings()" class="w-9 h-9 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors" title="Settings">
+            <div class="flex items-center gap-1.5">
+                <button class="theme-btn" onclick="toggleDarkMode()" id="themeBtn" title="Toggle dark/light mode">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+                <button onclick="openSettings()" class="theme-btn" title="Settings">
                     <i class="fas fa-cog"></i>
                 </button>
-                <button onclick="handleSignOut()" class="flex items-center gap-2 px-3 py-2 rounded-lg text-red-400 hover:bg-red-50 hover:text-red-500 transition-all text-sm font-semibold">
+                <button onclick="handleSignOut()" class="flex items-center gap-1.5 px-2.5 py-2 rounded-lg font-semibold transition-all text-sm" style="color:#ef4444" title="Sign Out">
                     <i class="fas fa-sign-out-alt"></i><span class="hidden sm:inline">Sign Out</span>
                 </button>
                 <div id="userAvatar" class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#16a34a] to-[#0ea5e9] text-white flex items-center justify-center font-bold text-sm cursor-pointer" onclick="openSettings()">?</div>
             </div>
         </header>
 
-        <div class="flex-grow p-4 md:p-8 max-w-[1200px] w-full mx-auto">
+        <div class="flex-grow p-3 sm:p-4 md:p-6 lg:p-8 max-w-[1200px] w-full mx-auto main-content-area">
 
             <!-- ═══ OVERVIEW TAB ═══ -->
             <div id="tab-overview">
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8">
+        <!-- STAT CARDS — 2-up on mobile, 4-up on desktop -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mb-5">
                     <div class="card stat-card">
                         <div class="stat-icon bg-[#16a34a]/10 text-[#16a34a]"><i class="fas fa-scroll"></i></div>
                         <div><p class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider">Courses</p><p id="enrolledCount" class="text-xl font-extrabold text-slate-900">0</p></div>
@@ -132,7 +403,7 @@
                     </div>
                 </div>
 
-                <div class="mb-8">
+                <div class="mb-5">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-base font-bold text-slate-900">My Courses</h2>
                         <a href="courses.html" class="text-xs font-bold text-[#16a34a] hover:underline no-underline">Browse All</a>
@@ -147,15 +418,15 @@
                         <h3 class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2"><i class="fas fa-bell text-[#16a34a]"></i> Notices</h3>
                         <div id="noticesArea" class="space-y-3">
                             <div class="flex gap-3 p-3 rounded-lg bg-blue-50/80 border border-blue-100/50">
-                                <div class="text-blue-500 mt-0.5 text-sm"><i class="fas fa-info-circle"></i></div>
-                                <div><p class="text-xs font-bold text-blue-900">Welcome to Learn!</p><p class="text-[0.7rem] text-blue-700/70 mt-0.5">Submit an application to get started with your course.</p></div>
+                                <div class="text-blue-500 mt-0.5 text-sm"><i class="fas fa-spinner fa-spin"></i></div>
+                                <div><p class="text-xs text-blue-700">Loading notices...</p></div>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-slate-300 group-hover:text-[#16a34a] transition-colors"></i>
                     </div>
 
                     <!-- Account Settings trigger -->
-                    <div class="card p-5 flex items-center justify-between cursor-pointer hover:border-[#16a34a]/30 transition-all group" onclick="openSettingsModal()">
+                    <div class="card p-5 flex items-center justify-between cursor-pointer hover:border-[#16a34a]/30 transition-all group" onclick="openSettings()">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-[#16a34a]/10 flex items-center justify-center text-[#16a34a]">
                                 <i class="fas fa-gear"></i>
@@ -209,9 +480,24 @@
 
             <!-- ═══ PAYMENTS TAB ═══ -->
             <div id="tab-payments" class="hidden">
-                <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center justify-between mb-4">
                     <h2 class="text-lg font-bold text-slate-900">Payment History</h2>
                     <a href="payment.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#16a34a] text-white rounded-lg text-xs font-bold hover:bg-[#15803d] transition-all no-underline"><i class="fas fa-plus"></i> New Payment</a>
+                </div>
+                <!-- Balance summary bar -->
+                <div id="balanceSummaryBar" class="hidden mb-4 card p-4 flex flex-wrap gap-4 items-center">
+                    <div class="flex-1 min-w-[120px]">
+                        <p class="text-[0.55rem] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Total Course Fee</p>
+                        <p id="balTotalFee" class="text-sm font-extrabold text-slate-800">KES 0</p>
+                    </div>
+                    <div class="flex-1 min-w-[120px]">
+                        <p class="text-[0.55rem] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Total Paid</p>
+                        <p id="balTotalPaid" class="text-sm font-extrabold text-green-600">KES 0</p>
+                    </div>
+                    <div class="flex-1 min-w-[120px]">
+                        <p class="text-[0.55rem] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Balance Remaining</p>
+                        <p id="balRemaining" class="text-sm font-extrabold text-amber-600">KES 0</p>
+                    </div>
                 </div>
                 <div class="card overflow-hidden">
                     <table class="w-full text-left">
@@ -219,39 +505,74 @@
                             <tr>
                                 <th class="p-3 text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">Description</th>
                                 <th class="p-3 text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">Amount</th>
+                                <th class="p-3 text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">Date</th>
+                                <th class="p-3 text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">M-Pesa Code</th>
                                 <th class="p-3 text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest text-right">Status</th>
                             </tr>
                         </thead>
                         <tbody id="paymentsList" class="divide-y divide-slate-50">
-                            <tr><td colspan="3" class="p-8 text-center text-slate-400 italic text-sm">Loading payments...</td></tr>
+                            <tr><td colspan="5" class="p-8 text-center text-slate-400 italic text-sm">Loading payments...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
+            <!-- ═══ NOTIFICATIONS TAB ═══ -->
+            <div id="tab-notifications" class="hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-bold text-slate-900">Notifications</h2>
+                    <span id="notifUnreadCount" class="text-xs font-bold text-[#16a34a] hidden"></span>
+                </div>
+                <div id="notificationsContent" class="space-y-3">
+                    <div class="card p-6 text-center">
+                        <i class="fas fa-spinner fa-spin text-2xl text-slate-300 mb-3"></i>
+                        <p class="text-slate-400 text-sm">Loading notifications...</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <footer class="mt-auto py-5 border-t border-slate-100 bg-white px-6">
+        <footer class="bot-bar mt-auto py-4 px-6">
             <div class="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
                 <div class="flex items-center gap-2">
                     <img src="https://coursecornerkenya.com/assets/images/logo.png" class="h-5 w-auto" alt="Logo">
-                    <p class="text-[0.65rem] font-bold text-slate-400">&copy; 2026 Course Corner Learn</p>
+                    <p class="text-[0.65rem] font-bold" style="color:var(--text3)">&copy; 2026 Course Corner Learn</p>
                 </div>
                 <div class="flex gap-5">
-                    <a href="../../index.html" class="text-[0.65rem] font-bold text-slate-400 hover:text-[#16a34a] transition-colors no-underline">Home</a>
-                    <a href="courses.html" class="text-[0.65rem] font-bold text-slate-400 hover:text-[#16a34a] transition-colors no-underline">Courses</a>
-                    <a href="https://coursecornerkenya.com/pages/privacy-policy.html" class="text-[0.65rem] font-bold text-slate-400 hover:text-[#16a34a] transition-colors no-underline">Privacy</a>
+                    <a href="../../index.html" class="text-[0.65rem] font-bold transition-colors no-underline" style="color:var(--text3)">Home</a>
+                    <a href="courses.html" class="text-[0.65rem] font-bold transition-colors no-underline" style="color:var(--text3)">Courses</a>
+                    <a href="https://coursecornerkenya.com/pages/privacy-policy.html" class="text-[0.65rem] font-bold transition-colors no-underline" style="color:var(--text3)">Privacy</a>
                 </div>
             </div>
         </footer>
     </main>
+
+    <!-- ═══ MOBILE BOTTOM NAV ═══ -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav">
+        <button class="bnav-item active" id="bnav-overview" onclick="switchTab('overview')" aria-label="Overview">
+            <i class="fas fa-th-large"></i><span>Home</span>
+        </button>
+        <button class="bnav-item" id="bnav-learning" onclick="switchTab('learning')" aria-label="Learning">
+            <i class="fas fa-book-reader"></i><span>Learning</span>
+        </button>
+        <button class="bnav-item" id="bnav-payments" onclick="switchTab('payments')" aria-label="Payments">
+            <i class="fas fa-receipt"></i><span>Payments</span>
+        </button>
+        <button class="bnav-item" id="bnav-notifications" onclick="switchTab('notifications')" aria-label="Notifications">
+            <i class="fas fa-bell"></i><span>Alerts</span>
+            <span id="bnavBadge" class="bnav-badge hidden"></span>
+        </button>
+        <button class="bnav-item" id="bnav-certs" onclick="switchTab('certs')" aria-label="Certificates">
+            <i class="fas fa-certificate"></i><span>Certs</span>
+        </button>
+    </nav>
 </div>
 
 <!-- ═══ SETTINGS MODAL ═══ -->
 <div id="settingsOverlay" class="settings-overlay" onclick="if(event.target===this)closeSettings()">
     <div class="settings-modal">
-        <div class="p-5 border-b border-slate-100 flex items-center justify-between">
-            <h2 class="text-base font-extrabold text-slate-900 flex items-center gap-2"><i class="fas fa-cog text-[#16a34a]"></i> Settings</h2>
-            <button onclick="closeSettings()" class="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors"><i class="fas fa-times"></i></button>
+        <div class="p-5 flex items-center justify-between" style="border-bottom:1px solid var(--border)">
+            <h2 class="text-base font-extrabold flex items-center gap-2" style="color:var(--text1)"><i class="fas fa-cog" style="color:var(--accent)"></i> Settings</h2>
+            <button onclick="closeSettings()" class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors" style="background:var(--surface3);color:var(--text2)"><i class="fas fa-times"></i></button>
         </div>
         <form id="settingsForm" class="p-5 space-y-4">
             <div>
@@ -281,7 +602,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
     import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-    import { getFirestore, collection, query, where, getDocs, orderBy, limit, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+    import { getFirestore, collection, query, where, getDocs, orderBy, limit, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
     const app = initializeApp({
         apiKey:"AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
@@ -332,6 +653,7 @@
             renderOverviewCourses();
             await loadPayments(email);
             renderLearningTab();
+            await loadNotifications();
         } catch (err) {
             console.error("Dashboard load error:", err);
         }
@@ -458,31 +780,201 @@
     }
 
     async function loadPayments(email) {
+        const pList = document.getElementById('paymentsList');
         try {
-            const pq = query(collection(db, "learnPayments"), where("email", "==", email), orderBy("timestamp", "desc"), limit(10));
-            const psnap = await getDocs(pq);
-            let payments = psnap.docs.map(d => d.data());
+            // Fetch from both collections
+            let raw = [];
             try {
-                const tq = query(collection(db, "transactions"), where("email", "==", email), orderBy("timestamp", "desc"), limit(10));
+                const pq = query(collection(db, "learnPayments"), where("email", "==", email), orderBy("timestamp", "desc"), limit(20));
+                const psnap = await getDocs(pq);
+                raw = psnap.docs.map(d => d.data());
+            } catch(e) { console.log('learnPayments fetch:', e.message); }
+            try {
+                const tq = query(collection(db, "transactions"), where("email", "==", email), orderBy("completedAt", "desc"), limit(20));
                 const tsnap = await getDocs(tq);
-                payments = [...payments, ...tsnap.docs.map(d => d.data())];
-            } catch(e) {}
-            const totalPaid = payments.filter(p => ['COMPLETED','SUCCESS','completed','success'].includes(p.status)).reduce((a, p) => a + (parseFloat(p.amount) || 0), 0);
+                // Merge, avoid duplicates by checkoutRequestId
+                const existing = new Set(raw.map(p => p.checkoutRequestId).filter(Boolean));
+                tsnap.docs.forEach(d => {
+                    const data = d.data();
+                    if (!data.checkoutRequestId || !existing.has(data.checkoutRequestId)) raw.push(data);
+                });
+            } catch(e) { console.log('transactions fetch:', e.message); }
+
+            // Only successful payments
+            const successStatuses = ['completed','success','COMPLETED','SUCCESS'];
+            const payments = raw
+                .filter(p => successStatuses.includes(p.status))
+                .sort((a, b) => {
+                    const ta = a.completedAt || a.timestamp || '';
+                    const tb = b.completedAt || b.timestamp || '';
+                    return tb > ta ? 1 : tb < ta ? -1 : 0;
+                });
+
+            // Compute total paid
+            const totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
             document.getElementById('paidAmt').textContent = `KES ${totalPaid.toLocaleString()}`;
-            const pList = document.getElementById('paymentsList');
-            if (payments.length === 0) { pList.innerHTML = '<tr><td colspan="3" class="p-8 text-center text-slate-400 italic text-sm">No transactions found.</td></tr>'; return; }
+
+            // Compute total course fee from enrolled applications
+            const totalFee = userApps.reduce((sum, a) => {
+                const course = allCourses.find(c => c.id === a.courseId);
+                return sum + (course ? (parseFloat(course.fee) || 0) : 0);
+            }, 0);
+            const balRemaining = Math.max(0, totalFee - totalPaid);
+
+            // Show balance bar if we have fee data
+            const bar = document.getElementById('balanceSummaryBar');
+            if (totalFee > 0) {
+                document.getElementById('balTotalFee').textContent  = `KES ${totalFee.toLocaleString()}`;
+                document.getElementById('balTotalPaid').textContent = `KES ${totalPaid.toLocaleString()}`;
+                document.getElementById('balRemaining').textContent = `KES ${balRemaining.toLocaleString()}`;
+                document.getElementById('balRemaining').className = balRemaining === 0
+                    ? 'text-sm font-extrabold text-green-600'
+                    : 'text-sm font-extrabold text-amber-600';
+                bar.classList.remove('hidden');
+            }
+
+            if (payments.length === 0) {
+                pList.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400 text-sm">No successful payments found.</td></tr>';
+                return;
+            }
+
             pList.innerHTML = payments.map(p => {
-                const ok = ['COMPLETED','SUCCESS','completed','success'].includes(p.status);
-                return `<tr class="hover:bg-slate-50 transition-colors"><td class="p-3"><div class="flex items-center gap-2"><div class="w-7 h-7 rounded bg-slate-50 flex items-center justify-center text-slate-400"><i class="fas fa-receipt text-[0.6rem]"></i></div><p class="text-xs font-bold text-slate-700">${p.description || p.courseTitle || 'Course Fee'}</p></div></td><td class="p-3 text-xs font-extrabold text-slate-900">KES ${parseFloat(p.amount).toLocaleString()}</td><td class="p-3 text-right"><span class="text-[0.55rem] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${ok ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${p.status}</span></td></tr>`;
+                const amt = parseFloat(p.amount) || 0;
+                // Format date
+                let dateStr = 'None';
+                const rawDate = p.completedAt || p.timestamp;
+                if (rawDate) {
+                    try {
+                        const d = rawDate.toDate ? rawDate.toDate() : new Date(rawDate);
+                        dateStr = d.toLocaleDateString('en-KE', { day:'2-digit', month:'short', year:'numeric' });
+                    } catch(_){}
+                }
+                // M-Pesa receipt code
+                const mpesa = p.mpesaReceiptNumber || p.transactionCode || 'None';
+                const desc = p.description || p.courseTitle || p.category || 'Course Fee';
+                return `<tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3"><div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded bg-green-50 flex items-center justify-center text-green-500 flex-shrink-0"><i class="fas fa-check text-[0.6rem]"></i></div>
+                        <p class="text-xs font-bold text-slate-700">${desc}</p>
+                    </div></td>
+                    <td class="p-3 text-xs font-extrabold text-slate-900 whitespace-nowrap">KES ${amt.toLocaleString()}</td>
+                    <td class="p-3 text-xs text-slate-500 whitespace-nowrap">${dateStr}</td>
+                    <td class="p-3 text-xs font-mono text-slate-600">${mpesa}</td>
+                    <td class="p-3 text-right"><span class="text-[0.55rem] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-green-100 text-green-700">Paid</span></td>
+                </tr>`;
             }).join('');
         } catch(e) {
-            console.error('Payments load:', e);
-            document.getElementById('paymentsList').innerHTML = '<tr><td colspan="3" class="p-8 text-center text-slate-400 italic text-sm">Unable to load payments.</td></tr>';
+            console.error('Payments load error:', e);
+            pList.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400 text-sm">No payments found.</td></tr>';
         }
+    }
+
+    async function loadNotifications() {
+        if (!currentUser) return;
+        try {
+            const nSnap = await getDocs(query(collection(db, 'learnNotifications'), orderBy('createdAt', 'desc'), limit(30)));
+            const all = nSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+            // Show notifications addressed to 'all' or specifically to this user
+            const myEmail = currentUser.email;
+            const notices = all.filter(n => !n.target || n.target === 'all' || n.target === myEmail);
+
+            // Sidebar badge — only count unread (not in readBy)
+            const badge = document.getElementById('notifBadge');
+            const bnavBadge = document.getElementById('bnavBadge');
+            const uid = currentUser?.uid;
+            const unread = notices.filter(n => !((n.readBy || []).includes(uid)));
+            if (unread.length > 0) {
+                const label = unread.length > 9 ? '9+' : String(unread.length);
+                badge.textContent = label;
+                badge.classList.remove('hidden');
+                if (bnavBadge) { bnavBadge.textContent = label; bnavBadge.classList.remove('hidden'); }
+            } else {
+                badge.classList.add('hidden');
+                if (bnavBadge) bnavBadge.classList.add('hidden');
+            }
+
+            // Notifications tab content
+            const content = document.getElementById('notificationsContent');
+            if (notices.length === 0) {
+                content.innerHTML = `<div class="card p-8 text-center">
+                    <div class="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center mx-auto mb-3"><i class="fas fa-bell-slash text-xl text-slate-300"></i></div>
+                    <p class="text-slate-400 text-sm font-medium">No notifications yet.</p>
+                    <p class="text-[0.7rem] text-slate-300 mt-1">We'll let you know about important updates here.</p>
+                </div>`;
+            } else {
+                const cntEl = document.getElementById('notifUnreadCount');
+                if (cntEl) { cntEl.textContent = `${notices.length} message${notices.length !== 1 ? 's' : ''}`; cntEl.classList.remove('hidden'); }
+                content.innerHTML = notices.map(n => {
+                    const ts = n.createdAt && n.createdAt.toDate
+                        ? n.createdAt.toDate().toLocaleDateString('en-KE', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })
+                        : '';
+                    return `<div class="flex gap-3 p-4 rounded-xl bg-blue-50/80 border border-blue-100/60 hover:border-blue-200 transition-all">
+                        <div class="text-blue-500 mt-0.5 flex-shrink-0"><i class="fas fa-bell text-sm"></i></div>
+                        <div class="flex-grow min-w-0">
+                            <p class="text-sm text-slate-800 leading-relaxed">${n.message || ''}</p>
+                            ${ts ? `<p class="text-[0.65rem] text-slate-400 mt-1.5 font-medium">${ts}</p>` : ''}
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            // Overview #noticesArea — show latest 2
+            const noticesArea = document.getElementById('noticesArea');
+            if (notices.length > 0) {
+                noticesArea.innerHTML = notices.slice(0, 2).map(n =>
+                    `<div class="flex gap-3 p-3 rounded-lg bg-blue-50/80 border border-blue-100/50">
+                        <div class="text-blue-500 mt-0.5 text-sm flex-shrink-0"><i class="fas fa-info-circle"></i></div>
+                        <div>
+                            <p class="text-xs text-blue-800 leading-relaxed">${n.message || ''}</p>
+                            <button onclick="switchTab('notifications')" class="text-[0.65rem] font-bold text-blue-500 mt-1 hover:underline bg-transparent border-none cursor-pointer p-0">View all notifications</button>
+                        </div>
+                    </div>`).join('');
+            } else {
+                noticesArea.innerHTML = `<p class="text-xs text-slate-400 py-2">No notices yet. <button onclick="switchTab('notifications')" class="text-[#16a34a] font-bold hover:underline">View all notifications</button></p>`;
+            }
+        } catch (e) {
+            console.log('Notifications load:', e.message);
+            document.getElementById('noticesArea').innerHTML = `<div class="flex gap-3 p-3 rounded-lg bg-blue-50/80 border border-blue-100/50">
+                <div class="text-blue-500 mt-0.5 text-sm"><i class="fas fa-info-circle"></i></div>
+                <div><p class="text-xs font-bold text-blue-900">Welcome to Learn!</p><p class="text-[0.7rem] text-blue-700/70 mt-0.5">Submit an application to get started with your course.</p></div>
+            </div>`;
+        }
+    }
+
+    async function markNotificationsRead() {
+        if (!currentUser) return;
+        try {
+            const uid = currentUser.uid;
+            const nSnap = await getDocs(query(collection(db, 'learnNotifications'), orderBy('createdAt','desc'), limit(30)));
+            const unread = nSnap.docs.filter(d => !((d.data().readBy || []).includes(uid)));
+            if (unread.length === 0) return;
+            await Promise.all(unread.map(d => updateDoc(doc(db, 'learnNotifications', d.id), { readBy: arrayUnion(uid) })));
+            const badge = document.getElementById('notifBadge');
+            if (badge) badge.classList.add('hidden');
+            const bnavBadge = document.getElementById('bnavBadge');
+            if (bnavBadge) bnavBadge.classList.add('hidden');
+        } catch(e) { console.log('markRead:', e.message); }
     }
 
     window.openSettings = () => document.getElementById('settingsOverlay').classList.add('show');
     window.closeSettings = () => document.getElementById('settingsOverlay').classList.remove('show');
+
+    // ═══ DARK / LIGHT THEME ═══
+    function applyTheme(dark) {
+        document.getElementById('appBody').classList.toggle('dark', dark);
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = dark ? 'fas fa-sun' : 'fas fa-moon';
+        localStorage.setItem('ccLearnDark', dark ? '1' : '0');
+    }
+    window.toggleDarkMode = () => applyTheme(!document.getElementById('appBody').classList.contains('dark'));
+    // Apply saved preference on load
+    (function(){
+        const saved = localStorage.getItem('ccLearnDark');
+        // Default to dark if not set and prefers-color-scheme dark
+        if (saved === '1' || (saved === null && window.matchMedia('(prefers-color-scheme:dark)').matches)) {
+            applyTheme(true);
+        }
+    })();
 
     document.getElementById('settingsForm').addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -504,12 +996,16 @@
     });
 
     window.switchTab = (tab) => {
-        ['overview','learning','certs','payments'].forEach(t => {
+        ['overview','learning','certs','payments','notifications'].forEach(t => {
             document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
             const nav = document.getElementById(`nav-${t}`);
             if (nav) { nav.classList.toggle('active', t === tab); }
+            // Update bottom nav
+            const bnav = document.getElementById(`bnav-${t}`);
+            if (bnav) { bnav.classList.toggle('active', t === tab); }
         });
         closeSidebar();
+        if (tab === 'notifications') markNotificationsRead();
     };
 
     window.handleSignOut = async () => {

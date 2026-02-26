@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+vv<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -138,9 +138,41 @@
         .animate-slide-in {
             animation: slide-in 0.3s ease;
         }
+
+        /* ═══ COMPACT LAYOUT FOR LAPTOP SCREENS ═══ */
+        @media (min-width:1024px) {
+            aside#sidebar { width:220px !important; }
+            .lg\:ml-72 { margin-left:220px !important; }
+        }
+        /* Sidebar header */
+        aside#sidebar > div:first-child { height:3.25rem !important; padding:.5rem 1rem !important; }
+        aside#sidebar > div:first-child img { width:1.75rem !important; height:1.75rem !important; border-radius:.5rem !important; }
+        aside#sidebar > div:first-child h1 { font-size:.875rem !important; }
+        aside#sidebar > div:first-child p { font-size:.6rem !important; }
+        /* Sidebar nav items */
+        aside#sidebar .nav-item { padding:.375rem .65rem !important; gap:.55rem !important; font-size:.78rem !important; border-radius:.6rem !important; }
+        aside#sidebar .nav-item > i:first-child { font-size:.78rem !important; width:.85rem !important; min-width:.85rem; }
+        aside#sidebar nav > div > p { font-size:.58rem !important; margin-bottom:.35rem !important; padding-left:.65rem !important; }
+        /* Top bar */
+        header.sticky.h-20 { height:3.25rem !important; padding-left:1.25rem !important; padding-right:1.25rem !important; }
+        header.sticky.h-20 #page-title { font-size:1.05rem !important; }
+        header.sticky.h-20 #page-subtitle { font-size:.68rem !important; }
+        header.sticky.h-20 button.p-3 { padding:.45rem !important; }
+        header.sticky.h-20 button.p-3 i { font-size:.8rem !important; }
+        header.sticky.h-20 #topbar-email { font-size:.75rem !important; max-width:120px !important; }
+        /* Stat cards */
+        [class*="stat-gradient-"] { width:2.25rem !important; height:2.25rem !important; border-radius:.6rem !important; }
+        [class*="stat-gradient-"] i { font-size:.8rem !important; }
+        .hover-lift { padding:.9rem !important; }
+        .hover-lift .mb-4 { margin-bottom:.6rem !important; }
+        #page-dashboard .text-4xl { font-size:1.5rem !important; line-height:1.2 !important; }
+        #page-dashboard .grid.gap-6 { gap:.9rem !important; margin-bottom:1.25rem !important; }
+        /* Main page padding */
+        main.p-4.lg\:p-8 { padding:1.25rem !important; }
+        main table th, main table td { padding:.6rem 1rem !important; font-size:.78rem !important; }
+        main table th { font-size:.65rem !important; }
     </style>
 </head>
-
 <body class="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
 
     <!-- Login Screen -->

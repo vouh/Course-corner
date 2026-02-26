@@ -140,6 +140,7 @@ module.exports = async (req, res) => {
       const successData = {
         sessionId: paymentData?.sessionId || `unknown-${checkoutRequestID}`,
         phoneNumber: paymentData?.phoneNumber || 'unknown',
+        email: paymentData?.email || null,
         amount: paymentData?.amount || 0,
         category: paymentData?.category || 'unknown',
         referralCode: paymentData?.referralCode || null, // Include referral code
@@ -224,6 +225,7 @@ module.exports = async (req, res) => {
       const failureData = {
         sessionId: paymentData?.sessionId || `unknown-${checkoutRequestID}`,
         phoneNumber: paymentData?.phoneNumber || 'unknown',
+        email: paymentData?.email || null,
         amount: paymentData?.amount || 0,
         category: paymentData?.category || 'unknown',
         status: 'failed',

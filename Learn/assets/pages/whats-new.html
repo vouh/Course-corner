@@ -172,7 +172,12 @@
         .mobile-menu-btn.active span:nth-child(1){transform:translateY(6px) rotate(45deg)}
         .mobile-menu-btn.active span:nth-child(2){opacity:0}
         .mobile-menu-btn.active span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-        .mobile-menu-btn span{display:block;transition:all .3s}
+        /* Force visible toggle bars + solid header on all viewports */
+        .mobile-menu-btn span{display:block!important;transition:all .3s;background-color:#1f2937!important;height:2px!important;width:24px!important;margin:0!important}
+        .modern-header{background:rgba(255,255,255,0.97)!important;backdrop-filter:blur(12px)!important}
+        /* Solid white mobile menu — no transparency dependency */
+        .mobile-menu{background-color:#fff!important}
+        .mobile-menu.show{background-color:#fff!important}
     </style>
 </head>
 <body>
@@ -226,100 +231,21 @@
 
 <!-- ═══ POSTS ══════════════════════════════════════════════════════════ -->
 <main class="posts-section">
-    <div class="posts-header">
-        <h2>All Posts <span class="text-gray-400 font-normal text-base">(3)</span></h2>
-        <div class="filter-tabs">
-            <button class="filter-tab active" onclick="filterPosts('all',this)">All</button>
-            <button class="filter-tab" onclick="filterPosts('news',this)">Portal News</button>
-            <button class="filter-tab" onclick="filterPosts('story',this)">Success Stories</button>
-            <button class="filter-tab" onclick="filterPosts('tips',this)">Quick Tips</button>
+
+    <!-- Check back soon (shown by default, hidden once Firestore posts load) -->
+    <div id="emptyState" style="text-align:center;padding:5rem 0 4rem">
+        <div style="display:inline-flex;align-items:center;justify-content:center;width:80px;height:80px;background:#f0fdf4;border-radius:50%;margin-bottom:1.5rem">
+            <i class="fas fa-bell-slash" style="font-size:2rem;color:#86efac"></i>
         </div>
+        <h3 style="font-size:1.25rem;font-weight:700;color:#1f2937;margin-bottom:.5rem">Check Back Soon</h3>
+        <p style="color:#6b7280;font-size:.9375rem;max-width:400px;margin:0 auto;line-height:1.65">We're busy putting together great content for you. New posts, portal updates and student spotlights are coming soon.</p>
     </div>
 
-    <div class="posts-grid" id="postsGrid">
+    <!-- Dynamic posts grid (populated from Firestore learnPosts) -->
+    <div class="posts-grid" id="postsGrid"></div>
 
-        <!-- Featured: Portal V2 -->
-        <article class="post-card featured" data-cat="news">
-            <div class="inner">
-                <div class="post-img">
-                    <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=900&auto=format&fit=crop" alt="Portal Launch">
-                    <div class="overlay"></div>
-                    <span class="cat-pill" style="background:#16a34a;color:white;">Portal News</span>
-                </div>
-                <div class="post-body" style="padding:2rem">
-                    <h3 style="font-size:1.3rem;line-height:1.35">Course Corner Learn: Portal V2 is Now Live 🚀</h3>
-                    <p>Our fully redesigned learning portal is officially live — now featuring 3 tiered packages, an improved student dashboard, faster performance, and much better mobile support. Whether you're on Starter, Intermediate, or Pro, the experience is now world-class.</p>
-                    <div class="post-meta">
-                        <i class="fas fa-calendar-alt text-green-500"></i>
-                        <span>June 2025</span>
-                        <span class="dot"></span>
-                        <span>Course Corner Team</span>
-                        <span class="dot"></span>
-                        <span>3 min read</span>
-                    </div>
-                    <a href="#" class="read-btn">Read More <i class="fas fa-arrow-right text-xs"></i></a>
-                </div>
-            </div>
-        </article>
-
-        <!-- Success story -->
-        <article class="post-card" data-cat="story">
-            <div class="post-img">
-                <img src="https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=600&auto=format&fit=crop" alt="">
-                <div class="overlay"></div>
-                <span class="cat-pill" style="background:#3b82f6;color:white;">Success Story</span>
-            </div>
-            <div class="post-body">
-                <h3>How John Mastered MS Office in 4 Weeks</h3>
-                <p>Fresh from Form 4, John enrolled in our Starter package and focused entirely on the Microsoft Office module. Four weeks later he landed a data-entry role at a local logistics firm.</p>
-                <div class="post-meta">
-                    <i class="fas fa-calendar-alt text-blue-500"></i>
-                    <span>May 2025</span>
-                    <span class="dot"></span>
-                    <span>4 min read</span>
-                </div>
-                <a href="#" class="read-btn">Read More <i class="fas fa-arrow-right text-xs"></i></a>
-            </div>
-        </article>
-
-        <!-- Quick tips -->
-        <article class="post-card" data-cat="tips">
-            <div class="post-img">
-                <img src="https://images.unsplash.com/photo-1620712943543-bcc4688e7485?q=80&w=600&auto=format&fit=crop" alt="">
-                <div class="overlay"></div>
-                <span class="cat-pill" style="background:#8b5cf6;color:white;">Quick Tips</span>
-            </div>
-            <div class="post-body">
-                <h3>5 AI Prompts to Boost Your Productivity Right Now</h3>
-                <p>Artificial Intelligence isn't going away — and it doesn't have to be scary. Here are 5 practical prompts you can use today in ChatGPT to save hours every week.</p>
-                <div class="post-meta">
-                    <i class="fas fa-calendar-alt text-purple-500"></i>
-                    <span>April 2025</span>
-                    <span class="dot"></span>
-                    <span>5 min read</span>
-                </div>
-                <a href="#" class="read-btn">Read More <i class="fas fa-arrow-right text-xs"></i></a>
-            </div>
-        </article>
-
-    </div><!-- /postsGrid -->
-
-    <!-- Empty state (hidden) -->
-    <div id="emptyState" style="display:none;text-align:center;padding:4rem 0">
-        <i class="fas fa-newspaper text-4xl text-gray-300 mb-3 block"></i>
-        <p class="text-gray-500">No posts in this category yet. Check back soon!</p>
-    </div>
 </main>
 
-<!-- ═══ NEWSLETTER STRIP ════════════════════════════════════════════════ -->
-<section class="nl-strip">
-    <h3>Stay in the Loop</h3>
-    <p>Get portal updates, new posts, and student tips sent straight to your WhatsApp.</p>
-    <div class="nl-form">
-        <input type="tel" placeholder="07XX XXX XXX" id="nlPhone">
-        <button onclick="subscribeNL()"><i class="fas fa-paper-plane mr-1"></i> Notify Me</button>
-    </div>
-</section>
 
 <footer class="cc-footer">
     <div class="cc-footer-container">
@@ -416,20 +342,7 @@
         if (mmBtn) mmBtn.classList.remove('active');
     };
 
-    // Post filtering
-    window.filterPosts = function(cat, btn) {
-        document.querySelectorAll('.filter-tab').forEach(t=>t.classList.remove('active'));
-        btn.classList.add('active');
-        const cards = document.querySelectorAll('.post-card');
-        let visible = 0;
-        cards.forEach(c => {
-            const show = cat === 'all' || c.dataset.cat === cat;
-            c.style.display = show ? '' : 'none';
-            if (show) visible++;
-        });
-        const emptyState = document.getElementById('emptyState');
-        if (emptyState) emptyState.style.display = visible === 0 ? 'block' : 'none';
-    };
+    // (Filter tabs removed — posts load directly from Firestore)
 
     // Load dynamic posts from Firestore (learnPosts collection)
     (async function loadDynamicPosts() {
@@ -445,20 +358,31 @@
                 appId:"1:961706784572:web:7aa6c24946570ffda59039"
             }, 'wn-reader');
             const dbR = getFirestore(fbApp);
-            const snap = await getDocs(query(collection(dbR, 'learnPosts'), where('published', '==', true), orderBy('createdAt', 'desc')));
-            if (snap.empty) return;
+            const snap = await getDocs(query(collection(dbR, 'learnPosts'), where('published', '==', true)));
+            // Sort client-side — avoids needing a Firestore composite index
+            const posts = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            posts.sort((a, b) => {
+                const ta = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
+                const tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
+                return tb - ta;
+            });
+            // Hide "Check back soon" only when posts exist
+            if (posts.length === 0) return;
+            const emptyEl = document.getElementById('emptyState');
+            if (emptyEl) emptyEl.style.display = 'none';
 
             const grid = document.getElementById('postsGrid');
             const catStyles = { story:'background:#3b82f6;color:white;', update:'background:#16a34a;color:white;', tip:'background:#8b5cf6;color:white;', news:'background:#f59e0b;color:white;' };
             const catLabels = { story:'Success Story', update:'Platform Update', tip:'Learning Tip', news:'News' };
             const catFilter = { story:'story', update:'news', tip:'tips', news:'news' };
 
-            snap.forEach(d => {
-                const p = d.data();
+            posts.forEach(p => {
                 const ts = p.createdAt && p.createdAt.toDate ? p.createdAt.toDate().toLocaleDateString('en-GB', { month:'short', year:'numeric' }) : '';
                 const card = document.createElement('article');
                 card.className = 'post-card';
+                card.style.cursor = 'pointer';
                 card.dataset.cat = catFilter[p.category] || p.category || 'news';
+                card.onclick = () => window.location.href = `post.html?id=${p.id}`;
                 card.innerHTML = `
                     <div class="post-img">
                         ${p.image ? `<img src="${p.image}" alt="">` : `<div style="width:100%;height:100%;background:linear-gradient(135deg,#e0e7ff,#dbeafe);display:flex;align-items:center;justify-content:center;"><i class="fas fa-newspaper text-4xl text-blue-300"></i></div>`}
@@ -474,16 +398,24 @@
                             <span class="dot"></span>
                             <span>${p.author || 'Course Corner Team'}</span>
                         </div>
-                        <a href="#" class="read-btn" onclick="event.preventDefault();Swal.fire({title:'${(p.title||'').replace(/'/g,"\\'")}',html:'<div style=\\'text-align:left;line-height:1.8;font-size:.95rem\\'>${(p.content||p.excerpt||'').replace(/'/g,"\\'").replace(/\n/g,'<br>')}</div>',confirmButtonColor:'#16a34a',width:640})">Read More <i class="fas fa-arrow-right text-xs"></i></a>
+                        <a href="post.html?id=${p.id}" class="read-btn">Read More <i class="fas fa-arrow-right text-xs"></i></a>
                     </div>`;
                 grid.appendChild(card);
             });
 
-            // Update count
+            // Count banner (optional – posts-header removed, safe to skip)
             const allCards = grid.querySelectorAll('.post-card');
-            const countSpan = document.querySelector('.posts-header h2 span');
-            if (countSpan) countSpan.textContent = `(${allCards.length})`;
-        } catch (e) { console.log('Dynamic posts load skipped:', e.message); }
+            if (allCards.length > 0) {
+                let hdr = document.getElementById('postsCountHdr');
+                if (!hdr) {
+                    hdr = document.createElement('p');
+                    hdr.id = 'postsCountHdr';
+                    hdr.style.cssText = 'font-size:.8125rem;color:#9ca3af;text-align:right;margin-bottom:1rem';
+                    grid.parentNode.insertBefore(hdr, grid);
+                }
+                hdr.textContent = `${allCards.length} post${allCards.length !== 1 ? 's' : ''}`;
+            }
+        } catch (e) { console.error('Dynamic posts load error:', e.message); }
     })();
 
     // Newsletter

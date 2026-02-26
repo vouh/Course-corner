@@ -3,31 +3,91 @@
     "id": "starter",
     "slug": "starter-package",
     "title": "Starter Package",
-    "description": "Essential digital literacy foundation. Perfect for beginners looking to master basics of computers and the internet.",
-    "shortDescription": "Master the basics of computing.",
+    "description": "Build digital confidence from scratch. In just 2 weeks you will go from zero to creating professional documents, using email like a pro, and navigating the internet safely — skills every campus student needs.",
+    "shortDescription": "Master computing basics in 2 focused weeks.",
     "level": "Beginner",
-    "duration": "4 Weeks",
-    "modulesCount": 5,
+    "duration": "2 Weeks",
+    "modulesCount": 3,
     "fee": 2000,
     "currency": "KSH",
     "icon": "fas fa-seedling",
     "gradient": "linear-gradient(135deg, #10b981 0%, #059669 100%)",
     "image": "assets/images/image.png",
-    "tags": ["Basics", "Computing", "Internet"],
+    "tags": ["Digital Literacy", "Microsoft Word", "Internet", "Email"],
     "features": [
-      { "icon": "fas fa-check", "title": "5 Core Modules", "text": "Structured learning" },
-      { "icon": "fas fa-check", "title": "Basic Certificate", "text": "Proof of completion" }
+      { "icon": "fas fa-check", "title": "3 Core Modules", "text": "Structured, practical learning" },
+      { "icon": "fas fa-check", "title": "2 Real Projects", "text": "CV and Application Letter" },
+      { "icon": "fas fa-check", "title": "Starter Certificate", "text": "Proof of digital literacy" }
+    ],
+    "outcomes": [
+      "Use a computer and Windows OS confidently",
+      "Organize files and folders professionally",
+      "Create and send professional emails",
+      "Build a clean, well-formatted CV",
+      "Write formal letters and academic documents",
+      "Stay safe online and understand digital footprints"
     ],
     "syllabus": [
       {
-        "week": "Module 1",
-        "title": "Computer Basics",
-        "topics": ["Hardware vs Software", "Using Mouse & Keyboard", "Windows OS Navigation"]
+        "week": "Week 1",
+        "module": "Module 1",
+        "title": "Computer & Internet Fundamentals",
+        "topics": [
+          "Computer components — Hardware vs Software",
+          "Windows Operating System basics and navigation",
+          "File and folder management (creating, renaming, organizing)",
+          "Internet browsing and effective searching (Google, Chrome, Edge)",
+          "Creating and using a professional email account",
+          "Digital safety — passwords, scams, phishing, privacy"
+        ],
+        "activities": [
+          "Create an organized academic folder structure",
+          "Set up a professional Gmail account",
+          "Practice safe downloads and identify suspicious links",
+          "Use Google Drive for cloud file backup"
+        ],
+        "assignment": "Create and organize a full academic folder system. Submit a screenshot of your professional email setup and write one professional email to a lecturer asking for an extension."
       },
       {
-        "week": "Module 2",
-        "title": "Internet & Email",
-        "topics": ["Browsing the Web", "Creating Email", "Online Safety"]
+        "week": "Week 2",
+        "module": "Module 2",
+        "title": "Microsoft Word — Document Creation",
+        "topics": [
+          "Word interface and toolbar navigation",
+          "Text and paragraph formatting (fonts, spacing, alignment)",
+          "Inserting tables, images, and headers/footers",
+          "Page layout and document design",
+          "Creating a professional CV and formal letter",
+          "Saving and exporting documents as PDF"
+        ],
+        "activities": [
+          "Format a raw document using Word tools",
+          "Build a 1-page professional CV from scratch",
+          "Write and format a formal job application letter",
+          "Export the CV as a PDF ready to send to employers"
+        ],
+        "assignment": "Submit a complete, formatted CV and a formal Application Letter using Microsoft Word."
+      },
+      {
+        "week": "Week 2 (cont.)",
+        "module": "Module 3",
+        "title": "Digital Communication & Online Etiquette",
+        "topics": [
+          "Writing professional emails — structure, tone, subject lines",
+          "WhatsApp and Telegram professionalism in academic and work settings",
+          "Zoom and Google Meet etiquette (camera, mute, punctuality)",
+          "Understanding your digital footprint and online reputation"
+        ],
+        "activities": [
+          "Rewrite 3 unprofessional messages into professional ones",
+          "Practice a mock Zoom meeting introduction",
+          "Audit your social media profile for professionalism"
+        ],
+        "project": [
+          "Professional CV (Microsoft Word, PDF export)",
+          "Formal Application Letter",
+          "Short Academic Assignment — 1 to 2 pages, properly formatted"
+        ]
       }
     ]
   },
@@ -35,32 +95,108 @@
     "id": "intermediate",
     "slug": "intermediate-package",
     "title": "Intermediate Package",
-    "description": "Master professional tools like Microsoft Office, Canva, and AI skills for the modern workplace.",
-    "shortDescription": "Professional productivity tools mastery.",
+    "description": "Everything in the Starter Package — plus 2 more power-packed weeks covering Excel data skills, database basics, and professional graphic design with Canva. By the end you will have real, monetizable skills.",
+    "shortDescription": "Starter skills + Excel, databases and Canva design.",
     "level": "Intermediate",
-    "duration": "6 Weeks",
-    "modulesCount": 10,
+    "duration": "4 Weeks",
+    "modulesCount": 6,
     "fee": 4000,
     "currency": "KSH",
     "icon": "fas fa-layer-group",
     "gradient": "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
     "image": "assets/images/image.png",
-    "tags": ["MS Office", "Canva", "AI Skills"],
+    "tags": ["Excel", "Canva", "Databases", "Graphic Design", "Monetization"],
     "features": [
-      { "icon": "fas fa-check", "title": "10 Modules", "text": "Deep dive" },
-      { "icon": "fas fa-check", "title": "Professional Certificate", "text": "Industry standard" },
-      { "icon": "fas fa-check", "title": "Capstone Projects", "text": "Build a portfolio" }
+      { "icon": "fas fa-check", "title": "6 Modules", "text": "Includes all Starter content" },
+      { "icon": "fas fa-check", "title": "Design Portfolio", "text": "3 real client-ready designs" },
+      { "icon": "fas fa-check", "title": "Professional Certificate", "text": "Intermediate level credential" }
+    ],
+    "outcomes": [
+      "Analyze and visualize data using Microsoft Excel",
+      "Create and query a simple database in Microsoft Access",
+      "Design professional posters, graphics, and brand kits in Canva",
+      "Build a beginner design portfolio for campus clients",
+      "Understand how to price and sell graphic design services",
+      "All Starter Package outcomes included"
     ],
     "syllabus": [
       {
-        "week": "Module 1-4",
-        "title": "Microsoft Office Suite",
-        "topics": ["Advanced Word", "Excel Formulas", "PowerPoint Design"]
+        "week": "Weeks 1–2",
+        "module": "Modules 1–3",
+        "title": "Starter Package Content (Included)",
+        "topics": [
+          "Computer and Internet Fundamentals (Module 1)",
+          "Microsoft Word and Document Creation (Module 2)",
+          "Digital Communication and Online Etiquette (Module 3)"
+        ],
+        "activities": [
+          "All Week 1 and Week 2 practical activities from the Starter Package"
+        ],
+        "assignment": "All Starter Package assignments — CV, Application Letter, and professional email write-up."
       },
       {
-        "week": "Module 5-8",
-        "title": "Graphic Design & AI",
-        "topics": ["Canva Pro Tips", "AI Prompt Engineering", "Content Creation"]
+        "week": "Week 3",
+        "module": "Module 4",
+        "title": "Microsoft Excel — Data Entry & Analysis",
+        "topics": [
+          "Spreadsheet basics — rows, columns, cells, navigation",
+          "Data entry and formatting (numbers, dates, text, borders)",
+          "Essential formulas — SUM, AVERAGE, COUNT, IF",
+          "Charts and data visualization (bar, pie, line charts)",
+          "Personal budgeting and student record keeping"
+        ],
+        "activities": [
+          "Build a personal monthly budget spreadsheet",
+          "Create a student grade tracker using formulas",
+          "Generate and format a chart from live data",
+          "Compare two datasets using conditional formatting"
+        ],
+        "assignment": "Submit a working expense tracker spreadsheet with at least 3 formulas (SUM, AVERAGE, COUNT) and one chart visualizing the data."
+      },
+      {
+        "week": "Week 4",
+        "module": "Module 5",
+        "title": "Microsoft Access — Database Basics",
+        "topics": [
+          "What databases are and why they matter",
+          "Tables, fields, and records — understanding structure",
+          "Creating a simple database from scratch",
+          "Forms for easy data entry",
+          "Basic queries to filter and find information",
+          "Real-life examples — inventory system, student records"
+        ],
+        "activities": [
+          "Build a simple student records database",
+          "Create a data entry form for adding new students",
+          "Run a query to filter students by grade or course"
+        ],
+        "assignment": "Create a simple inventory or student database with at least 10 records, one form, and one working query."
+      },
+      {
+        "week": "Week 4 (cont.)",
+        "module": "Module 6",
+        "title": "Graphic Design Using Canva",
+        "topics": [
+          "Canva interface — tools, templates, elements",
+          "Design principles — color theory, fonts, layout, whitespace",
+          "Creating posters and social media graphics",
+          "Personal and business branding basics",
+          "Exporting client-ready designs (PNG, PDF, MP4)",
+          "How to price your designs and find campus clients",
+          "Building a beginner design portfolio"
+        ],
+        "activities": [
+          "Design a campus event poster from scratch",
+          "Create a 3-post social media graphic set (Instagram/WhatsApp)",
+          "Build a simple brand kit — logo, colors, tagline",
+          "Compile designs into a shareable portfolio folder"
+        ],
+        "project": [
+          "Social media graphic set (3 posts)",
+          "Campus event poster — print-ready",
+          "Simple brand kit for a mock client",
+          "Beginner design portfolio (PDF or shared link)"
+        ]
       }
     ]
   },
@@ -68,32 +204,159 @@
     "id": "pro",
     "slug": "pro-package",
     "title": "Pro Package",
-    "description": "Premium mentorship, career readiness, advanced monetization strategies and 1-on-1 support.",
-    "shortDescription": "Career-ready mastery with mentorship.",
+    "description": "The complete Digital Skills Bootcamp. All Starter and Intermediate content PLUS AI tools, prompt engineering, career readiness, copywriting, social media marketing, and a final capstone project — everything you need to earn money with your skills.",
+    "shortDescription": "Full bootcamp — digital skills, AI, career and monetization.",
     "level": "Advanced",
     "duration": "8 Weeks",
-    "modulesCount": 15,
+    "modulesCount": 9,
     "fee": 6000,
     "currency": "KSH",
     "icon": "fas fa-crown",
     "gradient": "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
     "image": "assets/images/image.png",
-    "tags": ["Mentorship", "Monetization", "Career"],
+    "tags": ["AI Tools", "Copywriting", "Social Media", "Freelancing", "Career"],
     "features": [
-      { "icon": "fas fa-check", "title": "15 Modules", "text": "Full mastery" },
-      { "icon": "fas fa-check", "title": "Mentorship", "text": "1-on-1 support" },
-      { "icon": "fas fa-check", "title": "Direct Job Referrals", "text": "Career boost" }
+      { "icon": "fas fa-check", "title": "9 Modules", "text": "Full curriculum — 8 weeks" },
+      { "icon": "fas fa-check", "title": "Capstone Project", "text": "1 monetizable real-world project" },
+      { "icon": "fas fa-check", "title": "Pro Certificate", "text": "Career and income ready credential" }
+    ],
+    "outcomes": [
+      "Be fully digitally literate across all tools",
+      "Use Microsoft Office professionally",
+      "Create and sell graphic designs using Canva",
+      "Use AI tools responsibly and efficiently",
+      "Write persuasive copy and social media content",
+      "Build a personal brand and grow an online audience",
+      "Start freelancing or offer digital services",
+      "Be campus-ready and career-aware",
+      "All Starter and Intermediate outcomes included"
     ],
     "syllabus": [
       {
-        "week": "Module 1-10",
-        "title": "Full Curriculum",
-        "topics": ["All Intermediate Skills", "Advanced Projects", "Portfolio Building"]
+        "week": "Weeks 1–4",
+        "module": "Modules 1–6",
+        "title": "Starter & Intermediate Content (Included)",
+        "topics": [
+          "Computer, internet and email fundamentals (Module 1)",
+          "Microsoft Word and document creation (Module 2)",
+          "Digital communication and online etiquette (Module 3)",
+          "Microsoft Excel — data and analysis (Module 4)",
+          "Microsoft Access — databases (Module 5)",
+          "Graphic design using Canva (Module 6)"
+        ],
+        "activities": [
+          "All Starter and Intermediate practical activities",
+          "CV, Application Letter, budget tracker, database, design portfolio"
+        ],
+        "assignment": "All Starter and Intermediate assignments included."
       },
       {
-        "week": "Module 11-15",
-        "title": "Monetization & Career",
-        "topics": ["Freelancing", "Personal Branding", "1-on-1 Mentorship"]
+        "week": "Week 5",
+        "module": "Module 7",
+        "title": "AI Skills for Students",
+        "topics": [
+          "What Artificial Intelligence actually is (plain English)",
+          "Using AI for studying, research, and summarizing notes",
+          "AI writing and paraphrasing tools (ChatGPT, Gemini, Copilot)",
+          "Content and idea generation with AI",
+          "Ethical AI use — avoiding plagiarism, academic integrity",
+          "Free AI tools every student should know"
+        ],
+        "activities": [
+          "Use AI to summarize a 5-page document into bullet points",
+          "Compare AI-generated vs manually written paragraphs",
+          "Use AI to generate 3 ideas for a business or campus event",
+          "Create a personal reference sheet of your top free AI tools"
+        ],
+        "assignment": "Use an AI tool to improve one of your previous assignments. Submit both the original and the AI-assisted version, plus a short reflection paragraph on the differences."
+      },
+      {
+        "week": "Week 5 (cont.)",
+        "module": "Module 8",
+        "title": "Prompt Engineering for Beginners",
+        "topics": [
+          "What prompts are and how AI reads them",
+          "Prompt structure — Role + Task + Format + Context",
+          "Writing effective prompts step by step",
+          "Prompts for assignments and academic writing",
+          "Prompts for Canva design ideas and concepts",
+          "Prompts for marketing copy and social media captions",
+          "Prompts for content planning and business ideas"
+        ],
+        "activities": [
+          "Write 5 structured prompts using the Role-Task-Format method",
+          "Use a prompt to generate a complete content calendar",
+          "Improve a Canva design brief using AI prompts",
+          "Compare outputs from a weak prompt vs a strong prompt"
+        ],
+        "assignment": "Submit 5 polished, structured prompts covering at least 3 different use cases (study, design, marketing). Include the AI output for each."
+      },
+      {
+        "week": "Week 6",
+        "module": "Module 9",
+        "title": "Career Readiness & Campus Life",
+        "topics": [
+          "Digital expectations in campus and the workplace",
+          "Time management tools — Google Calendar, Notion, Trello",
+          "Online learning platforms — Coursera, YouTube, LinkedIn Learning",
+          "Improving your CV for internships and part-time jobs",
+          "Interview basics — preparation, body language, follow-up",
+          "Building a professional online identity (LinkedIn, email signature)"
+        ],
+        "activities": [
+          "Set up a Google Calendar with your weekly study schedule",
+          "Update your CV with all skills learned in this bootcamp",
+          "Create or clean up your LinkedIn profile",
+          "Practice a 2-minute mock interview self-introduction"
+        ],
+        "assignment": "Submit an updated CV reflecting your digital skills, plus a screenshot of your completed LinkedIn or professional online profile."
+      },
+      {
+        "week": "Weeks 6–7",
+        "module": "Monetization Block",
+        "title": "Copywriting, Social Media & Content Creation",
+        "topics": [
+          "Copywriting — persuasive captions, product descriptions, and ads",
+          "Simple sales copy structure — Problem, Agitate, Solve (PAS)",
+          "Social media content planning — weekly content calendar",
+          "Posting strategy — best times, formats, hashtags",
+          "Engagement tactics — growing followers and building community",
+          "Personal branding — your niche, voice, and story",
+          "Freelancing basics — Upwork, Fiverr, pricing, and proposals",
+          "Brand partnerships and offering digital services locally"
+        ],
+        "activities": [
+          "Write 5 social media captions for a mock Kenyan brand",
+          "Build a 7-day content calendar for Instagram or TikTok",
+          "Write a short sales page for one of your own skills",
+          "Research 2 freelancing opportunities relevant to your skills"
+        ],
+        "assignment": "Submit a 7-day content calendar for a brand of your choice, 3 sample captions, and one piece of sales copy using the PAS framework."
+      },
+      {
+        "week": "Week 8",
+        "module": "Capstone",
+        "title": "Final Capstone Project",
+        "topics": [
+          "Choosing your monetizable project track",
+          "Planning and structuring your presentation",
+          "Building and polishing your final deliverable",
+          "Presenting your work in PowerPoint (5–7 slides)",
+          "Peer and instructor feedback session",
+          "Next steps — how to keep growing after the bootcamp"
+        ],
+        "activities": [
+          "Complete one full monetizable project from your chosen track",
+          "Prepare a 5–7 slide PowerPoint presentation",
+          "Present your project with a short explanation of your process and results"
+        ],
+        "project": [
+          "Track A — Canva Design Portfolio (5+ real designs with brief descriptions)",
+          "Track B — Social Media Content Plan (full 30-day calendar and captions)",
+          "Track C — Copywriting Sample Collection (5+ pieces with context)",
+          "Track D — AI Productivity Showcase (5+ prompt use cases with outputs)",
+          "Track E — Small Business Digital Setup Plan (complete digital presence plan)"
+        ]
       }
     ]
   }

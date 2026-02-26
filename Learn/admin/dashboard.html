@@ -60,6 +60,113 @@
 </head>
 <body class="bg-gray-50">
 
+<!-- ═══ APPLICATION DETAIL MODAL (glassmorphic) ═══ -->
+<div id="appDetailOverlay" onclick="if(event.target===this)closeAppDetail()" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;padding:1rem">
+    <div style="background:rgba(255,255,255,.92);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.7);border-radius:.875rem;width:100%;max-width:580px;max-height:88vh;overflow-y:auto;box-shadow:0 32px 64px rgba(0,0,0,.18),0 0 0 1px rgba(255,255,255,.4) inset">
+        <!-- Header -->
+        <div style="padding:.9rem 1.25rem .75rem;background:linear-gradient(135deg,rgba(22,163,74,.9),rgba(14,165,233,.85));border-radius:.875rem .875rem 0 0;color:white">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem">
+                <div style="min-width:0">
+                    <p style="font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.75;margin:0 0 .2rem">Application</p>
+                    <h3 id="adName" style="font-size:1.05rem;font-weight:800;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</h3>
+                    <p id="adEmail" style="font-size:.75rem;opacity:.8;margin:.15rem 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</p>
+                </div>
+                <button onclick="closeAppDetail()" style="background:rgba(255,255,255,.2);border:none;border-radius:.5rem;width:28px;height:28px;cursor:pointer;color:white;font-size:.9rem;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.35)'" onmouseout="this.style.background='rgba(255,255,255,.2)'">&times;</button>
+            </div>
+        </div>
+        <!-- Body grid -->
+        <div style="padding:.9rem 1.25rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:.55rem">
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Full Name</p>
+                <p id="adFullName" style="font-size:.8125rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Course</p>
+                <p id="adCourse" style="font-size:.8125rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">WhatsApp</p>
+                <p id="adPhone" style="font-size:.8125rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Location</p>
+                <p id="adLocation" style="font-size:.8125rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Laptop</p>
+                <p id="adLaptop" style="margin:0;font-size:.8125rem">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Status</p>
+                <p id="adStatus" style="margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem;grid-column:1/-1">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Submitted</p>
+                <p id="adDate" style="font-size:.8rem;color:#374151;margin:0">—</p>
+            </div>
+            <div id="adInterestWrap" style="background:rgba(240,253,244,.95);border:1px solid #bbf7d0;border-radius:.6rem;padding:.55rem .7rem;grid-column:1/-1;display:none">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#16a34a;margin:0 0 .25rem">Why Interested</p>
+                <p id="adInterest" style="font-size:.8rem;color:#374151;line-height:1.6;margin:0">—</p>
+            </div>
+        </div>
+        <!-- Actions -->
+        <div style="padding:0 1.25rem .9rem;display:flex;gap:.5rem">
+            <button style="flex:1;padding:.55rem;background:#16a34a;color:white;border:none;border-radius:.6rem;font-weight:700;font-size:.78rem;cursor:pointer" onclick="appDetailAction('approved')"><i class="fas fa-check mr-1"></i>Approve</button>
+            <button style="flex:1;padding:.55rem;background:#ef4444;color:white;border:none;border-radius:.6rem;font-weight:700;font-size:.78rem;cursor:pointer" onclick="appDetailAction('rejected')"><i class="fas fa-times mr-1"></i>Reject</button>
+            <button style="flex:1;padding:.55rem;background:#3b82f6;color:white;border:none;border-radius:.6rem;font-weight:700;font-size:.78rem;cursor:pointer" onclick="appDetailAction('contacted')"><i class="fas fa-phone-alt mr-1"></i>Contacted</button>
+        </div>
+    </div>
+</div>
+
+<!-- ═══ TRANSACTION DETAIL MODAL ═══ -->
+<div id="txDetailOverlay" onclick="if(event.target===this)closeTxDetail()" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;padding:1rem">
+    <div style="background:rgba(255,255,255,.92);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.7);border-radius:.875rem;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;box-shadow:0 32px 64px rgba(0,0,0,.18)">
+        <div id="txDetailHeader" style="padding:.9rem 1.25rem .75rem;background:linear-gradient(135deg,rgba(109,40,217,.9),rgba(59,130,246,.85));border-radius:.875rem .875rem 0 0;color:white">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+                <div>
+                    <p style="font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.75;margin:0 0 .2rem">Transaction Details</p>
+                    <p id="tdStudent" style="font-size:1rem;font-weight:800;margin:0">—</p>
+                    <p id="tdCourse" style="font-size:.75rem;opacity:.8;margin:.15rem 0 0">—</p>
+                </div>
+                <button onclick="closeTxDetail()" style="background:rgba(255,255,255,.2);border:none;border-radius:.5rem;width:28px;height:28px;cursor:pointer;color:white;font-size:.9rem;display:flex;align-items:center;justify-content:center">&times;</button>
+            </div>
+        </div>
+        <div style="padding:.9rem 1.25rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:.55rem">
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Amount</p>
+                <p id="tdAmount" style="font-size:.875rem;font-weight:800;color:#16a34a;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Status</p>
+                <p id="tdStatus" style="margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Date</p>
+                <p id="tdDate" style="font-size:.8rem;color:#374151;margin:0">—</p>
+            </div>
+            <div style="background:rgba(240,253,244,.9);border:1px solid #bbf7d0;border-radius:.6rem;padding:.55rem .7rem;grid-column:1/-1">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#16a34a;margin:0 0 .2rem">M-Pesa Receipt</p>
+                <p id="tdReceipt" style="font-size:.875rem;font-weight:800;font-family:monospace;letter-spacing:.08em;color:#15803d;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Phone</p>
+                <p id="tdPhone" style="font-size:.8125rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Email</p>
+                <p id="tdEmail" style="font-size:.8125rem;font-weight:700;color:#111827;margin:0;word-break:break-all">—</p>
+            </div>
+            <div id="tdResultWrap" style="background:rgba(254,242,242,.9);border:1px solid #fecaca;border-radius:.6rem;padding:.55rem .7rem;grid-column:1/-1;display:none">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#dc2626;margin:0 0 .2rem">Failure Reason</p>
+                <p id="tdResult" style="font-size:.8rem;color:#374151;margin:0">—</p>
+            </div>
+        </div>
+        <div style="padding:0 1.25rem .9rem">
+            <button id="tdDeleteBtn" style="width:100%;padding:.6rem;background:#ef4444;color:white;border:none;border-radius:.6rem;font-weight:700;font-size:.8rem;cursor:pointer"><i class="fas fa-trash mr-1.5"></i>Delete This Transaction</button>
+        </div>
+    </div>
+</div>
+
 <!-- ═══ LOGIN SCREEN ═══ -->
 <div id="login-screen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-green-950 to-gray-900 p-4">
     <div class="w-full max-w-sm">
@@ -92,45 +199,48 @@
 <div id="dashboard" class="hidden">
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar fixed left-0 top-0 h-full w-72 bg-white border-r border-gray-200 z-40">
-        <div class="h-20 flex items-center gap-3 px-6 border-b border-gray-200">
-            <img src="https://coursecornerkenya.com/assets/images/logo.png" class="w-10 h-10 rounded-lg" alt="Logo">
+    <aside id="sidebar" class="sidebar fixed left-0 top-0 h-full w-72 bg-white border-r border-gray-200 z-40 flex flex-col">
+        <div class="flex-shrink-0 h-16 flex items-center gap-3 px-5 border-b border-gray-200">
+            <img src="https://coursecornerkenya.com/assets/images/logo.png" class="w-9 h-9 rounded-lg" alt="Logo">
             <div>
-                <h1 class="text-lg font-extrabold text-gray-900">Course Corner</h1>
-                <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Learn Dashboard</p>
+                <h1 class="text-base font-extrabold text-gray-900">Course Corner</h1>
+                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Learn Dashboard</p>
             </div>
         </div>
-        <nav class="p-4 space-y-1">
-            <a href="#" onclick="switchPage('learn-analytics')" id="nav-learn-analytics" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 font-medium">
-                <i class="fas fa-chart-line w-6"></i><span>Dashboard</span>
+        <nav class="flex-1 overflow-y-auto p-3 space-y-0.5">
+            <a href="#" onclick="switchPage('learn-analytics')" id="nav-learn-analytics" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-chart-line w-5 text-sm"></i><span>Dashboard</span>
             </a>
-            <a href="#" onclick="switchPage('learn-courses')" id="nav-learn-courses" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 font-medium">
-                <i class="fas fa-graduation-cap w-6"></i><span>Course Catalog</span>
+            <a href="#" onclick="switchPage('learn-courses')" id="nav-learn-courses" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-graduation-cap w-5 text-sm"></i><span>Course Catalog</span>
             </a>
-            <a href="#" onclick="switchPage('learn-applications')" id="nav-learn-applications" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 font-medium">
-                <i class="fas fa-user-graduate w-6"></i><span>Applications</span>
+            <a href="#" onclick="switchPage('learn-applications')" id="nav-learn-applications" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-user-graduate w-5 text-sm"></i><span>Applications</span>
             </a>
-            <a href="#" onclick="switchPage('learn-transactions')" id="nav-learn-transactions" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 font-medium">
-                <i class="fas fa-receipt w-6"></i><span>Transactions</span>
+            <a href="#" onclick="switchPage('learn-transactions')" id="nav-learn-transactions" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-receipt w-5 text-sm"></i><span>Transactions</span>
             </a>
-            <a href="#" onclick="switchPage('learn-modules')" id="nav-learn-modules" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 font-medium">
-                <i class="fas fa-list-ul w-6"></i><span>Modules & Progress</span>
+            <a href="#" onclick="switchPage('learn-modules')" id="nav-learn-modules" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-list-ul w-5 text-sm"></i><span>Modules & Progress</span>
             </a>
-            <a href="#" onclick="switchPage('learn-notifications')" id="nav-learn-notifications" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 font-medium">
-                <i class="fas fa-bell w-6"></i><span>Notifications</span>
+            <a href="#" onclick="switchPage('learn-notifications')" id="nav-learn-notifications" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-bell w-5 text-sm"></i><span>Notifications</span>
             </a>
-            <a href="#" onclick="switchPage('learn-blog')" id="nav-learn-blog" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 font-medium">
-                <i class="fas fa-blog w-6"></i><span>What's New / Blog</span>
+            <a href="#" onclick="switchPage('learn-users')" id="nav-learn-users" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-users w-5 text-sm"></i><span>Users</span>
             </a>
-            <div class="pt-4 mt-4 border-t border-gray-100">
-                <a href="../../admin/index.html" class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-600 transition-colors">
-                    <i class="fas fa-arrow-left w-6"></i><span>Back to Main Admin</span>
+            <a href="#" onclick="switchPage('learn-blog')" id="nav-learn-blog" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-blog w-5 text-sm"></i><span>What's New / Blog</span>
+            </a>
+            <div class="pt-3 mt-3 border-t border-gray-100">
+                <a href="../../admin/index.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-arrow-left w-5 text-sm"></i><span class="text-sm">Back to Main Admin</span>
                 </a>
             </div>
         </nav>
-        <div class="absolute bottom-0 left-0 right-0 p-4 border-t bg-white">
+        <div class="flex-shrink-0 p-3 border-t bg-white">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-[#16a34a] rounded-full flex items-center justify-center text-white font-bold" id="userInitial">?</div>
+                <div class="w-9 h-9 bg-[#16a34a] rounded-full flex items-center justify-center text-white font-bold text-sm" id="userInitial">?</div>
                 <div class="flex-1 min-w-0">
                     <p id="sidebar-email" class="text-xs font-bold truncate text-gray-900">Admin</p>
                 </div>
@@ -203,11 +313,22 @@
             <!-- ═══ Transactions ═══ -->
             <div id="page-learn-transactions" class="hidden">
                 <div class="bg-white rounded-2xl border overflow-hidden shadow-sm">
-                    <div class="p-6 border-b border-gray-100 bg-gray-50/50"><h3 class="font-bold">Course Payments</h3></div>
+                    <div class="p-6 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between gap-4">
+                        <div>
+                            <h3 class="font-bold">All Payment Attempts</h3>
+                            <p id="tx-count" class="text-xs text-gray-400 mt-0.5">Loading…</p>
+                        </div>
+                        <select id="tx-status-filter" onchange="filterTransactions()" class="text-sm border border-gray-200 rounded-xl px-3 py-1.5 bg-white cursor-pointer">
+                            <option value="">All Statuses</option>
+                            <option value="completed">Completed</option>
+                            <option value="failed">Failed</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
                     <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead class="bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                            <tr><th class="px-6 py-4">Student</th><th class="px-6 py-4">Course</th><th class="px-6 py-4">Amount</th><th class="px-6 py-4">Date</th><th class="px-6 py-4 text-center">Status</th></tr>
+                            <tr><th class="px-4 py-3">Student</th><th class="px-4 py-3">Course</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">M-Pesa Code</th><th class="px-4 py-3">Date</th><th class="px-4 py-3 text-center">Status</th><th class="px-4 py-3 text-right">Action</th></tr>
                         </thead>
                         <tbody id="learn-tx-table-body"></tbody>
                     </table>
@@ -227,21 +348,54 @@
 
             <!-- ═══ Notifications ═══ -->
             <div id="page-learn-notifications" class="hidden">
-                <div class="max-w-2xl">
-                    <h3 class="text-lg font-extrabold text-gray-900 mb-4">Send Notification</h3>
-                    <div class="bg-white p-6 rounded-2xl border shadow-sm space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Message</label>
-                            <textarea id="notifyText" class="w-full p-4 bg-gray-50 rounded-xl border border-gray-200 h-32 focus:outline-none focus:border-green-500" placeholder="Course update: Module 2 is now available..."></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Target Audience</label>
-                            <select id="notifyTarget" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 focus:outline-none focus:border-green-500">
-                                <option value="all">All Enrolled Users</option><option value="paid">Paid Users Only</option>
-                            </select>
-                        </div>
-                        <button onclick="sendNotification()" class="w-full bg-[#16a34a] text-white py-3 rounded-xl font-bold shadow-lg hover:bg-[#15803d] transition-all">Send Broadcast</button>
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-6 gap-4">
+                    <div>
+                        <h3 class="text-lg font-extrabold text-gray-900">Broadcast Notifications</h3>
+                        <p class="text-sm text-gray-500" id="notif-count">Loading…</p>
                     </div>
+                    <button onclick="openNotifyEditor()" class="flex items-center gap-2 px-5 py-2.5 bg-[#16a34a] text-white font-bold rounded-xl shadow-lg hover:bg-[#15803d] transition-all">
+                        <i class="fas fa-plus"></i> New Broadcast
+                    </button>
+                </div>
+                <!-- List -->
+                <div id="notif-list" class="space-y-4">
+                    <div class="py-16 text-center text-gray-300">
+                        <i class="fas fa-spinner fa-spin text-3xl mb-3 block"></i>
+                        <p class="text-xs font-bold uppercase tracking-widest">Loading…</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Users ═══ -->
+            <div id="page-learn-users" class="hidden">
+                <div class="flex items-center justify-between mb-4 gap-4">
+                    <div>
+                        <h3 class="text-lg font-extrabold text-gray-900">Registered Users</h3>
+                        <p class="text-sm text-gray-500" id="users-count">Loading…</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="bulkDeleteUsers()" id="bulk-delete-btn" class="hidden flex items-center gap-2 px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all text-sm">
+                            <i class="fas fa-trash"></i> Delete Selected
+                        </button>
+                        <input id="users-search" type="text" placeholder="Search by name or email…" oninput="filterUsers()" class="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 w-52">
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            <tr>
+                                <th class="px-4 py-3"><input type="checkbox" id="select-all-users" onchange="toggleSelectAllUsers(this.checked)"></th>
+                                <th class="px-4 py-3">Name</th>
+                                <th class="px-4 py-3">Email</th>
+                                <th class="px-4 py-3">Phone</th>
+                                <th class="px-4 py-3">Course</th>
+                                <th class="px-4 py-3 text-center">Status</th>
+                                <th class="px-4 py-3 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body"></tbody>
+                    </table>
                 </div>
             </div>
 
@@ -263,23 +417,23 @@
     </div>
 </div>
 
-<!-- ═══ Blog Editor Modal ═══ -->
+<!-- ═══ Blog Editor Modal (compact) ═══ -->
 <div id="blogEditorModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-    <div class="bg-white rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
-        <div class="p-6 border-b border-gray-100 flex items-center justify-between">
-            <h3 class="text-lg font-extrabold text-gray-900" id="blogEditorTitle">New Post</h3>
-            <button onclick="closeBlogEditor()" class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"><i class="fas fa-times text-gray-500"></i></button>
+    <div class="bg-white rounded-xl w-full max-w-lg max-h-[88vh] overflow-y-auto shadow-2xl">
+        <div class="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
+            <h3 class="text-sm font-extrabold text-gray-900" id="blogEditorTitle">New Post</h3>
+            <button onclick="closeBlogEditor()" class="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"><i class="fas fa-times text-gray-500 text-xs"></i></button>
         </div>
-        <form id="blogForm" class="p-6 space-y-5">
+        <form id="blogForm" class="px-5 py-4 space-y-3">
             <input type="hidden" id="blogEditId">
             <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1.5">Title *</label>
-                <input id="blogTitle" type="text" required class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-green-500" placeholder="Exciting Update: New Module Released!">
+                <label class="block text-xs font-bold text-gray-700 mb-1">Title *</label>
+                <input id="blogTitle" type="text" required class="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" placeholder="Exciting Update: New Module Released!">
             </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 gap-3">
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Category *</label>
-                    <select id="blogCategory" required class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-green-500">
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Category *</label>
+                    <select id="blogCategory" required class="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500">
                         <option value="story">Success Story</option>
                         <option value="update">Platform Update</option>
                         <option value="tip">Learning Tip</option>
@@ -287,29 +441,29 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Author</label>
-                    <input id="blogAuthor" type="text" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-green-500" placeholder="Course Corner Team">
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Author</label>
+                    <input id="blogAuthor" type="text" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" placeholder="Course Corner Team">
                 </div>
             </div>
             <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1.5">Excerpt / Summary *</label>
-                <textarea id="blogExcerpt" required class="w-full p-3 border border-gray-200 rounded-xl h-20 focus:outline-none focus:border-green-500" placeholder="A brief summary for the card..."></textarea>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Excerpt / Summary *</label>
+                <textarea id="blogExcerpt" required class="w-full p-2.5 border border-gray-200 rounded-lg text-sm h-14 focus:outline-none focus:border-green-500" placeholder="A brief summary for the card..."></textarea>
             </div>
             <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1.5">Full Content *</label>
-                <textarea id="blogContent" required class="w-full p-3 border border-gray-200 rounded-xl h-40 focus:outline-none focus:border-green-500" placeholder="Write the full article content here..."></textarea>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Full Content *</label>
+                <textarea id="blogContent" required class="w-full p-2.5 border border-gray-200 rounded-lg text-sm h-28 focus:outline-none focus:border-green-500" placeholder="Write the full article content here..."></textarea>
             </div>
             <div>
-                <label class="block text-sm font-bold text-gray-700 mb-1.5">Image URL (optional)</label>
-                <input id="blogImage" type="url" class="w-full p-3 border border-gray-200 rounded-xl focus:outline-none focus:border-green-500" placeholder="https://images.unsplash.com/...">
+                <label class="block text-xs font-bold text-gray-700 mb-1">Image URL (optional)</label>
+                <input id="blogImage" type="url" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" placeholder="https://images.unsplash.com/...">
             </div>
-            <div class="flex items-center gap-3">
-                <input id="blogPublished" type="checkbox" checked class="w-4 h-4 accent-green-600">
-                <label for="blogPublished" class="text-sm font-bold text-gray-700">Publish immediately</label>
+            <div class="flex items-center gap-2">
+                <input id="blogPublished" type="checkbox" checked class="w-3.5 h-3.5 accent-green-600">
+                <label for="blogPublished" class="text-xs font-bold text-gray-700">Publish immediately</label>
             </div>
-            <div class="flex gap-3 pt-2">
-                <button type="button" onclick="closeBlogEditor()" class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-all">Cancel</button>
-                <button type="submit" class="flex-1 py-3 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700 transition-all shadow-lg flex items-center justify-center gap-2">
+            <div class="flex gap-2 pt-1">
+                <button type="button" onclick="closeBlogEditor()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-bold text-sm hover:bg-gray-200 transition-all">Cancel</button>
+                <button type="submit" class="flex-1 py-2 bg-purple-600 text-white rounded-lg font-bold text-sm hover:bg-purple-700 transition-all shadow flex items-center justify-center gap-1.5">
                     <i class="fas fa-save"></i> <span id="blogSaveLabel">Publish Post</span>
                 </button>
             </div>
@@ -375,7 +529,7 @@
     // ═══════════════════════════════════════════════════════════
     //  Page Switching
     // ═══════════════════════════════════════════════════════════
-    const PAGES = ['learn-analytics','learn-courses','learn-applications','learn-transactions','learn-modules','learn-notifications','learn-blog'];
+    const PAGES = ['learn-analytics','learn-courses','learn-applications','learn-transactions','learn-modules','learn-notifications','learn-users','learn-blog'];
     const PAGE_TITLES = {
         'learn-analytics': 'Dashboard Analytics',
         'learn-courses': 'Course Catalog',
@@ -383,6 +537,7 @@
         'learn-transactions': 'Course Payments',
         'learn-modules': 'Modules & Progress',
         'learn-notifications': 'Broadcast Notifications',
+        'learn-users': 'Registered Users',
         'learn-blog': 'What\'s New / Blog'
     };
 
@@ -411,6 +566,8 @@
         if (page === 'learn-applications') loadApplications();
         if (page === 'learn-transactions') loadTransactions();
         if (page === 'learn-blog') loadBlogPosts();
+        if (page === 'learn-notifications') loadNotifications();
+        if (page === 'learn-users') loadUsers();
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -459,28 +616,52 @@
     // ═══════════════════════════════════════════════════════════
     async function loadCourses() {
         const grid = document.getElementById('courses-grid');
-        grid.innerHTML = '<div class="col-span-full py-20 flex justify-center"><i class="fas fa-spinner fa-spin text-3xl text-green-200"></i></div>';
+        grid.className = '';
+        grid.innerHTML = '<div class="py-16 flex justify-center"><i class="fas fa-spinner fa-spin text-2xl text-green-200"></i></div>';
         try {
             const resp = await fetch('../data/courses.json');
             const courses = await resp.json();
-            grid.innerHTML = courses.map(c => `
-                <div class="bg-white rounded-2xl border overflow-hidden group hover:shadow-xl transition-all duration-300">
-                    <div class="h-40 relative flex items-center justify-center" style="background:${c.gradient}">
-                        <i class="${c.icon} text-5xl text-white drop-shadow-xl group-hover:scale-110 transition-transform duration-300"></i>
-                        <div class="absolute top-4 right-4 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold text-white uppercase tracking-widest border border-white/30">${c.level}</div>
+            grid.className = 'bg-white rounded-2xl border border-gray-100 overflow-hidden';
+            grid.innerHTML = `<div class="divide-y divide-gray-50">` + courses.map(c => `
+                <div class="flex items-center gap-4 px-5 py-3 hover:bg-gray-50/60 transition-colors group">
+                    <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-sm" style="background:${c.gradient}">
+                        <i class="${c.icon}"></i>
                     </div>
-                    <div class="p-6">
-                        <p class="text-xs font-extrabold text-gray-400 uppercase tracking-widest mb-1">KSH ${c.fee.toLocaleString()}</p>
-                        <h3 class="text-lg font-extrabold text-gray-900 mb-2">${c.title}</h3>
-                        <p class="text-xs text-gray-500 leading-relaxed mb-4 line-clamp-2">${c.description}</p>
-                        <div class="flex gap-2 text-xs">
-                            <span class="px-3 py-1 rounded-full bg-green-50 text-green-700 font-bold">${c.duration}</span>
-                            <span class="px-3 py-1 rounded-full bg-blue-50 text-blue-700 font-bold">${c.modulesCount} modules</span>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <p class="text-sm font-extrabold text-gray-900 truncate">${c.title}</p>
+                            <span class="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">${c.level || ''}</span>
                         </div>
+                        <p class="text-[10px] text-gray-400 font-medium mt-0.5">${c.duration || ''} &middot; ${c.modulesCount || 0} modules &middot; KSH ${(c.fee || 0).toLocaleString()}</p>
                     </div>
+                    <button onclick="openCourseDetail(${JSON.stringify(c).replace(/'/g, '&apos;')})" class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 flex-shrink-0" title="View Details">
+                        <i class="fas fa-eye text-[11px]"></i>
+                    </button>
                 </div>
-            `).join('');
-        } catch (e) { console.error(e); grid.innerHTML = '<p class="col-span-full text-center text-red-500">Failed to load courses</p>'; }
+            `).join('') + `</div>`;
+        } catch (e) { console.error(e); grid.innerHTML = '<p class="text-center text-red-500 py-8">Failed to load courses</p>'; }
+    }
+
+    function openCourseDetail(c) {
+        if (typeof c === 'string') try { c = JSON.parse(c); } catch(_){}
+        Swal.fire({
+            title: c.title || 'Course Detail',
+            html: `
+                <div style="text-align:left;font-size:.83rem">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem .9rem;margin-bottom:.9rem">
+                        <div><p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;margin:0 0 .2rem">Level</p><p style="font-weight:700;color:#111827;margin:0">${c.level || '—'}</p></div>
+                        <div><p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;margin:0 0 .2rem">Fee</p><p style="font-weight:700;color:#16a34a;margin:0">KSH ${(c.fee || 0).toLocaleString()}</p></div>
+                        <div><p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;margin:0 0 .2rem">Duration</p><p style="font-weight:700;color:#111827;margin:0">${c.duration || '—'}</p></div>
+                        <div><p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;margin:0 0 .2rem">Modules</p><p style="font-weight:700;color:#111827;margin:0">${c.modulesCount || 0}</p></div>
+                    </div>
+                    ${c.description ? `<p style="color:#6b7280;font-size:.8rem;line-height:1.6;margin-bottom:.7rem">${c.description}</p>` : ''}
+                    ${c.outcomes && c.outcomes.length ? `<p style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;margin:.7rem 0 .3rem">Learning Outcomes</p><ul style="margin:0;padding-left:1.1rem;color:#374151;font-size:.78rem;line-height:1.7">${c.outcomes.map(o=>`<li>${o}</li>`).join('')}</ul>` : ''}
+                </div>`,
+            confirmButtonText: 'Close',
+            confirmButtonColor: '#16a34a',
+            customClass: { popup: 'swal-compact' },
+            width: '420px'
+        });
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -510,22 +691,102 @@
         }
         tbody.innerHTML = apps.map(a => {
             const ts = a.timestamp;
-            const date = typeof ts === 'string' ? new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : (ts && ts.toDate ? ts.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : '—');
+            const dateShort = typeof ts === 'string' ? new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : (ts && ts.toDate ? ts.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : '—');
             const sc = { pending: 'bg-amber-100 text-amber-700', approved: 'bg-green-100 text-green-700', rejected: 'bg-red-100 text-red-700' }[a.status] || 'bg-gray-100 text-gray-700';
             const email = a.email || '—';
             const name  = a.fullName || a.name || 'Anonymous';
             const phone = a.whatsapp || a.phone || '';
-            return `<tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                <td class="px-6 py-4"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center font-bold text-gray-400 capitalize text-sm">${email[0].toUpperCase()}</div><div><p class="text-xs font-extrabold text-green-700" style="letter-spacing:-.01em">${email}</p><p class="text-[11px] font-semibold text-gray-700 mt-0.5">${name}</p>${phone ? `<p class="text-[10px] text-gray-400">${phone}</p>` : ''}</div></div></td>
-                <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase">${a.courseTitle || a.courseId || '—'}</span></td>
-                <td class="px-6 py-4 text-xs font-bold text-gray-400">${date}</td>
-                <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${sc}">${a.status || 'pending'}</span></td>
-                <td class="px-6 py-4 text-right"><div class="flex justify-end gap-1.5">
-                    <button onclick="updateAppStatus('${a.id}','approved')" class="w-7 h-7 rounded-lg bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all flex items-center justify-center" title="Approve"><i class="fas fa-check text-[10px]"></i></button>
-                    <button onclick="updateAppStatus('${a.id}','rejected')" class="w-7 h-7 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center" title="Reject"><i class="fas fa-times text-[10px]"></i></button>
-                </div></td></tr>`;
+            return `
+                <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center font-bold text-gray-400 capitalize text-sm flex-shrink-0">${email[0].toUpperCase()}</div>
+                            <div style="min-width:0">
+                                <p class="text-xs font-extrabold text-green-700" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px">${email}</p>
+                                <p class="text-[11px] font-semibold text-gray-700 mt-0.5">${name}</p>
+                                ${phone ? `<p class="text-[10px] text-gray-400">${phone}</p>` : ''}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase">${a.courseTitle || a.courseId || '—'}</span></td>
+                    <td class="px-6 py-4 text-xs font-bold text-gray-400">${dateShort}</td>
+                    <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${sc}">${a.status || 'pending'}</span></td>
+                    <td class="px-6 py-4 text-right"><div class="flex justify-end gap-1.5">
+                        <button onclick="openAppDetail('${a.id}')" class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all flex items-center justify-center" title="View Full Details"><i class="fas fa-eye text-[11px]"></i></button>
+                        <button onclick="updateAppStatus('${a.id}','approved')" class="w-8 h-8 rounded-lg bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all flex items-center justify-center" title="Approve"><i class="fas fa-check text-[10px]"></i></button>
+                        <button onclick="updateAppStatus('${a.id}','rejected')" class="w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center" title="Reject"><i class="fas fa-times text-[10px]"></i></button>
+                    </div></td>
+                </tr>`;
         }).join('');
     }
+
+    function toggleLearnAppDetail(id) {
+        const row = document.getElementById('ldetail-' + id);
+        const chevron = document.getElementById('lchevron-' + id);
+        if (!row) return;
+        const isOpen = row.style.display !== 'none';
+        row.style.display = isOpen ? 'none' : 'table-row';
+        if (chevron) chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+    }
+
+    let _detailAppId = null;
+    function openAppDetail(id) {
+        const a = allApps.find(x => x.id === id);
+        if (!a) return;
+        _detailAppId = id;
+
+        const ts = a.timestamp;
+        const date = typeof ts === 'string' ? new Date(ts).toLocaleString() : (ts && ts.toDate ? ts.toDate().toLocaleString() : '—');
+        const email = a.email || '—';
+        const name  = a.fullName || a.name || 'Anonymous';
+        const phone = a.whatsapp || a.phone || '—';
+
+        // Laptop: form radio saves field as 'hasLaptop' with values 'yes'/'no'
+        const laptopVal = a.hasLaptop || a.laptop;
+        const laptopHtml = (laptopVal === true || laptopVal === 'yes' || laptopVal === 'Yes')
+            ? '<span style="color:#16a34a;font-weight:700;font-size:.9375rem"><i class="fas fa-check-circle"></i> Yes — has a laptop</span>'
+            : (laptopVal === false || laptopVal === 'no' || laptopVal === 'No')
+            ? '<span style="color:#dc2626;font-weight:700;font-size:.9375rem"><i class="fas fa-times-circle"></i> No — does not have a laptop</span>'
+            : '<span style="color:#9ca3af;font-size:.9375rem">Not specified</span>';
+
+        const statusColors = { pending:'background:#fef3c7;color:#b45309', contacted:'background:#dbeafe;color:#1d4ed8', approved:'background:#dcfce7;color:#15803d', rejected:'background:#fee2e2;color:#dc2626' };
+        const statusStyle = statusColors[a.status || 'pending'] || statusColors.pending;
+        const statusHtml = `<span style="font-size:.8rem;font-weight:800;padding:.25rem .75rem;border-radius:9999px;${statusStyle}">${(a.status || 'pending').toUpperCase()}</span>`;
+
+        document.getElementById('adName').textContent = name;
+        document.getElementById('adEmail').textContent = email;
+        document.getElementById('adFullName').textContent = name;
+        document.getElementById('adCourse').textContent = (a.courseTitle || a.courseId || '—').replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase());
+        document.getElementById('adPhone').textContent = phone;
+        document.getElementById('adLocation').textContent = a.location || '—';
+        document.getElementById('adLaptop').innerHTML = laptopHtml;
+        document.getElementById('adStatus').innerHTML = statusHtml;
+        document.getElementById('adDate').textContent = date;
+
+        const interest = a.interest || a.reason || a.message || '';
+        const wrap = document.getElementById('adInterestWrap');
+        document.getElementById('adInterest').textContent = interest;
+        wrap.style.display = interest ? 'block' : 'none';
+
+        const overlay = document.getElementById('appDetailOverlay');
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    window.openAppDetail = openAppDetail;
+
+    function closeAppDetail() {
+        document.getElementById('appDetailOverlay').style.display = 'none';
+        document.body.style.overflow = '';
+        _detailAppId = null;
+    }
+    window.closeAppDetail = closeAppDetail;
+
+    async function appDetailAction(status) {
+        if (!_detailAppId) return;
+        await updateAppStatus(_detailAppId, status);
+        closeAppDetail();
+    }
+    window.appDetailAction = appDetailAction;
 
     async function updateAppStatus(id, status) {
         try {
@@ -538,30 +799,126 @@
     }
 
     // ═══════════════════════════════════════════════════════════
-    //  Transactions (from learnPayments collection)
+    //  Transactions: learnPayments (successful) + transactions (all)
     // ═══════════════════════════════════════════════════════════
+    let allTxs = [];
+
     async function loadTransactions() {
         const tbody = document.getElementById('learn-tx-table-body');
-        tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400"><i class="fas fa-spinner fa-spin mr-2"></i>Loading…</td></tr>';
         try {
-            const snap = await db.collection('learnPayments').orderBy('timestamp', 'desc').limit(100).get();
-            if (snap.empty) {
-                tbody.innerHTML = '<tr><td colspan="5" class="p-20 text-center text-gray-300"><i class="fas fa-receipt text-4xl mb-3 block"></i><p class="font-bold text-xs uppercase tracking-widest">No Payments Yet</p></td></tr>';
-                return;
-            }
-            tbody.innerHTML = snap.docs.map(d => {
+            // Query both collections in parallel
+            const [learnPaySnap, txSnap] = await Promise.all([
+                db.collection('learnPayments').orderBy('timestamp', 'desc').limit(200).get(),
+                db.collection('transactions')
+                    .where('category', '>=', 'learn-')
+                    .where('category', '<=', 'learn-\uf8ff')
+                    .limit(300)
+                    .get()
+                    .catch(err => { console.warn('transactions query error:', err); return null; })
+            ]);
+
+            // Track checkoutRequestIds already covered by learnPayments (successful)
+            const coveredCheckoutIds = new Set();
+            const combined = [];
+
+            // 1. Add all learnPayments entries (rich data, always completed)
+            learnPaySnap.docs.forEach(d => {
                 const p = d.data();
-                const ts = p.timestamp;
-                const date = typeof ts === 'string' ? new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : (ts && ts.toDate ? ts.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—');
-                return `<tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                    <td class="px-6 py-4 text-sm font-bold text-gray-900">${p.email || p.phone || '—'}</td>
-                    <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase">${p.courseTitle || p.courseId || '—'}</span></td>
-                    <td class="px-6 py-4 text-sm font-extrabold text-green-600">KSH ${(p.amountPaid || 0).toLocaleString()}</td>
-                    <td class="px-6 py-4 text-xs font-bold text-gray-400">${date}</td>
-                    <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider bg-green-100 text-green-700">${p.status || 'completed'}</span></td>
-                </tr>`;
-            }).join('');
-        } catch (e) { console.error(e); tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-red-500">Failed to load payments</td></tr>'; }
+                combined.push({ id: d.id, ...p, _src: 'lp' });
+                if (p.checkoutRequestId) coveredCheckoutIds.add(p.checkoutRequestId);
+                if (p.sessionId) coveredCheckoutIds.add(p.sessionId);
+            });
+
+            // 2. Add transactions entries NOT already in learnPayments (failed/pending/duplicates)
+            if (txSnap && !txSnap.empty) {
+                txSnap.docs.forEach(d => {
+                    const t = d.data();
+                    // Skip if a matching successful learnPayments entry already exists
+                    if ((t.checkoutRequestId && coveredCheckoutIds.has(t.checkoutRequestId)) ||
+                        (t.sessionId && coveredCheckoutIds.has(t.sessionId))) return;
+                    combined.push({ id: d.id, ...t, _src: 'tx' });
+                });
+            }
+
+            // Sort by date descending
+            combined.sort((a, b) => {
+                const ta = a.timestamp || a.createdAt;
+                const tb = b.timestamp || b.createdAt;
+                const da = typeof ta === 'string' ? new Date(ta) : (ta && ta.toDate ? ta.toDate() : new Date(0));
+                const db2 = typeof tb === 'string' ? new Date(tb) : (tb && tb.toDate ? tb.toDate() : new Date(0));
+                return db2 - da;
+            });
+
+            allTxs = combined;
+            filterTransactions();
+        } catch (e) {
+            console.error(e);
+            document.getElementById('learn-tx-table-body').innerHTML =
+                '<tr><td colspan="5" class="p-8 text-center text-red-500"><i class="fas fa-exclamation-triangle mr-2"></i>Failed to load transactions</td></tr>';
+        }
+    }
+
+    function filterTransactions() {
+        const filter = document.getElementById('tx-status-filter')?.value || '';
+        const filtered = filter ? allTxs.filter(t => (t.status || 'completed') === filter) : allTxs;
+        renderTxTable(filtered);
+    }
+    window.filterTransactions = filterTransactions;
+
+    function renderTxTable(txs) {
+        const tbody = document.getElementById('learn-tx-table-body');
+        const countEl = document.getElementById('tx-count');
+        if (countEl) {
+            const failed   = allTxs.filter(t => t.status === 'failed').length;
+            const pending  = allTxs.filter(t => t.status === 'pending').length;
+            const success  = allTxs.filter(t => !t.status || t.status === 'completed').length;
+            countEl.textContent = `${allTxs.length} total — ${success} completed, ${failed} failed, ${pending} pending`;
+        }
+
+        if (!txs.length) {
+            tbody.innerHTML = '<tr><td colspan="7" class="p-16 text-center text-gray-300"><i class="fas fa-receipt text-4xl mb-3 block"></i><p class="font-bold text-xs uppercase tracking-widest">No Transactions Found</p></td></tr>';
+            return;
+        }
+
+        const sc = {
+            completed: 'bg-green-100 text-green-700',
+            failed:    'bg-red-100 text-red-700',
+            cancelled: 'bg-red-100 text-red-700',
+            pending:   'bg-amber-100 text-amber-700'
+        };
+
+        tbody.innerHTML = txs.map(p => {
+            const ts = p.timestamp || p.createdAt;
+            const date = typeof ts === 'string'
+                ? new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ' ' + new Date(ts).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' })
+                : (ts && ts.toDate ? ts.toDate().toLocaleDateString('en-GB', { day:'2-digit', month:'short' }) + ' ' + ts.toDate().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }) : '—');
+
+            const student = p.email || p.phoneNumber || p.phone || '—';
+            const course  = p.courseTitle ||
+                (p.category ? p.category.replace(/^learn-/, '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : null) ||
+                p.courseId || '—';
+            const amount  = p.amountPaid || p.amount || 0;
+            const status  = p.status || 'completed';
+            const badge   = sc[status] || 'bg-gray-100 text-gray-600';
+            const receipt = p.mpesaReceiptNumber || p.transactionCode || null;
+            const receiptHtml = receipt
+                ? `<span class="font-mono text-[10px] font-bold text-green-700 bg-green-50 px-1.5 py-0.5 rounded tracking-widest">${receipt}</span>`
+                : '<span class="text-gray-300 text-xs">—</span>';
+
+            return `<tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                <td class="px-4 py-3 text-xs font-bold text-gray-900" style="max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${student}</td>
+                <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-lg bg-green-50 text-green-700 text-[9px] font-bold uppercase">${course}</span></td>
+                <td class="px-4 py-3 text-xs font-extrabold text-green-600">${amount ? 'KSH&nbsp;' + Number(amount).toLocaleString() : '—'}</td>
+                <td class="px-4 py-3">${receiptHtml}</td>
+                <td class="px-4 py-3 text-[10px] font-bold text-gray-400">${date}</td>
+                <td class="px-4 py-3 text-center"><span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${badge}">${status}</span></td>
+                <td class="px-4 py-3 text-right"><div class="flex gap-1 justify-end">
+                    <button onclick="openTxDetail('${p.id}')" class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all flex items-center justify-center" title="View Details"><i class="fas fa-eye text-[10px]"></i></button>
+                    <button onclick="deleteTx('${p.id}','${p._src || 'lp'}')" class="w-7 h-7 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center" title="Delete"><i class="fas fa-trash text-[10px]"></i></button>
+                </div></td>
+            </tr>`;
+        }).join('');
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -680,20 +1037,430 @@
     });
 
     // ═══════════════════════════════════════════════════════════
-    //  Notifications
+    //  Notifications — Full CRUD
     // ═══════════════════════════════════════════════════════════
-    async function sendNotification() {
-        const text = document.getElementById('notifyText').value.trim();
-        const target = document.getElementById('notifyTarget').value;
-        if (!text) { Swal.fire({ icon: 'warning', title: 'Enter a message', confirmButtonColor: '#16a34a' }); return; }
+    let _editingNotifId = null;
+
+    async function loadNotifications() {
+        const list = document.getElementById('notif-list');
+        const countEl = document.getElementById('notif-count');
+        list.innerHTML = '<div class="py-16 text-center text-gray-300"><i class="fas fa-spinner fa-spin text-3xl mb-3 block"></i><p class="text-xs font-bold uppercase tracking-widest">Loading…</p></div>';
         try {
-            await db.collection('learnNotifications').add({
-                message: text, target, createdAt: firebase.firestore.FieldValue.serverTimestamp(), readBy: []
-            });
-            document.getElementById('notifyText').value = '';
-            Swal.fire({ icon: 'success', title: 'Notification Sent!', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
-        } catch (e) { Swal.fire({ icon: 'error', title: 'Failed', text: e.message, confirmButtonColor: '#16a34a' }); }
+            const snap = await db.collection('learnNotifications').orderBy('createdAt', 'desc').get();
+            if (countEl) countEl.textContent = snap.size + ' broadcast' + (snap.size !== 1 ? 's' : '');
+            if (snap.empty) {
+                list.innerHTML = `<div class="py-20 text-center bg-white rounded-2xl border">
+                    <div class="w-16 h-16 bg-green-50 text-green-400 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4"><i class="fas fa-bell-slash"></i></div>
+                    <h4 class="font-extrabold text-gray-900 mb-1">No Broadcasts Yet</h4>
+                    <p class="text-sm text-gray-400 mb-5">Click <strong>+ New Broadcast</strong> to create your first notification.</p>
+                </div>`;
+                return;
+            }
+            const targetLabels = { all: 'All Users', paid: 'Paid Users Only' };
+            list.innerHTML = `<div class="bg-white rounded-xl border divide-y divide-gray-50 overflow-hidden">
+                ${snap.docs.map(d => {
+                const n = d.data();
+                const ts = n.createdAt && n.createdAt.toDate ? n.createdAt.toDate() : null;
+                const dateStr = ts ? ts.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ' ' + ts.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '—';
+                const readCount = Array.isArray(n.readBy) ? n.readBy.length : 0;
+                const target = targetLabels[n.target] || n.target || 'All Users';
+                const preview = (n.message || '').replace(/\n/g,' ').slice(0, 72) + ((n.message||'').length > 72 ? '…' : '');
+                return `<div class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50/80 transition-colors group">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[9px] font-bold uppercase tracking-wider text-green-600 bg-green-50 px-1.5 py-0.5 rounded">${target}</span>
+                            <span class="text-[9px] text-blue-500 font-medium"><i class="fas fa-eye mr-0.5"></i>${readCount}</span>
+                            <span class="text-[10px] text-gray-400">${dateStr}</span>
+                        </div>
+                        <p class="text-xs text-gray-700 mt-0.5 truncate">${preview}</p>
+                    </div>
+                    <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onclick="openNotifDetail('${d.id}')" class="w-6 h-6 rounded bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all flex items-center justify-center" title="View"><i class="fas fa-eye text-[9px]"></i></button>
+                        <button onclick="openNotifyEditor('${d.id}')" class="w-6 h-6 rounded bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center" title="Edit"><i class="fas fa-pen text-[9px]"></i></button>
+                        <button onclick="deleteNotification('${d.id}')" class="w-6 h-6 rounded bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center" title="Delete"><i class="fas fa-trash text-[9px]"></i></button>
+                    </div>
+                </div>`;
+            }).join('')}</div>`;
+        } catch (e) {
+            console.error(e);
+            list.innerHTML = '<div class="py-12 text-center text-red-400"><i class="fas fa-exclamation-triangle text-3xl mb-2 block"></i>Failed to load notifications</div>';
+        }
     }
+    window.loadNotifications = loadNotifications;
+
+    // ═══════════════════════════════════════════════════════════
+    //  Notification Detail View
+    // ═══════════════════════════════════════════════════════════
+    let _allNotifs = [];
+    async function openNotifDetail(id) {
+        let n;
+        // Try cached first
+        const cached = _allNotifs.find(x => x.id === id);
+        if (cached) { n = cached; }
+        else {
+            const snap = await db.collection('learnNotifications').doc(id).get();
+            if (!snap.exists) return;
+            n = { id: snap.id, ...snap.data() };
+        }
+        const ts = n.createdAt && n.createdAt.toDate ? n.createdAt.toDate() : null;
+        const dateStr = ts ? ts.toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+        const readCount = Array.isArray(n.readBy) ? n.readBy.length : 0;
+        const targetLabels = { all: 'All Users', paid: 'Paid Users Only' };
+        const target = targetLabels[n.target] || n.target || 'All Users';
+        await Swal.fire({
+            title: '<span style="font-size:.95rem;font-weight:800">Notification Detail</span>',
+            html: `<div style="text-align:left">
+                <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem">
+                    <span style="font-size:.65rem;font-weight:700;background:#dcfce7;color:#16a34a;padding:.2rem .6rem;border-radius:9999px;text-transform:uppercase">${target}</span>
+                    <span style="font-size:.65rem;font-weight:700;background:#eff6ff;color:#3b82f6;padding:.2rem .6rem;border-radius:9999px"><i class="fas fa-eye"></i> ${readCount} read</span>
+                    <span style="font-size:.65rem;color:#9ca3af">${dateStr}</span>
+                </div>
+                <p style="font-size:.8125rem;color:#374151;line-height:1.7;white-space:pre-line;background:#f9fafb;padding:.75rem;border-radius:.5rem;border:1px solid #e5e7eb">${(n.message||'').replace(/</g,'&lt;')}</p>
+            </div>`,
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-pen mr-1"></i> Edit',
+            cancelButtonText: 'Close',
+            confirmButtonColor: '#3b82f6',
+            cancelButtonColor: '#6b7280',
+            width: 440
+        }).then(r => { if (r.isConfirmed) openNotifyEditor(id); });
+    }
+    window.openNotifDetail = openNotifDetail;
+
+    // ═══════════════════════════════════════════════════════════
+    //  Users Page
+    // ═══════════════════════════════════════════════════════════
+    let allUsersData = [];
+    let filteredUsersData = [];
+    let selectedUserIds = new Set();
+
+    async function loadUsers() {
+        const tbody = document.getElementById('users-table-body');
+        const countEl = document.getElementById('users-count');
+        tbody.innerHTML = '<tr><td colspan="7" class="p-12 text-center text-gray-300"><i class="fas fa-spinner fa-spin text-2xl mb-2 block"></i><p class="text-xs uppercase font-bold tracking-widest">Loading…</p></td></tr>';
+        try {
+            const snap = await db.collection('learnApplications').orderBy('timestamp', 'desc').get();
+            // Deduplicate by email - keep latest application per user
+            const emailMap = new Map();
+            snap.docs.forEach(d => {
+                const data = { id: d.id, ...d.data() };
+                const key = data.email || data.phoneNumber || d.id;
+                if (!emailMap.has(key)) emailMap.set(key, data);
+            });
+            allUsersData = Array.from(emailMap.values());
+            filteredUsersData = [...allUsersData];
+            if (countEl) countEl.textContent = allUsersData.length + ' user' + (allUsersData.length !== 1 ? 's' : '');
+            renderUsersTable();
+        } catch (e) {
+            console.error(e);
+            tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-red-400 text-xs">Failed to load users: ' + e.message + '</td></tr>';
+        }
+    }
+    window.loadUsers = loadUsers;
+
+    function filterUsers() {
+        const q = (document.getElementById('users-search').value || '').toLowerCase();
+        filteredUsersData = q
+            ? allUsersData.filter(u => (u.email||'').toLowerCase().includes(q) || (u.fullName||u.name||'').toLowerCase().includes(q))
+            : [...allUsersData];
+        renderUsersTable();
+    }
+    window.filterUsers = filterUsers;
+
+    function renderUsersTable() {
+        const tbody = document.getElementById('users-table-body');
+        if (!filteredUsersData.length) {
+            tbody.innerHTML = '<tr><td colspan="7" class="p-12 text-center text-gray-300 text-xs font-bold uppercase tracking-widest">No users found</td></tr>';
+            return;
+        }
+        const sc = { approved:'bg-green-100 text-green-700', pending:'bg-amber-100 text-amber-700', rejected:'bg-red-100 text-red-700', contacted:'bg-blue-100 text-blue-700' };
+        tbody.innerHTML = filteredUsersData.map(u => {
+            const status = u.status || 'pending';
+            const badge = sc[status] || 'bg-gray-100 text-gray-600';
+            const name = u.fullName || u.name || '—';
+            const email = u.email || '—';
+            const phone = u.phoneNumber || u.phone || '—';
+            const course = u.courseTitle || u.courseName || u.courseId || '—';
+            return `<tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                <td class="px-4 py-2.5"><input type="checkbox" class="user-row-cb w-3.5 h-3.5 accent-red-500" value="${u.id}" onchange="toggleUserSelect('${u.id}',this.checked)"></td>
+                <td class="px-4 py-2.5 text-xs font-bold text-gray-900" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</td>
+                <td class="px-4 py-2.5 text-xs text-gray-600" style="max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${email}</td>
+                <td class="px-4 py-2.5 text-xs text-gray-600">${phone}</td>
+                <td class="px-4 py-2.5"><span class="px-2 py-0.5 rounded bg-purple-50 text-purple-700 text-[9px] font-bold uppercase">${course}</span></td>
+                <td class="px-4 py-2.5 text-center"><span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${badge}">${status}</span></td>
+                <td class="px-4 py-2.5 text-right">
+                    <div class="flex gap-1 justify-end">
+                        <button onclick="openUserDetail('${u.id}')" class="w-6 h-6 rounded bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all flex items-center justify-center" title="View Details"><i class="fas fa-eye text-[9px]"></i></button>
+                        <a href="mailto:${email}" class="w-6 h-6 rounded bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center" title="Send Email"><i class="fas fa-envelope text-[9px]"></i></a>
+                        <button onclick="deleteUserApp('${u.id}')" class="w-6 h-6 rounded bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center" title="Delete"><i class="fas fa-trash text-[9px]"></i></button>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    function toggleUserSelect(id, checked) {
+        checked ? selectedUserIds.add(id) : selectedUserIds.delete(id);
+        const btn = document.getElementById('bulk-delete-btn');
+        if (btn) { btn.classList.toggle('hidden', selectedUserIds.size === 0); btn.classList.toggle('flex', selectedUserIds.size > 0); }
+    }
+    window.toggleUserSelect = toggleUserSelect;
+
+    function toggleSelectAllUsers(checked) {
+        document.querySelectorAll('.user-row-cb').forEach(cb => { cb.checked = checked; toggleUserSelect(cb.value, checked); });
+    }
+    window.toggleSelectAllUsers = toggleSelectAllUsers;
+
+    async function openUserDetail(id) {
+        const u = allUsersData.find(x => x.id === id);
+        if (!u) return;
+        const ts = u.submittedAt && u.submittedAt.toDate ? u.submittedAt.toDate() : null;
+        const dateStr = ts ? ts.toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+        const field = (label, val) => `<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:.5rem;padding:.5rem .65rem">
+            <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">${label}</p>
+            <p style="font-size:.8125rem;font-weight:700;color:#111827;margin:0;word-break:break-word">${val || '—'}</p>
+        </div>`;
+        await Swal.fire({
+            title: `<span style="font-size:.95rem;font-weight:800">${u.fullName || u.name || 'User Details'}</span>`,
+            html: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;text-align:left">
+                ${field('Email', u.email)}
+                ${field('Phone / WhatsApp', u.phoneNumber || u.phone)}
+                ${field('Location', u.location || u.county)}
+                ${field('Course', u.courseTitle || u.courseName || u.courseId)}
+                ${field('Has Laptop', u.hasLaptop === true ? '✅ Yes' : u.hasLaptop === false ? '❌ No' : '—')}
+                ${field('Status', (u.status || 'pending').toUpperCase())}
+                ${field('Submitted', dateStr)}
+                ${field('Application ID', u.id)}
+                ${u.interest ? `<div style="grid-column:1/-1;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.5rem;padding:.5rem .65rem"><p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#16a34a;margin:0 0 .25rem">Why Interested</p><p style="font-size:.8rem;color:#374151;margin:0;line-height:1.6;white-space:pre-line">${u.interest}</p></div>` : ''}
+            </div>`,
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-trash mr-1"></i> Delete',
+            cancelButtonText: 'Close',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            width: 480
+        }).then(r => { if (r.isConfirmed) deleteUserApp(id); });
+    }
+    window.openUserDetail = openUserDetail;
+
+    async function deleteUserApp(id) {
+        const conf = await Swal.fire({
+            icon: 'warning',
+            title: 'Delete Application?',
+            text: 'This removes the user\'s application record permanently.',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280'
+        });
+        if (!conf.isConfirmed) return;
+        try {
+            await db.collection('learnApplications').doc(id).delete();
+            allUsersData = allUsersData.filter(u => u.id !== id);
+            filteredUsersData = filteredUsersData.filter(u => u.id !== id);
+            renderUsersTable();
+            Swal.fire({ icon:'success', title:'Deleted', toast:true, position:'top-end', showConfirmButton:false, timer:1800 });
+        } catch(e) {
+            Swal.fire({ icon:'error', title:'Failed', text:e.message, confirmButtonColor:'#16a34a' });
+        }
+    }
+    window.deleteUserApp = deleteUserApp;
+
+    async function bulkDeleteUsers() {
+        if (!selectedUserIds.size) return;
+        const conf = await Swal.fire({
+            icon: 'warning',
+            title: `Delete ${selectedUserIds.size} application${selectedUserIds.size !== 1 ? 's' : ''}?`,
+            text: 'This action cannot be undone.',
+            showCancelButton: true,
+            confirmButtonText: 'Delete All',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280'
+        });
+        if (!conf.isConfirmed) return;
+        try {
+            const batch = db.batch();
+            selectedUserIds.forEach(id => batch.delete(db.collection('learnApplications').doc(id)));
+            await batch.commit();
+            const deleted = new Set(selectedUserIds);
+            allUsersData = allUsersData.filter(u => !deleted.has(u.id));
+            filteredUsersData = filteredUsersData.filter(u => !deleted.has(u.id));
+            selectedUserIds.clear();
+            const btn = document.getElementById('bulk-delete-btn');
+            if (btn) { btn.classList.add('hidden'); btn.classList.remove('flex'); }
+            renderUsersTable();
+            Swal.fire({ icon:'success', title:'Deleted', toast:true, position:'top-end', showConfirmButton:false, timer:1800 });
+        } catch(e) {
+            Swal.fire({ icon:'error', title:'Failed', text:e.message, confirmButtonColor:'#16a34a' });
+        }
+    }
+    window.bulkDeleteUsers = bulkDeleteUsers;
+
+    // ═══════════════════════════════════════════════════════════
+    //  Transaction Detail + Delete
+    // ═══════════════════════════════════════════════════════════
+    let _txDetailId = null;
+    let _txDetailSrc = null;
+
+    function openTxDetail(id) {
+        const p = allTxs.find(t => t.id === id);
+        if (!p) return;
+        _txDetailId = id;
+        _txDetailSrc = p._src || 'lp';
+
+        const ts = p.timestamp || p.createdAt;
+        const date = typeof ts === 'string'
+            ? new Date(ts).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+            : (ts && ts.toDate ? ts.toDate().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—');
+
+        const student = p.email || p.phoneNumber || p.phone || '—';
+        const course  = p.courseTitle || (p.category ? p.category.replace(/^learn-/, '').replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase()) : null) || p.courseId || '—';
+        const amount  = p.amountPaid || p.amount || 0;
+        const receipt = p.mpesaReceiptNumber || p.transactionCode || '—';
+        const statusColors = { completed:'background:#dcfce7;color:#15803d', failed:'background:#fee2e2;color:#dc2626', cancelled:'background:#fee2e2;color:#dc2626', pending:'background:#fef3c7;color:#b45309' };
+        const statusStyle = statusColors[p.status || 'completed'] || statusColors.completed;
+        const statusHtml = `<span style="font-size:.75rem;font-weight:800;padding:.2rem .65rem;border-radius:9999px;${statusStyle}">${(p.status||'completed').toUpperCase()}</span>`;
+        const srcLabel   = p._src === 'lp' ? '✅ Confirmed (learnPayments)' : '🟡 Raw M-Pesa (transactions)';
+
+        document.getElementById('tdStudent').textContent = student;
+        document.getElementById('tdCourse').textContent  = course;
+        document.getElementById('tdAmount').textContent  = amount ? 'KSH ' + Number(amount).toLocaleString() : '—';
+        document.getElementById('tdStatus').innerHTML    = statusHtml;
+        document.getElementById('tdDate').textContent    = date;
+        document.getElementById('tdReceipt').textContent = receipt;
+        document.getElementById('tdPhone').textContent   = p.phoneNumber || p.phone || '—';
+        document.getElementById('tdEmail').textContent   = p.email || '—';
+
+        const resultWrap = document.getElementById('tdResultWrap');
+        const reason = p.resultDesc || p.failureReason || '';
+        if (reason && (p.status === 'failed' || p.status === 'cancelled')) {
+            document.getElementById('tdResult').textContent = reason;
+            resultWrap.style.display = 'block';
+        } else {
+            resultWrap.style.display = 'none';
+        }
+
+        // Wire up delete button inside modal
+        document.getElementById('tdDeleteBtn').onclick = () => { closeTxDetail(); deleteTx(id, p._src || 'lp'); };
+
+        const overlay = document.getElementById('txDetailOverlay');
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    window.openTxDetail = openTxDetail;
+
+    function closeTxDetail() {
+        document.getElementById('txDetailOverlay').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    window.closeTxDetail = closeTxDetail;
+
+    async function deleteTx(id, src) {
+        const conf = await Swal.fire({
+            icon: 'warning',
+            title: 'Delete Transaction?',
+            text: 'This permanently removes the record.',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280'
+        });
+        if (!conf.isConfirmed) return;
+        try {
+            const col = src === 'tx' ? 'transactions' : 'learnPayments';
+            await db.collection(col).doc(id).delete();
+            allTxs = allTxs.filter(t => t.id !== id);
+            filterTransactions();
+            Swal.fire({ icon:'success', title:'Deleted', toast:true, position:'top-end', showConfirmButton:false, timer:1800 });
+        } catch(e) {
+            Swal.fire({ icon:'error', title:'Failed', text:e.message, confirmButtonColor:'#16a34a' });
+        }
+    }
+    window.deleteTx = deleteTx;
+
+    function openNotifyEditor(id) {
+        _editingNotifId = id || null;
+        const isEdit = !!id;
+
+        Swal.fire({
+            title: isEdit ? '<span style="font-size:1.1rem">Edit Broadcast</span>' : '<span style="font-size:1.1rem">New Broadcast</span>',
+            html: `
+                <div style="text-align:left;margin-top:.5rem">
+                    <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;display:block;margin-bottom:.4rem">Message</label>
+                    <textarea id="swal-notif-msg" style="width:100%;padding:.9rem;background:#f9fafb;border:1px solid #e5e7eb;border-radius:.75rem;height:130px;font-size:.9rem;resize:vertical;outline:none;font-family:inherit" placeholder="Module 2 is now live! Check your dashboard..."></textarea>
+                    <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;display:block;margin:1rem 0 .4rem">Target Audience</label>
+                    <select id="swal-notif-target" style="width:100%;padding:.8rem;background:#f9fafb;border:1px solid #e5e7eb;border-radius:.75rem;font-size:.9rem;font-family:inherit;outline:none">
+                        <option value="all">All Enrolled Users</option>
+                        <option value="paid">Paid Users Only</option>
+                    </select>
+                </div>`,
+            showCancelButton: true,
+            confirmButtonText: isEdit ? '<i class="fas fa-save mr-1"></i> Save Changes' : '<i class="fas fa-paper-plane mr-1"></i> Send Broadcast',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#16a34a',
+            cancelButtonColor: '#6b7280',
+            width: '540px',
+            didOpen: async () => {
+                if (isEdit) {
+                    try {
+                        const doc = await db.collection('learnNotifications').doc(id).get();
+                        if (doc.exists) {
+                            const data = doc.data();
+                            document.getElementById('swal-notif-msg').value = data.message || '';
+                            document.getElementById('swal-notif-target').value = data.target || 'all';
+                        }
+                    } catch (e) { console.error(e); }
+                }
+            },
+            preConfirm: () => {
+                const msg = document.getElementById('swal-notif-msg').value.trim();
+                const tgt = document.getElementById('swal-notif-target').value;
+                if (!msg) { Swal.showValidationMessage('Please enter a message'); return false; }
+                return { msg, tgt };
+            }
+        }).then(async result => {
+            if (!result.isConfirmed) return;
+            const { msg, tgt } = result.value;
+            try {
+                if (_editingNotifId) {
+                    await db.collection('learnNotifications').doc(_editingNotifId).update({
+                        message: msg, target: tgt, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    Swal.fire({ icon: 'success', title: 'Updated!', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+                } else {
+                    await db.collection('learnNotifications').add({
+                        message: msg, target: tgt, createdAt: firebase.firestore.FieldValue.serverTimestamp(), readBy: []
+                    });
+                    Swal.fire({ icon: 'success', title: 'Broadcast Sent!', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+                }
+                loadNotifications();
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Failed', text: e.message, confirmButtonColor: '#16a34a' });
+            }
+        });
+    }
+    window.openNotifyEditor = openNotifyEditor;
+
+    async function deleteNotification(id) {
+        const confirm = await Swal.fire({
+            icon: 'warning',
+            title: 'Delete Broadcast?',
+            text: 'This will remove the notification for all users.',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280'
+        });
+        if (!confirm.isConfirmed) return;
+        try {
+            await db.collection('learnNotifications').doc(id).delete();
+            Swal.fire({ icon: 'success', title: 'Deleted', toast: true, position: 'top-end', showConfirmButton: false, timer: 1800 });
+            loadNotifications();
+        } catch (e) {
+            Swal.fire({ icon: 'error', title: 'Failed', text: e.message, confirmButtonColor: '#16a34a' });
+        }
+    }
+    window.deleteNotification = deleteNotification;
 </script>
 </body>
 </html>

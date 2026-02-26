@@ -69,7 +69,11 @@
         .mobile-menu-btn.active span:nth-child(1){transform:translateY(6px) rotate(45deg)}
         .mobile-menu-btn.active span:nth-child(2){opacity:0}
         .mobile-menu-btn.active span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
-        .mobile-menu-btn span{display:block;transition:all .3s}
+        .mobile-menu-btn span{display:block;transition:all .3s;background-color:#1f2937!important;margin:0!important}
+        .modern-header{background:rgba(255,255,255,0.97)!important;backdrop-filter:blur(12px)!important}
+        /* Solid white mobile menu — no transparency dependency */
+        .mobile-menu{background-color:#fff!important}
+        .mobile-menu.show{background-color:#fff!important}
 
         @media(max-width:768px){
             .courses-grid{grid-template-columns:1fr}

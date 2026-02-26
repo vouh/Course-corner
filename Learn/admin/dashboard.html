@@ -1370,20 +1370,42 @@
         const countEl = document.getElementById('users-count');
         tbody.innerHTML = '<tr><td colspan="7" class="p-12 text-center text-gray-300"><i class="fas fa-spinner fa-spin text-2xl mb-2 block"></i><p class="text-xs uppercase font-bold tracking-widest">Loading…</p></td></tr>';
         try {
-            // Fetch ALL docs without orderBy — orderBy silently drops docs missing the field
-            const snap = await db.collection('learnApplications').get();
-            // Deduplicate by email — keep the entry with the latest timestamp
+            // Build merged map from BOTH collections
             const emailMap = new Map();
-            snap.docs.forEach(d => {
+
+            // 1. learnApplications (no orderBy — it silently drops docs missing the field)
+            const appSnap = await db.collection('learnApplications').get();
+            appSnap.docs.forEach(d => {
                 const data = { id: d.id, ...d.data() };
                 const key = (data.email || data.phoneNumber || d.id).toLowerCase();
                 const existing = emailMap.get(key);
-                // Keep whichever has a newer timestamp
-                const ts = data.timestamp?.seconds || data.submittedAt?.seconds || 0;
-                const existingTs = existing ? (existing.timestamp?.seconds || existing.submittedAt?.seconds || 0) : -1;
-                if (!existing || ts > existingTs) emailMap.set(key, data);
+                const ts  = data.timestamp?.seconds || data.submittedAt?.seconds || 0;
+                const ets = existing ? (existing.timestamp?.seconds || existing.submittedAt?.seconds || 0) : -1;
+                if (!existing || ts > ets) emailMap.set(key, data);
             });
-            // Sort by timestamp descending in JS
+
+            // 2. learn_users — profile updates override name/phone/location/hasLaptop;
+            //    users with no application entry are added as standalone records
+            try {
+                const profileSnap = await db.collection('learn_users').get();
+                profileSnap.docs.forEach(d => {
+                    const p = d.data();
+                    const key = (p.email || '').toLowerCase();
+                    if (!key) return;
+                    if (emailMap.has(key)) {
+                        const ex = emailMap.get(key);
+                        if (p.name)     ex.fullName  = p.name;
+                        if (p.phone)    ex.phone     = p.phone;
+                        if (p.location) ex.location  = p.location;
+                        if (p.hasLaptop !== undefined) ex.hasLaptop = p.hasLaptop;
+                        emailMap.set(key, ex);
+                    } else {
+                        emailMap.set(key, { id: d.id, email: p.email, fullName: p.name, phone: p.phone, location: p.location, hasLaptop: p.hasLaptop, status: 'pending', _profileOnly: true });
+                    }
+                });
+            } catch(e2) { console.warn('learn_users merge skipped:', e2.message); }
+
+            // Sort newest-first
             allUsersData = Array.from(emailMap.values()).sort((a, b) => {
                 const ta = a.timestamp?.seconds || a.submittedAt?.seconds || 0;
                 const tb = b.timestamp?.seconds || b.submittedAt?.seconds || 0;
@@ -1628,13 +1650,16 @@
         const btn = document.getElementById('sync-users-btn');
         if (btn) { btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing…'; btn.disabled = true; }
         try {
-            // Fetch all applications
-            const appSnap = await db.collection('learnApplications').orderBy('timestamp','desc').get();
+            // Fetch all applications (no orderBy — silently drops docs without that field)
+            const appSnap = await db.collection('learnApplications').get();
             const emailMap = new Map();
             appSnap.docs.forEach(d => {
                 const data = { id: d.id, ...d.data() };
-                const key = (data.email || '').toLowerCase() || data.phoneNumber || d.id;
-                if (!emailMap.has(key)) emailMap.set(key, data);
+                const key = (data.email || data.phoneNumber || d.id).toLowerCase();
+                const existing = emailMap.get(key);
+                const ts  = data.timestamp?.seconds || data.submittedAt?.seconds || 0;
+                const ets = existing ? (existing.timestamp?.seconds || existing.submittedAt?.seconds || 0) : -1;
+                if (!existing || ts > ets) emailMap.set(key, data);
             });
 
             // Fetch all learn_users profiles and merge (profile updates take priority for name/phone/location/hasLaptop)

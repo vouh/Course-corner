@@ -672,7 +672,7 @@
 <!-- --- SCRIPTS ----------------------------------------------- -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, signInWithRedirect, getRedirectResult, GoogleAuthProvider, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
     import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
     const app = initializeApp({
@@ -687,6 +687,14 @@
     const auth = getAuth(app);
     const db   = getFirestore(app);
     const gProvider = new GoogleAuthProvider();
+    gProvider.setCustomParameters({ prompt: 'select_account' });
+
+    // Handle redirect result on page load (fallback from signInWithRedirect)
+    getRedirectResult(auth).then(async result => {
+        if (!result) return;
+        const user = result.user;
+        await setDoc(doc(db, 'learn_users', user.uid), { uid: user.uid, name: user.displayName, email: user.email, lastLogin: new Date() }, { merge: true });
+    }).catch(err => console.warn('Redirect result error:', err.code));
 
     // Auth state management
     onAuthStateChanged(auth, user => {
@@ -803,8 +811,14 @@
             await setDoc(doc(db, 'learn_users', user.uid), { uid: user.uid, name: user.displayName, email: user.email, lastLogin: new Date() }, { merge: true });
             closeAuthModal();
         } catch (err) {
-            if (err.code !== 'auth/popup-closed-by-user')
-                Swal.fire({ icon: 'error', title: 'Google Sign-in Failed', text: authErr(err.code) });
+            console.error('Google sign-in error:', err.code, err.message);
+            if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') return;
+            // Popup blocked or unsupported — fall back to redirect flow
+            if (err.code === 'auth/popup-blocked' || err.code === 'auth/operation-not-supported-in-this-environment') {
+                await signInWithRedirect(auth, gProvider);
+                return;
+            }
+            Swal.fire({ icon: 'error', title: 'Google Sign-in Failed', text: authErr(err.code, err.message) });
         }
     };
 
@@ -875,8 +889,24 @@
 
     loadCourses();
 
-    function authErr(code){
-        return({'auth/email-already-in-use':'This email is already registered.','auth/weak-password':'Password must be at least 6 characters.','auth/invalid-email':'Please enter a valid email address.','auth/user-not-found':'No account found with this email.','auth/wrong-password':'Incorrect password.','auth/invalid-credential':'Incorrect email or password.','auth/too-many-requests':'Too many attempts. Please try again later.'})[code]||'An error occurred. Please try again.';
+    function authErr(code, message){
+        const map = {
+            'auth/email-already-in-use':   'This email is already registered.',
+            'auth/weak-password':           'Password must be at least 6 characters.',
+            'auth/invalid-email':           'Please enter a valid email address.',
+            'auth/user-not-found':          'No account found with this email.',
+            'auth/wrong-password':          'Incorrect password.',
+            'auth/invalid-credential':      'Incorrect email or password.',
+            'auth/too-many-requests':       'Too many attempts. Please try again later.',
+            'auth/unauthorized-domain':     'This domain is not authorised for sign-in. Please contact support.',
+            'auth/popup-blocked':           'Sign-in popup was blocked by your browser. Please allow popups and try again.',
+            'auth/popup-closed-by-user':    'Sign-in window was closed. Please try again.',
+            'auth/account-exists-with-different-credential': 'An account already exists with a different sign-in method.',
+            'auth/network-request-failed':  'Network error. Please check your connection and try again.',
+            'auth/internal-error':          'An internal error occurred. Please try again.',
+            'auth/user-disabled':           'This account has been disabled. Please contact support.',
+        };
+        return map[code] || `Sign-in failed (${code || 'unknown'}). Please try again.`;
     }
 </script>
 

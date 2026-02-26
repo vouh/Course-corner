@@ -453,7 +453,10 @@
                             <h3 class="font-bold">All Payment Attempts</h3>
                             <p id="tx-count" class="text-xs text-gray-400 mt-0.5">Loading…</p>
                         </div>
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button id="bulk-delete-tx-btn" onclick="bulkDeleteTransactions()" class="hidden items-center gap-1.5 px-3 py-1.5 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all text-xs">
+                                <i class="fas fa-trash"></i> Delete Selected (<span id="bulk-tx-count">0</span>)
+                            </button>
                             <button onclick="downloadTransactionsCSV()" class="flex items-center gap-1.5 px-3 py-1.5 bg-[#16a34a] text-white font-bold rounded-xl hover:bg-[#15803d] transition-all text-xs" title="Download all transactions as CSV">
                                 <i class="fas fa-download"></i> Export CSV
                             </button>
@@ -468,7 +471,7 @@
                     <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead class="bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                            <tr><th class="px-4 py-3">Student</th><th class="px-4 py-3">Course</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">M-Pesa Code</th><th class="px-4 py-3">Date</th><th class="px-4 py-3 text-center">Status</th><th class="px-4 py-3 text-right">Action</th></tr>
+                            <tr><th class="px-4 py-3"><input type="checkbox" id="select-all-tx" onchange="toggleSelectAllTx(this.checked)" class="w-3.5 h-3.5 accent-red-500"></th><th class="px-4 py-3">Student</th><th class="px-4 py-3">Course</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">M-Pesa Code</th><th class="px-4 py-3">Date</th><th class="px-4 py-3 text-center">Status</th><th class="px-4 py-3 text-right">Action</th></tr>
                         </thead>
                         <tbody id="learn-tx-table-body"></tbody>
                     </table>
@@ -1055,6 +1058,7 @@
     //  Transactions: learnPayments (successful) + transactions (all)
     // ═══════════════════════════════════════════════════════════
     let allTxs = [];
+    let selectedTxIds = new Map(); // id → src ('lp' or 'tx')
 
     async function loadTransactions() {
         const tbody = document.getElementById('learn-tx-table-body');
@@ -1129,8 +1133,14 @@
             countEl.textContent = `${allTxs.length} total — ${success} completed, ${failed} failed, ${pending} pending`;
         }
 
+        // Reset select-all checkbox
+        const selectAllCb = document.getElementById('select-all-tx');
+        if (selectAllCb) selectAllCb.checked = false;
+        selectedTxIds.clear();
+        updateTxBulkBtn();
+
         if (!txs.length) {
-            tbody.innerHTML = '<tr><td colspan="7" class="p-16 text-center text-gray-300"><i class="fas fa-receipt text-4xl mb-3 block"></i><p class="font-bold text-xs uppercase tracking-widest">No Transactions Found</p></td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8" class="p-16 text-center text-gray-300"><i class="fas fa-receipt text-4xl mb-3 block"></i><p class="font-bold text-xs uppercase tracking-widest">No Transactions Found</p></td></tr>';
             return;
         }
 
@@ -1160,6 +1170,7 @@
                 : '<span class="text-gray-300 text-xs">—</span>';
 
             return `<tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                <td class="px-4 py-3"><input type="checkbox" class="tx-row-cb w-3.5 h-3.5 accent-red-500" value="${p.id}" data-src="${p._src || 'lp'}" onchange="toggleTxSelect('${p.id}','${p._src || 'lp'}',this.checked)"></td>
                 <td class="px-4 py-3 text-xs font-bold text-gray-900" style="max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${student}</td>
                 <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-lg bg-green-50 text-green-700 text-[9px] font-bold uppercase">${course}</span></td>
                 <td class="px-4 py-3 text-xs font-extrabold text-green-600">${amount ? 'KSH&nbsp;' + Number(amount).toLocaleString() : '—'}</td>
@@ -2034,6 +2045,87 @@
         Swal.fire({ icon:'success', title:'Downloaded!', text:`${allTxs.length} transactions exported.`, toast:true, position:'top-end', showConfirmButton:false, timer:2500 });
     }
     window.downloadTransactionsCSV = downloadTransactionsCSV;
+
+    // ═══════════════════════════════════════════════════════════
+    //  Transactions — Bulk Select & Delete
+    // ═══════════════════════════════════════════════════════════
+
+    function toggleTxSelect(id, src, checked) {
+        if (checked) selectedTxIds.set(id, src); else selectedTxIds.delete(id);
+        updateTxBulkBtn();
+    }
+    window.toggleTxSelect = toggleTxSelect;
+
+    function toggleSelectAllTx(checked) {
+        document.querySelectorAll('.tx-row-cb').forEach(cb => {
+            cb.checked = checked;
+            toggleTxSelect(cb.value, cb.dataset.src, checked);
+        });
+    }
+    window.toggleSelectAllTx = toggleSelectAllTx;
+
+    function updateTxBulkBtn() {
+        const btn = document.getElementById('bulk-delete-tx-btn');
+        const cnt = document.getElementById('bulk-tx-count');
+        if (btn) {
+            btn.classList.toggle('hidden', selectedTxIds.size === 0);
+            btn.classList.toggle('flex', selectedTxIds.size > 0);
+        }
+        if (cnt) cnt.textContent = selectedTxIds.size;
+    }
+
+    async function bulkDeleteTransactions() {
+        if (!selectedTxIds.size) return;
+        const conf = await Swal.fire({
+            icon: 'warning',
+            title: `Delete ${selectedTxIds.size} transaction${selectedTxIds.size !== 1 ? 's' : ''}?`,
+            text: 'This action cannot be undone.',
+            showCancelButton: true,
+            confirmButtonText: 'Delete All',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280'
+        });
+        if (!conf.isConfirmed) return;
+
+        Swal.fire({ title: 'Deleting…', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+        try {
+            // Group by collection for batch operations
+            const lpIds = [];
+            const txIds = [];
+            selectedTxIds.forEach((src, id) => {
+                if (src === 'tx') txIds.push(id); else lpIds.push(id);
+            });
+
+            // Firestore batch limit is 500 — split if needed
+            const batchDelete = async (col, ids) => {
+                for (let i = 0; i < ids.length; i += 500) {
+                    const chunk = ids.slice(i, i + 500);
+                    const batch = db.batch();
+                    chunk.forEach(id => batch.delete(db.collection(col).doc(id)));
+                    await batch.commit();
+                }
+            };
+
+            if (lpIds.length) await batchDelete('learnPayments', lpIds);
+            if (txIds.length) await batchDelete('transactions', txIds);
+
+            // Remove from local array
+            const deleted = new Set([...selectedTxIds.keys()]);
+            allTxs = allTxs.filter(t => !deleted.has(t.id));
+            selectedTxIds.clear();
+            updateTxBulkBtn();
+            const selectAllCb = document.getElementById('select-all-tx');
+            if (selectAllCb) selectAllCb.checked = false;
+            filterTransactions();
+
+            Swal.fire({ icon: 'success', title: 'Deleted!', text: `${deleted.size} transaction${deleted.size !== 1 ? 's' : ''} removed.`, toast: true, position: 'top-end', showConfirmButton: false, timer: 2500 });
+        } catch (e) {
+            console.error('Bulk tx delete error:', e);
+            Swal.fire({ icon: 'error', title: 'Delete Failed', text: e.message, confirmButtonColor: '#16a34a' });
+        }
+    }
+    window.bulkDeleteTransactions = bulkDeleteTransactions;
 </script>
 </body>
 </html>

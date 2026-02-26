@@ -1,4 +1,4 @@
-const { saveTransaction, creditReferrer } = require('../utils/firebase');
+const { saveTransaction, creditReferrer, initializeFirebase } = require('../utils/firebase');
 
 // Helper to store logs for admin viewing
 function logToAdmin(logEntry) {
@@ -117,9 +117,27 @@ module.exports = async (req, res) => {
         console.warn('⚠️ Payment data not found in memory for checkoutRequestID:', checkoutRequestID);
         console.log('🔄 Attempting to recover transaction details from Callback Metadata...');
 
-        // Recovery Mode: Use extracted values from earlier loop
-        if (extractedAmount && extractedPhone) {
-          console.log('✅ Recovered details from metadata:', { amount: extractedAmount, phone: extractedPhone });
+        // Recovery Mode 1: Query Firestore pendingSessions (preserves email + category)
+        try {
+          const { db } = await initializeFirebase();
+          if (db) {
+            const snap = await db.collection('pendingSessions')
+              .where('checkoutRequestId', '==', checkoutRequestID)
+              .limit(1)
+              .get();
+            if (!snap.empty) {
+              paymentData = snap.docs[0].data();
+              sessionId = paymentData.sessionId;
+              console.log('✅ Session recovered from Firestore pendingSessions:', sessionId, '| email:', paymentData.email || 'none');
+            }
+          }
+        } catch (fsErr) {
+          console.warn('⚠️ Firestore session lookup failed:', fsErr.message);
+        }
+
+        // Recovery Mode 2: Fall back to M-Pesa metadata (no email, no category)
+        if (!paymentData && extractedAmount && extractedPhone) {
+          console.log('✅ Recovered details from M-Pesa metadata:', { amount: extractedAmount, phone: extractedPhone });
 
           paymentData = {
             sessionId: `recovered-${checkoutRequestID}`,
@@ -129,7 +147,7 @@ module.exports = async (req, res) => {
             merchantRequestId: null,
             status: 'pending'
           };
-        } else {
+        } else if (!paymentData) {
           console.error('❌ Critical: Could not recover Amount or PhoneNumber from metadata.');
           console.error('❌ Payment data lost and unrecoverable.');
           return res.json({ ResultCode: 1, ResultDesc: 'Payment record not found and unrecoverable' });
@@ -194,8 +212,8 @@ module.exports = async (req, res) => {
       console.log('   M-Pesa Receipt Number:', mpesaReceiptNumber || 'NOT FOUND IN CALLBACK');
       callbackLog.mpesaReceiptNumber = mpesaReceiptNumber;
 
-      // Update in-memory tracking
-      if (sessionId) {
+      // Update in-memory tracking (only if session exists in memory)
+      if (sessionId && global.payments[sessionId]) {
         global.payments[sessionId].status = 'completed';
         global.payments[sessionId].mpesaReceiptNumber = mpesaReceiptNumber;
         // REMOVED: metadata update - causes undefined values in Firestore
@@ -218,6 +236,26 @@ module.exports = async (req, res) => {
           paymentData = global.payments[sid];
           sessionId = sid;
           break;
+        }
+      }
+
+      // Try Firestore pendingSessions if not found in memory
+      if (!paymentData) {
+        try {
+          const { db } = await initializeFirebase();
+          if (db) {
+            const snap = await db.collection('pendingSessions')
+              .where('checkoutRequestId', '==', checkoutRequestID)
+              .limit(1)
+              .get();
+            if (!snap.empty) {
+              paymentData = snap.docs[0].data();
+              sessionId = paymentData.sessionId;
+              console.log('✅ Failed session recovered from Firestore:', sessionId, '| email:', paymentData.email || 'none');
+            }
+          }
+        } catch (fsErr) {
+          console.warn('⚠️ Firestore failed session lookup error:', fsErr.message);
         }
       }
 

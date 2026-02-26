@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { saveTransaction, formatPhoneNumber } = require('../utils/firebase');
+const { saveTransaction, formatPhoneNumber, initializeFirebase } = require('../utils/firebase');
 
 // M-Pesa Configuration
 const CONSUMER_KEY = process.env.CONSUMER_KEY;
@@ -174,6 +174,29 @@ module.exports = async (req, res) => {
     console.log('✅ STK Push initiated (in-memory only, waiting for callback):', sessionId);
     console.log('🎁 Referral Code:', referralCode ? referralCode.toUpperCase() : 'NONE');
     console.log('📋 Transaction will be saved to Firebase ONLY when callback arrives with result');
+
+    // Persist session to Firestore so callback can recover email across serverless instances
+    try {
+      const { db } = await initializeFirebase();
+      if (db) {
+        await db.collection('pendingSessions').doc(sessionId).set({
+          sessionId,
+          category,
+          phoneNumber: formattedPhone,
+          amount,
+          checkoutRequestId: response.data.CheckoutRequestID,
+          merchantRequestId: response.data.MerchantRequestID,
+          referralCode: referralCode ? referralCode.toUpperCase() : null,
+          email: email || null,
+          isLearnPayment: isLearnPayment || false,
+          createdAt: new Date(),
+          status: 'awaiting_callback'
+        });
+        console.log('💾 Session saved to Firestore pendingSessions (email preserved):', sessionId);
+      }
+    } catch (fsErr) {
+      console.warn('⚠️ Could not save session to Firestore pendingSessions (non-fatal):', fsErr.message);
+    }
 
     res.json({
       success: true,

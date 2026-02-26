@@ -63,6 +63,7 @@
             <a href="courses.html" class="text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Courses</a>
             <a href="whats-new.html" class="text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">What's New</a>
             <a href="about.html" class="text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">About</a>
+            <a href="resources.html" class="text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Resources</a>
             <a href="payment.html" class="text-[0.9rem] font-semibold text-[#16a34a] no-underline flex items-center gap-1"><i class="fas fa-credit-card text-xs"></i> Pay</a>
         </nav>
         <button id="mobileMenuBtn" class="mobile-menu-btn lg:hidden flex flex-col justify-center items-center gap-1.5 w-10 h-10 border-none bg-transparent cursor-pointer" aria-label="Toggle menu">
@@ -77,6 +78,7 @@
             <a href="courses.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 transition-all" onclick="closeMobileMenu()">Courses</a>
             <a href="whats-new.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 transition-all" onclick="closeMobileMenu()">What's New</a>
             <a href="about.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 transition-all" onclick="closeMobileMenu()">About</a>
+            <a href="resources.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 transition-all" onclick="closeMobileMenu()">Resources</a>
             <a href="payment.html" class="p-4 text-lg font-bold text-[#16a34a] no-underline rounded-xl bg-green-50 transition-all flex items-center gap-2" onclick="closeMobileMenu()"><i class="fas fa-credit-card"></i> Pay</a>
         </nav>
     </div>
@@ -371,11 +373,20 @@
                 sel.appendChild(o);
             });
 
-            // Pre-select from URL param
+            // Pre-fill email from URL param or localStorage (guest users)
             const params = new URLSearchParams(window.location.search);
             const courseParam = params.get('course');
             const emailParam = params.get('email');
-            if (emailParam) document.getElementById('payEmail').value = decodeURIComponent(emailParam);
+            if (emailParam) {
+                document.getElementById('payEmail').value = decodeURIComponent(emailParam);
+            } else {
+                // Restore from previous visit / step
+                const saved = localStorage.getItem('cc_learn_email');
+                if (saved) {
+                    const emailEl2 = document.getElementById('payEmail');
+                    if (emailEl2 && !emailEl2.readOnly) emailEl2.value = saved;
+                }
+            }
             if (courseParam) {
                 sel.value = courseParam;
                 onCourseSelect();
@@ -465,6 +476,9 @@
             document.getElementById('orderEmail').textContent = email;
             document.getElementById('orderAmount').textContent = `KSH ${payAmount.toLocaleString()}`;
         }
+
+        // Persist email to localStorage so it survives page reloads / re-visits
+        if (email) localStorage.setItem('cc_learn_email', email);
 
         document.querySelectorAll('.step-section').forEach(s => s.classList.remove('active'));
         document.getElementById(`step${step}`).classList.add('active');

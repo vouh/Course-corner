@@ -394,6 +394,23 @@
                     <div class="bg-white p-6 rounded-2xl shadow-sm border"><i class="fas fa-hourglass-half text-amber-600 text-xl mb-2"></i><h4 class="text-sm text-gray-500 font-bold">Pending Apps</h4><p class="text-3xl font-extrabold" id="stat-pending">–</p></div>
                     <div class="bg-white p-6 rounded-2xl shadow-sm border"><i class="fas fa-calendar-check text-blue-600 text-xl mb-2"></i><h4 class="text-sm text-gray-500 font-bold">Blog Posts</h4><p class="text-3xl font-extrabold" id="stat-posts">–</p></div>
                 </div>
+
+                <!-- Quick User Lookup -->
+                <div class="bg-white rounded-2xl border p-5 mb-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div>
+                            <h3 class="font-bold text-gray-900 flex items-center gap-2"><i class="fas fa-search text-purple-500"></i> Quick User Lookup</h3>
+                            <p class="text-xs text-gray-400 mt-0.5">Enter a user's email to instantly view their full profile, payment history & balance</p>
+                        </div>
+                        <div class="flex gap-2 items-center w-full sm:w-auto">
+                            <input id="analytics-email-lookup" type="email" placeholder="user@example.com" class="flex-1 sm:w-64 px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all" onkeydown="if(event.key==='Enter')analyticsLookupUser()">
+                            <button onclick="analyticsLookupUser()" class="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all text-sm flex items-center gap-2 shadow-lg shadow-purple-200">
+                                <i class="fas fa-user-search"></i> Lookup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-white rounded-2xl border p-6"><h3 class="font-bold mb-4">Recent Applications</h3><div id="recent-apps" class="space-y-3 text-sm text-gray-500">Loading...</div></div>
                     <div class="bg-white rounded-2xl border p-6"><h3 class="font-bold mb-4">Recent Payments</h3><div id="recent-payments" class="space-y-3 text-sm text-gray-500">Loading...</div></div>
@@ -436,12 +453,17 @@
                             <h3 class="font-bold">All Payment Attempts</h3>
                             <p id="tx-count" class="text-xs text-gray-400 mt-0.5">Loading…</p>
                         </div>
-                        <select id="tx-status-filter" onchange="filterTransactions()" class="text-sm border border-gray-200 rounded-xl px-3 py-1.5 bg-white cursor-pointer">
-                            <option value="">All Statuses</option>
-                            <option value="completed">Completed</option>
-                            <option value="failed">Failed</option>
-                            <option value="pending">Pending</option>
-                        </select>
+                        <div class="flex items-center gap-2">
+                            <button onclick="downloadTransactionsCSV()" class="flex items-center gap-1.5 px-3 py-1.5 bg-[#16a34a] text-white font-bold rounded-xl hover:bg-[#15803d] transition-all text-xs" title="Download all transactions as CSV">
+                                <i class="fas fa-download"></i> Export CSV
+                            </button>
+                            <select id="tx-status-filter" onchange="filterTransactions()" class="text-sm border border-gray-200 rounded-xl px-3 py-1.5 bg-white cursor-pointer">
+                                <option value="">All Statuses</option>
+                                <option value="completed">Completed</option>
+                                <option value="failed">Failed</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                        </div>
                     </div>
                     <div class="overflow-x-auto">
                     <table class="w-full text-left">
@@ -1916,6 +1938,102 @@
         }
     }
     window.deleteNotification = deleteNotification;
+
+    // ═══════════════════════════════════════════════════════════
+    //  Analytics — Quick Email Lookup
+    // ═══════════════════════════════════════════════════════════
+    async function analyticsLookupUser() {
+        const input = document.getElementById('analytics-email-lookup');
+        const email = (input.value || '').trim().toLowerCase();
+        if (!email) {
+            return Swal.fire({ icon:'warning', title:'Enter an email', text:'Type a user\'s email address to look them up.', confirmButtonColor:'#16a34a' });
+        }
+
+        // Show loading
+        Swal.fire({ title:'Looking up…', text:email, allowOutsideClick:false, didOpen:()=>Swal.showLoading() });
+
+        // Search across multiple collections for this email
+        let userData = null;
+
+        // 1. Try learnApplications
+        try {
+            const snap = await db.collection('learnApplications').where('email','==',email).limit(1).get();
+            if (!snap.empty) userData = { id: snap.docs[0].id, ...snap.docs[0].data() };
+        } catch(_) {}
+
+        // 2. Try learn_users if not found or merge profile data
+        try {
+            const pSnap = await db.collection('learn_users').where('email','==',email).limit(1).get();
+            if (!pSnap.empty) {
+                const p = pSnap.docs[0].data();
+                if (userData) {
+                    // Merge profile fields
+                    if (p.name)     userData.fullName  = p.name;
+                    if (p.phone)    userData.phone     = p.phone;
+                    if (p.location) userData.location  = p.location;
+                    if (p.hasLaptop !== undefined) userData.hasLaptop = p.hasLaptop;
+                } else {
+                    userData = { id: pSnap.docs[0].id, email: p.email, fullName: p.name, phone: p.phone, location: p.location, hasLaptop: p.hasLaptop, status: 'pending', _profileOnly: true };
+                }
+            }
+        } catch(_) {}
+
+        Swal.close();
+
+        if (!userData) {
+            return Swal.fire({ icon:'info', title:'Not Found', html:`No user found for <strong>${email}</strong>.<br><span style="font-size:.8rem;color:#9ca3af">Check the email and try again.</span>`, confirmButtonColor:'#16a34a' });
+        }
+
+        input.value = '';
+        await _fillAndOpenUserDetail(userData);
+    }
+    window.analyticsLookupUser = analyticsLookupUser;
+
+    // ═══════════════════════════════════════════════════════════
+    //  Transactions — Bulk CSV Download
+    // ═══════════════════════════════════════════════════════════
+    function downloadTransactionsCSV() {
+        if (!allTxs.length) {
+            return Swal.fire({ icon:'info', title:'No Transactions', text:'There are no transactions to export.', confirmButtonColor:'#16a34a' });
+        }
+
+        const headers = ['Date','Student/Email','Phone','Course','Amount (KSH)','M-Pesa Code','Status','Source','Result/Reason'];
+        const rows = allTxs.map(p => {
+            const ts = p.timestamp || p.createdAt;
+            let date = '';
+            if (ts) {
+                try {
+                    const d = typeof ts === 'string' ? new Date(ts) : (ts.toDate ? ts.toDate() : new Date(ts));
+                    date = d.toLocaleString('en-KE', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+                } catch(_) {}
+            }
+            const student = p.email || p.phoneNumber || p.phone || '';
+            const phone   = p.phoneNumber || p.phone || '';
+            const course  = p.courseTitle || (p.category ? p.category.replace(/^learn-/, '').replace(/-/g, ' ') : '') || p.courseId || '';
+            const amount  = p.amountPaid || p.amount || 0;
+            const receipt = p.mpesaReceiptNumber || p.transactionCode || '';
+            const status  = p.status || 'completed';
+            const source  = p._src === 'lp' ? 'learnPayments' : 'transactions';
+            const reason  = p.resultDesc || p.failureReason || '';
+            return [date, student, phone, course, amount, receipt, status, source, reason];
+        });
+
+        // Build CSV
+        const esc = v => `"${String(v).replace(/"/g,'""')}"`;
+        const csv = [headers.map(esc).join(','), ...rows.map(r => r.map(esc).join(','))].join('\n');
+        const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `learn-transactions-${new Date().toISOString().slice(0,10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        Swal.fire({ icon:'success', title:'Downloaded!', text:`${allTxs.length} transactions exported.`, toast:true, position:'top-end', showConfirmButton:false, timer:2500 });
+    }
+    window.downloadTransactionsCSV = downloadTransactionsCSV;
 </script>
 </body>
 </html>

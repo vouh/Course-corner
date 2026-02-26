@@ -75,6 +75,7 @@ const savePaymentTransaction = async (paymentData) => {
       id: transactionRef.id,
       sessionId: paymentData.sessionId,
       phoneNumber: paymentData.phoneNumber,
+      email: paymentData.email || null,
       amount: paymentData.amount,
       category: paymentData.category,
       status: paymentData.status,

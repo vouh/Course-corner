@@ -67,7 +67,7 @@ router.post('/stkpush', async (req, res) => {
 
     // Create payment record WITHOUT referral validation
     // Referral processing happens AFTER payment is confirmed in callback
-    PaymentStore.createPayment(sessionId, category, phoneNumber, amount, referralCode);
+    PaymentStore.createPayment(sessionId, category, phoneNumber, amount, referralCode, email);
 
     // Initiate STK Push
     const stkResult = await initiateSTKPush(
@@ -365,6 +365,7 @@ router.post('/callback', async (req, res) => {
         const transactionId = await savePaymentTransaction({
           sessionId: payment.sessionId,
           phoneNumber: payment.phoneNumber,
+          email: payment.email || null,
           amount: payment.amount,
           category: payment.category,
           status: 'completed',
@@ -405,6 +406,7 @@ router.post('/callback', async (req, res) => {
         await savePaymentTransaction({
           sessionId: payment.sessionId,
           phoneNumber: payment.phoneNumber,
+          email: payment.email || null,
           amount: payment.amount,
           category: payment.category,
           status: 'failed',

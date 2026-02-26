@@ -841,13 +841,8 @@ vv<!DOCTYPE html>
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // API endpoints - Primary (Express server) and Fallback (Vercel serverless)
-        const API_PRIMARY = 'https://course-corner-server.vercel.app';
-        // Use deployed Vercel URL for fallback - replace with your actual domain
-        const API_FALLBACK = 'https://coursecornerkenya.com';
-        let API_BASE = API_PRIMARY; // Will switch to fallback if primary fails
-        console.log('🌐 API_PRIMARY:', API_PRIMARY);
-        console.log('🌐 API_FALLBACK:', API_FALLBACK);
+        // API endpoint - used for M-Pesa re-query operations only
+        const API_BASE = 'https://course-corner-server.vercel.app';
         let allTransactions = [], filteredTransactions = [], currentTransactionId = null;
         const db = firebase.firestore();
 
@@ -1000,77 +995,68 @@ vv<!DOCTYPE html>
         async function loadData() { await loadTransactions(); }
         async function loadTransactions() {
             try {
-                // Try primary API first (Express server)
-                console.log(`🚀 [Admin] Trying PRIMARY: ${API_PRIMARY}/api/mpesa/admin/transactions?limit=200`);
+                console.log('📊 [Admin] Loading transactions from Firestore…');
 
-                let res, data;
-                let usedFallback = false;
-
-                try {
-                    res = await fetch(`${API_PRIMARY}/api/mpesa/admin/transactions?limit=200`, {
-                        signal: AbortSignal.timeout(10000) // 10 second timeout
-                    });
-                    data = await res.json();
-                    console.log(`📡 [Admin] PRIMARY response:`, data);
-                } catch (primaryError) {
-                    console.warn('⚠️ PRIMARY API failed, trying FALLBACK:', primaryError.message);
-                    usedFallback = true;
-                }
-
-                // If primary failed or returned no data, try fallback
-                if (usedFallback || !data?.success || (data?.data?.length === 0)) {
-                    console.log(`🔄 [Admin] Trying FALLBACK: ${API_FALLBACK}/api/admin/transactions?limit=200`);
-                    try {
-                        res = await fetch(`${API_FALLBACK}/api/admin/transactions?limit=200`);
-                        data = await res.json();
-                        console.log(`📡 [Admin] FALLBACK response:`, data);
-                        if (data.success) {
-                            API_BASE = API_FALLBACK;
-                            usedFallback = true;
+                // Query Firestore directly — no external API dependency
+                const snapshot = await db.collection('transactions')
+                    .orderBy('createdAt', 'desc')
+                    .limit(200)
+                    .get()
+                    .catch(async (err) => {
+                        // If index error, retry without ordering
+                        if (err.message && err.message.includes('index')) {
+                            console.warn('⚠️ Missing Firestore index, retrying without orderBy');
+                            return db.collection('transactions').limit(200).get();
                         }
-                    } catch (fallbackError) {
-                        console.error('❌ FALLBACK also failed:', fallbackError.message);
-                    }
-                }
-
-                if (usedFallback) {
-                    showToast('Using fallback API', 'warning');
-                }
-
-                console.log('📦 [Admin] Final data:', data);
-
-                if (data.success) {
-                    // Exclude Learn portal transactions — they belong to the Learn admin only
-                    allTransactions = (data.data || []).filter(tx => !String(tx.category || '').startsWith('learn-'));
-                    filteredTransactions = [...allTransactions];
-
-                    // DEBUG: Log all transactions with their status
-                    console.log('📊 [Admin] Transactions breakdown:');
-                    allTransactions.forEach((tx, idx) => {
-                        console.log(`  ${idx + 1}. ${tx.status.toUpperCase()} - ${tx.phoneNumber} - KSH ${tx.amount} - Receipt: ${tx.mpesaReceiptNumber || 'N/A'}`);
+                        throw err;
                     });
 
-                    // Calculate stats from transactions
-                    const s = { total: 0, completed: 0, pending: 0, failed: 0, completedAmount: 0 };
-                    allTransactions.forEach(tx => {
-                        s.total++;
-                        if (tx.status === 'completed') { s.completed++; s.completedAmount += tx.amount || 0; }
-                        else if (tx.status === 'pending') { s.pending++; }
-                        else if (tx.status === 'failed') { s.failed++; }
+                const raw = [];
+                snapshot.forEach(doc => {
+                    const d = doc.data();
+                    raw.push({
+                        id: doc.id,
+                        ...d,
+                        createdAt: d.createdAt?.toDate?.() ? d.createdAt.toDate().toISOString() : d.createdAt || null,
+                        updatedAt: d.updatedAt?.toDate?.() ? d.updatedAt.toDate().toISOString() : d.updatedAt || null
                     });
+                });
 
-                    console.log('📈 [Admin] Stats:', s);
+                // Exclude Learn portal transactions — they belong to the Learn admin only
+                allTransactions = raw.filter(tx => !String(tx.category || '').startsWith('learn-'));
 
-                    document.getElementById('stat-total').textContent = s.total;
-                    document.getElementById('stat-completed').textContent = s.completed;
-                    document.getElementById('stat-failed').textContent = s.failed;
-                    document.getElementById('stat-revenue').textContent = `KSH ${(s.completedAmount || 0).toLocaleString()}`;
-                    if (s.total > 0) document.getElementById('stat-completed-pct').textContent = `${Math.round((s.completed / s.total) * 100)}%`;
-                    renderRecentTransactions();
-                    renderTransactionsTable();
-                    updateResultsCount();
-                } else { showToast('Failed to load', 'error'); }
-            } catch (e) { console.error(e); showToast('Error connecting', 'error'); }
+                // Sort newest first (in case we fell back to unordered query)
+                allTransactions.sort((a, b) => {
+                    const da = a.createdAt ? new Date(a.createdAt) : new Date(0);
+                    const db2 = b.createdAt ? new Date(b.createdAt) : new Date(0);
+                    return db2 - da;
+                });
+
+                filteredTransactions = [...allTransactions];
+
+                console.log(`✅ [Admin] Loaded ${allTransactions.length} transactions (excluded ${raw.length - allTransactions.length} Learn transactions)`);
+
+                // Calculate stats
+                const s = { total: 0, completed: 0, pending: 0, failed: 0, completedAmount: 0 };
+                allTransactions.forEach(tx => {
+                    s.total++;
+                    if (tx.status === 'completed') { s.completed++; s.completedAmount += tx.amount || 0; }
+                    else if (tx.status === 'pending') { s.pending++; }
+                    else if (tx.status === 'failed') { s.failed++; }
+                });
+
+                document.getElementById('stat-total').textContent = s.total;
+                document.getElementById('stat-completed').textContent = s.completed;
+                document.getElementById('stat-failed').textContent = s.failed;
+                document.getElementById('stat-revenue').textContent = `KSH ${(s.completedAmount || 0).toLocaleString()}`;
+                if (s.total > 0) document.getElementById('stat-completed-pct').textContent = `${Math.round((s.completed / s.total) * 100)}%`;
+                renderRecentTransactions();
+                renderTransactionsTable();
+                updateResultsCount();
+            } catch (e) {
+                console.error('❌ [Admin] Firestore load error:', e);
+                showToast('Error loading transactions: ' + e.message, 'error');
+            }
         }
 
         function renderRecentTransactions() {

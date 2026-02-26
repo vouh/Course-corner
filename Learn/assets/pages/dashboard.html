@@ -588,6 +588,20 @@
                 <input id="setLocation" type="text" class="form-input" placeholder="e.g. Nairobi">
             </div>
             <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Do you have a laptop?</label>
+                <div class="flex gap-5 mt-1">
+                    <label class="flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-700">
+                        <input type="radio" id="setLaptopYes" name="hasLaptop" value="yes" class="accent-[#16a34a] w-4 h-4"> Yes
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-700">
+                        <input type="radio" id="setLaptopNo" name="hasLaptop" value="no" class="accent-[#16a34a] w-4 h-4"> No
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-400">
+                        <input type="radio" id="setLaptopNone" name="hasLaptop" value="" checked class="w-4 h-4"> Prefer not to say
+                    </label>
+                </div>
+            </div>
+            <div>
                 <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Email (read only)</label>
                 <input id="setEmail" type="email" class="form-input bg-slate-50 text-slate-400 cursor-not-allowed" readonly>
             </div>
@@ -632,6 +646,11 @@
                     document.getElementById('setName').value = profile.name || user.displayName || '';
                     document.getElementById('setPhone').value = profile.phone || '';
                     document.getElementById('setLocation').value = profile.location || '';
+                    // hasLaptop
+                    const lv = profile.hasLaptop;
+                    if (lv === 'yes' || lv === true)   document.getElementById('setLaptopYes').checked  = true;
+                    else if (lv === 'no' || lv === false) document.getElementById('setLaptopNo').checked = true;
+                    else document.getElementById('setLaptopNone').checked = true;
                 }
             } catch(e) { console.log('Profile load:', e); }
             document.getElementById('setEmail').value = user.email;
@@ -981,12 +1000,14 @@
         const name = document.getElementById('setName').value.trim();
         const phone = document.getElementById('setPhone').value.trim();
         const location = document.getElementById('setLocation').value.trim();
+        const laptopRaw = document.querySelector('input[name="hasLaptop"]:checked')?.value;
+        const hasLaptop = laptopRaw === 'yes' ? true : laptopRaw === 'no' ? false : null;
         if (!name) return Swal.fire({ icon:'warning', title:'Name Required', text:'Please enter your display name.' });
         const btn = e.target.querySelector('button[type="submit"]');
         btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
         try {
             await updateProfile(currentUser, { displayName: name });
-            await setDoc(doc(db, 'learn_users', currentUser.uid), { name, phone, location, email: currentUser.email, updatedAt: new Date() }, { merge: true });
+            await setDoc(doc(db, 'learn_users', currentUser.uid), { name, phone, location, hasLaptop, email: currentUser.email, updatedAt: new Date() }, { merge: true });
             document.getElementById('topBarName').textContent = name;
             document.getElementById('userAvatar').textContent = name[0].toUpperCase();
             Swal.fire({ icon:'success', title:'Saved!', text:'Your profile has been updated.', confirmButtonColor:'#16a34a', timer:2000 });

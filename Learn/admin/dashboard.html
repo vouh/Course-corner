@@ -60,6 +60,89 @@
 </head>
 <body class="bg-gray-50">
 
+<!-- ═══ USER DETAIL MODAL (glassmorphic) ═══ -->
+<div id="userDetailOverlay" onclick="if(event.target===this)closeUserDetail()" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(6px);z-index:10000;align-items:center;justify-content:center;padding:1rem">
+    <div style="background:rgba(255,255,255,.93);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.7);border-radius:.875rem;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:0 32px 64px rgba(0,0,0,.18)">
+        <!-- Header -->
+        <div style="padding:.9rem 1.25rem .75rem;background:linear-gradient(135deg,rgba(124,58,237,.9),rgba(59,130,246,.85));border-radius:.875rem .875rem 0 0;color:white">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem">
+                <div style="min-width:0">
+                    <p style="font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.75;margin:0 0 .2rem">User Profile</p>
+                    <h3 id="udName" style="font-size:1.05rem;font-weight:800;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</h3>
+                    <p id="udEmail" style="font-size:.75rem;opacity:.8;margin:.15rem 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</p>
+                </div>
+                <button onclick="closeUserDetail()" style="background:rgba(255,255,255,.2);border:none;border-radius:.5rem;width:28px;height:28px;cursor:pointer;color:white;font-size:.9rem;flex-shrink:0;display:flex;align-items:center;justify-content:center">&times;</button>
+            </div>
+        </div>
+        <!-- Body grid -->
+        <div style="padding:.9rem 1.25rem .5rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem">
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">Full Name</p>
+                <p id="udFullName" style="font-size:.8rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">Phone / WhatsApp</p>
+                <p id="udPhone" style="font-size:.8rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">Location</p>
+                <p id="udLocation" style="font-size:.8rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">Course</p>
+                <p id="udCourse" style="font-size:.8rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">Has Laptop</p>
+                <p id="udLaptop" style="font-size:.8rem;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">App Status</p>
+                <p id="udStatus" style="margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">Submitted</p>
+                <p id="udDate" style="font-size:.75rem;color:#374151;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem;grid-column:2/-1">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">Application ID</p>
+                <p id="udAppId" style="font-size:.68rem;font-family:monospace;color:#374151;margin:0;word-break:break-all">—</p>
+            </div>
+            <div id="udInterestWrap" style="background:rgba(240,253,244,.95);border:1px solid #bbf7d0;border-radius:.6rem;padding:.5rem .65rem;grid-column:1/-1;display:none">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#16a34a;margin:0 0 .2rem">Why Interested</p>
+                <p id="udInterest" style="font-size:.78rem;color:#374151;line-height:1.6;margin:0">—</p>
+            </div>
+        </div>
+        <!-- Payment summary -->
+        <div id="udPaySection" style="padding:0 1.25rem .75rem">
+            <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#9ca3af;margin:0 0 .5rem">Payment Summary</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.45rem;margin-bottom:.55rem">
+                <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.45rem .6rem">
+                    <p style="font-size:.48rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .12rem">Course Fee</p>
+                    <p id="udCourseFee" style="font-size:.82rem;font-weight:800;color:#111827;margin:0">—</p>
+                </div>
+                <div style="background:rgba(240,253,244,.9);border:1px solid #bbf7d0;border-radius:.6rem;padding:.45rem .6rem">
+                    <p style="font-size:.48rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#16a34a;margin:0 0 .12rem">Total Paid</p>
+                    <p id="udTotalPaid" style="font-size:.82rem;font-weight:800;color:#15803d;margin:0">—</p>
+                </div>
+                <div id="udBalanceBox" style="background:rgba(255,251,235,.9);border:1px solid #fde68a;border-radius:.6rem;padding:.45rem .6rem">
+                    <p id="udBalanceLabel" style="font-size:.48rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#b45309;margin:0 0 .12rem">Balance</p>
+                    <p id="udBalance" style="font-size:.82rem;font-weight:800;color:#b45309;margin:0">—</p>
+                </div>
+            </div>
+            <div id="udPayRows" style="background:#f9fafb;border-radius:.55rem;overflow:hidden;border:1px solid rgba(229,231,235,.6)">
+                <p style="padding:.55rem;font-size:.72rem;color:#9ca3af;text-align:center;margin:0"><i class="fas fa-spinner fa-spin mr-1"></i>Loading…</p>
+            </div>
+        </div>
+        <!-- Actions -->
+        <div style="padding:0 1.25rem .9rem;display:flex;gap:.5rem">
+            <a id="udEmailLink" href="#" style="flex:1;padding:.55rem;background:#3b82f6;color:white;border:none;border-radius:.6rem;font-weight:700;font-size:.78rem;cursor:pointer;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:.35rem"><i class="fas fa-envelope"></i>Send Email</a>
+            <button id="udDeleteBtn" style="flex:1;padding:.55rem;background:#ef4444;color:white;border:none;border-radius:.6rem;font-weight:700;font-size:.78rem;cursor:pointer" onclick="deleteUserFromModal()"><i class="fas fa-trash mr-1"></i>Delete</button>
+            <button onclick="closeUserDetail()" style="flex:1;padding:.55rem;background:#6b7280;color:white;border:none;border-radius:.6rem;font-weight:700;font-size:.78rem;cursor:pointer">Close</button>
+        </div>
+    </div>
+</div>
+
 <!-- ═══ APPLICATION DETAIL MODAL (glassmorphic) ═══ -->
 <div id="appDetailOverlay" onclick="if(event.target===this)closeAppDetail()" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;padding:1rem">
     <div style="background:rgba(255,255,255,.92);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.7);border-radius:.875rem;width:100%;max-width:580px;max-height:88vh;overflow-y:auto;box-shadow:0 32px 64px rgba(0,0,0,.18),0 0 0 1px rgba(255,255,255,.4) inset">
@@ -108,6 +191,29 @@
                 <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#16a34a;margin:0 0 .25rem">Why Interested</p>
                 <p id="adInterest" style="font-size:.8rem;color:#374151;line-height:1.6;margin:0">—</p>
             </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem;grid-column:1/-1">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Application ID</p>
+                <p id="adAppId" style="font-size:.7rem;font-family:monospace;color:#374151;margin:0;word-break:break-all">—</p>
+            </div>
+        </div>
+        <!-- Payment summary section -->
+        <div id="adPaymentsSection" style="padding:0 1.25rem .75rem;display:none">
+            <p style="font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#9ca3af;margin:0 0 .6rem">Payment Summary</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.65rem">
+                <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem">
+                    <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">Course Fee</p>
+                    <p id="adCourseFee" style="font-size:.85rem;font-weight:800;color:#111827;margin:0">—</p>
+                </div>
+                <div style="background:rgba(240,253,244,.9);border:1px solid #bbf7d0;border-radius:.6rem;padding:.5rem .65rem">
+                    <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#16a34a;margin:0 0 .15rem">Total Paid</p>
+                    <p id="adTotalPaid" style="font-size:.85rem;font-weight:800;color:#15803d;margin:0">—</p>
+                </div>
+                <div id="adBalanceBox" style="background:rgba(255,251,235,.9);border:1px solid #fde68a;border-radius:.6rem;padding:.5rem .65rem">
+                    <p id="adBalanceLabel" style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#b45309;margin:0 0 .15rem">Balance</p>
+                    <p id="adBalance" style="font-size:.85rem;font-weight:800;color:#b45309;margin:0">—</p>
+                </div>
+            </div>
+            <div id="adPaymentRows" style="background:#f9fafb;border-radius:.6rem;overflow:hidden;border:1px solid rgba(229,231,235,.6)"></div>
         </div>
         <!-- Actions -->
         <div style="padding:0 1.25rem .9rem;display:flex;gap:.5rem">
@@ -231,6 +337,9 @@
             </a>
             <a href="#" onclick="switchPage('learn-blog')" id="nav-learn-blog" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
                 <i class="fas fa-blog w-5 text-sm"></i><span>What's New / Blog</span>
+            </a>
+            <a href="#" onclick="switchPage('learn-resources')" id="nav-learn-resources" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-folder-open w-5 text-sm"></i><span>Resources</span>
             </a>
             <div class="pt-3 mt-3 border-t border-gray-100">
                 <a href="../../admin/index.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors">
@@ -369,16 +478,27 @@
 
             <!-- ═══ Users ═══ -->
             <div id="page-learn-users" class="hidden">
-                <div class="flex items-center justify-between mb-4 gap-4">
+                <div class="flex flex-wrap items-center justify-between mb-4 gap-3">
                     <div>
                         <h3 class="text-lg font-extrabold text-gray-900">Registered Users</h3>
                         <p class="text-sm text-gray-500" id="users-count">Loading…</p>
                     </div>
-                    <div class="flex gap-2">
-                        <button onclick="bulkDeleteUsers()" id="bulk-delete-btn" class="hidden flex items-center gap-2 px-4 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all text-sm">
+                    <div class="flex gap-2 flex-wrap items-center">
+                        <!-- Check user by email -->
+                        <div class="flex gap-1.5 items-center">
+                            <input id="check-user-email" type="email" placeholder="Enter email to check…" class="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-purple-500 w-48">
+                            <button onclick="checkUserByEmail()" class="px-3 py-2 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 transition-all text-xs flex items-center gap-1">
+                                <i class="fas fa-search"></i> Check
+                            </button>
+                        </div>
+                        <!-- Sync -->
+                        <button id="sync-users-btn" onclick="syncUsers()" class="px-3 py-2 bg-[#16a34a] text-white font-bold rounded-xl hover:bg-[#15803d] transition-all text-xs flex items-center gap-1.5">
+                            <i class="fas fa-sync-alt"></i> Sync
+                        </button>
+                        <button onclick="bulkDeleteUsers()" id="bulk-delete-btn" class="hidden items-center gap-2 px-3 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all text-xs">
                             <i class="fas fa-trash"></i> Delete Selected
                         </button>
-                        <input id="users-search" type="text" placeholder="Search by name or email…" oninput="filterUsers()" class="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 w-52">
+                        <input id="users-search" type="text" placeholder="Search…" oninput="filterUsers()" class="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 w-40">
                     </div>
                 </div>
                 <div class="bg-white rounded-2xl border overflow-hidden">
@@ -411,6 +531,23 @@
                     </button>
                 </div>
                 <div id="blog-posts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </div>
+
+            <!-- ═══ Resources ═══ -->
+            <div id="page-learn-resources" class="hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-lg font-extrabold text-gray-900">Resources</h3>
+                        <p class="text-sm text-gray-500">Downloadable materials, guides and study resources for students</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 p-16 text-center">
+                    <div class="w-20 h-20 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-5">
+                        <i class="fas fa-folder-open text-3xl text-amber-400"></i>
+                    </div>
+                    <h4 class="text-xl font-extrabold text-gray-900 mb-2">Resources Coming Soon</h4>
+                    <p class="text-sm text-gray-400 max-w-md mx-auto leading-relaxed">This section will contain downloadable study materials, guides, and resources for enrolled students. Check back soon!</p>
+                </div>
             </div>
 
         </main>
@@ -529,7 +666,7 @@
     // ═══════════════════════════════════════════════════════════
     //  Page Switching
     // ═══════════════════════════════════════════════════════════
-    const PAGES = ['learn-analytics','learn-courses','learn-applications','learn-transactions','learn-modules','learn-notifications','learn-users','learn-blog'];
+    const PAGES = ['learn-analytics','learn-courses','learn-applications','learn-transactions','learn-modules','learn-notifications','learn-users','learn-blog','learn-resources'];
     const PAGE_TITLES = {
         'learn-analytics': 'Dashboard Analytics',
         'learn-courses': 'Course Catalog',
@@ -538,7 +675,8 @@
         'learn-modules': 'Modules & Progress',
         'learn-notifications': 'Broadcast Notifications',
         'learn-users': 'Registered Users',
-        'learn-blog': 'What\'s New / Blog'
+        'learn-blog': 'What\'s New / Blog',
+        'learn-resources': 'Resources'
     };
 
     // ── Dark mode toggle ─────────────────────────────────────
@@ -568,6 +706,7 @@
         if (page === 'learn-blog') loadBlogPosts();
         if (page === 'learn-notifications') loadNotifications();
         if (page === 'learn-users') loadUsers();
+        // learn-resources: no data fetch needed
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -621,6 +760,7 @@
         try {
             const resp = await fetch('../data/courses.json');
             const courses = await resp.json();
+            _adminCourses = courses; // cache for app detail balance
             grid.className = 'bg-white rounded-2xl border border-gray-100 overflow-hidden';
             grid.innerHTML = `<div class="divide-y divide-gray-50">` + courses.map(c => `
                 <div class="flex items-center gap-4 px-5 py-3 hover:bg-gray-50/60 transition-colors group">
@@ -663,6 +803,9 @@
             width: '420px'
         });
     }
+
+    // Course data cache (loaded by loadCourses, reused by openAppDetail)
+    let _adminCourses = null;
 
     // ═══════════════════════════════════════════════════════════
     //  Applications
@@ -730,7 +873,7 @@
     }
 
     let _detailAppId = null;
-    function openAppDetail(id) {
+    async function openAppDetail(id) {
         const a = allApps.find(x => x.id === id);
         if (!a) return;
         _detailAppId = id;
@@ -762,6 +905,7 @@
         document.getElementById('adLaptop').innerHTML = laptopHtml;
         document.getElementById('adStatus').innerHTML = statusHtml;
         document.getElementById('adDate').textContent = date;
+        document.getElementById('adAppId').textContent = id;
 
         const interest = a.interest || a.reason || a.message || '';
         const wrap = document.getElementById('adInterestWrap');
@@ -771,6 +915,84 @@
         const overlay = document.getElementById('appDetailOverlay');
         overlay.style.display = 'flex';
         document.body.style.overflow = 'hidden';
+
+        // === Payment summary ===
+        const paySection = document.getElementById('adPaymentsSection');
+        paySection.style.display = 'none';
+        document.getElementById('adPaymentRows').innerHTML = '<p style="padding:.65rem;font-size:.72rem;color:#9ca3af;text-align:center;margin:0"><i class="fas fa-spinner fa-spin mr-1"></i>Loading payments…</p>';
+        paySection.style.display = 'block';
+
+        if (email && email !== '—') {
+            try {
+                // Ensure course cache is loaded
+                if (!_adminCourses) {
+                    try { const r = await fetch('../data/courses.json'); _adminCourses = await r.json(); } catch(_) { _adminCourses = []; }
+                }
+                const courseObj = _adminCourses.find(c => c.id === (a.courseId || ''));
+                const courseFee = courseObj ? (parseFloat(courseObj.fee) || 0) : 0;
+
+                // Fetch successful payments from both collections
+                const successStatuses = ['completed','success','COMPLETED','SUCCESS'];
+                let payments = [];
+                try {
+                    const pSnap = await db.collection('learnPayments').where('email','==',email).get();
+                    pSnap.forEach(d => { const p = d.data(); if (successStatuses.includes(p.status)) payments.push(p); });
+                } catch(_) {}
+                try {
+                    const tSnap = await db.collection('transactions').where('email','==',email).get();
+                    const seen = new Set(payments.map(p => p.checkoutRequestId).filter(Boolean));
+                    tSnap.forEach(d => {
+                        const p = d.data();
+                        if (!successStatuses.includes(p.status)) return;
+                        if (p.checkoutRequestId && seen.has(p.checkoutRequestId)) return;
+                        payments.push(p);
+                    });
+                } catch(_) {}
+
+                const totalPaid = payments.reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
+                const balance   = Math.max(0, courseFee - totalPaid);
+
+                document.getElementById('adCourseFee').textContent = courseFee > 0 ? `KSH ${courseFee.toLocaleString()}` : '—';
+                document.getElementById('adTotalPaid').textContent = `KSH ${totalPaid.toLocaleString()}`;
+                document.getElementById('adBalance').textContent   = `KSH ${balance.toLocaleString()}`;
+
+                const balBox   = document.getElementById('adBalanceBox');
+                const balAmtEl = document.getElementById('adBalance');
+                const balLblEl = document.getElementById('adBalanceLabel');
+                if (balance === 0 && totalPaid > 0) {
+                    balBox.style.background = 'rgba(240,253,244,.9)'; balBox.style.border = '1px solid #bbf7d0';
+                    balAmtEl.style.color = '#15803d'; balLblEl.style.color = '#16a34a';
+                    balLblEl.textContent = 'Fully Paid';
+                } else {
+                    balBox.style.background = 'rgba(255,251,235,.9)'; balBox.style.border = '1px solid #fde68a';
+                    balAmtEl.style.color = '#b45309'; balLblEl.style.color = '#b45309';
+                    balLblEl.textContent = 'Balance';
+                }
+
+                const rowsEl = document.getElementById('adPaymentRows');
+                if (payments.length === 0) {
+                    rowsEl.innerHTML = '<p style="padding:.65rem;font-size:.75rem;color:#9ca3af;text-align:center;margin:0">No successful payments yet.</p>';
+                } else {
+                    payments.sort((x, y) => { const dx = x.completedAt||x.timestamp||'', dy = y.completedAt||y.timestamp||''; return dy > dx ? 1 : -1; });
+                    rowsEl.innerHTML = payments.map((p, i) => {
+                        let ds = '—'; const rd = p.completedAt || p.timestamp;
+                        if (rd) try { const d = rd.toDate ? rd.toDate() : new Date(rd); ds = d.toLocaleDateString('en-KE',{day:'2-digit',month:'short',year:'numeric'}); } catch(_){}
+                        const code = p.mpesaReceiptNumber || p.transactionCode || 'None';
+                        return `<div style="display:flex;align-items:center;gap:.6rem;padding:.45rem .75rem;${i>0?'border-top:1px solid rgba(229,231,235,.5)':''}">
+                            <div style="width:7px;height:7px;border-radius:50%;background:#16a34a;flex-shrink:0"></div>
+                            <p style="flex:1;font-size:.78rem;font-weight:800;color:#111827;margin:0">KSH ${(parseFloat(p.amount)||0).toLocaleString()}</p>
+                            <p style="font-size:.68rem;color:#6b7280;margin:0;flex-shrink:0">${ds}</p>
+                            <p style="font-size:.65rem;font-family:monospace;color:#7c3aed;margin:0;flex-shrink:0">${code}</p>
+                        </div>`;
+                    }).join('');
+                }
+            } catch (e) {
+                console.error('App payment fetch:', e);
+                document.getElementById('adPaymentRows').innerHTML = '<p style="padding:.65rem;font-size:.72rem;color:#9ca3af;text-align:center;margin:0">Could not load payments.</p>';
+            }
+        } else {
+            document.getElementById('adPaymentRows').innerHTML = '<p style="padding:.65rem;font-size:.72rem;color:#9ca3af;text-align:center;margin:0">No email on record.</p>';
+        }
     }
     window.openAppDetail = openAppDetail;
 
@@ -1211,37 +1433,226 @@
     }
     window.toggleSelectAllUsers = toggleSelectAllUsers;
 
+    let _currentUserDetailId = null;
+
+    function closeUserDetail() {
+        document.getElementById('userDetailOverlay').style.display = 'none';
+        document.body.style.overflow = '';
+        _currentUserDetailId = null;
+    }
+    window.closeUserDetail = closeUserDetail;
+
+    function deleteUserFromModal() {
+        if (_currentUserDetailId) deleteUserApp(_currentUserDetailId);
+        closeUserDetail();
+    }
+    window.deleteUserFromModal = deleteUserFromModal;
+
+    async function _fillAndOpenUserDetail(u) {
+        _currentUserDetailId = u.id || null;
+
+        // Try to get latest profile from learn_users (user may have updated it)
+        let profile = {};
+        if (u.email) {
+            try {
+                const pSnap = await db.collection('learn_users').where('email', '==', u.email).limit(1).get();
+                if (!pSnap.empty) profile = pSnap.docs[0].data();
+            } catch(_) {}
+        }
+
+        // Merge: profile fields take priority (these are user-updated)
+        const name  = profile.name || u.fullName || u.name || '—';
+        const phone = profile.phone || u.whatsapp || u.phone || u.phoneNumber || '—';
+        const loc   = profile.location || u.location || u.county || '—';
+        const laptopVal = profile.hasLaptop !== undefined ? profile.hasLaptop : (u.hasLaptop !== undefined ? u.hasLaptop : null);
+
+        const laptopHtml = (laptopVal === true || laptopVal === 'yes' || laptopVal === 'Yes')
+            ? '<span style="color:#16a34a;font-weight:700"><i class="fas fa-check-circle"></i> Yes</span>'
+            : (laptopVal === false || laptopVal === 'no' || laptopVal === 'No')
+            ? '<span style="color:#dc2626;font-weight:700"><i class="fas fa-times-circle"></i> No</span>'
+            : '<span style="color:#9ca3af">Not specified</span>';
+
+        const statusColors = { pending:'background:#fef3c7;color:#b45309', contacted:'background:#dbeafe;color:#1d4ed8', approved:'background:#dcfce7;color:#15803d', rejected:'background:#fee2e2;color:#dc2626' };
+        const sc = statusColors[u.status || 'pending'] || statusColors.pending;
+
+        // Date
+        const ts = u.timestamp || u.submittedAt;
+        let dateStr = '—';
+        if (ts) { try { const d = ts.toDate ? ts.toDate() : new Date(ts); dateStr = d.toLocaleString('en-KE', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); } catch(_){} }
+
+        document.getElementById('udName').textContent  = name;
+        document.getElementById('udEmail').textContent = u.email || '—';
+        document.getElementById('udFullName').textContent = name;
+        document.getElementById('udPhone').textContent = phone;
+        document.getElementById('udLocation').textContent = loc;
+        document.getElementById('udCourse').textContent = (u.courseTitle || u.courseId || '—').replace(/-/g,' ').replace(/\b\w/g, l=>l.toUpperCase());
+        document.getElementById('udLaptop').innerHTML  = laptopHtml;
+        document.getElementById('udStatus').innerHTML  = `<span style="font-size:.75rem;font-weight:800;padding:.2rem .6rem;border-radius:9999px;${sc}">${(u.status||'pending').toUpperCase()}</span>`;
+        document.getElementById('udDate').textContent  = dateStr;
+        document.getElementById('udAppId').textContent = u.id || '—';
+
+        const interest = u.interest || u.reason || u.message || '';
+        document.getElementById('udInterest').textContent = interest;
+        document.getElementById('udInterestWrap').style.display = interest ? 'block' : 'none';
+
+        const emailVal = u.email || '';
+        document.getElementById('udEmailLink').href = emailVal ? `mailto:${emailVal}` : '#';
+
+        // Show modal first so user sees it loading
+        const overlay = document.getElementById('userDetailOverlay');
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        // === Payment summary ===
+        const rowsEl = document.getElementById('udPayRows');
+        rowsEl.innerHTML = '<p style="padding:.55rem;font-size:.72rem;color:#9ca3af;text-align:center;margin:0"><i class="fas fa-spinner fa-spin mr-1"></i>Loading payments…</p>';
+
+        if (emailVal) {
+            try {
+                if (!_adminCourses) {
+                    try { const r = await fetch('../data/courses.json'); _adminCourses = await r.json(); } catch(_) { _adminCourses = []; }
+                }
+                const courseObj = _adminCourses.find(c => c.id === (u.courseId || ''));
+                const courseFee = courseObj ? (parseFloat(courseObj.fee) || 0) : 0;
+
+                const successStatuses = ['completed','success','COMPLETED','SUCCESS'];
+                let payments = [];
+                try {
+                    const pSnap = await db.collection('learnPayments').where('email','==',emailVal).get();
+                    pSnap.forEach(d => { const p = d.data(); if (successStatuses.includes(p.status)) payments.push(p); });
+                } catch(_) {}
+                try {
+                    const tSnap = await db.collection('transactions').where('email','==',emailVal).get();
+                    const seen = new Set(payments.map(p=>p.checkoutRequestId).filter(Boolean));
+                    tSnap.forEach(d => {
+                        const p = d.data();
+                        if (!successStatuses.includes(p.status)) return;
+                        if (p.checkoutRequestId && seen.has(p.checkoutRequestId)) return;
+                        payments.push(p);
+                    });
+                } catch(_) {}
+
+                const totalPaid = payments.reduce((s,p) => s + (parseFloat(p.amount)||0), 0);
+                const balance   = Math.max(0, courseFee - totalPaid);
+
+                document.getElementById('udCourseFee').textContent  = courseFee > 0 ? `KSH ${courseFee.toLocaleString()}` : '—';
+                document.getElementById('udTotalPaid').textContent   = `KSH ${totalPaid.toLocaleString()}`;
+                document.getElementById('udBalance').textContent     = `KSH ${balance.toLocaleString()}`;
+
+                const balBox = document.getElementById('udBalanceBox');
+                const balEl  = document.getElementById('udBalance');
+                const balLbl = document.getElementById('udBalanceLabel');
+                if (balance === 0 && totalPaid > 0) {
+                    balBox.style.background = 'rgba(240,253,244,.9)'; balBox.style.borderColor = '#bbf7d0';
+                    balEl.style.color = '#15803d'; balLbl.style.color = '#16a34a'; balLbl.textContent = 'Fully Paid';
+                } else {
+                    balBox.style.background = 'rgba(255,251,235,.9)'; balBox.style.borderColor = '#fde68a';
+                    balEl.style.color = '#b45309'; balLbl.style.color = '#b45309'; balLbl.textContent = 'Balance';
+                }
+
+                if (!payments.length) {
+                    rowsEl.innerHTML = '<p style="padding:.55rem;font-size:.75rem;color:#9ca3af;text-align:center;margin:0">No successful payments yet.</p>';
+                } else {
+                    payments.sort((x,y) => { const dx=x.completedAt||x.timestamp||'',dy=y.completedAt||y.timestamp||''; return dy>dx?1:-1; });
+                    rowsEl.innerHTML = payments.map((p,i) => {
+                        let ds='—'; const rd=p.completedAt||p.timestamp;
+                        if(rd) try{ const d=rd.toDate?rd.toDate():new Date(rd); ds=d.toLocaleDateString('en-KE',{day:'2-digit',month:'short',year:'numeric'}); }catch(_){}
+                        const code=p.mpesaReceiptNumber||p.transactionCode||'None';
+                        return `<div style="display:flex;align-items:center;gap:.55rem;padding:.4rem .65rem;${i>0?'border-top:1px solid rgba(229,231,235,.5)':''}">
+                            <div style="width:6px;height:6px;border-radius:50%;background:#16a34a;flex-shrink:0"></div>
+                            <p style="flex:1;font-size:.78rem;font-weight:800;color:#111827;margin:0">KSH ${(parseFloat(p.amount)||0).toLocaleString()}</p>
+                            <p style="font-size:.68rem;color:#6b7280;margin:0;flex-shrink:0">${ds}</p>
+                            <p style="font-size:.65rem;font-family:monospace;color:#7c3aed;margin:0;flex-shrink:0">${code}</p>
+                        </div>`;
+                    }).join('');
+                }
+            } catch(e) {
+                console.error('User detail payments:', e);
+                rowsEl.innerHTML = '<p style="padding:.55rem;font-size:.72rem;color:#9ca3af;text-align:center;margin:0">Could not load payments.</p>';
+            }
+        } else {
+            rowsEl.innerHTML = '<p style="padding:.55rem;font-size:.72rem;color:#9ca3af;text-align:center;margin:0">No email on record.</p>';
+        }
+    }
+
     async function openUserDetail(id) {
         const u = allUsersData.find(x => x.id === id);
         if (!u) return;
-        const ts = u.submittedAt && u.submittedAt.toDate ? u.submittedAt.toDate() : null;
-        const dateStr = ts ? ts.toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
-        const field = (label, val) => `<div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:.5rem;padding:.5rem .65rem">
-            <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">${label}</p>
-            <p style="font-size:.8125rem;font-weight:700;color:#111827;margin:0;word-break:break-word">${val || '—'}</p>
-        </div>`;
-        await Swal.fire({
-            title: `<span style="font-size:.95rem;font-weight:800">${u.fullName || u.name || 'User Details'}</span>`,
-            html: `<div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;text-align:left">
-                ${field('Email', u.email)}
-                ${field('Phone / WhatsApp', u.phoneNumber || u.phone)}
-                ${field('Location', u.location || u.county)}
-                ${field('Course', u.courseTitle || u.courseName || u.courseId)}
-                ${field('Has Laptop', u.hasLaptop === true ? '✅ Yes' : u.hasLaptop === false ? '❌ No' : '—')}
-                ${field('Status', (u.status || 'pending').toUpperCase())}
-                ${field('Submitted', dateStr)}
-                ${field('Application ID', u.id)}
-                ${u.interest ? `<div style="grid-column:1/-1;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:.5rem;padding:.5rem .65rem"><p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#16a34a;margin:0 0 .25rem">Why Interested</p><p style="font-size:.8rem;color:#374151;margin:0;line-height:1.6;white-space:pre-line">${u.interest}</p></div>` : ''}
-            </div>`,
-            showCancelButton: true,
-            confirmButtonText: '<i class="fas fa-trash mr-1"></i> Delete',
-            cancelButtonText: 'Close',
-            confirmButtonColor: '#ef4444',
-            cancelButtonColor: '#6b7280',
-            width: 480
-        }).then(r => { if (r.isConfirmed) deleteUserApp(id); });
+        await _fillAndOpenUserDetail(u);
     }
     window.openUserDetail = openUserDetail;
+
+    async function checkUserByEmail() {
+        const email = (document.getElementById('check-user-email').value || '').trim().toLowerCase();
+        if (!email) return Swal.fire({ icon:'warning', title:'Enter an email', toast:true, position:'top-end', showConfirmButton:false, timer:2000 });
+
+        // First try in-memory data
+        let u = allUsersData.find(x => (x.email||'').toLowerCase() === email);
+
+        // If not found locally, query Firestore
+        if (!u) {
+            const snap = await db.collection('learnApplications').where('email','==',email).orderBy('timestamp','desc').limit(1).get().catch(async () => {
+                return db.collection('learnApplications').where('email','==',email).limit(1).get();
+            });
+            if (!snap.empty) u = { id: snap.docs[0].id, ...snap.docs[0].data() };
+        }
+
+        if (!u) {
+            return Swal.fire({ icon:'info', title:'Not Found', text:`No application found for ${email}`, confirmButtonColor:'#16a34a' });
+        }
+        document.getElementById('check-user-email').value = '';
+        await _fillAndOpenUserDetail(u);
+    }
+    window.checkUserByEmail = checkUserByEmail;
+
+    async function syncUsers() {
+        const btn = document.getElementById('sync-users-btn');
+        if (btn) { btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing…'; btn.disabled = true; }
+        try {
+            // Fetch all applications
+            const appSnap = await db.collection('learnApplications').orderBy('timestamp','desc').get();
+            const emailMap = new Map();
+            appSnap.docs.forEach(d => {
+                const data = { id: d.id, ...d.data() };
+                const key = (data.email || '').toLowerCase() || data.phoneNumber || d.id;
+                if (!emailMap.has(key)) emailMap.set(key, data);
+            });
+
+            // Fetch all learn_users profiles and merge (profile updates take priority for name/phone/location/hasLaptop)
+            try {
+                const profileSnap = await db.collection('learn_users').get();
+                profileSnap.docs.forEach(d => {
+                    const p = d.data();
+                    const key = (p.email || '').toLowerCase();
+                    if (!key) return;
+                    if (emailMap.has(key)) {
+                        const existing = emailMap.get(key);
+                        if (p.name)     existing.fullName = p.name;
+                        if (p.phone)    existing.phone = p.phone;
+                        if (p.location) existing.location = p.location;
+                        if (p.hasLaptop !== undefined) existing.hasLaptop = p.hasLaptop;
+                        emailMap.set(key, existing);
+                    } else {
+                        // User exists in learn_users but no application yet
+                        emailMap.set(key, { id: d.id, email: p.email, fullName: p.name, phone: p.phone, location: p.location, hasLaptop: p.hasLaptop, status: 'pending', _profileOnly: true });
+                    }
+                });
+            } catch(e) { console.warn('learn_users merge skipped:', e.message); }
+
+            allUsersData = Array.from(emailMap.values());
+            filteredUsersData = [...allUsersData];
+            const countEl = document.getElementById('users-count');
+            if (countEl) countEl.textContent = allUsersData.length + ' user' + (allUsersData.length !== 1 ? 's' : '');
+            renderUsersTable();
+            Swal.fire({ icon:'success', title:'Synced!', text:`${allUsersData.length} users loaded.`, toast:true, position:'top-end', showConfirmButton:false, timer:2200 });
+        } catch(e) {
+            console.error('Sync error:', e);
+            Swal.fire({ icon:'error', title:'Sync Failed', text:e.message, confirmButtonColor:'#16a34a' });
+        } finally {
+            if (btn) { btn.innerHTML = '<i class="fas fa-sync-alt"></i> Sync'; btn.disabled = false; }
+        }
+    }
+    window.syncUsers = syncUsers;
 
     async function deleteUserApp(id) {
         const conf = await Swal.fire({

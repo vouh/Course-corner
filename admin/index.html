@@ -1040,7 +1040,8 @@ vv<!DOCTYPE html>
                 console.log('📦 [Admin] Final data:', data);
 
                 if (data.success) {
-                    allTransactions = data.data || [];
+                    // Exclude Learn portal transactions — they belong to the Learn admin only
+                    allTransactions = (data.data || []).filter(tx => !String(tx.category || '').startsWith('learn-'));
                     filteredTransactions = [...allTransactions];
 
                     // DEBUG: Log all transactions with their status

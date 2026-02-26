@@ -291,8 +291,8 @@ module.exports = async (req, res) => {
       callbackLog.success = false;
       callbackLog.failureReason = resultDesc;
 
-      // Update in-memory if we have the session
-      if (sessionId && paymentData) {
+      // Update in-memory if we have the session (only if it exists in memory)
+      if (sessionId && global.payments[sessionId]) {
         global.payments[sessionId].status = 'failed';
         global.payments[sessionId].resultDesc = resultDesc;
       }

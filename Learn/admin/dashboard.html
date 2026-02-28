@@ -3,493 +3,2129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirecting - Course Corner</title>
-    <script>
-        // Use relative path to go to core admin
-        window.location.href = '../../admin/index.html?page=learn';
-    </script>
+    <title>Learn Admin – Course Corner</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',sans-serif;background:#f9fafb;transition:background .2s,color .2s}
+
+        /* ── Custom thin scrollbar (admin theme) ──────────────── */
+        ::-webkit-scrollbar{width:5px;height:5px}
+        ::-webkit-scrollbar-track{background:transparent}
+        ::-webkit-scrollbar-thumb{background:#d1fae5;border-radius:99px}
+        ::-webkit-scrollbar-thumb:hover{background:#86efac}
+        .dark ::-webkit-scrollbar-thumb{background:#1e4a2f}
+        .dark ::-webkit-scrollbar-thumb:hover{background:#16a34a}
+        *{scrollbar-width:thin;scrollbar-color:#d1fae5 transparent}
+        .sidebar{transition:transform .3s}
+        .nav-item{transition:all .2s}
+        .nav-item:hover{background:#f0fdf4;color:#16a34a}
+        .nav-item.active{background:#f0fdf4;color:#16a34a;font-weight:700}
+        @media(max-width:1024px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}}
+
+        /* ── Dark Theme ───────────────────────────────────────── */
+        .dark body,.dark{background:#0f172a!important;color:#e2e8f0}
+        .dark .sidebar{background:#1e293b!important;border-color:#334155!important}
+        .dark .sidebar h1{color:#f1f5f9!important}
+        .dark .sidebar p{color:#94a3b8!important}
+        .dark .nav-item{color:#94a3b8!important}
+        .dark .nav-item:hover{background:#0f4a27!important;color:#4ade80!important}
+        .dark .nav-item.active{background:#0f4a27!important;color:#4ade80!important}
+        .dark .sidebar>div:last-child{background:#1e293b!important;border-color:#334155!important}
+        .dark header{background:#1e293b!important;border-color:#334155!important}
+        .dark header h2{color:#f1f5f9!important}
+        .dark .bg-white{background:#1e293b!important}
+        .dark .bg-gray-50{background:#0f172a!important}
+        .dark .bg-gray-50\/50{background:rgba(15,23,42,.5)!important}
+        .dark .border{border-color:#334155!important}
+        .dark .border-b,.dark .border-t{border-color:#334155!important}
+        .dark .text-gray-900{color:#f1f5f9!important}
+        .dark .text-gray-700{color:#cbd5e1!important}
+        .dark .text-gray-600{color:#94a3b8!important}
+        .dark .text-gray-500{color:#64748b!important}
+        .dark .text-gray-400{color:#475569!important}
+        .dark .text-gray-300{color:#334155!important}
+        .dark .shadow-sm{box-shadow:0 1px 2px rgba(0,0,0,.4)!important}
+        .dark table thead{background:#1e293b!important}
+        .dark tr.border-b{border-color:#334155!important}
+        .dark tr:hover{background:rgba(30,41,59,.6)!important}
+        .dark select,.dark textarea,.dark input{background:#0f172a!important;border-color:#334155!important;color:#e2e8f0!important}
+        .dark .bg-green-50{background:#0f4a27!important}
+        .dark .bg-gray-100{background:#334155!important}
+        .dark #sidebarToggle{background:#1e293b!important;border-color:#334155!important}
+        .dark #sidebarToggle i{color:#94a3b8!important}
+        /* Stat cards */
+        .dark [id^="stat-"]{color:#4ade80!important}
+        /* Blog post cards dark fix */
+        .dark .rounded-2xl.border{background:#1e293b!important}
+    </style>
 </head>
-<body style="background:#f8fafc; display:flex; align-items:center; justify-content:center; min-height:100vh; font-family:sans-serif;">
-    <div style="text-align:center;">
-        <div style="width:40px; height:40px; border:3px solid #16a34a; border-top-color:transparent; border-radius:50%; animation:spin 1s linear infinite; margin:0 auto 20px;"></div>
-        <p style="color:#64748b; font-weight:600;">Moving to Unified Admin Dashboard...</p>
-    </div>
-    <style>@keyframes spin { to { transform:rotate(360deg); } }</style>
-</body>
-</html>
+<body class="bg-gray-50">
 
-    <!-- Dashboard Content -->
-    <div id="dashboard" class="hidden">
-        <!-- Sidebar -->
-        <aside id="sidebar" class="fixed left-0 top-0 h-full w-72 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 z-40 sidebar">
-            <div class="h-20 flex items-center gap-3 px-6 border-b border-gray-200">
-                <img src="../../assets/images/logo.png" class="w-10 h-10 rounded-lg">
-                <div>
-                    <h1 class="text-lg font-bold">Course Corner</h1>
-                    <p class="text-[10px] text-gray-500 font-bold uppercase tracking-widest">Learn Dashboard</p>
+<!-- ═══ USER DETAIL MODAL (glassmorphic) ═══ -->
+<div id="userDetailOverlay" onclick="if(event.target===this)closeUserDetail()" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(6px);z-index:10000;align-items:center;justify-content:center;padding:1rem">
+    <div style="background:rgba(255,255,255,.93);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.7);border-radius:.875rem;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:0 32px 64px rgba(0,0,0,.18)">
+        <!-- Header -->
+        <div style="padding:.9rem 1.25rem .75rem;background:linear-gradient(135deg,rgba(124,58,237,.9),rgba(59,130,246,.85));border-radius:.875rem .875rem 0 0;color:white">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem">
+                <div style="min-width:0">
+                    <p style="font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.75;margin:0 0 .2rem">User Profile</p>
+                    <h3 id="udName" style="font-size:1.05rem;font-weight:800;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</h3>
+                    <p id="udEmail" style="font-size:.75rem;opacity:.8;margin:.15rem 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</p>
+                </div>
+                <button onclick="closeUserDetail()" style="background:rgba(255,255,255,.2);border:none;border-radius:.5rem;width:28px;height:28px;cursor:pointer;color:white;font-size:.9rem;flex-shrink:0;display:flex;align-items:center;justify-content:center">&times;</button>
+            </div>
+        </div>
+        <!-- Body grid -->
+        <div style="padding:.9rem 1.25rem .5rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem">
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">Full Name</p>
+                <p id="udFullName" style="font-size:.8rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">Phone / WhatsApp</p>
+                <p id="udPhone" style="font-size:.8rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">Location</p>
+                <p id="udLocation" style="font-size:.8rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">Course</p>
+                <p id="udCourse" style="font-size:.8rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">Has Laptop</p>
+                <p id="udLaptop" style="font-size:.8rem;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">App Status</p>
+                <p id="udStatus" style="margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">Submitted</p>
+                <p id="udDate" style="font-size:.75rem;color:#374151;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem;grid-column:2/-1">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">Application ID</p>
+                <p id="udAppId" style="font-size:.68rem;font-family:monospace;color:#374151;margin:0;word-break:break-all">—</p>
+            </div>
+            <div id="udInterestWrap" style="background:rgba(240,253,244,.95);border:1px solid #bbf7d0;border-radius:.6rem;padding:.5rem .65rem;grid-column:1/-1;display:none">
+                <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#16a34a;margin:0 0 .2rem">Why Interested</p>
+                <p id="udInterest" style="font-size:.78rem;color:#374151;line-height:1.6;margin:0">—</p>
+            </div>
+        </div>
+        <!-- Payment summary -->
+        <div id="udPaySection" style="padding:0 1.25rem .75rem">
+            <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#9ca3af;margin:0 0 .5rem">Payment Summary</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.45rem;margin-bottom:.55rem">
+                <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.45rem .6rem">
+                    <p style="font-size:.48rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .12rem">Course Fee</p>
+                    <p id="udCourseFee" style="font-size:.82rem;font-weight:800;color:#111827;margin:0">—</p>
+                </div>
+                <div style="background:rgba(240,253,244,.9);border:1px solid #bbf7d0;border-radius:.6rem;padding:.45rem .6rem">
+                    <p style="font-size:.48rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#16a34a;margin:0 0 .12rem">Total Paid</p>
+                    <p id="udTotalPaid" style="font-size:.82rem;font-weight:800;color:#15803d;margin:0">—</p>
+                </div>
+                <div id="udBalanceBox" style="background:rgba(255,251,235,.9);border:1px solid #fde68a;border-radius:.6rem;padding:.45rem .6rem">
+                    <p id="udBalanceLabel" style="font-size:.48rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#b45309;margin:0 0 .12rem">Balance</p>
+                    <p id="udBalance" style="font-size:.82rem;font-weight:800;color:#b45309;margin:0">—</p>
                 </div>
             </div>
-            <nav class="p-4 space-y-1">
-                <a href="#" onclick="switchPage('learn-analytics')" id="nav-learn-analytics" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
-                    <i class="fas fa-chart-line w-6"></i>
-                    <span>Dashboard</span>
-                </a>
-                <a href="#" onclick="switchPage('learn-courses')" id="nav-learn-courses" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
-                    <i class="fas fa-graduation-cap w-6"></i>
-                    <span>Course Catalog</span>
-                </a>
-                <a href="#" onclick="switchPage('learn-applications')" id="nav-learn-applications" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
-                    <i class="fas fa-user-graduate w-6"></i>
-                    <span>Applications</span>
-                </a>
-                <a href="#" onclick="switchPage('learn-transactions')" id="nav-learn-transactions" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
-                    <i class="fas fa-receipt w-6"></i>
-                    <span>Transactions</span>
-                </a>
-                <a href="#" onclick="switchPage('learn-modules')" id="nav-learn-modules" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
-                    <i class="fas fa-list-ul w-6"></i>
-                    <span>Modules & Progress</span>
-                </a>
-                <a href="#" onclick="switchPage('learn-notifications')" id="nav-learn-notifications" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
-                    <i class="fas fa-bell w-6"></i>
-                    <span>Notifications</span>
-                </a>
-                <a href="#" onclick="switchPage('learn-blog')" id="nav-learn-blog" class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 font-medium">
-                    <i class="fas fa-blog w-6"></i>
-                    <span>Blog Posts</span>
-                </a>
-                <div class="pt-4 mt-4 border-t border-gray-100">
-                    <a href="../../admin/index.html" class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-arrow-left w-6"></i>
-                        <span>Back to Main Admin</span>
-                    </a>
-                </div>
-            </nav>
-            <div class="absolute bottom-0 left-0 right-0 p-4 border-t">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-primary-600 rounded-full flex items-center justify-center text-white font-bold" id="userInitial">?</div>
-                    <div class="flex-1 min-w-0">
-                        <p id="sidebar-email" class="text-xs font-bold truncate text-gray-900 dark:text-white">Admin</p>
-                    </div>
-                    <button onclick="logout()" class="p-2 text-gray-400 hover:text-red-500"><i class="fas fa-sign-out-alt"></i></button>
-                </div>
+            <div id="udPayRows" style="background:#f9fafb;border-radius:.55rem;overflow:hidden;border:1px solid rgba(229,231,235,.6)">
+                <p style="padding:.55rem;font-size:.72rem;color:#9ca3af;text-align:center;margin:0"><i class="fas fa-spinner fa-spin mr-1"></i>Loading…</p>
             </div>
-        </aside>
-
-        <!-- Main -->
-        <div class="lg:ml-72 min-h-screen">
-            <header class="h-20 bg-white dark:bg-gray-800 border-b border-gray-200 px-8 flex items-center justify-between sticky top-0 z-30">
-                <h2 id="page-title" class="text-xl font-bold">Course Catalog</h2>
-                <div class="flex gap-2">
-                    <button onclick="switchPage('learn-courses')" class="p-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100"><i class="fas fa-sync-alt"></i></button>
-                    <button onclick="toggleTheme()" class="p-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100"><i class="fas fa-moon"></i></button>
-                </div>
-            </header>
-            
-            <main class="p-6">
-                <!-- Dashboard Analytics -->
-                <div id="page-learn-analytics">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border">
-                            <i class="fas fa-users text-primary-600 mb-2"></i>
-                            <h4 class="text-sm text-gray-500 font-bold">Total Enrolled</h4>
-                            <p class="text-3xl font-extrabold" id="stat-enrolled">-</p>
-                        </div>
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border">
-                            <i class="fas fa-wallet text-green-600 mb-2"></i>
-                            <h4 class="text-sm text-gray-500 font-bold">Total Paid</h4>
-                            <p class="text-3xl font-extrabold" id="stat-paid">-</p>
-                        </div>
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border">
-                            <i class="fas fa-hourglass-half text-amber-600 mb-2"></i>
-                            <h4 class="text-sm text-gray-500 font-bold">Pending Amount</h4>
-                            <p class="text-3xl font-extrabold" id="stat-pending">-</p>
-                        </div>
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border">
-                            <i class="fas fa-calendar-check text-blue-600 mb-2"></i>
-                            <h4 class="text-sm text-gray-500 font-bold">New This Month</h4>
-                            <p class="text-3xl font-extrabold" id="stat-monthly">-</p>
-                        </div>
-                    </div>
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl border p-6">
-                        <h3 class="font-bold mb-4">Enrollment Trends</h3>
-                        <div class="h-64 flex items-center justify-center text-gray-400">Chart Placeholder</div>
-                    </div>
-                </div>
-
-                <!-- Course Management Page -->
-                <div id="page-learn-courses" class="hidden">
-                    <div class="flex items-center justify-between mb-8">
-                        <div>
-                            <h3 class="text-lg font-extrabold text-gray-900">Course Tiers</h3>
-                            <p class="text-sm text-gray-500">Starter (2k), Intermediate (4k), Pro (6k)</p>
-                        </div>
-                        <button onclick="openAddCourseModal()" class="px-5 py-2.5 bg-primary-600 text-white font-bold rounded-xl shadow-lg">Add New Course</button>
-                    </div>
-                    <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-                </div>
-
-                <!-- Applications Page -->
-                <div id="page-learn-applications" class="hidden">
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-                        <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                            <h3 class="font-bold">Student Applications</h3>
-                            <select id="app-status-filter" onchange="filterLearnApps()" class="bg-white border rounded-lg px-3 py-1 text-sm">
-                                <option value="all">All</option>
-                                <option value="pending">Pending</option>
-                                <option value="approved">Approved</option>
-                            </select>
-                        </div>
-                        <table class="w-full text-left">
-                            <thead class="bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                <tr>
-                                    <th class="px-6 py-4">Student</th>
-                                    <th class="px-6 py-4">Desired Package</th>
-                                    <th class="px-6 py-4">Date</th>
-                                    <th class="px-6 py-4 text-center">Status</th>
-                                    <th class="px-6 py-4 text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="learn-apps-table-body"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Transactions Page -->
-                <div id="page-learn-transactions" class="hidden">
-                    <div class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-                        <div class="p-6 border-b border-gray-100 bg-gray-50/50">
-                            <h3 class="font-bold">Course Payments</h3>
-                        </div>
-                        <table class="w-full text-left">
-                            <thead class="bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                <tr>
-                                    <th class="px-6 py-4">User</th>
-                                    <th class="px-6 py-4">Total Paid</th>
-                                    <th class="px-6 py-4">Remaining Balance</th>
-                                    <th class="px-6 py-4">Last Payment</th>
-                                    <th class="px-6 py-4 text-right">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="learn-tx-table-body"></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <!-- Modules & Progress Page -->
-                <div id="page-learn-modules" class="hidden">
-                    <div class="flex items-center justify-between mb-8">
-                        <div>
-                            <h3 class="text-lg font-extrabold text-gray-900">Modules & Progress</h3>
-                            <p class="text-sm text-gray-500">Update curriculum for active users</p>
-                        </div>
-                        <button onclick="openAddModuleModal()" class="px-5 py-2.5 bg-blue-600 text-white font-bold rounded-xl shadow-lg">New Module</button>
-                    </div>
-                    <div id="modules-list" class="space-y-4"></div>
-                </div>
-
-                <!-- Notifications Page -->
-                <div id="page-learn-notifications" class="hidden">
-                    <div class="max-w-2xl">
-                        <h3 class="text-lg font-extrabold text-gray-900 mb-4">Send Notification</h3>
-                        <div class="bg-white dark:bg-gray-800 p-6 rounded-2xl border shadow-sm">
-                            <form id="notifyForm" class="space-y-4">
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Message</label>
-                                    <textarea id="notifyText" class="w-full p-4 bg-gray-50 dark:bg-gray-700 rounded-xl border-none h-32" placeholder="Course update: Module 2 is now available..."></textarea>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-400 uppercase mb-1">Target Audience</label>
-                                    <select class="w-full p-3 bg-gray-50 dark:bg-gray-700 rounded-xl border-none">
-                                        <option value="all">All Logged-in Users</option>
-                                        <option value="paid">Paid Users Only</option>
-                                    </select>
-                                </div>
-                                <button type="submit" class="w-full bg-primary-600 text-white py-3 rounded-xl font-bold shadow-lg">Send Broadcast</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Blog Page -->
-                <div id="page-learn-blog" class="hidden">
-                    <div class="flex items-center justify-between mb-8">
-                        <div>
-                            <h3 class="text-lg font-extrabold text-gray-900">Blog Management</h3>
-                            <p class="text-sm text-gray-500">Post new articles and updates</p>
-                        </div>
-                        <button onclick="openAddBlogModal()" class="px-5 py-2.5 bg-purple-600 text-white font-bold rounded-xl shadow-lg">Create Post</button>
-                    </div>
-                    <div id="blog-posts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
-                </div>
-            </main>
+        </div>
+        <!-- Actions -->
+        <div style="padding:0 1.25rem .9rem;display:flex;gap:.5rem">
+            <a id="udEmailLink" href="#" style="flex:1;padding:.55rem;background:#3b82f6;color:white;border:none;border-radius:.6rem;font-weight:700;font-size:.78rem;cursor:pointer;text-align:center;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:.35rem"><i class="fas fa-envelope"></i>Send Email</a>
+            <button id="udDeleteBtn" style="flex:1;padding:.55rem;background:#ef4444;color:white;border:none;border-radius:.6rem;font-weight:700;font-size:.78rem;cursor:pointer" onclick="deleteUserFromModal()"><i class="fas fa-trash mr-1"></i>Delete</button>
+            <button onclick="closeUserDetail()" style="flex:1;padding:.55rem;background:#6b7280;color:white;border:none;border-radius:.6rem;font-weight:700;font-size:.78rem;cursor:pointer">Close</button>
         </div>
     </div>
+</div>
 
-    <script>
-        const app = firebase.initializeApp({
-            apiKey:"AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
-            authDomain:"course-corner.firebaseapp.com",
-            projectId:"course-corner",
-            appId:"1:961706784572:web:7aa6c24946570ffda59039"
-        });
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+<!-- ═══ APPLICATION DETAIL MODAL (glassmorphic) ═══ -->
+<div id="appDetailOverlay" onclick="if(event.target===this)closeAppDetail()" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;padding:1rem">
+    <div style="background:rgba(255,255,255,.92);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.7);border-radius:.875rem;width:100%;max-width:580px;max-height:88vh;overflow-y:auto;box-shadow:0 32px 64px rgba(0,0,0,.18),0 0 0 1px rgba(255,255,255,.4) inset">
+        <!-- Header -->
+        <div style="padding:.9rem 1.25rem .75rem;background:linear-gradient(135deg,rgba(22,163,74,.9),rgba(14,165,233,.85));border-radius:.875rem .875rem 0 0;color:white">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:.75rem">
+                <div style="min-width:0">
+                    <p style="font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.75;margin:0 0 .2rem">Application</p>
+                    <h3 id="adName" style="font-size:1.05rem;font-weight:800;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</h3>
+                    <p id="adEmail" style="font-size:.75rem;opacity:.8;margin:.15rem 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">—</p>
+                </div>
+                <button onclick="closeAppDetail()" style="background:rgba(255,255,255,.2);border:none;border-radius:.5rem;width:28px;height:28px;cursor:pointer;color:white;font-size:.9rem;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:background .15s" onmouseover="this.style.background='rgba(255,255,255,.35)'" onmouseout="this.style.background='rgba(255,255,255,.2)'">&times;</button>
+            </div>
+        </div>
+        <!-- Body grid -->
+        <div style="padding:.9rem 1.25rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:.55rem">
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Full Name</p>
+                <p id="adFullName" style="font-size:.8125rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Course</p>
+                <p id="adCourse" style="font-size:.8125rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">WhatsApp</p>
+                <p id="adPhone" style="font-size:.8125rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Location</p>
+                <p id="adLocation" style="font-size:.8125rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Laptop</p>
+                <p id="adLaptop" style="margin:0;font-size:.8125rem">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Status</p>
+                <p id="adStatus" style="margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem;grid-column:1/-1">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Submitted</p>
+                <p id="adDate" style="font-size:.8rem;color:#374151;margin:0">—</p>
+            </div>
+            <div id="adInterestWrap" style="background:rgba(240,253,244,.95);border:1px solid #bbf7d0;border-radius:.6rem;padding:.55rem .7rem;grid-column:1/-1;display:none">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#16a34a;margin:0 0 .25rem">Why Interested</p>
+                <p id="adInterest" style="font-size:.8rem;color:#374151;line-height:1.6;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem;grid-column:1/-1">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Application ID</p>
+                <p id="adAppId" style="font-size:.7rem;font-family:monospace;color:#374151;margin:0;word-break:break-all">—</p>
+            </div>
+        </div>
+        <!-- Payment summary section -->
+        <div id="adPaymentsSection" style="padding:0 1.25rem .75rem;display:none">
+            <p style="font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:#9ca3af;margin:0 0 .6rem">Payment Summary</p>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.65rem">
+                <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.5rem .65rem">
+                    <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .15rem">Course Fee</p>
+                    <p id="adCourseFee" style="font-size:.85rem;font-weight:800;color:#111827;margin:0">—</p>
+                </div>
+                <div style="background:rgba(240,253,244,.9);border:1px solid #bbf7d0;border-radius:.6rem;padding:.5rem .65rem">
+                    <p style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#16a34a;margin:0 0 .15rem">Total Paid</p>
+                    <p id="adTotalPaid" style="font-size:.85rem;font-weight:800;color:#15803d;margin:0">—</p>
+                </div>
+                <div id="adBalanceBox" style="background:rgba(255,251,235,.9);border:1px solid #fde68a;border-radius:.6rem;padding:.5rem .65rem">
+                    <p id="adBalanceLabel" style="font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#b45309;margin:0 0 .15rem">Balance</p>
+                    <p id="adBalance" style="font-size:.85rem;font-weight:800;color:#b45309;margin:0">—</p>
+                </div>
+            </div>
+            <div id="adPaymentRows" style="background:#f9fafb;border-radius:.6rem;overflow:hidden;border:1px solid rgba(229,231,235,.6)"></div>
+        </div>
+        <!-- Actions -->
+        <div style="padding:0 1.25rem .9rem;display:flex;gap:.5rem">
+            <button style="flex:1;padding:.55rem;background:#16a34a;color:white;border:none;border-radius:.6rem;font-weight:700;font-size:.78rem;cursor:pointer" onclick="appDetailAction('approved')"><i class="fas fa-check mr-1"></i>Approve</button>
+            <button style="flex:1;padding:.55rem;background:#ef4444;color:white;border:none;border-radius:.6rem;font-weight:700;font-size:.78rem;cursor:pointer" onclick="appDetailAction('rejected')"><i class="fas fa-times mr-1"></i>Reject</button>
+            <button style="flex:1;padding:.55rem;background:#3b82f6;color:white;border:none;border-radius:.6rem;font-weight:700;font-size:.78rem;cursor:pointer" onclick="appDetailAction('contacted')"><i class="fas fa-phone-alt mr-1"></i>Contacted</button>
+        </div>
+    </div>
+</div>
 
-        auth.onAuthStateChanged(user => {
-            if (user && isAuthorizedAdmin(user)) {
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-                document.getElementById('sidebar-email').textContent = user.email;
-                document.getElementById('userInitial').textContent = user.email[0].toUpperCase();
-                loadLearnCourses();
-            } else {
-                document.getElementById('login-screen').classList.remove('hidden');
-                document.getElementById('dashboard').classList.add('hidden');
-            }
-        });
+<!-- ═══ TRANSACTION DETAIL MODAL ═══ -->
+<div id="txDetailOverlay" onclick="if(event.target===this)closeTxDetail()" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,.45);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;padding:1rem">
+    <div style="background:rgba(255,255,255,.92);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.7);border-radius:.875rem;width:100%;max-width:560px;max-height:88vh;overflow-y:auto;box-shadow:0 32px 64px rgba(0,0,0,.18)">
+        <div id="txDetailHeader" style="padding:.9rem 1.25rem .75rem;background:linear-gradient(135deg,rgba(109,40,217,.9),rgba(59,130,246,.85));border-radius:.875rem .875rem 0 0;color:white">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+                <div>
+                    <p style="font-size:.58rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.75;margin:0 0 .2rem">Transaction Details</p>
+                    <p id="tdStudent" style="font-size:1rem;font-weight:800;margin:0">—</p>
+                    <p id="tdCourse" style="font-size:.75rem;opacity:.8;margin:.15rem 0 0">—</p>
+                </div>
+                <button onclick="closeTxDetail()" style="background:rgba(255,255,255,.2);border:none;border-radius:.5rem;width:28px;height:28px;cursor:pointer;color:white;font-size:.9rem;display:flex;align-items:center;justify-content:center">&times;</button>
+            </div>
+        </div>
+        <div style="padding:.9rem 1.25rem;display:grid;grid-template-columns:1fr 1fr 1fr;gap:.55rem">
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Amount</p>
+                <p id="tdAmount" style="font-size:.875rem;font-weight:800;color:#16a34a;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Status</p>
+                <p id="tdStatus" style="margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Date</p>
+                <p id="tdDate" style="font-size:.8rem;color:#374151;margin:0">—</p>
+            </div>
+            <div style="background:rgba(240,253,244,.9);border:1px solid #bbf7d0;border-radius:.6rem;padding:.55rem .7rem;grid-column:1/-1">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#16a34a;margin:0 0 .2rem">M-Pesa Receipt</p>
+                <p id="tdReceipt" style="font-size:.875rem;font-weight:800;font-family:monospace;letter-spacing:.08em;color:#15803d;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Phone</p>
+                <p id="tdPhone" style="font-size:.8125rem;font-weight:700;color:#111827;margin:0">—</p>
+            </div>
+            <div style="background:rgba(249,250,251,.9);border:1px solid rgba(229,231,235,.6);border-radius:.6rem;padding:.55rem .7rem">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#9ca3af;margin:0 0 .2rem">Email</p>
+                <p id="tdEmail" style="font-size:.8125rem;font-weight:700;color:#111827;margin:0;word-break:break-all">—</p>
+            </div>
+            <div id="tdResultWrap" style="background:rgba(254,242,242,.9);border:1px solid #fecaca;border-radius:.6rem;padding:.55rem .7rem;grid-column:1/-1;display:none">
+                <p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#dc2626;margin:0 0 .2rem">Failure Reason</p>
+                <p id="tdResult" style="font-size:.8rem;color:#374151;margin:0">—</p>
+            </div>
+        </div>
+        <div style="padding:0 1.25rem .9rem">
+            <button id="tdDeleteBtn" style="width:100%;padding:.6rem;background:#ef4444;color:white;border:none;border-radius:.6rem;font-weight:700;font-size:.8rem;cursor:pointer"><i class="fas fa-trash mr-1.5"></i>Delete This Transaction</button>
+        </div>
+    </div>
+</div>
 
-        document.getElementById('login-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('login-email').value;
-            const pass = document.getElementById('login-password').value;
-            const btn = document.getElementById('login-btn');
-            btn.disabled = true;
-            try {
-                await auth.signInWithEmailAndPassword(email, pass);
-            } catch (err) {
-                document.getElementById('login-error').textContent = err.message;
-                document.getElementById('login-error').classList.remove('hidden');
-                btn.disabled = false;
-            }
-        });
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div id="login-screen" class="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-green-950 to-gray-900 p-4">
+    <div class="w-full max-w-sm">
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center gap-2 mb-4">
+                <img src="https://coursecornerkenya.com/assets/images/logo.png" class="h-10 w-auto" alt="Logo">
+                <div class="text-left">
+                    <div class="text-white font-extrabold text-lg leading-none">Course Corner</div>
+                    <div class="text-green-400 text-[0.6rem] font-bold uppercase tracking-wider">Learn Admin</div>
+                </div>
+            </div>
+            <p class="text-gray-400 text-sm">Sign in to manage the Learn portal</p>
+        </div>
+        <form id="login-form" class="bg-white/10 backdrop-blur-xl border border-white/10 rounded-2xl p-6 space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-gray-300 mb-1.5 uppercase tracking-wider">Email</label>
+                <input id="login-email" type="email" required class="w-full p-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-green-500" placeholder="admin@email.com">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-300 mb-1.5 uppercase tracking-wider">Password</label>
+                <input id="login-password" type="password" required class="w-full p-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-green-500" placeholder="••••••••">
+            </div>
+            <p id="login-error" class="text-red-400 text-xs font-bold hidden"></p>
+            <button id="login-btn" type="submit" class="w-full py-3 bg-[#16a34a] text-white rounded-xl font-bold hover:bg-[#15803d] transition-all">Sign In</button>
+        </form>
+    </div>
+</div>
 
-        function switchPage(page) {
-            const pages = ['learn-analytics', 'learn-courses', 'learn-applications', 'learn-transactions', 'learn-modules', 'learn-notifications', 'learn-blog'];
-            pages.forEach(p => {
-                const el = document.getElementById(`page-${p}`);
-                if (el) el.classList.add('hidden');
-            });
-            
-            const target = document.getElementById(`page-${page}`);
-            if (target) target.classList.remove('hidden');
+<!-- ═══ DASHBOARD ═══ -->
+<div id="dashboard" class="hidden">
 
-            document.getElementById('page-title').textContent = {
-                'learn-analytics': 'Dashboard Analytics',
-                'learn-courses': 'Course Catalog',
-                'learn-applications': 'Student Applications',
-                'learn-transactions': 'Course Payments',
-                'learn-modules': 'Modules & Progress',
-                'learn-notifications': 'Broadcast Notifications',
-                'learn-blog': 'Blog Management'
-            }[page] || 'Learn Dashboard';
-            
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('bg-primary-50', 'text-primary-600'));
-            const nav = document.getElementById(`nav-${page}`);
-            if (nav) nav.classList.add('bg-primary-50', 'text-primary-600');
-            
-            if(page === 'learn-applications') loadLearnApplications();
-            if(page === 'learn-courses') loadLearnCourses();
-            if(page === 'learn-analytics') loadLearnAnalytics();
-            if(page === 'learn-transactions') loadLearnTransactions();
-            if(page === 'learn-modules') loadLearnModules();
-            if(page === 'learn-blog') loadLearnBlogs();
-        }
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed left-0 top-0 h-full w-72 bg-white border-r border-gray-200 z-40 flex flex-col">
+        <div class="flex-shrink-0 h-16 flex items-center gap-3 px-5 border-b border-gray-200">
+            <img src="https://coursecornerkenya.com/assets/images/logo.png" class="w-9 h-9 rounded-lg" alt="Logo">
+            <div>
+                <h1 class="text-base font-extrabold text-gray-900">Course Corner</h1>
+                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-widest">Learn Dashboard</p>
+            </div>
+        </div>
+        <nav class="flex-1 overflow-y-auto p-3 space-y-0.5">
+            <a href="#" onclick="switchPage('learn-analytics')" id="nav-learn-analytics" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-chart-line w-5 text-sm"></i><span>Dashboard</span>
+            </a>
+            <a href="#" onclick="switchPage('learn-courses')" id="nav-learn-courses" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-graduation-cap w-5 text-sm"></i><span>Course Catalog</span>
+            </a>
+            <a href="#" onclick="switchPage('learn-applications')" id="nav-learn-applications" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-user-graduate w-5 text-sm"></i><span>Applications</span>
+            </a>
+            <a href="#" onclick="switchPage('learn-transactions')" id="nav-learn-transactions" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-receipt w-5 text-sm"></i><span>Transactions</span>
+            </a>
+            <a href="#" onclick="switchPage('learn-modules')" id="nav-learn-modules" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-list-ul w-5 text-sm"></i><span>Modules & Progress</span>
+            </a>
+            <a href="#" onclick="switchPage('learn-notifications')" id="nav-learn-notifications" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-bell w-5 text-sm"></i><span>Notifications</span>
+            </a>
+            <a href="#" onclick="switchPage('learn-users')" id="nav-learn-users" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-users w-5 text-sm"></i><span>Users</span>
+            </a>
+            <a href="#" onclick="switchPage('learn-blog')" id="nav-learn-blog" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-blog w-5 text-sm"></i><span>What's New / Blog</span>
+            </a>
+            <a href="#" onclick="switchPage('learn-resources')" id="nav-learn-resources" class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-700 font-medium">
+                <i class="fas fa-folder-open w-5 text-sm"></i><span>Resources</span>
+            </a>
+            <div class="pt-3 mt-3 border-t border-gray-100">
+                <a href="../../admin/index.html" class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-400 hover:text-gray-600 hover:bg-gray-50 transition-colors">
+                    <i class="fas fa-arrow-left w-5 text-sm"></i><span class="text-sm">Back to Main Admin</span>
+                </a>
+            </div>
+        </nav>
+        <div class="flex-shrink-0 p-3 border-t bg-white">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-[#16a34a] rounded-full flex items-center justify-center text-white font-bold text-sm" id="userInitial">?</div>
+                <div class="flex-1 min-w-0">
+                    <p id="sidebar-email" class="text-xs font-bold truncate text-gray-900">Admin</p>
+                </div>
+                <button onclick="logout()" class="p-2 text-gray-400 hover:text-red-500 transition-colors"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
+        </div>
+    </aside>
 
-        async function loadLearnApplications() {
-            const tbody = document.getElementById('learn-apps-table-body');
-            tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400 font-bold uppercase tracking-widest"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr>';
-            try {
-                const snapshot = await db.collection('learnApplications')
-                    .orderBy('timestamp', 'desc')
-                    .limit(50).get();
-                
-                if (snapshot.empty) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="p-20 text-center"><div class="flex flex-col items-center opacity-20"><i class="fas fa-inbox text-5xl mb-4"></i><p class="font-black text-xs uppercase tracking-[0.2em]">No Applications Yet</p></div></td></tr>';
-                    return;
-                }
+    <!-- Mobile sidebar toggle -->
+    <button id="sidebarToggle" class="lg:hidden fixed top-5 left-4 z-50 w-10 h-10 bg-white border rounded-xl shadow-lg flex items-center justify-center" onclick="document.getElementById('sidebar').classList.toggle('open')">
+        <i class="fas fa-bars text-gray-600"></i>
+    </button>
 
-                tbody.innerHTML = snapshot.docs.map(doc => {
-                    const data = doc.data();
-                    const date = data.timestamp ? data.timestamp.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : 'Unknown';
-                    const statusClass = {
-                        'pending': 'bg-amber-100 text-amber-700',
-                        'approved': 'bg-emerald-100 text-emerald-700',
-                        'rejected': 'bg-rose-100 text-rose-700'
-                    }[data.status] || 'bg-slate-100 text-slate-700';
+    <!-- Main Content -->
+    <div class="lg:ml-72 min-h-screen">
+        <header class="h-20 bg-white border-b border-gray-200 px-8 flex items-center justify-between sticky top-0 z-30">
+            <h2 id="page-title" class="text-xl font-extrabold text-gray-900">Dashboard</h2>
+            <div class="flex gap-2">
+                <button onclick="location.reload()" class="p-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100 transition-colors" title="Refresh"><i class="fas fa-sync-alt"></i></button>
+                <button id="darkToggleBtn" onclick="toggleDark()" class="p-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100 transition-colors" title="Toggle dark mode">
+                    <i id="darkToggleIcon" class="fas fa-moon"></i>
+                </button>
+            </div>
+        </header>
 
-                    return `
-                        <tr class="border-b border-gray-100/50 hover:bg-gray-50/80 transition-all duration-200">
-                            <td class="px-6 py-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-xl bg-gray-100 border flex items-center justify-center font-bold text-gray-400 capitalize">${data.fullName ? data.fullName[0] : '?'}</div>
-                                    <div>
-                                        <p class="text-xs font-black text-gray-900 uppercase tracking-tight">${data.fullName || 'Anonymous'}</p>
-                                        <p class="text-[10px] text-gray-400 font-bold">${data.whatsapp || data.email || 'No Contact'}</p>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="px-3 py-1 rounded-lg bg-primary-50 text-primary-600 text-[10px] font-black uppercase tracking-wider border border-primary-100/50">${data.courseId || 'Masterclass'}</span>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">${date}</span>
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <span class="px-2.5 py-1 rounded-full text-[9px] font-black uppercase tracking-widest border ${statusClass}">${data.status || 'pending'}</span>
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <div class="flex justify-end gap-2">
-                                    <button onclick="updateAppStatus('${doc.id}', 'approved')" class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all duration-300 flex items-center justify-center"><i class="fas fa-check text-[10px]"></i></button>
-                                    <button onclick="updateAppStatus('${doc.id}', 'rejected')" class="w-8 h-8 rounded-lg bg-rose-50 text-rose-600 hover:bg-rose-600 hover:text-white transition-all duration-300 flex items-center justify-center"><i class="fas fa-times text-[10px]"></i></button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            } catch (e) { console.error("Error loading apps:", e); }
-        }
+        <main class="p-4 md:p-6">
 
-        async function updateAppStatus(id, status) {
-            try {
-                await db.collection('learnApplications').doc(id).update({ status });
-                loadLearnApplications();
-                Swal.fire({ icon: 'success', title: `Application ${status}!`, toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
-            } catch (e) {
-                Swal.fire({ icon: 'error', title: 'Update failed', text: e.message });
-            }
-        }
+            <!-- ═══ Analytics ═══ -->
+            <div id="page-learn-analytics">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border"><i class="fas fa-users text-[#16a34a] text-xl mb-2"></i><h4 class="text-sm text-gray-500 font-bold">Total Applications</h4><p class="text-3xl font-extrabold" id="stat-enrolled">–</p></div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border"><i class="fas fa-wallet text-green-600 text-xl mb-2"></i><h4 class="text-sm text-gray-500 font-bold">Total Paid</h4><p class="text-3xl font-extrabold" id="stat-paid">–</p></div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border"><i class="fas fa-hourglass-half text-amber-600 text-xl mb-2"></i><h4 class="text-sm text-gray-500 font-bold">Pending Apps</h4><p class="text-3xl font-extrabold" id="stat-pending">–</p></div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border"><i class="fas fa-calendar-check text-blue-600 text-xl mb-2"></i><h4 class="text-sm text-gray-500 font-bold">Blog Posts</h4><p class="text-3xl font-extrabold" id="stat-posts">–</p></div>
+                </div>
 
-        async function loadLearnTransactions() {
-            const tbody = document.getElementById('learn-tx-table-body');
-            tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400 font-bold uppercase tracking-widest"><i class="fas fa-spinner fa-spin mr-2"></i>Calculating...</td></tr>';
-            
-            try {
-                // Get all applications to know the package fees
-                const appsSnap = await db.collection('learnApplications').get();
-                const studentPackages = {};
-                appsSnap.forEach(doc => {
-                    const data = doc.data();
-                    const email = data.email || data.whatsapp;
-                    if (email) studentPackages[email] = data.courseId || 'starter';
-                });
-
-                // Tiers mapping
-                const fees = { 'starter': 2000, 'intermediate': 4000, 'pro': 6000 };
-
-                // Get all course-related transactions
-                const txSnap = await db.collection('transactions')
-                    .where('status', '==', 'completed')
-                    .get();
-
-                const userLedger = {};
-                txSnap.forEach(doc => {
-                    const data = doc.data();
-                    const id = data.userEmail || data.phoneNumber; // Link by email or phone
-                    if (!userLedger[id]) {
-                        userLedger[id] = { 
-                            name: data.fullName || id, 
-                            paid: 0, 
-                            lastDate: null, 
-                            package: studentPackages[id] || 'starter' 
-                        };
-                    }
-                    userLedger[id].paid += (data.amount || 0);
-                    if (!userLedger[id].lastDate || data.createdAt?.toDate() > userLedger[id].lastDate) {
-                        userLedger[id].lastDate = data.createdAt?.toDate();
-                    }
-                });
-
-                if (Object.keys(userLedger).length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="5" class="p-20 text-center"><div class="flex flex-col items-center opacity-20"><i class="fas fa-receipt text-5xl mb-4"></i><p class="font-black text-xs uppercase tracking-[0.2em]">No Payments Recorded</p></div></td></tr>';
-                    return;
-                }
-
-                tbody.innerHTML = Object.entries(userLedger).map(([id, info]) => {
-                    const totalFee = fees[info.package] || 2000;
-                    const remaining = Math.max(0, totalFee - info.paid);
-                    return `
-                        <tr class="border-b border-gray-100/50 hover:bg-gray-50/80 transition-all duration-200">
-                            <td class="px-6 py-4">
-                                <div>
-                                    <p class="text-xs font-black text-gray-900 uppercase tracking-tight">${info.name}</p>
-                                    <p class="text-[10px] text-gray-500 font-bold">${info.package.toUpperCase()} PACKAGE</p>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4">
-                                <p class="text-xs font-black text-emerald-600 uppercase tracking-widest">KSH ${info.paid.toLocaleString()}</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <p class="text-xs font-black ${remaining > 0 ? 'text-rose-500' : 'text-emerald-500'} uppercase tracking-widest">KSH ${remaining.toLocaleString()}</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">${info.lastDate ? info.lastDate.toLocaleDateString() : '-'}</span>
-                            </td>
-                            <td class="px-6 py-4 text-right">
-                                <button class="w-8 h-8 rounded-lg bg-gray-50 text-gray-400 hover:bg-primary-600 hover:text-white transition-all duration-300 flex items-center justify-center"><i class="fas fa-ellipsis-v text-[10px]"></i></button>
-                            </td>
-                        </tr>
-                    `;
-                }).join('');
-            } catch (e) {
-                console.error("Tx load error:", e);
-                tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-rose-500">Failed to load transactions</td></tr>';
-            }
-        }
-
-        async function loadLearnCourses() {
-            const grid = document.getElementById('courses-grid');
-            grid.innerHTML = '<div class="col-span-full py-20 flex justify-center"><i class="fas fa-spinner fa-spin text-3xl text-primary-200"></i></div>';
-            try {
-                const resp = await fetch('../data/courses.json');
-                const courses = await resp.json();
-                grid.innerHTML = courses.map(c => `
-                    <div class="bg-white dark:bg-gray-800 rounded-3xl border border-gray-200 overflow-hidden group hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
-                        <div class="h-40 relative flex items-center justify-center overflow-hidden" style="background: ${c.gradient}">
-                            <i class="${c.icon} text-5xl text-white drop-shadow-2xl group-hover:scale-110 transition-transform duration-500"></i>
-                            <div class="absolute top-4 right-4 px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold text-white uppercase tracking-widest border border-white/30">${c.level}</div>
+                <!-- Quick User Lookup -->
+                <div class="bg-white rounded-2xl border p-5 mb-6">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                        <div>
+                            <h3 class="font-bold text-gray-900 flex items-center gap-2"><i class="fas fa-search text-purple-500"></i> Quick User Lookup</h3>
+                            <p class="text-xs text-gray-400 mt-0.5">Enter a user's email to instantly view their full profile, payment history & balance</p>
                         </div>
-                        <div class="p-6">
-                            <h4 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-1">KSH ${c.fee.toLocaleString()}</h4>
-                            <h3 class="text-lg font-black text-gray-900 mb-2 leading-tight">${c.title}</h3>
-                            <p class="text-xs text-gray-500 font-medium leading-relaxed mb-4 line-clamp-2">${c.description}</p>
-                            <div class="flex items-center gap-2 pt-4 border-t border-gray-50">
-                                <button class="flex-1 bg-gray-50 hover:bg-gray-100 text-gray-900 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">Edit</button>
-                                <button class="w-10 h-10 bg-rose-50 text-rose-500 flex items-center justify-center rounded-xl hover:bg-rose-500 hover:text-white transition-all"><i class="fas fa-trash-alt text-[10px]"></i></button>
+                        <div class="flex gap-2 items-center w-full sm:w-auto">
+                            <input id="analytics-email-lookup" type="email" placeholder="user@example.com" class="flex-1 sm:w-64 px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all" onkeydown="if(event.key==='Enter')analyticsLookupUser()">
+                            <button onclick="analyticsLookupUser()" class="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-bold rounded-xl hover:from-purple-700 hover:to-blue-700 transition-all text-sm flex items-center gap-2 shadow-lg shadow-purple-200">
+                                <i class="fas fa-user-search"></i> Lookup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-2xl border p-6"><h3 class="font-bold mb-4">Recent Applications</h3><div id="recent-apps" class="space-y-3 text-sm text-gray-500">Loading...</div></div>
+                    <div class="bg-white rounded-2xl border p-6"><h3 class="font-bold mb-4">Recent Payments</h3><div id="recent-payments" class="space-y-3 text-sm text-gray-500">Loading...</div></div>
+                </div>
+            </div>
+
+            <!-- ═══ Course Catalog ═══ -->
+            <div id="page-learn-courses" class="hidden">
+                <div class="flex items-center justify-between mb-8">
+                    <div><h3 class="text-lg font-extrabold text-gray-900">Course Tiers</h3><p class="text-sm text-gray-500">Managed from courses.json</p></div>
+                </div>
+                <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            </div>
+
+            <!-- ═══ Applications ═══ -->
+            <div id="page-learn-applications" class="hidden">
+                <div class="bg-white rounded-2xl border overflow-hidden shadow-sm">
+                    <div class="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                        <h3 class="font-bold">Student Applications</h3>
+                        <select id="app-status-filter" onchange="filterLearnApps()" class="bg-white border rounded-lg px-3 py-1 text-sm">
+                            <option value="all">All</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="rejected">Rejected</option>
+                        </select>
+                    </div>
+                    <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            <tr><th class="px-6 py-4">Student</th><th class="px-6 py-4">Package</th><th class="px-6 py-4">Date</th><th class="px-6 py-4 text-center">Status</th><th class="px-6 py-4 text-right">Action</th></tr>
+                        </thead>
+                        <tbody id="learn-apps-table-body"></tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Transactions ═══ -->
+            <div id="page-learn-transactions" class="hidden">
+                <div class="bg-white rounded-2xl border overflow-hidden shadow-sm">
+                    <div class="p-6 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between gap-4">
+                        <div>
+                            <h3 class="font-bold">All Payment Attempts</h3>
+                            <p id="tx-count" class="text-xs text-gray-400 mt-0.5">Loading…</p>
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button id="bulk-delete-tx-btn" onclick="bulkDeleteTransactions()" class="hidden items-center gap-1.5 px-3 py-1.5 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all text-xs">
+                                <i class="fas fa-trash"></i> Delete Selected (<span id="bulk-tx-count">0</span>)
+                            </button>
+                            <button onclick="downloadTransactionsCSV()" class="flex items-center gap-1.5 px-3 py-1.5 bg-[#16a34a] text-white font-bold rounded-xl hover:bg-[#15803d] transition-all text-xs" title="Download all transactions as CSV">
+                                <i class="fas fa-download"></i> Export CSV
+                            </button>
+                            <select id="tx-status-filter" onchange="filterTransactions()" class="text-sm border border-gray-200 rounded-xl px-3 py-1.5 bg-white cursor-pointer">
+                                <option value="">All Statuses</option>
+                                <option value="completed">Completed</option>
+                                <option value="failed">Failed</option>
+                                <option value="pending">Pending</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            <tr><th class="px-4 py-3"><input type="checkbox" id="select-all-tx" onchange="toggleSelectAllTx(this.checked)" class="w-3.5 h-3.5 accent-red-500"></th><th class="px-4 py-3">Student</th><th class="px-4 py-3">Course</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">M-Pesa Code</th><th class="px-4 py-3">Date</th><th class="px-4 py-3 text-center">Status</th><th class="px-4 py-3 text-right">Action</th></tr>
+                        </thead>
+                        <tbody id="learn-tx-table-body"></tbody>
+                    </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Modules ═══ -->
+            <div id="page-learn-modules" class="hidden">
+                <div class="bg-white p-12 rounded-3xl border text-center flex flex-col items-center">
+                    <div class="w-20 h-20 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-3xl mb-6"><i class="fas fa-layer-group"></i></div>
+                    <h3 class="font-extrabold text-gray-900 mb-2">Curriculum Builder</h3>
+                    <p class="text-sm text-gray-500 max-w-sm leading-relaxed mb-6">Manage modules and lessons for each course. Currently linked to courses.json — can be migrated to Firestore for dynamic editing.</p>
+                    <button onclick="Swal.fire({icon:'info',title:'Coming Soon',text:'Dynamic module management will be available in the next update.', confirmButtonColor:'#16a34a'})" class="px-6 py-3 bg-blue-600 text-white rounded-xl font-bold shadow-lg hover:bg-blue-700 transition-all">Configure Modules</button>
+                </div>
+            </div>
+
+            <!-- ═══ Notifications ═══ -->
+            <div id="page-learn-notifications" class="hidden">
+                <!-- Header -->
+                <div class="flex items-center justify-between mb-6 gap-4">
+                    <div>
+                        <h3 class="text-lg font-extrabold text-gray-900">Broadcast Notifications</h3>
+                        <p class="text-sm text-gray-500" id="notif-count">Loading…</p>
+                    </div>
+                    <button onclick="openNotifyEditor()" class="flex items-center gap-2 px-5 py-2.5 bg-[#16a34a] text-white font-bold rounded-xl shadow-lg hover:bg-[#15803d] transition-all">
+                        <i class="fas fa-plus"></i> New Broadcast
+                    </button>
+                </div>
+                <!-- List -->
+                <div id="notif-list" class="space-y-4">
+                    <div class="py-16 text-center text-gray-300">
+                        <i class="fas fa-spinner fa-spin text-3xl mb-3 block"></i>
+                        <p class="text-xs font-bold uppercase tracking-widest">Loading…</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ═══ Users ═══ -->
+            <div id="page-learn-users" class="hidden">
+                <div class="flex flex-wrap items-center justify-between mb-4 gap-3">
+                    <div>
+                        <h3 class="text-lg font-extrabold text-gray-900">Registered Users</h3>
+                        <p class="text-sm text-gray-500" id="users-count">Loading…</p>
+                    </div>
+                    <div class="flex gap-2 flex-wrap items-center">
+                        <!-- Check user by email -->
+                        <div class="flex gap-1.5 items-center">
+                            <input id="check-user-email" type="email" placeholder="Enter email to check…" class="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-purple-500 w-48">
+                            <button onclick="checkUserByEmail()" class="px-3 py-2 bg-purple-600 text-white font-bold rounded-xl hover:bg-purple-700 transition-all text-xs flex items-center gap-1">
+                                <i class="fas fa-search"></i> Check
+                            </button>
+                        </div>
+                        <!-- Sync -->
+                        <button id="sync-users-btn" onclick="syncUsers()" class="px-3 py-2 bg-[#16a34a] text-white font-bold rounded-xl hover:bg-[#15803d] transition-all text-xs flex items-center gap-1.5">
+                            <i class="fas fa-sync-alt"></i> Sync
+                        </button>
+                        <button onclick="bulkDeleteUsers()" id="bulk-delete-btn" class="hidden items-center gap-2 px-3 py-2 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all text-xs">
+                            <i class="fas fa-trash"></i> Delete Selected
+                        </button>
+                        <input id="users-search" type="text" placeholder="Search…" oninput="filterUsers()" class="px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-green-500 w-40">
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                            <tr>
+                                <th class="px-4 py-3"><input type="checkbox" id="select-all-users" onchange="toggleSelectAllUsers(this.checked)"></th>
+                                <th class="px-4 py-3">Name</th>
+                                <th class="px-4 py-3">Email</th>
+                                <th class="px-4 py-3">Phone</th>
+                                <th class="px-4 py-3">Course</th>
+                                <th class="px-4 py-3 text-center">Status</th>
+                                <th class="px-4 py-3 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ═══ Blog / What's New ═══ -->
+            <div id="page-learn-blog" class="hidden">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+                    <div>
+                        <h3 class="text-lg font-extrabold text-gray-900">What's New Management</h3>
+                        <p class="text-sm text-gray-500">Create and manage blog posts shown on the What's New page</p>
+                    </div>
+                    <button onclick="openBlogEditor()" class="px-5 py-2.5 bg-purple-600 text-white font-bold rounded-xl shadow-lg hover:bg-purple-700 transition-all flex items-center gap-2">
+                        <i class="fas fa-plus"></i> New Post
+                    </button>
+                </div>
+                <div id="blog-posts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+            </div>
+
+            <!-- ═══ Resources ═══ -->
+            <div id="page-learn-resources" class="hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h3 class="text-lg font-extrabold text-gray-900">Resources</h3>
+                        <p class="text-sm text-gray-500">Downloadable materials, guides and study resources for students</p>
+                    </div>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 p-16 text-center">
+                    <div class="w-20 h-20 rounded-2xl bg-amber-50 flex items-center justify-center mx-auto mb-5">
+                        <i class="fas fa-folder-open text-3xl text-amber-400"></i>
+                    </div>
+                    <h4 class="text-xl font-extrabold text-gray-900 mb-2">Resources Coming Soon</h4>
+                    <p class="text-sm text-gray-400 max-w-md mx-auto leading-relaxed">This section will contain downloadable study materials, guides, and resources for enrolled students. Check back soon!</p>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- ═══ Blog Editor Modal (compact) ═══ -->
+<div id="blogEditorModal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-xl w-full max-w-lg max-h-[88vh] overflow-y-auto shadow-2xl">
+        <div class="px-5 py-3 border-b border-gray-100 flex items-center justify-between">
+            <h3 class="text-sm font-extrabold text-gray-900" id="blogEditorTitle">New Post</h3>
+            <button onclick="closeBlogEditor()" class="w-7 h-7 rounded-lg bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors"><i class="fas fa-times text-gray-500 text-xs"></i></button>
+        </div>
+        <form id="blogForm" class="px-5 py-4 space-y-3">
+            <input type="hidden" id="blogEditId">
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Title *</label>
+                <input id="blogTitle" type="text" required class="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" placeholder="Exciting Update: New Module Released!">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Category *</label>
+                    <select id="blogCategory" required class="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500">
+                        <option value="story">Success Story</option>
+                        <option value="update">Platform Update</option>
+                        <option value="tip">Learning Tip</option>
+                        <option value="news">News</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">Author</label>
+                    <input id="blogAuthor" type="text" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" placeholder="Course Corner Team">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Excerpt / Summary *</label>
+                <textarea id="blogExcerpt" required class="w-full p-2.5 border border-gray-200 rounded-lg text-sm h-14 focus:outline-none focus:border-green-500" placeholder="A brief summary for the card..."></textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Full Content *</label>
+                <textarea id="blogContent" required class="w-full p-2.5 border border-gray-200 rounded-lg text-sm h-28 focus:outline-none focus:border-green-500" placeholder="Write the full article content here..."></textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-gray-700 mb-1">Image URL (optional)</label>
+                <input id="blogImage" type="url" class="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-green-500" placeholder="https://images.unsplash.com/...">
+            </div>
+            <div class="flex items-center gap-2">
+                <input id="blogPublished" type="checkbox" checked class="w-3.5 h-3.5 accent-green-600">
+                <label for="blogPublished" class="text-xs font-bold text-gray-700">Publish immediately</label>
+            </div>
+            <div class="flex gap-2 pt-1">
+                <button type="button" onclick="closeBlogEditor()" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-bold text-sm hover:bg-gray-200 transition-all">Cancel</button>
+                <button type="submit" class="flex-1 py-2 bg-purple-600 text-white rounded-lg font-bold text-sm hover:bg-purple-700 transition-all shadow flex items-center justify-center gap-1.5">
+                    <i class="fas fa-save"></i> <span id="blogSaveLabel">Publish Post</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // ═══════════════════════════════════════════════════════════
+    //  Firebase init & Auth
+    // ═══════════════════════════════════════════════════════════
+    const app = firebase.initializeApp({
+        apiKey: "AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
+        authDomain: "course-corner.firebaseapp.com",
+        projectId: "course-corner",
+        storageBucket: "course-corner.firebasestorage.app",
+        messagingSenderId: "961706784572",
+        appId: "1:961706784572:web:7aa6c24946570ffda59039"
+    });
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    const ADMIN_EMAILS = ['peterkelvinkibiru1532@gmail.com', 'macharia074m@gmail.com'];
+    function isAuthorizedAdmin(user) { return user && ADMIN_EMAILS.includes(user.email); }
+
+    auth.onAuthStateChanged(user => {
+        if (user && isAuthorizedAdmin(user)) {
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('sidebar-email').textContent = user.email;
+            document.getElementById('userInitial').textContent = user.email[0].toUpperCase();
+            const urlPage = new URLSearchParams(window.location.search).get('page');
+            switchPage(urlPage && PAGES.includes(urlPage) ? urlPage : 'learn-analytics');
+        } else {
+            document.getElementById('login-screen').classList.remove('hidden');
+            document.getElementById('dashboard').classList.add('hidden');
+            if (user && !isAuthorizedAdmin(user)) {
+                Swal.fire({ icon: 'error', title: 'Access Denied', text: 'You are not an authorized admin.', confirmButtonColor: '#16a34a' });
+                auth.signOut();
+            }
+        }
+    });
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value;
+        const pass = document.getElementById('login-password').value;
+        const btn = document.getElementById('login-btn');
+        const errEl = document.getElementById('login-error');
+        btn.disabled = true;
+        errEl.classList.add('hidden');
+        try {
+            await auth.signInWithEmailAndPassword(email, pass);
+        } catch (err) {
+            errEl.textContent = err.message;
+            errEl.classList.remove('hidden');
+            btn.disabled = false;
+        }
+    });
+
+    function logout() { auth.signOut(); }
+
+    // ═══════════════════════════════════════════════════════════
+    //  Page Switching
+    // ═══════════════════════════════════════════════════════════
+    const PAGES = ['learn-analytics','learn-courses','learn-applications','learn-transactions','learn-modules','learn-notifications','learn-users','learn-blog','learn-resources'];
+    const PAGE_TITLES = {
+        'learn-analytics': 'Dashboard Analytics',
+        'learn-courses': 'Course Catalog',
+        'learn-applications': 'Student Applications',
+        'learn-transactions': 'Course Payments',
+        'learn-modules': 'Modules & Progress',
+        'learn-notifications': 'Broadcast Notifications',
+        'learn-users': 'Registered Users',
+        'learn-blog': 'What\'s New / Blog',
+        'learn-resources': 'Resources'
+    };
+
+    // ── Dark mode toggle ─────────────────────────────────────
+    function applyDark(on) {
+        document.documentElement.classList.toggle('dark', on);
+        const icon = document.getElementById('darkToggleIcon');
+        if (icon) icon.className = on ? 'fas fa-sun' : 'fas fa-moon';
+        localStorage.setItem('learnAdminDark', on ? '1' : '0');
+    }
+    window.toggleDark = () => applyDark(!document.documentElement.classList.contains('dark'));
+    applyDark(localStorage.getItem('learnAdminDark') === '1');
+
+    function switchPage(page) {
+        PAGES.forEach(p => { const el = document.getElementById('page-' + p); if (el) el.classList.add('hidden'); });
+        const target = document.getElementById('page-' + page);
+        if (target) target.classList.remove('hidden');
+        document.getElementById('page-title').textContent = PAGE_TITLES[page] || 'Dashboard';
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        const nav = document.getElementById('nav-' + page);
+        if (nav) nav.classList.add('active');
+        document.getElementById('sidebar').classList.remove('open');
+
+        if (page === 'learn-analytics') loadAnalytics();
+        if (page === 'learn-courses') loadCourses();
+        if (page === 'learn-applications') loadApplications();
+        if (page === 'learn-transactions') loadTransactions();
+        if (page === 'learn-blog') loadBlogPosts();
+        if (page === 'learn-notifications') loadNotifications();
+        if (page === 'learn-users') loadUsers();
+        // learn-resources: no data fetch needed
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  Analytics
+    // ═══════════════════════════════════════════════════════════
+    async function loadAnalytics() {
+        try {
+            const [appsSnap, paymentsSnap, postsSnap] = await Promise.all([
+                db.collection('learnApplications').get(),
+                db.collection('learnPayments').get(),
+                db.collection('learnPosts').get()
+            ]);
+
+            document.getElementById('stat-enrolled').textContent = appsSnap.size;
+            const pendingCount = appsSnap.docs.filter(d => (d.data().status || 'pending') === 'pending').length;
+            document.getElementById('stat-pending').textContent = pendingCount;
+
+            let totalPaid = 0;
+            paymentsSnap.forEach(d => { totalPaid += (d.data().amountPaid || 0); });
+            document.getElementById('stat-paid').textContent = 'KSH ' + totalPaid.toLocaleString();
+            document.getElementById('stat-posts').textContent = postsSnap.size;
+
+            // Recent apps
+            const recentApps = appsSnap.docs
+                .map(d => ({ id: d.id, ...d.data() }))
+                .sort((a, b) => (b.timestamp || '') > (a.timestamp || '') ? 1 : -1)
+                .slice(0, 5);
+            document.getElementById('recent-apps').innerHTML = recentApps.length
+                ? recentApps.map(a => `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl"><div><p class="text-sm font-bold text-gray-900">${a.fullName || 'Anonymous'}</p><p class="text-xs text-gray-400">${a.courseTitle || a.courseId || '—'}</p></div><span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${a.status === 'approved' ? 'bg-green-100 text-green-700' : a.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-amber-100 text-amber-700'}">${a.status || 'pending'}</span></div>`).join('')
+                : '<p class="text-gray-400 text-center py-8">No applications yet</p>';
+
+            // Recent payments
+            const recentPay = paymentsSnap.docs
+                .map(d => ({ id: d.id, ...d.data() }))
+                .sort((a, b) => (b.timestamp || '') > (a.timestamp || '') ? 1 : -1)
+                .slice(0, 5);
+            document.getElementById('recent-payments').innerHTML = recentPay.length
+                ? recentPay.map(p => `<div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl"><div><p class="text-sm font-bold text-gray-900">${p.email || p.phone || '—'}</p><p class="text-xs text-gray-400">${p.courseTitle || '—'}</p></div><span class="text-sm font-extrabold text-green-600">KSH ${(p.amountPaid || 0).toLocaleString()}</span></div>`).join('')
+                : '<p class="text-gray-400 text-center py-8">No payments yet</p>';
+
+        } catch (e) { console.error('Analytics error:', e); }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  Course Catalog
+    // ═══════════════════════════════════════════════════════════
+    async function loadCourses() {
+        const grid = document.getElementById('courses-grid');
+        grid.className = '';
+        grid.innerHTML = '<div class="py-16 flex justify-center"><i class="fas fa-spinner fa-spin text-2xl text-green-200"></i></div>';
+        try {
+            const resp = await fetch('../data/courses.json');
+            const courses = await resp.json();
+            _adminCourses = courses; // cache for app detail balance
+            grid.className = 'bg-white rounded-2xl border border-gray-100 overflow-hidden';
+            grid.innerHTML = `<div class="divide-y divide-gray-50">` + courses.map(c => `
+                <div class="flex items-center gap-4 px-5 py-3 hover:bg-gray-50/60 transition-colors group">
+                    <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 text-white text-sm" style="background:${c.gradient}">
+                        <i class="${c.icon}"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <p class="text-sm font-extrabold text-gray-900 truncate">${c.title}</p>
+                            <span class="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-gray-100 text-gray-500">${c.level || ''}</span>
+                        </div>
+                        <p class="text-[10px] text-gray-400 font-medium mt-0.5">${c.duration || ''} &middot; ${c.modulesCount || 0} modules &middot; KSH ${(c.fee || 0).toLocaleString()}</p>
+                    </div>
+                    <button onclick="openCourseDetail(${JSON.stringify(c).replace(/'/g, '&apos;')})" class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all flex items-center justify-center opacity-0 group-hover:opacity-100 flex-shrink-0" title="View Details">
+                        <i class="fas fa-eye text-[11px]"></i>
+                    </button>
+                </div>
+            `).join('') + `</div>`;
+        } catch (e) { console.error(e); grid.innerHTML = '<p class="text-center text-red-500 py-8">Failed to load courses</p>'; }
+    }
+
+    function openCourseDetail(c) {
+        if (typeof c === 'string') try { c = JSON.parse(c); } catch(_){}
+        Swal.fire({
+            title: c.title || 'Course Detail',
+            html: `
+                <div style="text-align:left;font-size:.83rem">
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem .9rem;margin-bottom:.9rem">
+                        <div><p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;margin:0 0 .2rem">Level</p><p style="font-weight:700;color:#111827;margin:0">${c.level || '—'}</p></div>
+                        <div><p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;margin:0 0 .2rem">Fee</p><p style="font-weight:700;color:#16a34a;margin:0">KSH ${(c.fee || 0).toLocaleString()}</p></div>
+                        <div><p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;margin:0 0 .2rem">Duration</p><p style="font-weight:700;color:#111827;margin:0">${c.duration || '—'}</p></div>
+                        <div><p style="font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;margin:0 0 .2rem">Modules</p><p style="font-weight:700;color:#111827;margin:0">${c.modulesCount || 0}</p></div>
+                    </div>
+                    ${c.description ? `<p style="color:#6b7280;font-size:.8rem;line-height:1.6;margin-bottom:.7rem">${c.description}</p>` : ''}
+                    ${c.outcomes && c.outcomes.length ? `<p style="font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;margin:.7rem 0 .3rem">Learning Outcomes</p><ul style="margin:0;padding-left:1.1rem;color:#374151;font-size:.78rem;line-height:1.7">${c.outcomes.map(o=>`<li>${o}</li>`).join('')}</ul>` : ''}
+                </div>`,
+            confirmButtonText: 'Close',
+            confirmButtonColor: '#16a34a',
+            customClass: { popup: 'swal-compact' },
+            width: '420px'
+        });
+    }
+
+    // Course data cache (loaded by loadCourses, reused by openAppDetail)
+    let _adminCourses = null;
+
+    // ═══════════════════════════════════════════════════════════
+    //  Applications
+    // ═══════════════════════════════════════════════════════════
+    let allApps = [];
+    async function loadApplications() {
+        const tbody = document.getElementById('learn-apps-table-body');
+        tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400"><i class="fas fa-spinner fa-spin mr-2"></i>Loading...</td></tr>';
+        try {
+            const snap = await db.collection('learnApplications').orderBy('timestamp', 'desc').limit(100).get();
+            allApps = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            renderApps(allApps);
+        } catch (e) { console.error(e); tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-red-500">Error loading applications</td></tr>'; }
+    }
+
+    function filterLearnApps() {
+        const f = document.getElementById('app-status-filter').value;
+        renderApps(f === 'all' ? allApps : allApps.filter(a => (a.status || 'pending') === f));
+    }
+
+    function renderApps(apps) {
+        const tbody = document.getElementById('learn-apps-table-body');
+        if (!apps.length) {
+            tbody.innerHTML = '<tr><td colspan="5" class="p-20 text-center text-gray-300"><i class="fas fa-inbox text-4xl mb-3 block"></i><p class="font-bold text-xs uppercase tracking-widest">No Applications</p></td></tr>';
+            return;
+        }
+        tbody.innerHTML = apps.map(a => {
+            const ts = a.timestamp;
+            const dateShort = typeof ts === 'string' ? new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : (ts && ts.toDate ? ts.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) : '—');
+            const sc = { pending: 'bg-amber-100 text-amber-700', approved: 'bg-green-100 text-green-700', rejected: 'bg-red-100 text-red-700' }[a.status] || 'bg-gray-100 text-gray-700';
+            const email = a.email || '—';
+            const name  = a.fullName || a.name || 'Anonymous';
+            const phone = a.whatsapp || a.phone || '';
+            return `
+                <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                    <td class="px-6 py-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-xl bg-gray-100 flex items-center justify-center font-bold text-gray-400 capitalize text-sm flex-shrink-0">${email[0].toUpperCase()}</div>
+                            <div style="min-width:0">
+                                <p class="text-xs font-extrabold text-green-700" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px">${email}</p>
+                                <p class="text-[11px] font-semibold text-gray-700 mt-0.5">${name}</p>
+                                ${phone ? `<p class="text-[10px] text-gray-400">${phone}</p>` : ''}
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4"><span class="px-2.5 py-1 rounded-lg bg-green-50 text-green-700 text-[10px] font-bold uppercase">${a.courseTitle || a.courseId || '—'}</span></td>
+                    <td class="px-6 py-4 text-xs font-bold text-gray-400">${dateShort}</td>
+                    <td class="px-6 py-4 text-center"><span class="px-2.5 py-1 rounded-full text-[9px] font-bold uppercase tracking-wider ${sc}">${a.status || 'pending'}</span></td>
+                    <td class="px-6 py-4 text-right"><div class="flex justify-end gap-1.5">
+                        <button onclick="openAppDetail('${a.id}')" class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all flex items-center justify-center" title="View Full Details"><i class="fas fa-eye text-[11px]"></i></button>
+                        <button onclick="updateAppStatus('${a.id}','approved')" class="w-8 h-8 rounded-lg bg-green-50 text-green-600 hover:bg-green-600 hover:text-white transition-all flex items-center justify-center" title="Approve"><i class="fas fa-check text-[10px]"></i></button>
+                        <button onclick="updateAppStatus('${a.id}','rejected')" class="w-8 h-8 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center" title="Reject"><i class="fas fa-times text-[10px]"></i></button>
+                    </div></td>
+                </tr>`;
+        }).join('');
+    }
+
+    function toggleLearnAppDetail(id) {
+        const row = document.getElementById('ldetail-' + id);
+        const chevron = document.getElementById('lchevron-' + id);
+        if (!row) return;
+        const isOpen = row.style.display !== 'none';
+        row.style.display = isOpen ? 'none' : 'table-row';
+        if (chevron) chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+    }
+
+    let _detailAppId = null;
+    async function openAppDetail(id) {
+        const a = allApps.find(x => x.id === id);
+        if (!a) return;
+        _detailAppId = id;
+
+        const ts = a.timestamp;
+        const date = typeof ts === 'string' ? new Date(ts).toLocaleString() : (ts && ts.toDate ? ts.toDate().toLocaleString() : '—');
+        const email = a.email || '—';
+        const name  = a.fullName || a.name || 'Anonymous';
+        const phone = a.whatsapp || a.phone || '—';
+
+        // Laptop: form radio saves field as 'hasLaptop' with values 'yes'/'no'
+        const laptopVal = a.hasLaptop || a.laptop;
+        const laptopHtml = (laptopVal === true || laptopVal === 'yes' || laptopVal === 'Yes')
+            ? '<span style="color:#16a34a;font-weight:700;font-size:.9375rem"><i class="fas fa-check-circle"></i> Yes — has a laptop</span>'
+            : (laptopVal === false || laptopVal === 'no' || laptopVal === 'No')
+            ? '<span style="color:#dc2626;font-weight:700;font-size:.9375rem"><i class="fas fa-times-circle"></i> No — does not have a laptop</span>'
+            : '<span style="color:#9ca3af;font-size:.9375rem">Not specified</span>';
+
+        const statusColors = { pending:'background:#fef3c7;color:#b45309', contacted:'background:#dbeafe;color:#1d4ed8', approved:'background:#dcfce7;color:#15803d', rejected:'background:#fee2e2;color:#dc2626' };
+        const statusStyle = statusColors[a.status || 'pending'] || statusColors.pending;
+        const statusHtml = `<span style="font-size:.8rem;font-weight:800;padding:.25rem .75rem;border-radius:9999px;${statusStyle}">${(a.status || 'pending').toUpperCase()}</span>`;
+
+        document.getElementById('adName').textContent = name;
+        document.getElementById('adEmail').textContent = email;
+        document.getElementById('adFullName').textContent = name;
+        document.getElementById('adCourse').textContent = (a.courseTitle || a.courseId || '—').replace(/-/g,' ').replace(/\b\w/g, l => l.toUpperCase());
+        document.getElementById('adPhone').textContent = phone;
+        document.getElementById('adLocation').textContent = a.location || '—';
+        document.getElementById('adLaptop').innerHTML = laptopHtml;
+        document.getElementById('adStatus').innerHTML = statusHtml;
+        document.getElementById('adDate').textContent = date;
+        document.getElementById('adAppId').textContent = id;
+
+        const interest = a.interest || a.reason || a.message || '';
+        const wrap = document.getElementById('adInterestWrap');
+        document.getElementById('adInterest').textContent = interest;
+        wrap.style.display = interest ? 'block' : 'none';
+
+        const overlay = document.getElementById('appDetailOverlay');
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        // === Payment summary ===
+        const paySection = document.getElementById('adPaymentsSection');
+        paySection.style.display = 'none';
+        document.getElementById('adPaymentRows').innerHTML = '<p style="padding:.65rem;font-size:.72rem;color:#9ca3af;text-align:center;margin:0"><i class="fas fa-spinner fa-spin mr-1"></i>Loading payments…</p>';
+        paySection.style.display = 'block';
+
+        if (email && email !== '—') {
+            try {
+                // Ensure course cache is loaded
+                if (!_adminCourses) {
+                    try { const r = await fetch('../data/courses.json'); _adminCourses = await r.json(); } catch(_) { _adminCourses = []; }
+                }
+                const courseObj = _adminCourses.find(c => c.id === (a.courseId || ''));
+                const courseFee = courseObj ? (parseFloat(courseObj.fee) || 0) : 0;
+
+                // Fetch successful payments from both collections
+                const successStatuses = ['completed','success','COMPLETED','SUCCESS'];
+                let payments = [];
+                try {
+                    const pSnap = await db.collection('learnPayments').where('email','==',email).get();
+                    pSnap.forEach(d => { const p = d.data(); if (successStatuses.includes(p.status)) payments.push(p); });
+                } catch(_) {}
+                try {
+                    const tSnap = await db.collection('transactions').where('email','==',email).get();
+                    const seen = new Set(payments.map(p => p.checkoutRequestId).filter(Boolean));
+                    tSnap.forEach(d => {
+                        const p = d.data();
+                        if (!successStatuses.includes(p.status)) return;
+                        if (p.checkoutRequestId && seen.has(p.checkoutRequestId)) return;
+                        payments.push(p);
+                    });
+                } catch(_) {}
+
+                const totalPaid = payments.reduce((s, p) => s + (parseFloat(p.amount) || 0), 0);
+                const balance   = Math.max(0, courseFee - totalPaid);
+
+                document.getElementById('adCourseFee').textContent = courseFee > 0 ? `KSH ${courseFee.toLocaleString()}` : '—';
+                document.getElementById('adTotalPaid').textContent = `KSH ${totalPaid.toLocaleString()}`;
+                document.getElementById('adBalance').textContent   = `KSH ${balance.toLocaleString()}`;
+
+                const balBox   = document.getElementById('adBalanceBox');
+                const balAmtEl = document.getElementById('adBalance');
+                const balLblEl = document.getElementById('adBalanceLabel');
+                if (balance === 0 && totalPaid > 0) {
+                    balBox.style.background = 'rgba(240,253,244,.9)'; balBox.style.border = '1px solid #bbf7d0';
+                    balAmtEl.style.color = '#15803d'; balLblEl.style.color = '#16a34a';
+                    balLblEl.textContent = 'Fully Paid';
+                } else {
+                    balBox.style.background = 'rgba(255,251,235,.9)'; balBox.style.border = '1px solid #fde68a';
+                    balAmtEl.style.color = '#b45309'; balLblEl.style.color = '#b45309';
+                    balLblEl.textContent = 'Balance';
+                }
+
+                const rowsEl = document.getElementById('adPaymentRows');
+                if (payments.length === 0) {
+                    rowsEl.innerHTML = '<p style="padding:.65rem;font-size:.75rem;color:#9ca3af;text-align:center;margin:0">No successful payments yet.</p>';
+                } else {
+                    payments.sort((x, y) => { const dx = x.completedAt||x.timestamp||'', dy = y.completedAt||y.timestamp||''; return dy > dx ? 1 : -1; });
+                    rowsEl.innerHTML = payments.map((p, i) => {
+                        let ds = '—'; const rd = p.completedAt || p.timestamp;
+                        if (rd) try { const d = rd.toDate ? rd.toDate() : new Date(rd); ds = d.toLocaleDateString('en-KE',{day:'2-digit',month:'short',year:'numeric'}); } catch(_){}
+                        const code = p.mpesaReceiptNumber || p.transactionCode || 'None';
+                        return `<div style="display:flex;align-items:center;gap:.6rem;padding:.45rem .75rem;${i>0?'border-top:1px solid rgba(229,231,235,.5)':''}">
+                            <div style="width:7px;height:7px;border-radius:50%;background:#16a34a;flex-shrink:0"></div>
+                            <p style="flex:1;font-size:.78rem;font-weight:800;color:#111827;margin:0">KSH ${(parseFloat(p.amount)||0).toLocaleString()}</p>
+                            <p style="font-size:.68rem;color:#6b7280;margin:0;flex-shrink:0">${ds}</p>
+                            <p style="font-size:.65rem;font-family:monospace;color:#7c3aed;margin:0;flex-shrink:0">${code}</p>
+                        </div>`;
+                    }).join('');
+                }
+            } catch (e) {
+                console.error('App payment fetch:', e);
+                document.getElementById('adPaymentRows').innerHTML = '<p style="padding:.65rem;font-size:.72rem;color:#9ca3af;text-align:center;margin:0">Could not load payments.</p>';
+            }
+        } else {
+            document.getElementById('adPaymentRows').innerHTML = '<p style="padding:.65rem;font-size:.72rem;color:#9ca3af;text-align:center;margin:0">No email on record.</p>';
+        }
+    }
+    window.openAppDetail = openAppDetail;
+
+    function closeAppDetail() {
+        document.getElementById('appDetailOverlay').style.display = 'none';
+        document.body.style.overflow = '';
+        _detailAppId = null;
+    }
+    window.closeAppDetail = closeAppDetail;
+
+    async function appDetailAction(status) {
+        if (!_detailAppId) return;
+        await updateAppStatus(_detailAppId, status);
+        closeAppDetail();
+    }
+    window.appDetailAction = appDetailAction;
+
+    async function updateAppStatus(id, status) {
+        try {
+            await db.collection('learnApplications').doc(id).update({ status });
+            const app = allApps.find(a => a.id === id);
+            if (app) app.status = status;
+            filterLearnApps();
+            Swal.fire({ icon: 'success', title: `Application ${status}!`, toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+        } catch (e) { Swal.fire({ icon: 'error', title: 'Update failed', text: e.message, confirmButtonColor: '#16a34a' }); }
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  Transactions: learnPayments (successful) + transactions (all)
+    // ═══════════════════════════════════════════════════════════
+    let allTxs = [];
+    let selectedTxIds = new Map(); // id → src ('lp' or 'tx')
+
+    async function loadTransactions() {
+        const tbody = document.getElementById('learn-tx-table-body');
+        tbody.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-gray-400"><i class="fas fa-spinner fa-spin mr-2"></i>Loading…</td></tr>';
+        try {
+            // Query both collections in parallel
+            const [learnPaySnap, txSnap] = await Promise.all([
+                db.collection('learnPayments').orderBy('timestamp', 'desc').limit(200).get(),
+                db.collection('transactions')
+                    .where('category', '>=', 'learn-')
+                    .where('category', '<=', 'learn-\uf8ff')
+                    .limit(300)
+                    .get()
+                    .catch(err => { console.warn('transactions query error:', err); return null; })
+            ]);
+
+            // Track checkoutRequestIds already covered by learnPayments (successful)
+            const coveredCheckoutIds = new Set();
+            const combined = [];
+
+            // 1. Add all learnPayments entries (rich data, always completed)
+            learnPaySnap.docs.forEach(d => {
+                const p = d.data();
+                combined.push({ id: d.id, ...p, _src: 'lp' });
+                if (p.checkoutRequestId) coveredCheckoutIds.add(p.checkoutRequestId);
+                if (p.sessionId) coveredCheckoutIds.add(p.sessionId);
+            });
+
+            // 2. Add transactions entries NOT already in learnPayments (failed/pending/duplicates)
+            if (txSnap && !txSnap.empty) {
+                txSnap.docs.forEach(d => {
+                    const t = d.data();
+                    // Skip if a matching successful learnPayments entry already exists
+                    if ((t.checkoutRequestId && coveredCheckoutIds.has(t.checkoutRequestId)) ||
+                        (t.sessionId && coveredCheckoutIds.has(t.sessionId))) return;
+                    combined.push({ id: d.id, ...t, _src: 'tx' });
+                });
+            }
+
+            // Sort by date descending
+            combined.sort((a, b) => {
+                const ta = a.timestamp || a.createdAt;
+                const tb = b.timestamp || b.createdAt;
+                const da = typeof ta === 'string' ? new Date(ta) : (ta && ta.toDate ? ta.toDate() : new Date(0));
+                const db2 = typeof tb === 'string' ? new Date(tb) : (tb && tb.toDate ? tb.toDate() : new Date(0));
+                return db2 - da;
+            });
+
+            allTxs = combined;
+            filterTransactions();
+        } catch (e) {
+            console.error(e);
+            document.getElementById('learn-tx-table-body').innerHTML =
+                '<tr><td colspan="5" class="p-8 text-center text-red-500"><i class="fas fa-exclamation-triangle mr-2"></i>Failed to load transactions</td></tr>';
+        }
+    }
+
+    function filterTransactions() {
+        const filter = document.getElementById('tx-status-filter')?.value || '';
+        const filtered = filter ? allTxs.filter(t => (t.status || 'completed') === filter) : allTxs;
+        renderTxTable(filtered);
+    }
+    window.filterTransactions = filterTransactions;
+
+    function renderTxTable(txs) {
+        const tbody = document.getElementById('learn-tx-table-body');
+        const countEl = document.getElementById('tx-count');
+        if (countEl) {
+            const failed   = allTxs.filter(t => t.status === 'failed').length;
+            const pending  = allTxs.filter(t => t.status === 'pending').length;
+            const success  = allTxs.filter(t => !t.status || t.status === 'completed').length;
+            countEl.textContent = `${allTxs.length} total — ${success} completed, ${failed} failed, ${pending} pending`;
+        }
+
+        // Reset select-all checkbox
+        const selectAllCb = document.getElementById('select-all-tx');
+        if (selectAllCb) selectAllCb.checked = false;
+        selectedTxIds.clear();
+        updateTxBulkBtn();
+
+        if (!txs.length) {
+            tbody.innerHTML = '<tr><td colspan="8" class="p-16 text-center text-gray-300"><i class="fas fa-receipt text-4xl mb-3 block"></i><p class="font-bold text-xs uppercase tracking-widest">No Transactions Found</p></td></tr>';
+            return;
+        }
+
+        const sc = {
+            completed: 'bg-green-100 text-green-700',
+            failed:    'bg-red-100 text-red-700',
+            cancelled: 'bg-red-100 text-red-700',
+            pending:   'bg-amber-100 text-amber-700'
+        };
+
+        tbody.innerHTML = txs.map(p => {
+            const ts = p.timestamp || p.createdAt;
+            const date = typeof ts === 'string'
+                ? new Date(ts).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ' ' + new Date(ts).toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' })
+                : (ts && ts.toDate ? ts.toDate().toLocaleDateString('en-GB', { day:'2-digit', month:'short' }) + ' ' + ts.toDate().toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit' }) : '—');
+
+            const student = p.email || p.phoneNumber || p.phone || '—';
+            const course  = p.courseTitle ||
+                (p.category ? p.category.replace(/^learn-/, '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) : null) ||
+                p.courseId || '—';
+            const amount  = p.amountPaid || p.amount || 0;
+            const status  = p.status || 'completed';
+            const badge   = sc[status] || 'bg-gray-100 text-gray-600';
+            const receipt = p.mpesaReceiptNumber || p.transactionCode || null;
+            const receiptHtml = receipt
+                ? `<span class="font-mono text-[10px] font-bold text-green-700 bg-green-50 px-1.5 py-0.5 rounded tracking-widest">${receipt}</span>`
+                : '<span class="text-gray-300 text-xs">—</span>';
+
+            return `<tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                <td class="px-4 py-3"><input type="checkbox" class="tx-row-cb w-3.5 h-3.5 accent-red-500" value="${p.id}" data-src="${p._src || 'lp'}" onchange="toggleTxSelect('${p.id}','${p._src || 'lp'}',this.checked)"></td>
+                <td class="px-4 py-3 text-xs font-bold text-gray-900" style="max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${student}</td>
+                <td class="px-4 py-3"><span class="px-2 py-0.5 rounded-lg bg-green-50 text-green-700 text-[9px] font-bold uppercase">${course}</span></td>
+                <td class="px-4 py-3 text-xs font-extrabold text-green-600">${amount ? 'KSH&nbsp;' + Number(amount).toLocaleString() : '—'}</td>
+                <td class="px-4 py-3">${receiptHtml}</td>
+                <td class="px-4 py-3 text-[10px] font-bold text-gray-400">${date}</td>
+                <td class="px-4 py-3 text-center"><span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${badge}">${status}</span></td>
+                <td class="px-4 py-3 text-right"><div class="flex gap-1 justify-end">
+                    <button onclick="openTxDetail('${p.id}')" class="w-7 h-7 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all flex items-center justify-center" title="View Details"><i class="fas fa-eye text-[10px]"></i></button>
+                    <button onclick="deleteTx('${p.id}','${p._src || 'lp'}')" class="w-7 h-7 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center" title="Delete"><i class="fas fa-trash text-[10px]"></i></button>
+                </div></td>
+            </tr>`;
+        }).join('');
+    }
+
+    // ═══════════════════════════════════════════════════════════
+    //  Blog / What's New — Full CRUD
+    // ═══════════════════════════════════════════════════════════
+    async function loadBlogPosts() {
+        const grid = document.getElementById('blog-posts-grid');
+        grid.innerHTML = '<div class="col-span-full py-12 flex justify-center"><i class="fas fa-spinner fa-spin text-3xl text-purple-200"></i></div>';
+        try {
+            const snap = await db.collection('learnPosts').orderBy('createdAt', 'desc').get();
+            if (snap.empty) {
+                grid.innerHTML = `<div class="col-span-full bg-white p-12 rounded-2xl border text-center">
+                    <div class="w-16 h-16 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4"><i class="fas fa-pen-fancy"></i></div>
+                    <h3 class="font-extrabold text-gray-900 mb-2">No Posts Yet</h3>
+                    <p class="text-sm text-gray-500 mb-6">Create your first post to show on the What's New page.</p>
+                    <button onclick="openBlogEditor()" class="px-5 py-2.5 bg-purple-600 text-white rounded-xl font-bold hover:bg-purple-700 transition-all">Create First Post</button>
+                </div>`;
+                return;
+            }
+            grid.innerHTML = snap.docs.map(d => {
+                const p = d.data();
+                const catColors = { story: 'bg-pink-100 text-pink-700', update: 'bg-blue-100 text-blue-700', tip: 'bg-amber-100 text-amber-700', news: 'bg-green-100 text-green-700' };
+                const cc = catColors[p.category] || 'bg-gray-100 text-gray-700';
+                const ts = p.createdAt && p.createdAt.toDate ? p.createdAt.toDate().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—';
+                return `<div class="bg-white rounded-2xl border overflow-hidden hover:shadow-lg transition-all">
+                    ${p.image ? `<img src="${p.image}" class="w-full h-40 object-cover" alt="">` : `<div class="h-40 bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center"><i class="fas fa-newspaper text-4xl text-purple-300"></i></div>`}
+                    <div class="p-5">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${cc}">${p.category || 'post'}</span>
+                            ${!p.published ? '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-gray-100 text-gray-500">Draft</span>' : ''}
+                        </div>
+                        <h4 class="font-extrabold text-gray-900 mb-1 line-clamp-2">${p.title}</h4>
+                        <p class="text-xs text-gray-500 line-clamp-2 mb-3">${p.excerpt || ''}</p>
+                        <div class="flex items-center justify-between pt-3 border-t border-gray-50">
+                            <span class="text-[10px] font-bold text-gray-400">${ts}</span>
+                            <div class="flex gap-1.5">
+                                <button onclick="editBlogPost('${d.id}')" class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center" title="Edit"><i class="fas fa-pen text-[10px]"></i></button>
+                                <button onclick="deleteBlogPost('${d.id}')" class="w-7 h-7 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center" title="Delete"><i class="fas fa-trash text-[10px]"></i></button>
                             </div>
                         </div>
                     </div>
-                `).join('');
-            } catch (e) { console.error(e); }
-        }
+                </div>`;
+            }).join('');
+        } catch (e) { console.error(e); grid.innerHTML = '<p class="col-span-full text-center text-red-500">Failed to load posts</p>'; }
+    }
 
-        async function loadLearnModules() {
-            const list = document.getElementById('modules-list');
-            list.innerHTML = `
-                <div class="bg-white p-12 rounded-3xl border border-gray-100 text-center flex flex-col items-center">
-                    <div class="w-20 h-20 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center text-3xl mb-6"><i class="fas fa-layer-group"></i></div>
-                    <h3 class="font-black text-gray-900 uppercase tracking-tight mb-2">Curriculum Builder</h3>
-                    <p class="text-xs text-gray-500 font-medium max-w-xs leading-relaxed mb-8">Manage modules and lessons for each course package. Currently linked to static JSON but can be switched to dynamic Firestore storage.</p>
-                    <div class="flex gap-4">
-                        <button onclick="Swal.fire('Feature Coming Soon')" class="px-6 py-3 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-blue-200">Configure Modules</button>
+    function openBlogEditor(data = null) {
+        document.getElementById('blogEditorModal').classList.remove('hidden');
+        document.getElementById('blogEditorTitle').textContent = data ? 'Edit Post' : 'New Post';
+        document.getElementById('blogSaveLabel').textContent = data ? 'Update Post' : 'Publish Post';
+        if (data) {
+            document.getElementById('blogEditId').value = data.id || '';
+            document.getElementById('blogTitle').value = data.title || '';
+            document.getElementById('blogCategory').value = data.category || 'story';
+            document.getElementById('blogAuthor').value = data.author || '';
+            document.getElementById('blogExcerpt').value = data.excerpt || '';
+            document.getElementById('blogContent').value = data.content || '';
+            document.getElementById('blogImage').value = data.image || '';
+            document.getElementById('blogPublished').checked = data.published !== false;
+        } else {
+            document.getElementById('blogForm').reset();
+            document.getElementById('blogEditId').value = '';
+            document.getElementById('blogPublished').checked = true;
+        }
+    }
+
+    function closeBlogEditor() { document.getElementById('blogEditorModal').classList.add('hidden'); }
+
+    async function editBlogPost(id) {
+        try {
+            const docSnap = await db.collection('learnPosts').doc(id).get();
+            if (docSnap.exists) openBlogEditor({ id: docSnap.id, ...docSnap.data() });
+        } catch (e) { Swal.fire({ icon: 'error', title: 'Error', text: e.message, confirmButtonColor: '#16a34a' }); }
+    }
+
+    async function deleteBlogPost(id) {
+        const result = await Swal.fire({
+            icon: 'warning', title: 'Delete Post?', text: 'This cannot be undone.',
+            showCancelButton: true, confirmButtonColor: '#ef4444', confirmButtonText: 'Delete'
+        });
+        if (!result.isConfirmed) return;
+        try {
+            await db.collection('learnPosts').doc(id).delete();
+            Swal.fire({ icon: 'success', title: 'Deleted!', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+            loadBlogPosts();
+        } catch (e) { Swal.fire({ icon: 'error', title: 'Error', text: e.message, confirmButtonColor: '#16a34a' }); }
+    }
+
+    document.getElementById('blogForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const editId = document.getElementById('blogEditId').value;
+        const postData = {
+            title: document.getElementById('blogTitle').value.trim(),
+            category: document.getElementById('blogCategory').value,
+            author: document.getElementById('blogAuthor').value.trim() || 'Course Corner Team',
+            excerpt: document.getElementById('blogExcerpt').value.trim(),
+            content: document.getElementById('blogContent').value.trim(),
+            image: document.getElementById('blogImage').value.trim() || null,
+            published: document.getElementById('blogPublished').checked,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        try {
+            if (editId) {
+                await db.collection('learnPosts').doc(editId).update(postData);
+            } else {
+                postData.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+                await db.collection('learnPosts').add(postData);
+            }
+            closeBlogEditor();
+            Swal.fire({ icon: 'success', title: editId ? 'Post Updated!' : 'Post Published!', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+            loadBlogPosts();
+        } catch (e) {
+            Swal.fire({ icon: 'error', title: 'Save Failed', text: e.message, confirmButtonColor: '#16a34a' });
+        }
+    });
+
+    // ═══════════════════════════════════════════════════════════
+    //  Notifications — Full CRUD
+    // ═══════════════════════════════════════════════════════════
+    let _editingNotifId = null;
+
+    async function loadNotifications() {
+        const list = document.getElementById('notif-list');
+        const countEl = document.getElementById('notif-count');
+        list.innerHTML = '<div class="py-16 text-center text-gray-300"><i class="fas fa-spinner fa-spin text-3xl mb-3 block"></i><p class="text-xs font-bold uppercase tracking-widest">Loading…</p></div>';
+        try {
+            const snap = await db.collection('learnNotifications').orderBy('createdAt', 'desc').get();
+            if (countEl) countEl.textContent = snap.size + ' broadcast' + (snap.size !== 1 ? 's' : '');
+            if (snap.empty) {
+                list.innerHTML = `<div class="py-20 text-center bg-white rounded-2xl border">
+                    <div class="w-16 h-16 bg-green-50 text-green-400 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4"><i class="fas fa-bell-slash"></i></div>
+                    <h4 class="font-extrabold text-gray-900 mb-1">No Broadcasts Yet</h4>
+                    <p class="text-sm text-gray-400 mb-5">Click <strong>+ New Broadcast</strong> to create your first notification.</p>
+                </div>`;
+                return;
+            }
+            const targetLabels = { all: 'All Users', paid: 'Paid Users Only' };
+            list.innerHTML = `<div class="bg-white rounded-xl border divide-y divide-gray-50 overflow-hidden">
+                ${snap.docs.map(d => {
+                const n = d.data();
+                const ts = n.createdAt && n.createdAt.toDate ? n.createdAt.toDate() : null;
+                const dateStr = ts ? ts.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' }) + ' ' + ts.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '—';
+                const readCount = Array.isArray(n.readBy) ? n.readBy.length : 0;
+                const target = targetLabels[n.target] || n.target || 'All Users';
+                const preview = (n.message || '').replace(/\n/g,' ').slice(0, 72) + ((n.message||'').length > 72 ? '…' : '');
+                return `<div class="flex items-center gap-3 px-4 py-2.5 hover:bg-gray-50/80 transition-colors group">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                            <span class="text-[9px] font-bold uppercase tracking-wider text-green-600 bg-green-50 px-1.5 py-0.5 rounded">${target}</span>
+                            <span class="text-[9px] text-blue-500 font-medium"><i class="fas fa-eye mr-0.5"></i>${readCount}</span>
+                            <span class="text-[10px] text-gray-400">${dateStr}</span>
+                        </div>
+                        <p class="text-xs text-gray-700 mt-0.5 truncate">${preview}</p>
                     </div>
+                    <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onclick="openNotifDetail('${d.id}')" class="w-6 h-6 rounded bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all flex items-center justify-center" title="View"><i class="fas fa-eye text-[9px]"></i></button>
+                        <button onclick="openNotifyEditor('${d.id}')" class="w-6 h-6 rounded bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center" title="Edit"><i class="fas fa-pen text-[9px]"></i></button>
+                        <button onclick="deleteNotification('${d.id}')" class="w-6 h-6 rounded bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center" title="Delete"><i class="fas fa-trash text-[9px]"></i></button>
+                    </div>
+                </div>`;
+            }).join('')}</div>`;
+        } catch (e) {
+            console.error(e);
+            list.innerHTML = '<div class="py-12 text-center text-red-400"><i class="fas fa-exclamation-triangle text-3xl mb-2 block"></i>Failed to load notifications</div>';
+        }
+    }
+    window.loadNotifications = loadNotifications;
+
+    // ═══════════════════════════════════════════════════════════
+    //  Notification Detail View
+    // ═══════════════════════════════════════════════════════════
+    let _allNotifs = [];
+    async function openNotifDetail(id) {
+        let n;
+        // Try cached first
+        const cached = _allNotifs.find(x => x.id === id);
+        if (cached) { n = cached; }
+        else {
+            const snap = await db.collection('learnNotifications').doc(id).get();
+            if (!snap.exists) return;
+            n = { id: snap.id, ...snap.data() };
+        }
+        const ts = n.createdAt && n.createdAt.toDate ? n.createdAt.toDate() : null;
+        const dateStr = ts ? ts.toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+        const readCount = Array.isArray(n.readBy) ? n.readBy.length : 0;
+        const targetLabels = { all: 'All Users', paid: 'Paid Users Only' };
+        const target = targetLabels[n.target] || n.target || 'All Users';
+        await Swal.fire({
+            title: '<span style="font-size:.95rem;font-weight:800">Notification Detail</span>',
+            html: `<div style="text-align:left">
+                <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:.75rem">
+                    <span style="font-size:.65rem;font-weight:700;background:#dcfce7;color:#16a34a;padding:.2rem .6rem;border-radius:9999px;text-transform:uppercase">${target}</span>
+                    <span style="font-size:.65rem;font-weight:700;background:#eff6ff;color:#3b82f6;padding:.2rem .6rem;border-radius:9999px"><i class="fas fa-eye"></i> ${readCount} read</span>
+                    <span style="font-size:.65rem;color:#9ca3af">${dateStr}</span>
                 </div>
-            `;
+                <p style="font-size:.8125rem;color:#374151;line-height:1.7;white-space:pre-line;background:#f9fafb;padding:.75rem;border-radius:.5rem;border:1px solid #e5e7eb">${(n.message||'').replace(/</g,'&lt;')}</p>
+            </div>`,
+            showCancelButton: true,
+            confirmButtonText: '<i class="fas fa-pen mr-1"></i> Edit',
+            cancelButtonText: 'Close',
+            confirmButtonColor: '#3b82f6',
+            cancelButtonColor: '#6b7280',
+            width: 440
+        }).then(r => { if (r.isConfirmed) openNotifyEditor(id); });
+    }
+    window.openNotifDetail = openNotifDetail;
+
+    // ═══════════════════════════════════════════════════════════
+    //  Users Page
+    // ═══════════════════════════════════════════════════════════
+    let allUsersData = [];
+    let filteredUsersData = [];
+    let selectedUserIds = new Set();
+
+    async function loadUsers() {
+        const tbody = document.getElementById('users-table-body');
+        const countEl = document.getElementById('users-count');
+        tbody.innerHTML = '<tr><td colspan="7" class="p-12 text-center text-gray-300"><i class="fas fa-spinner fa-spin text-2xl mb-2 block"></i><p class="text-xs uppercase font-bold tracking-widest">Loading…</p></td></tr>';
+        try {
+            // Build merged map from BOTH collections
+            const emailMap = new Map();
+
+            // 1. learnApplications (no orderBy — it silently drops docs missing the field)
+            const appSnap = await db.collection('learnApplications').get();
+            appSnap.docs.forEach(d => {
+                const data = { id: d.id, ...d.data() };
+                const key = (data.email || data.phoneNumber || d.id).toLowerCase();
+                const existing = emailMap.get(key);
+                const ts  = data.timestamp?.seconds || data.submittedAt?.seconds || 0;
+                const ets = existing ? (existing.timestamp?.seconds || existing.submittedAt?.seconds || 0) : -1;
+                if (!existing || ts > ets) emailMap.set(key, data);
+            });
+
+            // 2. learn_users — profile updates override name/phone/location/hasLaptop;
+            //    users with no application entry are added as standalone records
+            try {
+                const profileSnap = await db.collection('learn_users').get();
+                profileSnap.docs.forEach(d => {
+                    const p = d.data();
+                    const key = (p.email || '').toLowerCase();
+                    if (!key) return;
+                    if (emailMap.has(key)) {
+                        const ex = emailMap.get(key);
+                        if (p.name)     ex.fullName  = p.name;
+                        if (p.phone)    ex.phone     = p.phone;
+                        if (p.location) ex.location  = p.location;
+                        if (p.hasLaptop !== undefined) ex.hasLaptop = p.hasLaptop;
+                        emailMap.set(key, ex);
+                    } else {
+                        emailMap.set(key, { id: d.id, email: p.email, fullName: p.name, phone: p.phone, location: p.location, hasLaptop: p.hasLaptop, status: 'pending', _profileOnly: true });
+                    }
+                });
+            } catch(e2) { console.warn('learn_users merge skipped:', e2.message); }
+
+            // Sort newest-first
+            allUsersData = Array.from(emailMap.values()).sort((a, b) => {
+                const ta = a.timestamp?.seconds || a.submittedAt?.seconds || 0;
+                const tb = b.timestamp?.seconds || b.submittedAt?.seconds || 0;
+                return tb - ta;
+            });
+            filteredUsersData = [...allUsersData];
+            if (countEl) countEl.textContent = allUsersData.length + ' user' + (allUsersData.length !== 1 ? 's' : '');
+            renderUsersTable();
+        } catch (e) {
+            console.error(e);
+            tbody.innerHTML = '<tr><td colspan="7" class="p-8 text-center text-red-400 text-xs">Failed to load users: ' + e.message + '</td></tr>';
+        }
+    }
+    window.loadUsers = loadUsers;
+
+    function filterUsers() {
+        const q = (document.getElementById('users-search').value || '').toLowerCase();
+        filteredUsersData = q
+            ? allUsersData.filter(u => (u.email||'').toLowerCase().includes(q) || (u.fullName||u.name||'').toLowerCase().includes(q))
+            : [...allUsersData];
+        renderUsersTable();
+    }
+    window.filterUsers = filterUsers;
+
+    function renderUsersTable() {
+        const tbody = document.getElementById('users-table-body');
+        if (!filteredUsersData.length) {
+            tbody.innerHTML = '<tr><td colspan="7" class="p-12 text-center text-gray-300 text-xs font-bold uppercase tracking-widest">No users found</td></tr>';
+            return;
+        }
+        const sc = { approved:'bg-green-100 text-green-700', pending:'bg-amber-100 text-amber-700', rejected:'bg-red-100 text-red-700', contacted:'bg-blue-100 text-blue-700' };
+        tbody.innerHTML = filteredUsersData.map(u => {
+            const status = u.status || 'pending';
+            const badge = sc[status] || 'bg-gray-100 text-gray-600';
+            const name = u.fullName || u.name || '—';
+            const email = u.email || '—';
+            const phone = u.phoneNumber || u.phone || '—';
+            const course = u.courseTitle || u.courseName || u.courseId || '—';
+            return `<tr class="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                <td class="px-4 py-2.5"><input type="checkbox" class="user-row-cb w-3.5 h-3.5 accent-red-500" value="${u.id}" onchange="toggleUserSelect('${u.id}',this.checked)"></td>
+                <td class="px-4 py-2.5 text-xs font-bold text-gray-900" style="max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</td>
+                <td class="px-4 py-2.5 text-xs text-gray-600" style="max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${email}</td>
+                <td class="px-4 py-2.5 text-xs text-gray-600">${phone}</td>
+                <td class="px-4 py-2.5"><span class="px-2 py-0.5 rounded bg-purple-50 text-purple-700 text-[9px] font-bold uppercase">${course}</span></td>
+                <td class="px-4 py-2.5 text-center"><span class="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase ${badge}">${status}</span></td>
+                <td class="px-4 py-2.5 text-right">
+                    <div class="flex gap-1 justify-end">
+                        <button onclick="openUserDetail('${u.id}')" class="w-6 h-6 rounded bg-purple-50 text-purple-600 hover:bg-purple-600 hover:text-white transition-all flex items-center justify-center" title="View Details"><i class="fas fa-eye text-[9px]"></i></button>
+                        <a href="mailto:${email}" class="w-6 h-6 rounded bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-all flex items-center justify-center" title="Send Email"><i class="fas fa-envelope text-[9px]"></i></a>
+                        <button onclick="deleteUserApp('${u.id}')" class="w-6 h-6 rounded bg-red-50 text-red-600 hover:bg-red-600 hover:text-white transition-all flex items-center justify-center" title="Delete"><i class="fas fa-trash text-[9px]"></i></button>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    function toggleUserSelect(id, checked) {
+        checked ? selectedUserIds.add(id) : selectedUserIds.delete(id);
+        const btn = document.getElementById('bulk-delete-btn');
+        if (btn) { btn.classList.toggle('hidden', selectedUserIds.size === 0); btn.classList.toggle('flex', selectedUserIds.size > 0); }
+    }
+    window.toggleUserSelect = toggleUserSelect;
+
+    function toggleSelectAllUsers(checked) {
+        document.querySelectorAll('.user-row-cb').forEach(cb => { cb.checked = checked; toggleUserSelect(cb.value, checked); });
+    }
+    window.toggleSelectAllUsers = toggleSelectAllUsers;
+
+    let _currentUserDetailId = null;
+
+    function closeUserDetail() {
+        document.getElementById('userDetailOverlay').style.display = 'none';
+        document.body.style.overflow = '';
+        _currentUserDetailId = null;
+    }
+    window.closeUserDetail = closeUserDetail;
+
+    function deleteUserFromModal() {
+        if (_currentUserDetailId) deleteUserApp(_currentUserDetailId);
+        closeUserDetail();
+    }
+    window.deleteUserFromModal = deleteUserFromModal;
+
+    async function _fillAndOpenUserDetail(u) {
+        _currentUserDetailId = u.id || null;
+
+        // Try to get latest profile from learn_users (user may have updated it)
+        let profile = {};
+        if (u.email) {
+            try {
+                const pSnap = await db.collection('learn_users').where('email', '==', u.email).limit(1).get();
+                if (!pSnap.empty) profile = pSnap.docs[0].data();
+            } catch(_) {}
         }
 
-        async function loadLearnBlogs() {
-            const grid = document.getElementById('blog-posts-grid');
-            grid.innerHTML = `
-                <div class="col-span-full bg-white p-12 rounded-3xl border border-gray-100 text-center flex flex-col items-center">
-                    <div class="w-20 h-20 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center text-3xl mb-6"><i class="fas fa-pen-fancy"></i></div>
-                    <h3 class="font-black text-gray-900 uppercase tracking-tight mb-2">What's New Editor</h3>
-                    <p class="text-xs text-gray-500 font-medium max-w-xs leading-relaxed mb-8">Post news, updates, and success stories to the portal feed.</p>
-                    <button onclick="Swal.fire('Feature Coming Soon')" class="px-6 py-3 bg-purple-600 text-white rounded-xl text-[10px] font-black uppercase tracking-[0.2em] shadow-lg shadow-purple-200">Write Article</button>
-                </div>
-            `;
+        // Merge: profile fields take priority (these are user-updated)
+        const name  = profile.name || u.fullName || u.name || '—';
+        const phone = profile.phone || u.whatsapp || u.phone || u.phoneNumber || '—';
+        const loc   = profile.location || u.location || u.county || '—';
+        const laptopVal = profile.hasLaptop !== undefined ? profile.hasLaptop : (u.hasLaptop !== undefined ? u.hasLaptop : null);
+
+        const laptopHtml = (laptopVal === true || laptopVal === 'yes' || laptopVal === 'Yes')
+            ? '<span style="color:#16a34a;font-weight:700"><i class="fas fa-check-circle"></i> Yes</span>'
+            : (laptopVal === false || laptopVal === 'no' || laptopVal === 'No')
+            ? '<span style="color:#dc2626;font-weight:700"><i class="fas fa-times-circle"></i> No</span>'
+            : '<span style="color:#9ca3af">Not specified</span>';
+
+        const statusColors = { pending:'background:#fef3c7;color:#b45309', contacted:'background:#dbeafe;color:#1d4ed8', approved:'background:#dcfce7;color:#15803d', rejected:'background:#fee2e2;color:#dc2626' };
+        const sc = statusColors[u.status || 'pending'] || statusColors.pending;
+
+        // Date
+        const ts = u.timestamp || u.submittedAt;
+        let dateStr = '—';
+        if (ts) { try { const d = ts.toDate ? ts.toDate() : new Date(ts); dateStr = d.toLocaleString('en-KE', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); } catch(_){} }
+
+        document.getElementById('udName').textContent  = name;
+        document.getElementById('udEmail').textContent = u.email || '—';
+        document.getElementById('udFullName').textContent = name;
+        document.getElementById('udPhone').textContent = phone;
+        document.getElementById('udLocation').textContent = loc;
+        document.getElementById('udCourse').textContent = (u.courseTitle || u.courseId || '—').replace(/-/g,' ').replace(/\b\w/g, l=>l.toUpperCase());
+        document.getElementById('udLaptop').innerHTML  = laptopHtml;
+        document.getElementById('udStatus').innerHTML  = `<span style="font-size:.75rem;font-weight:800;padding:.2rem .6rem;border-radius:9999px;${sc}">${(u.status||'pending').toUpperCase()}</span>`;
+        document.getElementById('udDate').textContent  = dateStr;
+        document.getElementById('udAppId').textContent = u.id || '—';
+
+        const interest = u.interest || u.reason || u.message || '';
+        document.getElementById('udInterest').textContent = interest;
+        document.getElementById('udInterestWrap').style.display = interest ? 'block' : 'none';
+
+        const emailVal = u.email || '';
+        document.getElementById('udEmailLink').href = emailVal ? `mailto:${emailVal}` : '#';
+
+        // Show modal first so user sees it loading
+        const overlay = document.getElementById('userDetailOverlay');
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        // === Payment summary ===
+        const rowsEl = document.getElementById('udPayRows');
+        rowsEl.innerHTML = '<p style="padding:.55rem;font-size:.72rem;color:#9ca3af;text-align:center;margin:0"><i class="fas fa-spinner fa-spin mr-1"></i>Loading payments…</p>';
+
+        if (emailVal) {
+            try {
+                if (!_adminCourses) {
+                    try { const r = await fetch('../data/courses.json'); _adminCourses = await r.json(); } catch(_) { _adminCourses = []; }
+                }
+                const courseObj = _adminCourses.find(c => c.id === (u.courseId || ''));
+                const courseFee = courseObj ? (parseFloat(courseObj.fee) || 0) : 0;
+
+                const successStatuses = ['completed','success','COMPLETED','SUCCESS'];
+                let payments = [];
+                try {
+                    const pSnap = await db.collection('learnPayments').where('email','==',emailVal).get();
+                    pSnap.forEach(d => { const p = d.data(); if (successStatuses.includes(p.status)) payments.push(p); });
+                } catch(_) {}
+                try {
+                    const tSnap = await db.collection('transactions').where('email','==',emailVal).get();
+                    const seen = new Set(payments.map(p=>p.checkoutRequestId).filter(Boolean));
+                    tSnap.forEach(d => {
+                        const p = d.data();
+                        if (!successStatuses.includes(p.status)) return;
+                        if (p.checkoutRequestId && seen.has(p.checkoutRequestId)) return;
+                        payments.push(p);
+                    });
+                } catch(_) {}
+
+                const totalPaid = payments.reduce((s,p) => s + (parseFloat(p.amount)||0), 0);
+                const balance   = Math.max(0, courseFee - totalPaid);
+
+                document.getElementById('udCourseFee').textContent  = courseFee > 0 ? `KSH ${courseFee.toLocaleString()}` : '—';
+                document.getElementById('udTotalPaid').textContent   = `KSH ${totalPaid.toLocaleString()}`;
+                document.getElementById('udBalance').textContent     = `KSH ${balance.toLocaleString()}`;
+
+                const balBox = document.getElementById('udBalanceBox');
+                const balEl  = document.getElementById('udBalance');
+                const balLbl = document.getElementById('udBalanceLabel');
+                if (balance === 0 && totalPaid > 0) {
+                    balBox.style.background = 'rgba(240,253,244,.9)'; balBox.style.borderColor = '#bbf7d0';
+                    balEl.style.color = '#15803d'; balLbl.style.color = '#16a34a'; balLbl.textContent = 'Fully Paid';
+                } else {
+                    balBox.style.background = 'rgba(255,251,235,.9)'; balBox.style.borderColor = '#fde68a';
+                    balEl.style.color = '#b45309'; balLbl.style.color = '#b45309'; balLbl.textContent = 'Balance';
+                }
+
+                if (!payments.length) {
+                    rowsEl.innerHTML = '<p style="padding:.55rem;font-size:.75rem;color:#9ca3af;text-align:center;margin:0">No successful payments yet.</p>';
+                } else {
+                    payments.sort((x,y) => { const dx=x.completedAt||x.timestamp||'',dy=y.completedAt||y.timestamp||''; return dy>dx?1:-1; });
+                    rowsEl.innerHTML = payments.map((p,i) => {
+                        let ds='—'; const rd=p.completedAt||p.timestamp;
+                        if(rd) try{ const d=rd.toDate?rd.toDate():new Date(rd); ds=d.toLocaleDateString('en-KE',{day:'2-digit',month:'short',year:'numeric'}); }catch(_){}
+                        const code=p.mpesaReceiptNumber||p.transactionCode||'None';
+                        return `<div style="display:flex;align-items:center;gap:.55rem;padding:.4rem .65rem;${i>0?'border-top:1px solid rgba(229,231,235,.5)':''}">
+                            <div style="width:6px;height:6px;border-radius:50%;background:#16a34a;flex-shrink:0"></div>
+                            <p style="flex:1;font-size:.78rem;font-weight:800;color:#111827;margin:0">KSH ${(parseFloat(p.amount)||0).toLocaleString()}</p>
+                            <p style="font-size:.68rem;color:#6b7280;margin:0;flex-shrink:0">${ds}</p>
+                            <p style="font-size:.65rem;font-family:monospace;color:#7c3aed;margin:0;flex-shrink:0">${code}</p>
+                        </div>`;
+                    }).join('');
+                }
+            } catch(e) {
+                console.error('User detail payments:', e);
+                rowsEl.innerHTML = '<p style="padding:.55rem;font-size:.72rem;color:#9ca3af;text-align:center;margin:0">Could not load payments.</p>';
+            }
+        } else {
+            rowsEl.innerHTML = '<p style="padding:.55rem;font-size:.72rem;color:#9ca3af;text-align:center;margin:0">No email on record.</p>';
+        }
+    }
+
+    async function openUserDetail(id) {
+        const u = allUsersData.find(x => x.id === id);
+        if (!u) return;
+        await _fillAndOpenUserDetail(u);
+    }
+    window.openUserDetail = openUserDetail;
+
+    async function checkUserByEmail() {
+        const email = (document.getElementById('check-user-email').value || '').trim().toLowerCase();
+        if (!email) return Swal.fire({ icon:'warning', title:'Enter an email', toast:true, position:'top-end', showConfirmButton:false, timer:2000 });
+
+        // First try in-memory data
+        let u = allUsersData.find(x => (x.email||'').toLowerCase() === email);
+
+        // If not found locally, query Firestore
+        if (!u) {
+            const snap = await db.collection('learnApplications').where('email','==',email).orderBy('timestamp','desc').limit(1).get().catch(async () => {
+                return db.collection('learnApplications').where('email','==',email).limit(1).get();
+            });
+            if (!snap.empty) u = { id: snap.docs[0].id, ...snap.docs[0].data() };
         }
 
-        // Initialize first page
-        switchPage('learn-analytics');
+        if (!u) {
+            return Swal.fire({ icon:'info', title:'Not Found', text:`No application found for ${email}`, confirmButtonColor:'#16a34a' });
+        }
+        document.getElementById('check-user-email').value = '';
+        await _fillAndOpenUserDetail(u);
+    }
+    window.checkUserByEmail = checkUserByEmail;
+
+    async function syncUsers() {
+        const btn = document.getElementById('sync-users-btn');
+        if (btn) { btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Syncing…'; btn.disabled = true; }
+        try {
+            // Fetch all applications (no orderBy — silently drops docs without that field)
+            const appSnap = await db.collection('learnApplications').get();
+            const emailMap = new Map();
+            appSnap.docs.forEach(d => {
+                const data = { id: d.id, ...d.data() };
+                const key = (data.email || data.phoneNumber || d.id).toLowerCase();
+                const existing = emailMap.get(key);
+                const ts  = data.timestamp?.seconds || data.submittedAt?.seconds || 0;
+                const ets = existing ? (existing.timestamp?.seconds || existing.submittedAt?.seconds || 0) : -1;
+                if (!existing || ts > ets) emailMap.set(key, data);
+            });
+
+            // Fetch all learn_users profiles and merge (profile updates take priority for name/phone/location/hasLaptop)
+            try {
+                const profileSnap = await db.collection('learn_users').get();
+                profileSnap.docs.forEach(d => {
+                    const p = d.data();
+                    const key = (p.email || '').toLowerCase();
+                    if (!key) return;
+                    if (emailMap.has(key)) {
+                        const existing = emailMap.get(key);
+                        if (p.name)     existing.fullName = p.name;
+                        if (p.phone)    existing.phone = p.phone;
+                        if (p.location) existing.location = p.location;
+                        if (p.hasLaptop !== undefined) existing.hasLaptop = p.hasLaptop;
+                        emailMap.set(key, existing);
+                    } else {
+                        // User exists in learn_users but no application yet
+                        emailMap.set(key, { id: d.id, email: p.email, fullName: p.name, phone: p.phone, location: p.location, hasLaptop: p.hasLaptop, status: 'pending', _profileOnly: true });
+                    }
+                });
+            } catch(e) { console.warn('learn_users merge skipped:', e.message); }
+
+            allUsersData = Array.from(emailMap.values());
+            filteredUsersData = [...allUsersData];
+            const countEl = document.getElementById('users-count');
+            if (countEl) countEl.textContent = allUsersData.length + ' user' + (allUsersData.length !== 1 ? 's' : '');
+            renderUsersTable();
+            Swal.fire({ icon:'success', title:'Synced!', text:`${allUsersData.length} users loaded.`, toast:true, position:'top-end', showConfirmButton:false, timer:2200 });
+        } catch(e) {
+            console.error('Sync error:', e);
+            Swal.fire({ icon:'error', title:'Sync Failed', text:e.message, confirmButtonColor:'#16a34a' });
+        } finally {
+            if (btn) { btn.innerHTML = '<i class="fas fa-sync-alt"></i> Sync'; btn.disabled = false; }
+        }
+    }
+    window.syncUsers = syncUsers;
+
+    async function deleteUserApp(id) {
+        const conf = await Swal.fire({
+            icon: 'warning',
+            title: 'Delete Application?',
+            text: 'This removes the user\'s application record permanently.',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280'
+        });
+        if (!conf.isConfirmed) return;
+        try {
+            await db.collection('learnApplications').doc(id).delete();
+            allUsersData = allUsersData.filter(u => u.id !== id);
+            filteredUsersData = filteredUsersData.filter(u => u.id !== id);
+            renderUsersTable();
+            Swal.fire({ icon:'success', title:'Deleted', toast:true, position:'top-end', showConfirmButton:false, timer:1800 });
+        } catch(e) {
+            Swal.fire({ icon:'error', title:'Failed', text:e.message, confirmButtonColor:'#16a34a' });
+        }
+    }
+    window.deleteUserApp = deleteUserApp;
+
+    async function bulkDeleteUsers() {
+        if (!selectedUserIds.size) return;
+        const conf = await Swal.fire({
+            icon: 'warning',
+            title: `Delete ${selectedUserIds.size} application${selectedUserIds.size !== 1 ? 's' : ''}?`,
+            text: 'This action cannot be undone.',
+            showCancelButton: true,
+            confirmButtonText: 'Delete All',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280'
+        });
+        if (!conf.isConfirmed) return;
+        try {
+            const batch = db.batch();
+            selectedUserIds.forEach(id => batch.delete(db.collection('learnApplications').doc(id)));
+            await batch.commit();
+            const deleted = new Set(selectedUserIds);
+            allUsersData = allUsersData.filter(u => !deleted.has(u.id));
+            filteredUsersData = filteredUsersData.filter(u => !deleted.has(u.id));
+            selectedUserIds.clear();
+            const btn = document.getElementById('bulk-delete-btn');
+            if (btn) { btn.classList.add('hidden'); btn.classList.remove('flex'); }
+            renderUsersTable();
+            Swal.fire({ icon:'success', title:'Deleted', toast:true, position:'top-end', showConfirmButton:false, timer:1800 });
+        } catch(e) {
+            Swal.fire({ icon:'error', title:'Failed', text:e.message, confirmButtonColor:'#16a34a' });
+        }
+    }
+    window.bulkDeleteUsers = bulkDeleteUsers;
+
+    // ═══════════════════════════════════════════════════════════
+    //  Transaction Detail + Delete
+    // ═══════════════════════════════════════════════════════════
+    let _txDetailId = null;
+    let _txDetailSrc = null;
+
+    function openTxDetail(id) {
+        const p = allTxs.find(t => t.id === id);
+        if (!p) return;
+        _txDetailId = id;
+        _txDetailSrc = p._src || 'lp';
+
+        const ts = p.timestamp || p.createdAt;
+        const date = typeof ts === 'string'
+            ? new Date(ts).toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' })
+            : (ts && ts.toDate ? ts.toDate().toLocaleString('en-GB', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—');
+
+        const student = p.email || p.phoneNumber || p.phone || '—';
+        const course  = p.courseTitle || (p.category ? p.category.replace(/^learn-/, '').replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase()) : null) || p.courseId || '—';
+        const amount  = p.amountPaid || p.amount || 0;
+        const receipt = p.mpesaReceiptNumber || p.transactionCode || '—';
+        const statusColors = { completed:'background:#dcfce7;color:#15803d', failed:'background:#fee2e2;color:#dc2626', cancelled:'background:#fee2e2;color:#dc2626', pending:'background:#fef3c7;color:#b45309' };
+        const statusStyle = statusColors[p.status || 'completed'] || statusColors.completed;
+        const statusHtml = `<span style="font-size:.75rem;font-weight:800;padding:.2rem .65rem;border-radius:9999px;${statusStyle}">${(p.status||'completed').toUpperCase()}</span>`;
+        const srcLabel   = p._src === 'lp' ? '✅ Confirmed (learnPayments)' : '🟡 Raw M-Pesa (transactions)';
+
+        document.getElementById('tdStudent').textContent = student;
+        document.getElementById('tdCourse').textContent  = course;
+        document.getElementById('tdAmount').textContent  = amount ? 'KSH ' + Number(amount).toLocaleString() : '—';
+        document.getElementById('tdStatus').innerHTML    = statusHtml;
+        document.getElementById('tdDate').textContent    = date;
+        document.getElementById('tdReceipt').textContent = receipt;
+        document.getElementById('tdPhone').textContent   = p.phoneNumber || p.phone || '—';
+        document.getElementById('tdEmail').textContent   = p.email || '—';
+
+        const resultWrap = document.getElementById('tdResultWrap');
+        const reason = p.resultDesc || p.failureReason || '';
+        if (reason && (p.status === 'failed' || p.status === 'cancelled')) {
+            document.getElementById('tdResult').textContent = reason;
+            resultWrap.style.display = 'block';
+        } else {
+            resultWrap.style.display = 'none';
+        }
+
+        // Wire up delete button inside modal
+        document.getElementById('tdDeleteBtn').onclick = () => { closeTxDetail(); deleteTx(id, p._src || 'lp'); };
+
+        const overlay = document.getElementById('txDetailOverlay');
+        overlay.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+    window.openTxDetail = openTxDetail;
+
+    function closeTxDetail() {
+        document.getElementById('txDetailOverlay').style.display = 'none';
+        document.body.style.overflow = '';
+    }
+    window.closeTxDetail = closeTxDetail;
+
+    async function deleteTx(id, src) {
+        const conf = await Swal.fire({
+            icon: 'warning',
+            title: 'Delete Transaction?',
+            text: 'This permanently removes the record.',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280'
+        });
+        if (!conf.isConfirmed) return;
+        try {
+            const col = src === 'tx' ? 'transactions' : 'learnPayments';
+            await db.collection(col).doc(id).delete();
+            allTxs = allTxs.filter(t => t.id !== id);
+            filterTransactions();
+            Swal.fire({ icon:'success', title:'Deleted', toast:true, position:'top-end', showConfirmButton:false, timer:1800 });
+        } catch(e) {
+            Swal.fire({ icon:'error', title:'Failed', text:e.message, confirmButtonColor:'#16a34a' });
+        }
+    }
+    window.deleteTx = deleteTx;
+
+    function openNotifyEditor(id) {
+        _editingNotifId = id || null;
+        const isEdit = !!id;
+
+        Swal.fire({
+            title: isEdit ? '<span style="font-size:1.1rem">Edit Broadcast</span>' : '<span style="font-size:1.1rem">New Broadcast</span>',
+            html: `
+                <div style="text-align:left;margin-top:.5rem">
+                    <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;display:block;margin-bottom:.4rem">Message</label>
+                    <textarea id="swal-notif-msg" style="width:100%;padding:.9rem;background:#f9fafb;border:1px solid #e5e7eb;border-radius:.75rem;height:130px;font-size:.9rem;resize:vertical;outline:none;font-family:inherit" placeholder="Module 2 is now live! Check your dashboard..."></textarea>
+                    <label style="font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;display:block;margin:1rem 0 .4rem">Target Audience</label>
+                    <select id="swal-notif-target" style="width:100%;padding:.8rem;background:#f9fafb;border:1px solid #e5e7eb;border-radius:.75rem;font-size:.9rem;font-family:inherit;outline:none">
+                        <option value="all">All Enrolled Users</option>
+                        <option value="paid">Paid Users Only</option>
+                    </select>
+                </div>`,
+            showCancelButton: true,
+            confirmButtonText: isEdit ? '<i class="fas fa-save mr-1"></i> Save Changes' : '<i class="fas fa-paper-plane mr-1"></i> Send Broadcast',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#16a34a',
+            cancelButtonColor: '#6b7280',
+            width: '540px',
+            didOpen: async () => {
+                if (isEdit) {
+                    try {
+                        const doc = await db.collection('learnNotifications').doc(id).get();
+                        if (doc.exists) {
+                            const data = doc.data();
+                            document.getElementById('swal-notif-msg').value = data.message || '';
+                            document.getElementById('swal-notif-target').value = data.target || 'all';
+                        }
+                    } catch (e) { console.error(e); }
+                }
+            },
+            preConfirm: () => {
+                const msg = document.getElementById('swal-notif-msg').value.trim();
+                const tgt = document.getElementById('swal-notif-target').value;
+                if (!msg) { Swal.showValidationMessage('Please enter a message'); return false; }
+                return { msg, tgt };
+            }
+        }).then(async result => {
+            if (!result.isConfirmed) return;
+            const { msg, tgt } = result.value;
+            try {
+                if (_editingNotifId) {
+                    await db.collection('learnNotifications').doc(_editingNotifId).update({
+                        message: msg, target: tgt, updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    Swal.fire({ icon: 'success', title: 'Updated!', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+                } else {
+                    await db.collection('learnNotifications').add({
+                        message: msg, target: tgt, createdAt: firebase.firestore.FieldValue.serverTimestamp(), readBy: []
+                    });
+                    Swal.fire({ icon: 'success', title: 'Broadcast Sent!', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 });
+                }
+                loadNotifications();
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Failed', text: e.message, confirmButtonColor: '#16a34a' });
+            }
+        });
+    }
+    window.openNotifyEditor = openNotifyEditor;
+
+    async function deleteNotification(id) {
+        const confirm = await Swal.fire({
+            icon: 'warning',
+            title: 'Delete Broadcast?',
+            text: 'This will remove the notification for all users.',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280'
+        });
+        if (!confirm.isConfirmed) return;
+        try {
+            await db.collection('learnNotifications').doc(id).delete();
+            Swal.fire({ icon: 'success', title: 'Deleted', toast: true, position: 'top-end', showConfirmButton: false, timer: 1800 });
+            loadNotifications();
+        } catch (e) {
+            Swal.fire({ icon: 'error', title: 'Failed', text: e.message, confirmButtonColor: '#16a34a' });
+        }
+    }
+    window.deleteNotification = deleteNotification;
+
+    // ═══════════════════════════════════════════════════════════
+    //  Analytics — Quick Email Lookup
+    // ═══════════════════════════════════════════════════════════
+    async function analyticsLookupUser() {
+        const input = document.getElementById('analytics-email-lookup');
+        const email = (input.value || '').trim().toLowerCase();
+        if (!email) {
+            return Swal.fire({ icon:'warning', title:'Enter an email', text:'Type a user\'s email address to look them up.', confirmButtonColor:'#16a34a' });
+        }
+
+        // Show loading
+        Swal.fire({ title:'Looking up…', text:email, allowOutsideClick:false, didOpen:()=>Swal.showLoading() });
+
+        // Search across multiple collections for this email
+        let userData = null;
+
+        // 1. Try learnApplications
+        try {
+            const snap = await db.collection('learnApplications').where('email','==',email).limit(1).get();
+            if (!snap.empty) userData = { id: snap.docs[0].id, ...snap.docs[0].data() };
+        } catch(_) {}
+
+        // 2. Try learn_users if not found or merge profile data
+        try {
+            const pSnap = await db.collection('learn_users').where('email','==',email).limit(1).get();
+            if (!pSnap.empty) {
+                const p = pSnap.docs[0].data();
+                if (userData) {
+                    // Merge profile fields
+                    if (p.name)     userData.fullName  = p.name;
+                    if (p.phone)    userData.phone     = p.phone;
+                    if (p.location) userData.location  = p.location;
+                    if (p.hasLaptop !== undefined) userData.hasLaptop = p.hasLaptop;
+                } else {
+                    userData = { id: pSnap.docs[0].id, email: p.email, fullName: p.name, phone: p.phone, location: p.location, hasLaptop: p.hasLaptop, status: 'pending', _profileOnly: true };
+                }
+            }
+        } catch(_) {}
+
+        Swal.close();
+
+        if (!userData) {
+            return Swal.fire({ icon:'info', title:'Not Found', html:`No user found for <strong>${email}</strong>.<br><span style="font-size:.8rem;color:#9ca3af">Check the email and try again.</span>`, confirmButtonColor:'#16a34a' });
+        }
+
+        input.value = '';
+        await _fillAndOpenUserDetail(userData);
+    }
+    window.analyticsLookupUser = analyticsLookupUser;
+
+    // ═══════════════════════════════════════════════════════════
+    //  Transactions — Bulk CSV Download
+    // ═══════════════════════════════════════════════════════════
+    function downloadTransactionsCSV() {
+        if (!allTxs.length) {
+            return Swal.fire({ icon:'info', title:'No Transactions', text:'There are no transactions to export.', confirmButtonColor:'#16a34a' });
+        }
+
+        const headers = ['Date','Student/Email','Phone','Course','Amount (KSH)','M-Pesa Code','Status','Source','Result/Reason'];
+        const rows = allTxs.map(p => {
+            const ts = p.timestamp || p.createdAt;
+            let date = '';
+            if (ts) {
+                try {
+                    const d = typeof ts === 'string' ? new Date(ts) : (ts.toDate ? ts.toDate() : new Date(ts));
+                    date = d.toLocaleString('en-KE', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+                } catch(_) {}
+            }
+            const student = p.email || p.phoneNumber || p.phone || '';
+            const phone   = p.phoneNumber || p.phone || '';
+            const course  = p.courseTitle || (p.category ? p.category.replace(/^learn-/, '').replace(/-/g, ' ') : '') || p.courseId || '';
+            const amount  = p.amountPaid || p.amount || 0;
+            const receipt = p.mpesaReceiptNumber || p.transactionCode || '';
+            const status  = p.status || 'completed';
+            const source  = p._src === 'lp' ? 'learnPayments' : 'transactions';
+            const reason  = p.resultDesc || p.failureReason || '';
+            return [date, student, phone, course, amount, receipt, status, source, reason];
+        });
+
+        // Build CSV
+        const esc = v => `"${String(v).replace(/"/g,'""')}"`;
+        const csv = [headers.map(esc).join(','), ...rows.map(r => r.map(esc).join(','))].join('\n');
+        const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `learn-transactions-${new Date().toISOString().slice(0,10)}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        Swal.fire({ icon:'success', title:'Downloaded!', text:`${allTxs.length} transactions exported.`, toast:true, position:'top-end', showConfirmButton:false, timer:2500 });
+    }
+    window.downloadTransactionsCSV = downloadTransactionsCSV;
+
+    // ═══════════════════════════════════════════════════════════
+    //  Transactions — Bulk Select & Delete
+    // ═══════════════════════════════════════════════════════════
+
+    function toggleTxSelect(id, src, checked) {
+        if (checked) selectedTxIds.set(id, src); else selectedTxIds.delete(id);
+        updateTxBulkBtn();
+    }
+    window.toggleTxSelect = toggleTxSelect;
+
+    function toggleSelectAllTx(checked) {
+        document.querySelectorAll('.tx-row-cb').forEach(cb => {
+            cb.checked = checked;
+            toggleTxSelect(cb.value, cb.dataset.src, checked);
+        });
+    }
+    window.toggleSelectAllTx = toggleSelectAllTx;
+
+    function updateTxBulkBtn() {
+        const btn = document.getElementById('bulk-delete-tx-btn');
+        const cnt = document.getElementById('bulk-tx-count');
+        if (btn) {
+            btn.classList.toggle('hidden', selectedTxIds.size === 0);
+            btn.classList.toggle('flex', selectedTxIds.size > 0);
+        }
+        if (cnt) cnt.textContent = selectedTxIds.size;
+    }
+
+    async function bulkDeleteTransactions() {
+        if (!selectedTxIds.size) return;
+        const conf = await Swal.fire({
+            icon: 'warning',
+            title: `Delete ${selectedTxIds.size} transaction${selectedTxIds.size !== 1 ? 's' : ''}?`,
+            text: 'This action cannot be undone.',
+            showCancelButton: true,
+            confirmButtonText: 'Delete All',
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280'
+        });
+        if (!conf.isConfirmed) return;
+
+        Swal.fire({ title: 'Deleting…', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+        try {
+            // Group by collection for batch operations
+            const lpIds = [];
+            const txIds = [];
+            selectedTxIds.forEach((src, id) => {
+                if (src === 'tx') txIds.push(id); else lpIds.push(id);
+            });
+
+            // Firestore batch limit is 500 — split if needed
+            const batchDelete = async (col, ids) => {
+                for (let i = 0; i < ids.length; i += 500) {
+                    const chunk = ids.slice(i, i + 500);
+                    const batch = db.batch();
+                    chunk.forEach(id => batch.delete(db.collection(col).doc(id)));
+                    await batch.commit();
+                }
+            };
+
+            if (lpIds.length) await batchDelete('learnPayments', lpIds);
+            if (txIds.length) await batchDelete('transactions', txIds);
+
+            // Remove from local array
+            const deleted = new Set([...selectedTxIds.keys()]);
+            allTxs = allTxs.filter(t => !deleted.has(t.id));
+            selectedTxIds.clear();
+            updateTxBulkBtn();
+            const selectAllCb = document.getElementById('select-all-tx');
+            if (selectAllCb) selectAllCb.checked = false;
+            filterTransactions();
+
+            Swal.fire({ icon: 'success', title: 'Deleted!', text: `${deleted.size} transaction${deleted.size !== 1 ? 's' : ''} removed.`, toast: true, position: 'top-end', showConfirmButton: false, timer: 2500 });
+        } catch (e) {
+            console.error('Bulk tx delete error:', e);
+            Swal.fire({ icon: 'error', title: 'Delete Failed', text: e.message, confirmButtonColor: '#16a34a' });
+        }
+    }
+    window.bulkDeleteTransactions = bulkDeleteTransactions;
+</script>
 </body>
 </html>

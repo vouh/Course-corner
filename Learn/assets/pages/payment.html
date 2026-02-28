@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment – Course Corner Learn</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',sans-serif;background:#f9fafb;color:#1f2937}
+        /* Nav visibility */
+        @media(min-width:1025px){.desktop-nav{display:flex!important;align-items:center;}.mobile-menu-btn{display:none!important;}}
+        @media(max-width:1024px){.desktop-nav{display:none!important;}.mobile-menu-btn{display:flex!important;}}
+        .mobile-menu.show{height:auto!important;max-height:calc(100vh - 64px);opacity:1!important;overflow-y:auto;border-bottom:1px solid #e5e7eb;box-shadow:0 10px 40px rgba(0,0,0,.1);background:#ffffff!important}
+        .mobile-menu-btn.active span:nth-child(1){transform:translateY(6px) rotate(45deg)}
+        .mobile-menu-btn.active span:nth-child(2){opacity:0}
+        .mobile-menu-btn.active span:nth-child(3){transform:translateY(-6px) rotate(-45deg)}
+        .mobile-menu-btn span{display:block;transition:all .3s;background-color:#1f2937!important}
+        .modern-header{background:rgba(255,255,255,0.97)!important;backdrop-filter:blur(12px)!important}
+        .form-input{width:100%;padding:.75rem 1rem;border:1.5px solid #e5e7eb;border-radius:.75rem;font-size:.9375rem;transition:all .2s;font-family:inherit}
+        .form-input:focus{outline:none;border-color:#16a34a;box-shadow:0 0 0 3px rgba(22,163,74,.1)}
+        .pct-btn{position:relative;cursor:pointer;border:2px solid #e5e7eb;border-radius:1rem;padding:1.25rem 1rem;text-align:center;transition:all .25s;background:white}
+        .pct-btn:hover{border-color:#86efac;background:#f0fdf4}
+        .pct-btn.selected{border-color:#16a34a;background:#f0fdf4;box-shadow:0 0 0 3px rgba(22,163,74,.12)}
+        .pct-btn.selected .pct-ring{background:#16a34a;color:white}
+        .pct-ring{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .5rem;font-weight:800;font-size:.9rem;background:#f3f4f6;color:#6b7280;transition:all .25s}
+        .pct-label{font-size:.8rem;font-weight:700;color:#374151}
+        .pct-amount{font-size:1.05rem;font-weight:800;color:#16a34a;margin-top:.25rem}
+        .step-section{display:none}
+        .step-section.active{display:block}
+        .pulse-ring{animation:pulse-ring 1.5s ease-out infinite}
+        @keyframes pulse-ring{0%{box-shadow:0 0 0 0 rgba(22,163,74,.4)}70%{box-shadow:0 0 0 15px rgba(22,163,74,0)}100%{box-shadow:0 0 0 0 rgba(22,163,74,0)}}
+        .cc-footer{background:linear-gradient(135deg,#16a34a 0%,#15803d 100%);color:white;padding:4rem 2rem 2rem;border-top:3px solid #16a34a}
+        .cc-footer-container{max-width:1240px;margin:0 auto}
+        .cc-footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;padding-bottom:3rem;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:2rem}
+        .cc-footer-links h4{font-size:.75rem;font-weight:700;color:white;margin-bottom:1.25rem;letter-spacing:.1em;text-transform:uppercase}
+        .cc-footer-links ul{list-style:none}
+        .cc-footer-links li{margin-bottom:.75rem}
+        .cc-footer-links a{color:rgba(255,255,255,.85);text-decoration:none;font-size:.9375rem;transition:all .2s}
+        .cc-footer-links a:hover{color:white;padding-left:4px}
+        .cc-footer-bottom{text-align:center;font-size:.875rem;color:rgba(255,255,255,.75);padding-top:1.5rem}
+        @media(max-width:768px){.cc-footer-grid{grid-template-columns:1fr}.pct-grid{grid-template-columns:repeat(2,1fr)!important}}
+    </style>
+</head>
+<body>
+
+<!-- ═══ HEADER ════════════════════════════════════════════════ -->
+<header class="modern-header fixed top-0 left-0 right-0 w-full z-[1000] bg-white/95 backdrop-blur-md border-b border-gray-100 transition-all duration-300" id="learnHeader">
+    <div class="header-container flex items-center justify-between max-w-[1400px] mx-auto px-4 md:px-8 py-3">
+        <a href="../../index.html" class="logo-container flex items-center gap-2.5 no-underline">
+            <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Course Corner Logo" class="h-8 md:h-10 w-auto">
+            <div class="logo-text-group flex flex-col justify-center leading-none gap-[2px]">
+                <span class="text-[1.15rem] md:text-[1.35rem] font-extrabold text-[#16a34a] tracking-tight leading-none">Course Corner</span>
+                <span class="text-[0.55rem] md:text-[0.65rem] font-semibold text-[#0ea5e9] tracking-wide leading-none">Learn Portal</span>
+            </div>
+        </a>
+        <nav class="desktop-nav hidden lg:flex items-center gap-6">
+            <a href="../../index.html" class="text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Home</a>
+            <a href="courses.html" class="text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Courses</a>
+            <a href="whats-new.html" class="text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">What's New</a>
+            <a href="about.html" class="text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">About</a>
+            <a href="resources.html" class="text-[0.9rem] font-semibold text-gray-600 hover:text-[#16a34a] no-underline transition-colors">Resources</a>
+            <a href="payment.html" class="text-[0.9rem] font-semibold text-[#16a34a] no-underline flex items-center gap-1"><i class="fas fa-credit-card text-xs"></i> Pay</a>
+        </nav>
+        <button id="mobileMenuBtn" class="mobile-menu-btn lg:hidden flex flex-col justify-center items-center gap-1.5 w-10 h-10 border-none bg-transparent cursor-pointer" aria-label="Toggle menu">
+            <span class="w-6 h-0.5 bg-gray-800"></span>
+            <span class="w-6 h-0.5 bg-gray-800"></span>
+            <span class="w-6 h-0.5 bg-gray-800"></span>
+        </button>
+    </div>
+    <div class="mobile-menu lg:hidden fixed top-[64px] left-0 right-0 h-0 opacity-0 overflow-hidden bg-white/98 backdrop-blur-xl transition-all duration-300 z-[999]" id="mobileMenu">
+        <nav class="flex flex-col gap-2 p-6">
+            <a href="../../index.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 transition-all" onclick="closeMobileMenu()">Home</a>
+            <a href="courses.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 transition-all" onclick="closeMobileMenu()">Courses</a>
+            <a href="whats-new.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 transition-all" onclick="closeMobileMenu()">What's New</a>
+            <a href="about.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 transition-all" onclick="closeMobileMenu()">About</a>
+            <a href="resources.html" class="p-4 text-lg font-bold text-gray-800 no-underline rounded-xl hover:bg-gray-50 transition-all" onclick="closeMobileMenu()">Resources</a>
+            <a href="payment.html" class="p-4 text-lg font-bold text-[#16a34a] no-underline rounded-xl bg-green-50 transition-all flex items-center gap-2" onclick="closeMobileMenu()"><i class="fas fa-credit-card"></i> Pay</a>
+        </nav>
+    </div>
+</header>
+
+<!-- Hero -->
+<section class="pt-24 pb-8 px-4 md:px-8 bg-gradient-to-br from-gray-900 via-green-950 to-gray-900 text-white text-center">
+    <div class="max-w-3xl mx-auto">
+        <div class="inline-flex items-center gap-2 bg-green-500/15 border border-green-500/30 text-green-400 px-4 py-1.5 rounded-full text-sm font-semibold mb-6">
+            <i class="fas fa-credit-card"></i> Secure M-Pesa Payment
+        </div>
+        <h1 class="text-3xl md:text-4xl font-extrabold mb-3 tracking-tight">Course Payment</h1>
+        <p class="text-gray-400 text-lg">Pay for your course using M-Pesa — flexible installments available.</p>
+    </div>
+</section>
+
+<!-- Payment Wizard -->
+<section class="max-w-2xl mx-auto px-4 py-12">
+
+    <!-- Progress Steps -->
+    <div class="flex items-center justify-center gap-2 mb-10">
+        <div class="step-dot flex items-center gap-2" id="stepDot1">
+            <span class="w-8 h-8 rounded-full bg-[#16a34a] text-white flex items-center justify-center text-sm font-bold">1</span>
+            <span class="text-sm font-bold text-[#16a34a] hidden sm:inline">Details</span>
+        </div>
+        <div class="w-8 h-0.5 bg-gray-200" id="stepLine1"></div>
+        <div class="step-dot flex items-center gap-2" id="stepDot2">
+            <span class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-sm font-bold" id="dot2Circle">2</span>
+            <span class="text-sm font-bold text-gray-400 hidden sm:inline" id="dot2Label">Amount</span>
+        </div>
+        <div class="w-8 h-0.5 bg-gray-200" id="stepLine2"></div>
+        <div class="step-dot flex items-center gap-2" id="stepDot3">
+            <span class="w-8 h-8 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center text-sm font-bold" id="dot3Circle">3</span>
+            <span class="text-sm font-bold text-gray-400 hidden sm:inline" id="dot3Label">Pay</span>
+        </div>
+    </div>
+
+    <!-- ═════════ STEP 1: Email & Course ═════════ -->
+    <div class="step-section active" id="step1">
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                <h2 class="text-lg font-extrabold text-gray-900 flex items-center gap-2">
+                    <i class="fas fa-user text-[#16a34a]"></i> Your Details
+                </h2>
+            </div>
+            <div class="p-6 space-y-5">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Email Address *</label>
+                    <div class="relative">
+                        <input id="payEmail" type="email" class="form-input pr-10" placeholder="you@example.com" required>
+                        <span id="emailLockIcon" class="absolute right-3 top-1/2 -translate-y-1/2 hidden"><i class="fas fa-lock text-[#16a34a] text-sm"></i></span>
+                    </div>
+                    <p id="emailHint" class="text-xs text-gray-400 mt-1">Use the same email you registered with</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">Select Course *</label>
+                    <select id="payCourseSelect" class="form-input" required>
+                        <option value="">-- Choose a package --</option>
+                    </select>
+                </div>
+                <!-- Course summary -->
+                <div id="courseSummary" class="hidden bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-lg flex items-center justify-center text-white text-lg" id="sumIcon" style="background:#16a34a"><i class="fas fa-graduation-cap"></i></div>
+                        <div>
+                            <h4 class="font-extrabold text-gray-900" id="sumTitle">...</h4>
+                            <p class="text-xs text-gray-500" id="sumMeta">...</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-sm font-bold text-gray-600">Total Course Fee</span>
+                        <span class="text-xl font-extrabold text-[#16a34a]" id="sumFee">...</span>
+                    </div>
+                </div>
+                <button onclick="goToStep(2)" class="w-full py-3.5 bg-[#16a34a] text-white rounded-xl font-bold text-base hover:bg-[#15803d] transition-all flex items-center justify-center gap-2" id="step1Btn" disabled>
+                    Continue <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═════════ STEP 2: Choose Amount ═════════ -->
+    <div class="step-section" id="step2">
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                <h2 class="text-lg font-extrabold text-gray-900 flex items-center gap-2">
+                    <i class="fas fa-calculator text-[#16a34a]"></i> Payment Amount
+                </h2>
+                <p class="text-sm text-gray-500 mt-1">Choose how much to pay — you can complete the rest later.</p>
+            </div>
+            <div class="p-6 space-y-6">
+                <!-- Percentage Options -->
+                <div class="pct-grid grid grid-cols-4 gap-3" id="pctGrid">
+                    <div class="pct-btn" data-pct="25" onclick="selectPct(25)">
+                        <div class="pct-ring">25%</div>
+                        <div class="pct-label">Quarter</div>
+                        <div class="pct-amount" id="amt25">...</div>
+                    </div>
+                    <div class="pct-btn" data-pct="50" onclick="selectPct(50)">
+                        <div class="pct-ring">50%</div>
+                        <div class="pct-label">Half</div>
+                        <div class="pct-amount" id="amt50">...</div>
+                    </div>
+                    <div class="pct-btn" data-pct="75" onclick="selectPct(75)">
+                        <div class="pct-ring">75%</div>
+                        <div class="pct-label">Three-Qtr</div>
+                        <div class="pct-amount" id="amt75">...</div>
+                    </div>
+                    <div class="pct-btn selected" data-pct="100" onclick="selectPct(100)">
+                        <div class="pct-ring" style="background:#16a34a;color:white">100%</div>
+                        <div class="pct-label">Full</div>
+                        <div class="pct-amount" id="amt100">...</div>
+                    </div>
+                </div>
+
+                <!-- Amount summary -->
+                <div class="bg-gray-50 rounded-xl p-4 flex items-center justify-between">
+                    <span class="text-sm font-bold text-gray-600">You will pay</span>
+                    <span class="text-2xl font-extrabold text-[#16a34a]" id="payAmountDisplay">KSH 0</span>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="goToStep(1)" class="px-6 py-3.5 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-all">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button onclick="goToStep(3)" class="flex-1 py-3.5 bg-[#16a34a] text-white rounded-xl font-bold hover:bg-[#15803d] transition-all flex items-center justify-center gap-2" id="step2Btn">
+                        Continue <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═════════ STEP 3: M-Pesa Phone & Pay ═════════ -->
+    <div class="step-section" id="step3">
+        <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                <h2 class="text-lg font-extrabold text-gray-900 flex items-center gap-2">
+                    <i class="fas fa-mobile-alt text-[#16a34a]"></i> M-Pesa Payment
+                </h2>
+            </div>
+            <div class="p-6 space-y-5">
+                <!-- Order summary -->
+                <div class="bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl p-5">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm font-bold text-gray-600">Course</span>
+                        <span class="font-extrabold text-gray-900" id="orderCourse">...</span>
+                    </div>
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-sm font-bold text-gray-600">Email</span>
+                        <span class="text-sm text-gray-700" id="orderEmail">...</span>
+                    </div>
+                    <div class="flex items-center justify-between pt-3 border-t border-green-200">
+                        <span class="text-sm font-bold text-gray-600">Amount to Pay</span>
+                        <span class="text-2xl font-extrabold text-[#16a34a]" id="orderAmount">...</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1.5">M-Pesa Phone Number *</label>
+                    <input id="mpesaPhone" type="tel" class="form-input" placeholder="07XX XXX XXX" required>
+                    <p class="text-xs text-gray-400 mt-1">The STK push prompt will be sent to this number</p>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="goToStep(2)" class="px-6 py-3.5 bg-gray-100 text-gray-700 rounded-xl font-bold hover:bg-gray-200 transition-all">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                    <button onclick="initiatePayment()" class="flex-1 py-3.5 bg-[#16a34a] text-white rounded-xl font-bold hover:bg-[#15803d] transition-all shadow-lg shadow-green-600/20 flex items-center justify-center gap-2" id="payBtn">
+                        <i class="fas fa-lock"></i> Pay Now via M-Pesa
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment status (hidden until payment begins) -->
+        <div id="paymentStatus" class="hidden mt-6 bg-white rounded-2xl border border-gray-200 shadow-sm p-8 text-center">
+            <div class="pulse-ring w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-5">
+                <i class="fas fa-mobile-alt text-[#16a34a] text-3xl" id="statusIcon"></i>
+            </div>
+            <h3 class="text-xl font-extrabold text-gray-900 mb-2" id="statusTitle">Waiting for M-Pesa...</h3>
+            <p class="text-gray-500 mb-4" id="statusMessage">Check your phone and enter your M-Pesa PIN to complete the payment.</p>
+            <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full bg-[#16a34a] rounded-full transition-all duration-500" id="statusProgress" style="width:10%"></div>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<!-- ═══ FOOTER ════════════════════════════════════════════════ -->
+<footer class="cc-footer">
+    <div class="cc-footer-container">
+        <div class="cc-footer-grid">
+            <div class="cc-footer-brand">
+                <div class="flex items-center gap-2 mb-4">
+                    <img src="https://coursecornerkenya.com/assets/images/logo.png" class="h-10 w-auto" alt="Course Corner logo" />
+                    <div class="flex flex-col leading-none">
+                        <span class="text-white font-extrabold text-lg">Course Corner</span>
+                        <span class="text-blue-400 font-bold text-[0.6rem] uppercase tracking-wider">Learn Portal</span>
+                    </div>
+                </div>
+                <p class="text-white/90 text-sm leading-relaxed max-w-[260px] mt-3">Empowering Kenyan students to gain practical digital skills for the modern economy.</p>
+            </div>
+            <div class="cc-footer-links">
+                <h4>Learn Portal</h4>
+                <ul>
+                    <li><a href="../../index.html">Home</a></li>
+                    <li><a href="courses.html">All Courses</a></li>
+                    <li><a href="dashboard.html">Student Dashboard</a></li>
+                    <li><a href="whats-new.html">What's New</a></li>
+                </ul>
+            </div>
+            <div class="cc-footer-links">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="https://coursecornerkenya.com">Main Site</a></li>
+                    <li><a href="https://coursecornerkenya.com/pages/privacy-policy.html">Privacy Policy</a></li>
+                    <li><a href="https://coursecornerkenya.com/pages/terms-of-service.html">Terms of Service</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-5">Contact</h4>
+                <ul class="space-y-3 text-sm" style="list-style:none;">
+                    <li class="flex items-center gap-3 text-white/85"><i class="fas fa-envelope text-white"></i> info.coursecorner@gmail.com</li>
+                    <li class="flex items-center gap-3 text-white/85"><i class="fas fa-phone text-white"></i> 0718 744780</li>
+                    <li class="flex items-center gap-3 text-white/85"><i class="fas fa-map-marker-alt text-white"></i> Nairobi, Kenya</li>
+                </ul>
+            </div>
+        </div>
+        <div class="cc-footer-bottom"><p>&copy; 2026 Course Corner. All rights reserved.</p></div>
+    </div>
+</footer>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+    const app = initializeApp({
+        apiKey:"AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
+        authDomain:"course-corner.firebaseapp.com",
+        projectId:"course-corner",
+        storageBucket:"course-corner.firebasestorage.app",
+        messagingSenderId:"961706784572",
+        appId:"1:961706784572:web:7aa6c24946570ffda59039"
+    });
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const SERVER_URL = 'https://course-corner-server.vercel.app/api';
+
+    let allCourses = [];
+    let selectedCourse = null;
+    let selectedPct = 100;
+    let payAmount = 0;
+
+    // Expose to window
+    window._auth = auth;
+    window._db = db;
+
+    // Auto-fill and LOCK email to the signed-in account
+    onAuthStateChanged(auth, u => {
+        if (u) {
+            const emailEl = document.getElementById('payEmail');
+            const lockIcon = document.getElementById('emailLockIcon');
+            const hint = document.getElementById('emailHint');
+            if (emailEl) {
+                emailEl.value = u.email || '';
+                emailEl.readOnly = true;
+                emailEl.style.background = '#f0fdf4';
+                emailEl.style.borderColor = '#86efac';
+                emailEl.style.cursor = 'not-allowed';
+            }
+            if (lockIcon) lockIcon.classList.remove('hidden');
+            if (hint) {
+                hint.innerHTML = '<i class="fas fa-check-circle text-[#16a34a] mr-1"></i><span class="text-[#16a34a] font-semibold">Linked to your account</span>';
+            }
+            validateStep1();
+        }
+    });
+
+    // Load courses
+    async function init() {
+        try {
+            const r = await fetch('../../data/courses.json');
+            allCourses = await r.json();
+            const sel = document.getElementById('payCourseSelect');
+            allCourses.forEach(c => {
+                const o = document.createElement('option');
+                o.value = c.id;
+                o.textContent = `${c.title} — ${c.currency} ${c.fee.toLocaleString()}`;
+                sel.appendChild(o);
+            });
+
+            // Pre-fill email from URL param or localStorage (guest users)
+            const params = new URLSearchParams(window.location.search);
+            const courseParam = params.get('course');
+            const emailParam = params.get('email');
+            if (emailParam) {
+                document.getElementById('payEmail').value = decodeURIComponent(emailParam);
+            } else {
+                // Restore from previous visit / step
+                const saved = localStorage.getItem('cc_learn_email');
+                if (saved) {
+                    const emailEl2 = document.getElementById('payEmail');
+                    if (emailEl2 && !emailEl2.readOnly) emailEl2.value = saved;
+                }
+            }
+            if (courseParam) {
+                sel.value = courseParam;
+                onCourseSelect();
+            }
+
+            // Listen for course change
+            sel.addEventListener('change', onCourseSelect);
+            document.getElementById('payEmail').addEventListener('input', validateStep1);
+        } catch (err) {
+            console.error('Failed to load courses:', err);
+        }
+    }
+
+    function onCourseSelect() {
+        const sel = document.getElementById('payCourseSelect');
+        selectedCourse = allCourses.find(x => x.id === sel.value) || null;
+        const sum = document.getElementById('courseSummary');
+        if (!selectedCourse) { sum.classList.add('hidden'); validateStep1(); return; }
+
+        sum.classList.remove('hidden');
+        document.getElementById('sumTitle').textContent = selectedCourse.title;
+        document.getElementById('sumMeta').textContent = `${selectedCourse.modulesCount} Modules · ${selectedCourse.duration} · ${selectedCourse.level}`;
+        document.getElementById('sumFee').textContent = `${selectedCourse.currency} ${selectedCourse.fee.toLocaleString()}`;
+        document.getElementById('sumIcon').style.background = selectedCourse.gradient;
+        document.getElementById('sumIcon').innerHTML = `<i class="${selectedCourse.icon}"></i>`;
+
+        // Update amount grid
+        updateAmounts();
+        validateStep1();
+    }
+    window.onCourseSelect = onCourseSelect;
+
+    function validateStep1() {
+        const email = document.getElementById('payEmail').value.trim();
+        const course = document.getElementById('payCourseSelect').value;
+        document.getElementById('step1Btn').disabled = !(email && course);
+    }
+
+    function updateAmounts() {
+        if (!selectedCourse) return;
+        const fee = selectedCourse.fee;
+        [25,50,75,100].forEach(p => {
+            const el = document.getElementById(`amt${p}`);
+            if (el) el.textContent = `KSH ${Math.ceil(fee * p / 100).toLocaleString()}`;
+        });
+        selectPct(selectedPct);
+    }
+
+    window.selectPct = (pct) => {
+        selectedPct = pct;
+        document.querySelectorAll('.pct-btn').forEach(b => {
+            const bPct = parseInt(b.dataset.pct);
+            b.classList.toggle('selected', bPct === pct);
+            const ring = b.querySelector('.pct-ring');
+            if (bPct === pct) {
+                ring.style.background = '#16a34a'; ring.style.color = 'white';
+            } else {
+                ring.style.background = '#f3f4f6'; ring.style.color = '#6b7280';
+            }
+        });
+        if (selectedCourse) {
+            payAmount = Math.ceil(selectedCourse.fee * pct / 100);
+            document.getElementById('payAmountDisplay').textContent = `KSH ${payAmount.toLocaleString()}`;
+        }
+    };
+
+    // Step navigation
+    window.goToStep = (step) => {
+        // Validate before moving forward
+        if (step === 2 && !selectedCourse) {
+            Swal.fire({ icon:'warning', title:'Select a course first', confirmButtonColor:'#16a34a' });
+            return;
+        }
+        const email = document.getElementById('payEmail').value.trim();
+        if (step === 2 && !email) {
+            Swal.fire({ icon:'warning', title:'Enter your email', confirmButtonColor:'#16a34a' });
+            return;
+        }
+        if (step === 3 && (!payAmount || payAmount < 1)) {
+            Swal.fire({ icon:'warning', title:'Enter a valid amount', confirmButtonColor:'#16a34a' });
+            return;
+        }
+
+        // Update step 3 order summary
+        if (step === 3) {
+            document.getElementById('orderCourse').textContent = selectedCourse.title;
+            document.getElementById('orderEmail').textContent = email;
+            document.getElementById('orderAmount').textContent = `KSH ${payAmount.toLocaleString()}`;
+        }
+
+        // Persist email to localStorage so it survives page reloads / re-visits
+        if (email) localStorage.setItem('cc_learn_email', email);
+
+        document.querySelectorAll('.step-section').forEach(s => s.classList.remove('active'));
+        document.getElementById(`step${step}`).classList.add('active');
+
+        // Update progress dots
+        for (let i = 1; i <= 3; i++) {
+            const circle = i === 1 ? document.querySelector('#stepDot1 span') : document.getElementById(`dot${i}Circle`);
+            const label = i === 1 ? document.querySelector('#stepDot1 .text-sm') : document.getElementById(`dot${i}Label`);
+            if (i <= step) {
+                circle.classList.remove('bg-gray-200','text-gray-400');
+                circle.classList.add('bg-[#16a34a]','text-white');
+                if (label) { label.classList.remove('text-gray-400'); label.classList.add('text-[#16a34a]'); }
+            } else {
+                circle.classList.add('bg-gray-200','text-gray-400');
+                circle.classList.remove('bg-[#16a34a]','text-white');
+                if (label) { label.classList.add('text-gray-400'); label.classList.remove('text-[#16a34a]'); }
+            }
+        }
+        const line1 = document.getElementById('stepLine1');
+        const line2 = document.getElementById('stepLine2');
+        line1.classList.toggle('bg-[#16a34a]', step >= 2); line1.classList.toggle('bg-gray-200', step < 2);
+        line2.classList.toggle('bg-[#16a34a]', step >= 3); line2.classList.toggle('bg-gray-200', step < 3);
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // ═══ PAYMENT FLOW (via dedicated Learn handler) ═══
+    // Dynamic import of the Learn payment handler
+    let payHandler = null;
+    import('../js/learnPaymentHandler.js').then(m => {
+        payHandler = new m.LearnPaymentHandler();
+    }).catch(() => {
+        console.warn('LearnPaymentHandler module not found, using inline fallback');
+    });
+
+    window.initiatePayment = async () => {
+        const phone = document.getElementById('mpesaPhone').value.trim();
+        if (!phone) {
+            Swal.fire({ icon:'warning', title:'Enter your M-Pesa phone number', confirmButtonColor:'#16a34a' });
+            return;
+        }
+
+        const email = document.getElementById('payEmail').value.trim();
+        const payBtn = document.getElementById('payBtn');
+        const statusDiv = document.getElementById('paymentStatus');
+        payBtn.disabled = true;
+        payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Initiating...';
+        statusDiv.classList.remove('hidden');
+
+        try {
+            let data;
+            if (payHandler) {
+                // Use dedicated Learn payment handler (clean separation)
+                data = await payHandler.initiate({
+                    phone,
+                    email,
+                    course: selectedCourse,
+                    amount: payAmount,
+                    onStatus: updateStatus
+                });
+            } else {
+                // Inline fallback
+                const resp = await fetch(`${SERVER_URL}/mpesa/stkpush`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        phoneNumber: phone,
+                        category: `learn-${selectedCourse.id}`,
+                        learnAmount: payAmount,
+                        email
+                    })
+                });
+                data = await resp.json();
+                if (!resp.ok || !data.success) throw new Error(data.message || 'Failed to initiate payment');
+            }
+
+            const sessionId = data.data.sessionId;
+            const checkoutRequestId = data.data.checkoutRequestId;
+
+            updateStatus('pending', 'STK Push Sent!', 'Check your phone and enter your M-Pesa PIN.', 20);
+            payBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Waiting for confirmation...';
+
+            // Poll for status
+            let attempts = 0;
+            const maxAttempts = 20;
+            const poll = setInterval(async () => {
+                attempts++;
+                const pct = Math.min(20 + (attempts / maxAttempts) * 70, 90);
+                updateStatus('pending', 'Waiting for M-Pesa...', `Checking payment status (${attempts}/${maxAttempts})...`, pct);
+
+                try {
+                    let url = `${SERVER_URL}/mpesa/status?sessionId=${sessionId}`;
+                    if (checkoutRequestId) url += `&checkoutRequestId=${checkoutRequestId}`;
+                    const sr = await fetch(url);
+                    const sd = await sr.json();
+
+                    if (!sr.ok) {
+                        const rawMsg = sd?.data?.resultDesc || sd?.message || 'Payment status check failed.';
+                        const msg = String(rawMsg);
+                        const lm = msg.toLowerCase();
+
+                        // If backend has no session yet, keep polling briefly
+                        if (sr.status === 404 && attempts < maxAttempts) {
+                            return;
+                        }
+
+                        clearInterval(poll);
+                        let userMsg = msg;
+                        if (lm.includes('wrong pin') || lm.includes('2001') || lm.includes('1025')) {
+                            userMsg = 'Wrong M-Pesa PIN entered. Please retry and enter the correct PIN.';
+                        } else if (lm.includes('insufficient') || lm.includes('balance')) {
+                            userMsg = 'Insufficient M-Pesa balance. Please top up then retry payment.';
+                        } else if (lm.includes('timed out') || lm.includes('timeout') || lm.includes('1037')) {
+                            userMsg = 'Payment request timed out. Please retry and approve quickly on your phone.';
+                        } else if (lm.includes('cancel') || lm.includes('1032')) {
+                            userMsg = 'Payment was cancelled on your phone.';
+                        }
+
+                        updateStatus('error', 'Payment Failed', userMsg, 100);
+                        payBtn.disabled = false;
+                        payBtn.innerHTML = '<i class="fas fa-lock"></i> Retry Payment';
+                        return;
+                    }
+
+                    const st = sd?.data?.status;
+
+                    if (st === 'completed') {
+                        clearInterval(poll);
+                        updateStatus('success', 'Payment Successful!', 'Your payment has been received. Thank you!', 100);
+                        // Save to Firestore
+                        saveLearnPayment(data.data, sd.data);
+                        payBtn.innerHTML = '<i class="fas fa-check"></i> Payment Complete';
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Payment Received!',
+                            html: `<p>KSH ${payAmount.toLocaleString()} for <strong>${selectedCourse.title}</strong> has been received.</p>`,
+                            confirmButtonColor: '#16a34a',
+                            confirmButtonText: 'Go to Dashboard'
+                        }).then(() => { window.location.href = 'dashboard.html'; });
+                        return;
+                    } else if (st === 'failed' || st === 'cancelled') {
+                        clearInterval(poll);
+                        const msg = sd?.data?.resultDesc || 'Payment was not completed.';
+                        updateStatus('error', 'Payment Failed', msg, 100);
+                        payBtn.disabled = false;
+                        payBtn.innerHTML = '<i class="fas fa-lock"></i> Retry Payment';
+                        return;
+                    }
+                } catch (e) {
+                    console.error('Poll error:', e);
+                }
+
+                if (attempts >= maxAttempts) {
+                    clearInterval(poll);
+                    updateStatus('warning', 'Status Unknown', 'We could not confirm payment. If you paid, it will reflect shortly.', 100);
+                    payBtn.disabled = false;
+                    payBtn.innerHTML = '<i class="fas fa-lock"></i> Retry Payment';
+                }
+            }, 3000);
+
+        } catch (err) {
+            console.error('Payment error:', err);
+            updateStatus('error', 'Payment Error', err.message, 100);
+            payBtn.disabled = false;
+            payBtn.innerHTML = '<i class="fas fa-lock"></i> Retry Payment';
+        }
+    };
+
+    function updateStatus(type, title, msg, progress) {
+        const icon = document.getElementById('statusIcon');
+        const titleEl = document.getElementById('statusTitle');
+        const msgEl = document.getElementById('statusMessage');
+        const bar = document.getElementById('statusProgress');
+        const ring = icon.parentElement;
+
+        titleEl.textContent = title;
+        msgEl.textContent = msg;
+        bar.style.width = progress + '%';
+
+        if (type === 'success') {
+            icon.className = 'fas fa-check-circle text-green-600 text-3xl';
+            ring.className = 'w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-5';
+            bar.classList.remove('bg-red-500','bg-yellow-500'); bar.classList.add('bg-[#16a34a]');
+        } else if (type === 'error') {
+            icon.className = 'fas fa-times-circle text-red-500 text-3xl';
+            ring.className = 'w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-5';
+            bar.classList.remove('bg-[#16a34a]','bg-yellow-500'); bar.classList.add('bg-red-500');
+        } else if (type === 'warning') {
+            icon.className = 'fas fa-exclamation-triangle text-yellow-500 text-3xl';
+            ring.className = 'w-20 h-20 rounded-full bg-yellow-100 flex items-center justify-center mx-auto mb-5';
+            bar.classList.remove('bg-[#16a34a]','bg-red-500'); bar.classList.add('bg-yellow-500');
+        } else {
+            icon.className = 'fas fa-mobile-alt text-[#16a34a] text-3xl';
+            ring.className = 'pulse-ring w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-5';
+            bar.classList.remove('bg-red-500','bg-yellow-500'); bar.classList.add('bg-[#16a34a]');
+        }
+    }
+
+    async function saveLearnPayment(stkData, resultData) {
+        try {
+            const email = document.getElementById('payEmail').value.trim();
+            await setDoc(doc(db, "learnPayments", `${Date.now()}_${selectedCourse.id}`), {
+                email,
+                courseId: selectedCourse.id,
+                courseTitle: selectedCourse.title,
+                courseFee: selectedCourse.fee,
+                amountPaid: payAmount,
+                percentage: selectedPct || Math.round((payAmount / selectedCourse.fee) * 100),
+                currency: selectedCourse.currency,
+                sessionId: stkData.sessionId,
+                checkoutRequestId: stkData.checkoutRequestId,
+                mpesaCode: resultData?.mpesaReceiptNumber || resultData?.mpesaCode || null,
+                phone: document.getElementById('mpesaPhone').value.trim(),
+                status: 'completed',
+                timestamp: new Date().toISOString()
+            });
+            console.log('Learn payment saved to Firestore');
+        } catch (e) {
+            console.error('Failed to save payment:', e);
+        }
+    }
+
+    init();
+</script>
+
+<script>
+    // Mobile menu
+    document.addEventListener('DOMContentLoaded', () => {
+        const mmBtn = document.getElementById('mobileMenuBtn');
+        const mm = document.getElementById('mobileMenu');
+        if (mmBtn && mm) {
+            mmBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                mm.classList.toggle('show');
+                mmBtn.classList.toggle('active');
+            });
+        }
+        document.addEventListener('click', (e) => {
+            const mm = document.getElementById('mobileMenu');
+            const mmBtn = document.getElementById('mobileMenuBtn');
+            if (mm && mm.classList.contains('show') && !mm.contains(e.target) && !mmBtn.contains(e.target)) {
+                mm.classList.remove('show');
+                mmBtn.classList.remove('active');
+            }
+        });
+    });
+    window.closeMobileMenu = () => {
+        const mm = document.getElementById('mobileMenu');
+        const mmBtn = document.getElementById('mobileMenuBtn');
+        if (mm) mm.classList.remove('show');
+        if (mmBtn) mmBtn.classList.remove('active');
+    };
+    window.addEventListener('scroll', () => {
+        const h = document.getElementById('learnHeader');
+        if (h) h.classList.toggle('scrolled', scrollY > 10);
+    });
+</script>
+</body>
+</html>

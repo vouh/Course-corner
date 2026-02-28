@@ -3,392 +3,1045 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learning Dashboard - Course Corner Learn</title>
+    <title>Dashboard – Course Corner Learn</title>
+    <link rel="icon" href="/favicon.ico" sizes="any">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <style>
-        :root { --cc-primary: #16a34a; --cc-bg: #f8fafc; }
-        body { background-color: var(--cc-bg); font-family: 'Inter', system-ui, -apple-system, sans-serif; }
-        .sidebar-link { transition: all 0.2s; border-radius: 0.75rem; }
-        .sidebar-link.active { background: #16a34a; color: white !important; box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25); }
-        .card { background: white; border-radius: 1.25rem; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 1px 3px rgba(0,0,0,0.02); }
-        .stat-card { padding: 1.5rem; border-bottom: 3px solid transparent; transition: all 0.3s; }
-        .stat-card:hover { transform: translateY(-4px); border-bottom-color: #16a34a; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1); }
-        .progress-bar { height: 8px; background: #f1f5f9; border-radius: 999px; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #16a34a, #22c55e); border-radius: 999px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
-        .empty-state { opacity: 0.6; padding: 3rem 1rem; text-align: center; }
-        .badge-pending { background: #fef9c3; color: #854d0e; }
-        .badge-approved { background: #dcfce7; color: #166534; }
-        .shimmer { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; }
-        @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
-    </style>
-</head>
-<body class="text-slate-800">
-    <div class="min-h-screen flex flex-col lg:flex-row">
-        <!-- Sidebar -->
-        <aside class="w-full lg:w-72 bg-white border-r lg:min-h-screen p-6 hidden lg:flex flex-col">
-            <div class="mb-10 px-2">
-                <a href="../../index.html" class="flex items-center gap-3 no-underline">
-                    <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Logo" class="h-10 w-auto">
-                    <div class="flex flex-col leading-tight">
-                        <span class="text-lg font-extrabold text-[#16a34a] tracking-tight">Course Corner</span>
-                        <span class="text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest -mt-0.5">Learn Portal</span>
-                    </div>
-                </a>
-            </div>
-
-            <nav class="space-y-1.5 flex-grow">
-                <a href="#" class="sidebar-link active flex items-center gap-3.5 p-3.5 text-slate-600 font-semibold hover:bg-slate-50">
-                    <i class="fas fa-grid-2 text-lg"></i> Overview
-                </a>
-                <a href="courses.html" class="sidebar-link flex items-center gap-3.5 p-3.5 text-slate-500 font-medium hover:bg-slate-50">
-                    <i class="fas fa-book-open"></i> All Courses
-                </a>
-                <a href="whats-new.html" class="sidebar-link flex items-center gap-3.5 p-3.5 text-slate-500 font-medium hover:bg-slate-50">
-                    <i class="fas fa-bullhorn"></i> What's New
-                </a>
-                <a href="apply.html" class="sidebar-link flex items-center gap-3.5 p-3.5 text-slate-500 font-medium hover:bg-slate-50">
-                    <i class="fas fa-paper-plane"></i> Applications
-                </a>
-                <div class="my-6 border-t border-slate-100"></div>
-                <a href="https://coursecornerkenya.com" class="sidebar-link flex items-center gap-3.5 p-3.5 text-slate-500 font-medium hover:bg-slate-50">
-                    <i class="fas fa-external-link-alt text-xs opacity-50"></i> Main Platform
-                </a>
-            </nav>
-            
-            <div class="mt-auto pt-6 border-t border-slate-100">
-                <button onclick="handleSignOut()" class="flex items-center gap-3.5 p-3.5 w-full rounded-xl text-red-500 hover:bg-red-50 transition-colors font-semibold">
-                    <i class="fas fa-power-off"></i> Sign Out
-                </button>
-            </div>
-        </aside>
-
-        <!-- Main Content -->
-        <main class="flex-grow p-5 md:p-10 max-w-[1400px] mx-auto w-full">
-            <!-- Mobile Header -->
-            <div class="lg:hidden flex items-center justify-between mb-8">
-                <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Logo" class="h-8">
-                <button onclick="handleSignOut()" class="text-slate-400 hover:text-red-500"><i class="fas fa-power-off text-xl"></i></button>
-            </div>
-
-            <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
-                <div>
-                    <h1 class="text-3xl font-black text-slate-900 tracking-tight mb-2">My <span class="text-[#16a34a]">Dashboard</span></h1>
-                    <p class="text-slate-500 flex items-center gap-2">
-                        <span id="userStatus" class="w-2 h-2 rounded-full bg-green-500"></span> 
-                        Logged in as <span id="userEmail" class="font-bold text-slate-700">Loading...</span>
-                    </p>
-                </div>
-                <div class="flex items-center gap-3 bg-white p-2 rounded-2xl shadow-sm border border-slate-100">
-                    <div id="userAvatar" class="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-[#16a34a] font-bold text-lg">?</div>
-                    <div class="pr-3">
-                        <p id="profileName" class="text-sm font-bold text-slate-900 leading-none mb-1">...</p>
-                        <p class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-tighter">Student Account</p>
-                    </div>
-                </div>
-            </header>
-
-            <!-- Stats -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-                <div class="card stat-card">
-                    <div class="w-10 h-10 rounded-lg bg-[#16a34a]/10 flex items-center justify-center text-[#16a34a] mb-4">
-                        <i class="fas fa-scroll"></i>
-                    </div>
-                    <h3 class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Active Courses</h3>
-                    <p id="enrolledCount" class="text-3xl font-black text-slate-900">...</p>
-                </div>
-                <div class="card stat-card">
-                    <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-600 mb-4">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <h3 class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Completion</h3>
-                    <p class="text-3xl font-black text-slate-900"><span id="avgProgress">0</span>%</p>
-                </div>
-                <div class="card stat-card">
-                    <div class="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600 mb-4">
-                        <i class="fas fa-wallet"></i>
-                    </div>
-                    <h3 class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Fees Paid</h3>
-                    <p class="text-3xl font-black text-slate-900" style="font-size: 1.5rem !important;">KES <span id="paidAmt">...</span></p>
-                </div>
-                <div class="card stat-card">
-                    <div class="w-10 h-10 rounded-lg bg-pink-500/10 flex items-center justify-center text-pink-600 mb-4">
-                        <i class="fas fa-medal"></i>
-                    </div>
-                    <h3 class="text-slate-500 text-xs font-bold uppercase tracking-widest mb-1">Certificates</h3>
-                    <p id="certCount" class="text-3xl font-black text-slate-900">0</p>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Main Activity -->
-                <div class="lg:col-span-2 space-y-8">
-                    <!-- Ongoing Courses Section -->
-                    <div>
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 class="text-xl font-bold text-slate-900">My Learning Journey</h2>
-                            <a href="courses.html" class="text-sm font-bold text-[#16a34a] hover:underline">Explore More</a>
-                        </div>
-                        <div id="coursesList" class="space-y-4">
-                            <!-- Shimmer Loading -->
-                            <div class="card p-6 flex flex-col gap-4 animate-pulse">
-                                <div class="h-4 w-1/3 bg-slate-100 rounded"></div>
-                                <div class="h-8 w-full bg-slate-50 rounded"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Payment History -->
-                    <div>
-                        <h2 class="text-xl font-bold text-slate-900 mb-6">Transactions & Receipts</h2>
-                        <div class="card overflow-hidden">
-                            <table class="w-full text-left">
-                                <thead class="bg-slate-50 border-b border-slate-100">
-                                    <tr>
-                                        <th class="p-4 text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest">Description</th>
-                                        <th class="p-4 text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest">Amount</th>
-                                        <th class="p-4 text-[0.65rem] font-bold text-slate-400 uppercase tracking-widest text-right">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="paymentsList" class="divide-y divide-slate-50">
-                                    <tr><td colspan="3" class="p-10 text-center text-slate-400 italic">Connecting to secure billing...</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Updates & Quick Actions -->
-                <div class="space-y-8">
-                    <!-- Notifications -->
-                    <div class="card p-6">
-                        <h2 class="text-lg font-bold text-slate-900 mb-6">Notices</h2>
-                        <div id="noticesArea" class="space-y-4">
-                            <div class="flex gap-4 p-4 rounded-xl bg-blue-50 border border-blue-100/50">
-                                <div class="text-blue-500 mt-0.5"><i class="fas fa-info-circle"></i></div>
-                                <div>
-                                    <p class="text-sm font-bold text-blue-900">Welcome to Learn!</p>
-                                    <p class="text-[0.8rem] text-blue-700/70 mt-1">Complete your profile set up to access premium Slack community channels.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Support Card -->
-                    <div class="card p-6 bg-slate-900 text-white border-0 overflow-hidden relative">
-                        <div class="relative z-10">
-                            <h3 class="font-bold mb-2">Need Guidance?</h3>
-                            <p class="text-slate-400 text-sm mb-6">Our academic advisors are online 8am - 6pm daily.</p>
-                            <a href="https://wa.me/254712345678" target="_blank" class="block w-full text-center py-3 bg-[#16a34a] hover:bg-[#15803d] rounded-xl font-bold transition-all text-sm">
-                                <i class="fab fa-whatsapp mr-1"></i> Chat Support
-                            </a>
-                        </div>
-                        <i class="fab fa-whatsapp absolute -bottom-4 -right-4 text-7xl opacity-10 rotate-12"></i>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- ═══ SCRIPTS ═══════════════════════════════════════════════ -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-        import { getFirestore, collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* ═══ RESET ═══ */
+        *{box-sizing:border-box;margin:0;padding:0}
 
-        // Production Config
-        const firebaseConfig = {
-            apiKey:"AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
-            authDomain:"course-corner.firebaseapp.com",
-            projectId:"course-corner",
-            appId:"1:961706784572:web:7aa6c24946570ffda59039"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                // UI Header
-                const email = user.email;
-                const name = user.displayName || email.split('@')[0];
-                document.getElementById('userEmail').innerText = email;
-                document.getElementById('profileName').innerText = name;
-                document.getElementById('userAvatar').innerText = name[0].toUpperCase();
-
-                // Fetch Data
-                await loadDashboardData(email);
-            } else {
-                window.location.href = 'index.html?modal=login';
-            }
-        });
-
-        async function loadDashboardData(email) {
-            try {
-                // 1. Fetch Applications (Active Courses)
-                const q = query(collection(db, "learnApplications"), where("email", "==", email));
-                const snap = await getDocs(q);
-                const apps = snap.docs.map(doc => ({id: doc.id, ...doc.data()}));
-                
-                // 2. Fetch Course Registry for Metadata
-                const resp = await fetch('data/courses.json');
-                const courseDocs = await resp.json();
-
-                // Stats Update
-                document.getElementById('enrolledCount').innerText = apps.length;
-                
-                // Render Course Cards
-                const list = document.getElementById('coursesList');
-                if (apps.length === 0) {
-                    list.innerHTML = `
-                        <div class="empty-state card">
-                            <i class="fas fa-book-open text-3xl mb-3 text-slate-200"></i>
-                            <p class="text-slate-500 font-medium">You haven't enrolled in any courses yet.</p>
-                            <a href="courses.html" class="text-[#16a34a] font-bold text-sm hover:underline mt-2 inline-block">Enroll in your first course</a>
-                        </div>
-                    `;
-                } else {
-                    list.innerHTML = apps.map(app => {
-                        const course = courseDocs.find(c => c.id === app.courseId) || { title: app.courseId };
-                        const statusColor = app.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
-                        return `
-                            <div class="card p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-[#16a34a]/30 transition-all">
-                                <div class="flex-grow">
-                                    <div class="flex items-center gap-3 mb-2">
-                                        <span class="text-[0.65rem] font-bold uppercase tracking-widest ${statusColor} px-2 py-0.5 rounded-full">${app.status || 'Pending'}</span>
-                                        <p class="text-[0.7rem] text-slate-400 font-medium">${new Date(app.timestamp?.seconds * 1000 || Date.now()).toLocaleDateString()}</p>
-                                    </div>
-                                    <h3 class="text-lg font-bold text-slate-900">${course.title}</h3>
-                                    <div class="mt-4 flex items-center justify-between max-w-sm">
-                                        <span class="text-xs font-bold text-slate-500">Program Progress</span>
-                                        <span class="text-xs font-black text-[#16a34a]">10%</span>
-                                    </div>
-                                    <div class="progress-bar mt-2 max-w-sm">
-                                        <div class="progress-fill" style="width: 10%"></div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center gap-3">
-                                    <a href="course-detail.html?id=${app.courseId}" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold text-sm transition-all">Syllabus</a>
-                                    <button class="px-5 py-2.5 bg-[#16a34a] text-white rounded-xl font-bold text-sm hover:shadow-lg transition-all">Enter Classroom</button>
-                                </div>
-                            </div>
-                        `;
-                    }).join('');
-                }
-
-                // 3. Payments (Fetch from transactions)
-                const pq = query(collection(db, "transactions"), where("email", "==", email), orderBy("timestamp", "desc"), limit(5));
-                const psnap = await getDocs(pq);
-                const payments = psnap.docs.map(doc => doc.data());
-                
-                const totalPaid = payments.filter(p => p.status === 'COMPLETED' || p.status === 'SUCCESS').reduce((acc, p) => acc + (parseFloat(p.amount) || 0), 0);
-                document.getElementById('paidAmt').innerText = totalPaid.toLocaleString();
-
-                const pList = document.getElementById('paymentsList');
-                if (payments.length === 0) {
-                    pList.innerHTML = `<tr><td colspan="3" class="p-10 text-center text-slate-400 italic">No transaction records found.</td></tr>`;
-                } else {
-                    pList.innerHTML = payments.map(p => `
-                        <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="p-4">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-8 h-8 rounded bg-slate-100 flex items-center justify-center text-slate-400"><i class="fas fa-receipt text-xs"></i></div>
-                                    <p class="text-sm font-bold text-slate-700">${p.description || 'Course Fee'}</p>
-                                </div>
-                            </td>
-                            <td class="p-4 text-sm font-black text-slate-900">KES ${parseFloat(p.amount).toLocaleString()}</td>
-                            <td class="p-4 text-right">
-                                <span class="text-[0.6rem] font-black uppercase tracking-widest px-2 py-1 rounded inline-block ${p.status === 'SUCCESS' || p.status === 'COMPLETED' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">${p.status}</span>
-                            </td>
-                        </tr>
-                    `).join('');
-                }
-
-            } catch (err) {
-                console.error("Dashboard Load Error:", err);
-                Swal.fire({ icon: 'error', title: 'Connection Issue', text: 'Some data could not be loaded. Please refresh.' });
-            }
+        /* ═══ THEME VARIABLES ═══ */
+        :root{
+            --bg:#f0f4f8;
+            --surface:#ffffff;
+            --surface2:#f8fafc;
+            --surface3:#f1f5f9;
+            --border:rgba(0,0,0,.07);
+            --border2:rgba(0,0,0,.11);
+            --text1:#1e293b;
+            --text2:#64748b;
+            --text3:#94a3b8;
+            --accent:#16a34a;
+            --accent2:#15803d;
+            --accent-bg:rgba(22,163,74,.1);
+            --shadow:rgba(0,0,0,.06);
+            --shadow2:rgba(0,0,0,.12);
+            --notif-bg:rgba(239,246,255,.9);
+            --notif-border:rgba(191,219,254,.6);
+            --notif-text:#1d4ed8;
+            --notif-icon:#3b82f6;
+            --blue-soft:rgba(59,130,246,.1);
+            --amber-soft:rgba(245,158,11,.1);
+            --purple-soft:rgba(168,85,247,.1);
+            --input-bg:#ffffff;
+        }
+        body.dark{
+            --bg:#0a0f1e;
+            --surface:#141c2f;
+            --surface2:#0f172a;
+            --surface3:#1e2d45;
+            --border:rgba(255,255,255,.07);
+            --border2:rgba(255,255,255,.13);
+            --text1:#e2e8f0;
+            --text2:#94a3b8;
+            --text3:#475569;
+            --accent:#22c55e;
+            --accent2:#16a34a;
+            --accent-bg:rgba(34,197,94,.12);
+            --shadow:rgba(0,0,0,.3);
+            --shadow2:rgba(0,0,0,.5);
+            --notif-bg:rgba(30,58,138,.2);
+            --notif-border:rgba(59,130,246,.25);
+            --notif-text:#93c5fd;
+            --notif-icon:#60a5fa;
+            --blue-soft:rgba(59,130,246,.12);
+            --amber-soft:rgba(245,158,11,.12);
+            --purple-soft:rgba(168,85,247,.12);
+            --input-bg:#1e293b;
         }
 
-        window.handleSignOut = async () => {
-            const result = await Swal.fire({
-                title: 'Sign Out?',
-                text: "Are you sure you want to end your session?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#16a34a',
-                cancelButtonColor: '#f1f5f9',
-                confirmButtonText: 'Yes, Sign Out',
-                cancelButtonTextColor: '#334155'
-            });
+        /* ═══ BASE ═══ */
+        body{
+            font-family:'Inter',sans-serif;
+            background:var(--bg);
+            color:var(--text1);
+            transition:background .25s,color .25s;
+            -webkit-tap-highlight-color:transparent;
+            /* safe area for notched phones */
+            padding-bottom:env(safe-area-inset-bottom);
+        }
+        a{text-decoration:none;color:inherit}
 
-            if (result.isConfirmed) {
-                await signOut(auth);
-                window.location.href = 'index.html';
+        /* ═══ SIDEBAR ═══ */
+        .dash-sidebar{
+            background:var(--surface);
+            border-right:1px solid var(--border);
+            transition:background .25s,border-color .25s;
+        }
+        .sidebar-link{transition:all .18s;border-radius:.75rem;color:var(--text2)}
+        .sidebar-link:hover{background:var(--surface3)}
+        .sidebar-link.active{
+            background:var(--accent-bg);
+            color:var(--accent)!important;
+            font-weight:700;
+            border-left:3px solid var(--accent)
+        }
+
+        /* ═══ CARDS ═══ */
+        .card{
+            background:var(--surface);
+            border-radius:1rem;
+            border:1px solid var(--border);
+            transition:all .2s;
+        }
+        .card:hover{border-color:var(--border2);box-shadow:0 4px 16px var(--shadow)}
+
+        /* ═══ STATS ═══ */
+        .stat-card{padding:1rem;display:flex;align-items:center;gap:.875rem}
+        .stat-card .stat-icon{width:40px;height:40px;border-radius:.75rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.875rem}
+
+        /* ═══ HEADER / FOOTER ═══ */
+        header.top-bar{
+            background:var(--surface);
+            border-bottom:1px solid var(--border);
+            transition:background .25s,border-color .25s;
+        }
+        footer.bot-bar{
+            background:var(--surface);
+            border-top:1px solid var(--border);
+            transition:background .25s,border-color .25s;
+        }
+
+        /* ═══ TABLE ═══ */
+        .card table thead{background:var(--surface3)}
+        .card table thead th{color:var(--text3);border-bottom:1px solid var(--border)}
+        .card table tbody tr:hover{background:var(--surface3)}
+        .card table tbody td{color:var(--text1);border-bottom:1px solid var(--border)}
+
+        /* ═══ PROGRESS ═══ */
+        .progress-bar{height:5px;background:var(--surface3);border-radius:999px;overflow:hidden}
+        .progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),#22c55e);border-radius:999px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+
+        /* ═══ MODULES ═══ */
+        .module-item{display:flex;align-items:center;gap:.75rem;padding:.625rem .75rem;border-radius:.625rem;transition:all .15s}
+        .module-item:hover{background:var(--surface3)}
+        .module-item.completed .mod-dot{background:var(--accent);color:white}
+        .module-item.current .mod-dot{background:var(--accent);color:white;animation:pulse-dot 2s infinite}
+        .module-item.locked .mod-dot{background:var(--surface3);color:var(--text3)}
+        .mod-dot{width:28px;height:28px;border-radius:.5rem;display:flex;align-items:center;justify-content:center;font-size:.625rem;font-weight:700;flex-shrink:0}
+        @keyframes pulse-dot{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.35)}50%{box-shadow:0 0 0 6px rgba(34,197,94,0)}}
+
+        /* ═══ TAB BUTTONS ═══ */
+        .tab-btn{padding:.5rem 1rem;border-radius:.625rem;font-size:.8125rem;font-weight:600;border:none;background:transparent;color:var(--text2);cursor:pointer;transition:all .2s}
+        .tab-btn.active{background:var(--accent);color:white}
+        .tab-btn:hover:not(.active){background:var(--surface3)}
+
+        /* ═══ SETTINGS MODAL ═══ */
+        .settings-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem}
+        .settings-overlay.show{display:flex}
+        .settings-modal{
+            background:var(--surface);
+            border-radius:1.25rem;
+            width:100%;
+            max-width:440px;
+            overflow:hidden;
+            box-shadow:0 24px 48px var(--shadow2);
+            animation:slideUp .25s ease;
+        }
+        @keyframes slideUp{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+        .settings-modal .form-input{
+            width:100%;
+            padding:.625rem .875rem;
+            border:1.5px solid var(--border2);
+            border-radius:.625rem;
+            font-size:.875rem;
+            transition:all .2s;
+            font-family:inherit;
+            background:var(--input-bg);
+            color:var(--text1);
+        }
+        .settings-modal .form-input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-bg)}
+        .settings-modal .form-input:read-only{background:var(--surface3);color:var(--text3);cursor:not-allowed}
+        .settings-modal label{color:var(--text2)}
+
+        /* ═══ THEME TOGGLE BUTTON ═══ */
+        .theme-btn{
+            width:36px;height:36px;border-radius:.75rem;
+            border:1px solid var(--border2);
+            background:var(--surface3);
+            color:var(--text2);
+            display:flex;align-items:center;justify-content:center;
+            cursor:pointer;transition:all .2s;
+            font-size:.875rem;
+        }
+        .theme-btn:hover{background:var(--accent-bg);color:var(--accent);border-color:var(--accent)}
+
+        /* ═══ NOTIFICATION ITEMS ═══ */
+        .notif-item{
+            background:var(--notif-bg);
+            border:1px solid var(--notif-border);
+            border-radius:.875rem;
+            padding:.875rem 1rem;
+            display:flex;gap:.75rem;
+        }
+        .notif-item .notif-icon{color:var(--notif-icon)}
+        .notif-item .notif-text{color:var(--text1)}
+        .notif-item .notif-date{color:var(--text3)}
+
+        /* ═══ STATUS BADGES ═══ */
+        .badge-green{background:rgba(22,163,74,.12);color:#15803d}
+        .badge-amber{background:rgba(245,158,11,.12);color:#b45309}
+        .badge-red{background:rgba(239,68,68,.12);color:#dc2626}
+        .badge-blue{background:rgba(59,130,246,.12);color:#1d4ed8}
+        body.dark .badge-green{background:rgba(34,197,94,.15);color:#4ade80}
+        body.dark .badge-amber{background:rgba(251,191,36,.15);color:#fbbf24}
+        body.dark .badge-red{background:rgba(248,113,113,.15);color:#f87171}
+        body.dark .badge-blue{background:rgba(96,165,250,.15);color:#60a5fa}
+
+        /* ═══ MOBILE SIDEBAR ═══ */
+        @media(max-width:1023px){
+            .dash-sidebar{
+                display:none!important;
             }
-        };
+            .dash-sidebar.mobile-open{
+                display:flex!important;
+                position:fixed;top:0;left:0;width:82vw;max-width:300px;
+                height:100vh;z-index:999;
+                box-shadow:4px 0 32px var(--shadow2);
+                animation:slideInLeft .22s ease;
+                overflow-y:auto;
+                border-right:1px solid var(--border);
+            }
+            @keyframes slideInLeft{from{transform:translateX(-100%);opacity:.5}to{transform:translateX(0);opacity:1}}
+            .sidebar-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:998;backdrop-filter:blur(2px)}
+            .sidebar-backdrop.show{display:block}
+        }
 
-    </script>
-<!-- ═══ FOOTER ════════════════════════════════════════════════ -->
-<footer class="cc-footer">
-    <div class="cc-footer-container">
-        <div class="cc-footer-grid">
-            <div class="cc-footer-brand">
-                <div class="flex items-center gap-2 mb-4">
-                    <img src="https://coursecornerkenya.com/assets/images/logo.png" class="h-10 w-auto" alt="Course Corner logo" />
-                    <div class="flex flex-col leading-none">
-                        <span class="text-white font-extrabold text-lg">Course Corner</span>
-                        <span class="text-blue-400 font-bold text-[0.6rem] uppercase tracking-wider">Learn Portal</span>
+        /* ═══ MOBILE BOTTOM NAV ═══ */
+        .mobile-bottom-nav{
+            display:none;
+            position:fixed;bottom:0;left:0;right:0;
+            height:calc(56px + env(safe-area-inset-bottom));
+            padding-bottom:env(safe-area-inset-bottom);
+            background:var(--surface);
+            border-top:1px solid var(--border);
+            z-index:90;
+            align-items:stretch;
+            box-shadow:0 -4px 20px var(--shadow);
+        }
+        @media(max-width:1023px){
+            .mobile-bottom-nav{display:flex!important}
+            .main-content-area{padding-bottom:calc(64px + env(safe-area-inset-bottom))!important;}
+            footer.bot-bar{display:none}
+        }
+        .bnav-item{
+            flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+            gap:3px;padding:.4rem 0;
+            color:var(--text3);font-size:.5625rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;
+            cursor:pointer;border:none;background:transparent;
+            transition:color .18s;
+            -webkit-tap-highlight-color:transparent;
+            position:relative;
+        }
+        .bnav-item i{font-size:1.125rem;transition:transform .18s}
+        .bnav-item.active{color:var(--accent)}
+        .bnav-item.active i{transform:translateY(-1px)}
+        .bnav-item.active::before{
+            content:'';
+            position:absolute;top:0;left:50%;transform:translateX(-50%);
+            width:32px;height:3px;border-radius:0 0 4px 4px;
+            background:var(--accent);
+        }
+        .bnav-badge{
+            position:absolute;top:4px;
+            background:#ef4444;color:white;
+            font-size:.45rem;font-weight:800;
+            padding:.1rem .3rem;border-radius:99px;
+            min-width:14px;text-align:center;
+            line-height:1.4;
+        }
+
+        /* ═══ MOBILE HEADER ═══ */
+        @media(max-width:639px){
+            .main-page-title{font-size:1rem!important}
+            .top-bar-inner{padding:.625rem 1rem!important}
+        }
+
+        /* ═══ DARK MODE OVERRIDES for Tailwind-generated content ═══ */
+        body.dark .bg-slate-50{background:var(--surface3)!important}
+        body.dark .bg-slate-100{background:var(--surface3)!important}
+        body.dark .text-slate-900{color:var(--text1)!important}
+        body.dark .text-slate-800{color:var(--text1)!important}
+        body.dark .text-slate-700{color:var(--text1)!important}
+        body.dark .text-slate-600{color:var(--text2)!important}
+        body.dark .text-slate-500{color:var(--text2)!important}
+        body.dark .text-slate-400{color:var(--text3)!important}
+        body.dark .text-slate-300{color:var(--text3)!important}
+        body.dark .text-slate-200{color:#334155!important;opacity:1!important}
+        body.dark .border-slate-100,.dark .border-b,.dark .divide-slate-50>*{border-color:var(--border)!important}
+        body.dark .bg-slate-900{background:#0a0f1e!important}
+        body.dark .text-white{color:#f1f5f9!important}
+        body.dark .hover\:bg-slate-50:hover,.dark .hover\:bg-slate-100:hover{background:var(--surface3)!important}
+        body.dark .bg-blue-50\/80,.dark .bg-blue-50{background:var(--notif-bg)!important;border-color:var(--notif-border)!important}
+        body.dark .text-blue-700,.dark .text-blue-800,.dark .text-blue-900{color:var(--notif-text)!important}
+        body.dark .text-blue-500{color:var(--notif-icon)!important}
+        body.dark .bg-green-100{background:rgba(34,197,94,.15)!important}
+        body.dark .text-green-700{color:#4ade80!important}
+        body.dark .bg-amber-100{background:rgba(251,191,36,.15)!important}
+        body.dark .text-amber-600{color:#fbbf24!important}
+        body.dark .bg-red-100{background:rgba(248,113,113,.15)!important}
+        body.dark .text-red-700{color:#f87171!important}
+        body.dark .bg-purple-50{background:var(--purple-soft)!important}
+        body.dark .text-blue-600{color:#60a5fa!important}
+        body.dark .bg-\[\#16a34a\]\/10{background:var(--accent-bg)!important}
+        body.dark .border-blue-100\/50{border-color:var(--notif-border)!important}
+        body.dark .border-blue-100\/60{border-color:var(--notif-border)!important}
+        body.dark input,body.dark select,body.dark textarea{
+            background:var(--input-bg)!important;
+            color:var(--text1)!important;
+            border-color:var(--border2)!important;
+        }
+        body.dark .animate-pulse .bg-slate-100{background:var(--surface3)!important}
+        body.dark .animate-pulse .bg-slate-50{background:var(--surface2)!important}
+    </style>
+</head>
+<body id="appBody">
+
+<div class="min-h-screen flex">
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="closeSidebar()"></div>
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="dash-sidebar w-64 min-h-screen flex flex-col p-5 flex-shrink-0" id="dashSidebar">
+        <a href="../../index.html" class="flex items-center gap-2.5 no-underline mb-8 px-1">
+            <img src="https://coursecornerkenya.com/assets/images/logo.png" alt="Logo" class="h-9 w-auto">
+            <div class="flex flex-col leading-tight">
+                <span class="text-base font-extrabold tracking-tight" style="color:var(--accent)">Course Corner</span>
+                <span class="text-[0.55rem] font-bold uppercase tracking-widest" style="color:var(--text3)">Learn Portal</span>
+            </div>
+        </a>
+        <nav class="space-y-1 flex-grow">
+            <a href="#" onclick="switchTab('overview');return false" id="nav-overview" class="sidebar-link active flex items-center gap-3 p-3 font-semibold text-sm">
+                <i class="fas fa-th-large w-5 text-center"></i> Overview
+            </a>
+            <a href="#" onclick="switchTab('learning');return false" id="nav-learning" class="sidebar-link flex items-center gap-3 p-3 font-medium text-sm">
+                <i class="fas fa-book-reader w-5 text-center"></i> My Learning
+            </a>
+            <a href="#" onclick="switchTab('certs');return false" id="nav-certs" class="sidebar-link flex items-center gap-3 p-3 font-medium text-sm">
+                <i class="fas fa-certificate w-5 text-center"></i> My Certs
+            </a>
+            <a href="#" onclick="switchTab('payments');return false" id="nav-payments" class="sidebar-link flex items-center gap-3 p-3 font-medium text-sm">
+                <i class="fas fa-receipt w-5 text-center"></i> Payments
+            </a>
+            <a href="#" onclick="switchTab('notifications');return false" id="nav-notifications" class="sidebar-link flex items-center gap-3 p-3 font-medium text-sm">
+                <i class="fas fa-bell w-5 text-center"></i> Notifications
+                <span id="notifBadge" class="ml-auto text-[0.55rem] font-bold bg-red-500 text-white rounded-full px-1.5 py-0.5 hidden">0</span>
+            </a>
+            <div class="my-5" style="border-top:1px solid var(--border)"></div>
+            <a href="courses.html" class="sidebar-link flex items-center gap-3 p-3 font-medium text-sm">
+                <i class="fas fa-compass w-5 text-center"></i> Browse Courses
+            </a>
+            <a href="payment.html" class="sidebar-link flex items-center gap-3 p-3 font-medium text-sm">
+                <i class="fas fa-credit-card w-5 text-center"></i> Make Payment
+            </a>
+            <a href="../../index.html" class="sidebar-link flex items-center gap-3 p-3 font-medium text-sm" style="opacity:.6">
+                <i class="fas fa-arrow-left w-5 text-center"></i> Back to Portal
+            </a>
+        </nav>
+    </aside>
+
+    <!-- ═══ MAIN ═══ -->
+    <main class="flex-grow flex flex-col min-h-screen">
+        <!-- Top Bar -->
+        <header class="top-bar px-4 md:px-8 py-0 flex items-center justify-between sticky top-0 z-50 min-h-[56px]">
+            <div class="flex items-center gap-2.5 top-bar-inner">
+                <button onclick="toggleSidebar()" class="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center transition-colors" style="background:var(--surface3);color:var(--text2)">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div>
+                    <h1 class="main-page-title font-extrabold leading-none" style="color:var(--text1)">Dashboard</h1>
+                    <p class="text-[0.68rem] font-medium mt-0.5" style="color:var(--text3)">Welcome back, <span id="topBarName" class="font-bold" style="color:var(--accent)">Student</span></p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1.5">
+                <button class="theme-btn" onclick="toggleDarkMode()" id="themeBtn" title="Toggle dark/light mode">
+                    <i class="fas fa-moon" id="themeIcon"></i>
+                </button>
+                <button onclick="openSettings()" class="theme-btn" title="Settings">
+                    <i class="fas fa-cog"></i>
+                </button>
+                <button onclick="handleSignOut()" class="flex items-center gap-1.5 px-2.5 py-2 rounded-lg font-semibold transition-all text-sm" style="color:#ef4444" title="Sign Out">
+                    <i class="fas fa-sign-out-alt"></i><span class="hidden sm:inline">Sign Out</span>
+                </button>
+                <div id="userAvatar" class="w-9 h-9 rounded-lg bg-gradient-to-br from-[#16a34a] to-[#0ea5e9] text-white flex items-center justify-center font-bold text-sm cursor-pointer" onclick="openSettings()">?</div>
+            </div>
+        </header>
+
+        <div class="flex-grow p-3 sm:p-4 md:p-6 lg:p-8 max-w-[1200px] w-full mx-auto main-content-area">
+
+            <!-- ═══ OVERVIEW TAB ═══ -->
+            <div id="tab-overview">
+        <!-- STAT CARDS — 2-up on mobile, 4-up on desktop -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mb-5">
+                    <div class="card stat-card">
+                        <div class="stat-icon bg-[#16a34a]/10 text-[#16a34a]"><i class="fas fa-scroll"></i></div>
+                        <div><p class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider">Courses</p><p id="enrolledCount" class="text-xl font-extrabold text-slate-900">0</p></div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon bg-blue-500/10 text-blue-600"><i class="fas fa-chart-line"></i></div>
+                        <div><p class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider">Progress</p><p id="avgProgress" class="text-xl font-extrabold text-slate-900">0%</p></div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon bg-amber-500/10 text-amber-600"><i class="fas fa-wallet"></i></div>
+                        <div><p class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider">Paid</p><p id="paidAmt" class="text-xl font-extrabold text-slate-900">KES 0</p></div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-icon bg-purple-500/10 text-purple-600"><i class="fas fa-medal"></i></div>
+                        <div><p class="text-[0.65rem] font-bold text-slate-400 uppercase tracking-wider">Certs</p><p id="certCount" class="text-xl font-extrabold text-slate-900">0</p></div>
                     </div>
                 </div>
-                <p>Empowering Kenyan students to gain practical digital skills for the modern economy.</p>
-                <div class="cc-social-links flex gap-3 mt-6">
-                    <a href="#" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#16a34a] transition-all"><i class="fab fa-whatsapp"></i></a>
-                    <a href="#" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#16a34a] transition-all"><i class="fab fa-tiktok"></i></a>
-                    <a href="#" class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white hover:bg-[#16a34a] transition-all"><i class="fab fa-twitter"></i></a>
+
+                <div class="mb-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-base font-bold text-slate-900">My Courses</h2>
+                        <a href="courses.html" class="text-xs font-bold text-[#16a34a] hover:underline no-underline">Browse All</a>
+                    </div>
+                    <div id="coursesList" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        <div class="card p-5 animate-pulse"><div class="h-3 w-1/3 bg-slate-100 rounded mb-3"></div><div class="h-6 w-full bg-slate-50 rounded"></div></div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                    <div class="card p-5">
+                        <h3 class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2"><i class="fas fa-bell text-[#16a34a]"></i> Notices</h3>
+                        <div id="noticesArea" class="space-y-3">
+                            <div class="flex gap-3 p-3 rounded-lg bg-blue-50/80 border border-blue-100/50">
+                                <div class="text-blue-500 mt-0.5 text-sm"><i class="fas fa-spinner fa-spin"></i></div>
+                                <div><p class="text-xs text-blue-700">Loading notices...</p></div>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-slate-300 group-hover:text-[#16a34a] transition-colors"></i>
+                    </div>
+
+                    <!-- Account Settings trigger -->
+                    <div class="card p-5 flex items-center justify-between cursor-pointer hover:border-[#16a34a]/30 transition-all group" onclick="openSettings()">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-[#16a34a]/10 flex items-center justify-center text-[#16a34a]">
+                                <i class="fas fa-gear"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-slate-800">Account Settings</p>
+                                <p class="text-xs text-slate-400">Update profile, phone & billing</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-slate-300 group-hover:text-[#16a34a] transition-colors"></i>
+                    </div>
+                    <div class="card p-5 bg-slate-900 text-white border-0 relative overflow-hidden">
+                        <div class="relative z-10">
+                            <h3 class="font-bold text-sm mb-1">Need Help?</h3>
+                            <p class="text-slate-400 text-xs mb-4">Our team is online 8AM – 6PM daily.</p>
+                            <a href="https://wa.me/254718744780" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-[#16a34a] hover:bg-[#15803d] rounded-lg font-bold text-sm transition-all no-underline text-white"><i class="fab fa-whatsapp"></i> Chat Support</a>
+                        </div>
+                        <i class="fab fa-whatsapp absolute -bottom-3 -right-3 text-6xl opacity-10 rotate-12"></i>
+                    </div>
                 </div>
             </div>
 
-            <div class="cc-footer-links">
-                <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Learn Portal</h4>
-                <ul class="space-y-3">
-                    <li><a href="../../index.html" class="text-gray-400 hover:text-white transition-all text-sm">Home</a></li>
-                    <li><a href="../../index.html#courses" class="text-gray-400 hover:text-white transition-all text-sm">Our Courses</a></li>
-                    <li><a href="../../apply.html" class="text-gray-400 hover:text-white transition-all text-sm">Apply Now</a></li>
-                    <li><a href="dashboard.html" class="text-gray-400 hover:text-white transition-all text-sm">Student Dashboard</a></li>
-                    <li><a href="whats-new.html" class="text-gray-400 hover:text-white transition-all text-sm">What's New</a></li>
-                </ul>
+            <!-- ═══ MY LEARNING TAB ═══ -->
+            <div id="tab-learning" class="hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-bold text-slate-900">My Learning Progress</h2>
+                </div>
+                <div id="learningCourseSelector" class="mb-6 hidden">
+                    <div class="flex gap-2 flex-wrap" id="learningCourseTabs"></div>
+                </div>
+                <div id="learningContent" class="space-y-4">
+                    <div class="card p-6 text-center">
+                        <i class="fas fa-book-open text-3xl text-slate-200 mb-3"></i>
+                        <p class="text-slate-400 text-sm font-medium">No courses enrolled yet.</p>
+                        <a href="apply.html" class="inline-block mt-3 text-[#16a34a] font-bold text-sm hover:underline no-underline">Apply for a course</a>
+                    </div>
+                </div>
             </div>
 
-            <div class="cc-footer-links">
-                <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Main Resources</h4>
-                <ul class="space-y-3">
-                    <li><a href="https://coursecornerkenya.com" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Main Site</a></li>
-                    <li><a href="https://coursecornerkenya.com/pages/calculator.html" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Cluster Calculator</a></li>
-                    <li><a href="https://coursecornerkenya.com/pages/privacy-policy.html" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Privacy Policy</a></li>
-                    <li><a href="https://coursecornerkenya.com/pages/terms-of-service.html" onclick="return confirmExternal(event,this)" class="text-gray-400 hover:text-white transition-all text-sm">Terms of Service</a></li>
-                </ul>
+            <!-- ═══ MY CERTS TAB ═══ -->
+            <div id="tab-certs" class="hidden">
+                <h2 class="text-lg font-bold text-slate-900 mb-6">My Certificates</h2>
+                <div id="certsContent">
+                    <div class="card p-8 text-center">
+                        <div class="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center mx-auto mb-4"><i class="fas fa-certificate text-2xl text-purple-400"></i></div>
+                        <h3 class="text-base font-bold text-slate-900 mb-1">No Certificates Yet</h3>
+                        <p class="text-sm text-slate-400 max-w-sm mx-auto">Complete a course to earn your verified certificate. Keep learning!</p>
+                    </div>
+                </div>
             </div>
 
-            <div class="cc-footer-contact">
-                <h4 class="text-white font-bold uppercase tracking-widest text-xs mb-6">Contact Support</h4>
-                <ul class="space-y-4">
-                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-envelope text-[#16a34a]"></i> info.coursecorner@gmail.com</li>
-                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-phone text-[#16a34a]"></i> 0718 744780</li>
-                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-phone text-[#16a34a]"></i> 0741 739262</li>
-                    <li class="flex items-center gap-3 text-gray-400 text-sm"><i class="fas fa-map-marker-alt text-[#16a34a]"></i> Nairobi, Kenya</li>
-                </ul>
+            <!-- ═══ PAYMENTS TAB ═══ -->
+            <div id="tab-payments" class="hidden">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-lg font-bold text-slate-900">Payment History</h2>
+                    <a href="payment.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#16a34a] text-white rounded-lg text-xs font-bold hover:bg-[#15803d] transition-all no-underline"><i class="fas fa-plus"></i> New Payment</a>
+                </div>
+                <!-- Balance summary bar -->
+                <div id="balanceSummaryBar" class="hidden mb-4 card p-4 flex flex-wrap gap-4 items-center">
+                    <div class="flex-1 min-w-[120px]">
+                        <p class="text-[0.55rem] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Total Course Fee</p>
+                        <p id="balTotalFee" class="text-sm font-extrabold text-slate-800">KES 0</p>
+                    </div>
+                    <div class="flex-1 min-w-[120px]">
+                        <p class="text-[0.55rem] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Total Paid</p>
+                        <p id="balTotalPaid" class="text-sm font-extrabold text-green-600">KES 0</p>
+                    </div>
+                    <div class="flex-1 min-w-[120px]">
+                        <p class="text-[0.55rem] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Balance Remaining</p>
+                        <p id="balRemaining" class="text-sm font-extrabold text-amber-600">KES 0</p>
+                    </div>
+                </div>
+                <div class="card overflow-hidden">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b border-slate-100">
+                            <tr>
+                                <th class="p-3 text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">Description</th>
+                                <th class="p-3 text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">Amount</th>
+                                <th class="p-3 text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">Date</th>
+                                <th class="p-3 text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest">M-Pesa Code</th>
+                                <th class="p-3 text-[0.6rem] font-bold text-slate-400 uppercase tracking-widest text-right">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentsList" class="divide-y divide-slate-50">
+                            <tr><td colspan="5" class="p-8 text-center text-slate-400 italic text-sm">Loading payments...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- ═══ NOTIFICATIONS TAB ═══ -->
+            <div id="tab-notifications" class="hidden">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-lg font-bold text-slate-900">Notifications</h2>
+                    <span id="notifUnreadCount" class="text-xs font-bold text-[#16a34a] hidden"></span>
+                </div>
+                <div id="notificationsContent" class="space-y-3">
+                    <div class="card p-6 text-center">
+                        <i class="fas fa-spinner fa-spin text-2xl text-slate-300 mb-3"></i>
+                        <p class="text-slate-400 text-sm">Loading notifications...</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="cc-footer-bottom border-t border-white/5 pt-8 mt-8 text-center">
-            <p class="text-gray-500 text-sm">&copy; 2026 Course Corner. All rights reserved. &nbsp;&middot;&nbsp; Empowering Students Through Quality Education</p>
+        <footer class="bot-bar mt-auto py-4 px-6">
+            <div class="max-w-[1200px] mx-auto flex flex-col md:flex-row justify-between items-center gap-3">
+                <div class="flex items-center gap-2">
+                    <img src="https://coursecornerkenya.com/assets/images/logo.png" class="h-5 w-auto" alt="Logo">
+                    <p class="text-[0.65rem] font-bold" style="color:var(--text3)">&copy; 2026 Course Corner Learn</p>
+                </div>
+                <div class="flex gap-5">
+                    <a href="../../index.html" class="text-[0.65rem] font-bold transition-colors no-underline" style="color:var(--text3)">Home</a>
+                    <a href="courses.html" class="text-[0.65rem] font-bold transition-colors no-underline" style="color:var(--text3)">Courses</a>
+                    <a href="https://coursecornerkenya.com/pages/privacy-policy.html" class="text-[0.65rem] font-bold transition-colors no-underline" style="color:var(--text3)">Privacy</a>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- ═══ MOBILE BOTTOM NAV ═══ -->
+    <nav class="mobile-bottom-nav" id="mobileBottomNav">
+        <button class="bnav-item active" id="bnav-overview" onclick="switchTab('overview')" aria-label="Overview">
+            <i class="fas fa-th-large"></i><span>Home</span>
+        </button>
+        <button class="bnav-item" id="bnav-learning" onclick="switchTab('learning')" aria-label="Learning">
+            <i class="fas fa-book-reader"></i><span>Learning</span>
+        </button>
+        <button class="bnav-item" id="bnav-payments" onclick="switchTab('payments')" aria-label="Payments">
+            <i class="fas fa-receipt"></i><span>Payments</span>
+        </button>
+        <button class="bnav-item" id="bnav-notifications" onclick="switchTab('notifications')" aria-label="Notifications">
+            <i class="fas fa-bell"></i><span>Alerts</span>
+            <span id="bnavBadge" class="bnav-badge hidden"></span>
+        </button>
+        <button class="bnav-item" id="bnav-certs" onclick="switchTab('certs')" aria-label="Certificates">
+            <i class="fas fa-certificate"></i><span>Certs</span>
+        </button>
+    </nav>
+</div>
+
+<!-- ═══ SETTINGS MODAL ═══ -->
+<div id="settingsOverlay" class="settings-overlay" onclick="if(event.target===this)closeSettings()">
+    <div class="settings-modal">
+        <div class="p-5 flex items-center justify-between" style="border-bottom:1px solid var(--border)">
+            <h2 class="text-base font-extrabold flex items-center gap-2" style="color:var(--text1)"><i class="fas fa-cog" style="color:var(--accent)"></i> Settings</h2>
+            <button onclick="closeSettings()" class="w-8 h-8 rounded-lg flex items-center justify-center transition-colors" style="background:var(--surface3);color:var(--text2)"><i class="fas fa-times"></i></button>
         </div>
+        <form id="settingsForm" class="p-5 space-y-4">
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Display Name</label>
+                <input id="setName" type="text" class="form-input" placeholder="Your name">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Phone / WhatsApp</label>
+                <input id="setPhone" type="tel" class="form-input" placeholder="0712 345 678">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Location</label>
+                <input id="setLocation" type="text" class="form-input" placeholder="e.g. Nairobi">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Do you have a laptop?</label>
+                <div class="flex gap-5 mt-1">
+                    <label class="flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-700">
+                        <input type="radio" id="setLaptopYes" name="hasLaptop" value="yes" class="accent-[#16a34a] w-4 h-4"> Yes
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-700">
+                        <input type="radio" id="setLaptopNo" name="hasLaptop" value="no" class="accent-[#16a34a] w-4 h-4"> No
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer text-sm font-semibold text-slate-400">
+                        <input type="radio" id="setLaptopNone" name="hasLaptop" value="" checked class="w-4 h-4"> Prefer not to say
+                    </label>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-slate-500 mb-1.5 uppercase tracking-wider">Email (read only)</label>
+                <input id="setEmail" type="email" class="form-input bg-slate-50 text-slate-400 cursor-not-allowed" readonly>
+            </div>
+            <button type="submit" class="w-full py-3 bg-[#16a34a] text-white rounded-lg font-bold text-sm hover:bg-[#15803d] transition-all flex items-center justify-center gap-2">
+                <i class="fas fa-check"></i> Save Changes
+            </button>
+        </form>
     </div>
-</footer>
+</div>
 
+<!-- ═══ SCRIPTS ═══ -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { getFirestore, collection, query, where, getDocs, orderBy, limit, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+    const app = initializeApp({
+        apiKey:"AIzaSyCt_mM9mwRg0QJpHC4haH7ZsLspVNJI6XM",
+        authDomain:"course-corner.firebaseapp.com",
+        projectId:"course-corner",
+        storageBucket:"course-corner.firebasestorage.app",
+        messagingSenderId:"961706784572",
+        appId:"1:961706784572:web:7aa6c24946570ffda59039"
+    });
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUser = null;
+    let allCourses = [];
+    let userApps = [];
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUser = user;
+            const name = user.displayName || user.email.split('@')[0];
+            document.getElementById('topBarName').textContent = name;
+            document.getElementById('userAvatar').textContent = name[0].toUpperCase();
+            try {
+                const profileSnap = await getDoc(doc(db, 'learn_users', user.uid));
+                if (profileSnap.exists()) {
+                    const profile = profileSnap.data();
+                    document.getElementById('setName').value = profile.name || user.displayName || '';
+                    document.getElementById('setPhone').value = profile.phone || '';
+                    document.getElementById('setLocation').value = profile.location || '';
+                    // hasLaptop
+                    const lv = profile.hasLaptop;
+                    if (lv === 'yes' || lv === true)   document.getElementById('setLaptopYes').checked  = true;
+                    else if (lv === 'no' || lv === false) document.getElementById('setLaptopNo').checked = true;
+                    else document.getElementById('setLaptopNone').checked = true;
+                }
+            } catch(e) { console.log('Profile load:', e); }
+            document.getElementById('setEmail').value = user.email;
+            if (!document.getElementById('setName').value) document.getElementById('setName').value = user.displayName || '';
+            await loadDashboardData(user.email);
+        } else {
+            window.location.href = '../../index.html';
+        }
+    });
+
+    async function loadDashboardData(email) {
+        try {
+            const resp = await fetch('../../data/courses.json');
+            allCourses = await resp.json();
+            const q = query(collection(db, "learnApplications"), where("email", "==", email));
+            const snap = await getDocs(q);
+            userApps = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            document.getElementById('enrolledCount').textContent = userApps.length;
+            renderOverviewCourses();
+            await loadPayments(email);
+            renderLearningTab();
+            await loadNotifications();
+        } catch (err) {
+            console.error("Dashboard load error:", err);
+        }
+    }
+
+    function renderOverviewCourses() {
+        const list = document.getElementById('coursesList');
+        if (userApps.length === 0) {
+            list.innerHTML = '<div class="card p-6 text-center col-span-full"><i class="fas fa-book-open text-2xl text-slate-200 mb-2"></i><p class="text-slate-400 text-sm font-medium">No courses enrolled yet.</p><a href="apply.html" class="text-[#16a34a] font-bold text-xs hover:underline mt-2 inline-block no-underline">Apply Now</a></div>';
+            return;
+        }
+        list.innerHTML = userApps.map(a => {
+            const c = allCourses.find(x => x.id === a.courseId) || { title: a.courseTitle || a.courseId, modulesCount: 0, duration: '' };
+            const sCls = a.status === 'approved' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700';
+            return `<div class="card p-4 flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                    <span class="text-[0.6rem] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full ${sCls}">${a.status || 'Pending'}</span>
+                    <span class="text-[0.6rem] text-slate-400">${formatDate(a.timestamp)}</span>
+                </div>
+                <h3 class="text-sm font-bold text-slate-900">${c.title}</h3>
+                <div class="flex items-center justify-between text-[0.65rem]">
+                    <span class="text-slate-400 font-semibold">${c.modulesCount} modules · ${c.duration}</span>
+                    <span class="text-[#16a34a] font-bold">10%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" style="width:10%"></div></div>
+                <div class="flex gap-2 mt-1">
+                    <a href="course-detail.html?id=${a.courseId}" class="flex-1 text-center py-2 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-lg font-bold text-xs transition-all no-underline">Syllabus</a>
+                    <button onclick="switchTab('learning')" class="flex-1 py-2 bg-[#16a34a] text-white rounded-lg font-bold text-xs hover:bg-[#15803d] transition-all">My Progress</button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function renderLearningTab() {
+        const content = document.getElementById('learningContent');
+        const selector = document.getElementById('learningCourseSelector');
+        const tabs = document.getElementById('learningCourseTabs');
+        if (userApps.length === 0) {
+            content.innerHTML = '<div class="card p-8 text-center"><i class="fas fa-book-open text-3xl text-slate-200 mb-3"></i><p class="text-slate-400 text-sm font-medium">No courses enrolled yet.</p><a href="apply.html" class="inline-block mt-3 text-[#16a34a] font-bold text-sm hover:underline no-underline">Apply for a course</a></div>';
+            return;
+        }
+        if (userApps.length > 1) {
+            selector.classList.remove('hidden');
+            tabs.innerHTML = userApps.map((a, i) => {
+                const c = allCourses.find(x => x.id === a.courseId) || { title: a.courseTitle || a.courseId };
+                return `<button class="tab-btn ${i === 0 ? 'active' : ''}" onclick="showLearningCourse(${i}, this)">${c.title}</button>`;
+            }).join('');
+        }
+        window.showLearningCourse(0);
+    }
+
+    window.showLearningCourse = (index, btn) => {
+        if (btn) { document.querySelectorAll('#learningCourseTabs .tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+        const a = userApps[index];
+        const c = allCourses.find(x => x.id === a.courseId) || { title: a.courseTitle || a.courseId, modulesCount: 0, duration: '', syllabus: [] };
+        const content = document.getElementById('learningContent');
+        const totalMod = c.modulesCount || 1;
+        const doneMod = Math.min(1, totalMod);
+        const pct = Math.round((doneMod / totalMod) * 100);
+        const enrolled = a.timestamp ? new Date(a.timestamp.seconds ? a.timestamp.seconds * 1000 : a.timestamp) : new Date();
+        const wk = Math.max(1, Math.ceil((Date.now() - enrolled.getTime()) / (7 * 24 * 60 * 60 * 1000)));
+        const totalWk = parseInt(c.duration) || 4;
+
+        content.innerHTML = `
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+                <div class="card p-3 text-center"><p class="text-[0.6rem] font-bold text-slate-400 uppercase mb-1">Current Week</p><p class="text-lg font-extrabold text-[#16a34a]">${Math.min(wk, totalWk)} <span class="text-xs font-bold text-slate-400">/ ${totalWk}</span></p></div>
+                <div class="card p-3 text-center"><p class="text-[0.6rem] font-bold text-slate-400 uppercase mb-1">Covered</p><p class="text-lg font-extrabold text-blue-600">${doneMod} <span class="text-xs font-bold text-slate-400">modules</span></p></div>
+                <div class="card p-3 text-center"><p class="text-[0.6rem] font-bold text-slate-400 uppercase mb-1">Remaining</p><p class="text-lg font-extrabold text-amber-600">${totalMod - doneMod} <span class="text-xs font-bold text-slate-400">modules</span></p></div>
+                <div class="card p-3 text-center"><p class="text-[0.6rem] font-bold text-slate-400 uppercase mb-1">Overall</p><p class="text-lg font-extrabold text-slate-900">${pct}%</p></div>
+            </div>
+            <div class="card p-5 mb-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-sm font-bold text-slate-900">${c.title}</h3>
+                    <span class="text-xs font-extrabold text-[#16a34a]">${pct}% Complete</span>
+                </div>
+                <div class="progress-bar" style="height:8px"><div class="progress-fill" style="width:${pct}%"></div></div>
+                <p class="text-[0.65rem] text-slate-400 mt-2">${doneMod} of ${totalMod} modules completed · Week ${Math.min(wk, totalWk)} of ${totalWk}</p>
+            </div>
+            <div class="card overflow-hidden">
+                <div class="p-4 border-b border-slate-50 bg-slate-50/50"><h3 class="text-sm font-bold text-slate-900 flex items-center gap-2"><i class="fas fa-layer-group text-[#16a34a]"></i> Syllabus & Module Progress</h3></div>
+                <div class="p-4 space-y-1">${renderModules(c, doneMod)}</div>
+            </div>
+            <div class="card overflow-hidden mt-4">
+                <div class="p-4 border-b border-slate-50 bg-slate-50/50 flex items-center justify-between"><h3 class="text-sm font-bold text-slate-900 flex items-center gap-2"><i class="fas fa-clipboard-check text-[#16a34a]"></i> Assignments</h3></div>
+                <div class="p-4" id="assignmentsArea">
+                    <div class="text-center py-6"><i class="fas fa-clipboard text-2xl text-slate-200 mb-2"></i><p class="text-sm text-slate-400">No assignments submitted yet.</p><p class="text-[0.65rem] text-slate-300 mt-1">Assignments will appear here as you progress through modules.</p></div>
+                </div>
+            </div>`;
+
+        document.getElementById('avgProgress').textContent = pct + '%';
+        loadAssignments(a.courseId);
+    };
+
+    function renderModules(course, doneCount) {
+        if (!course.syllabus || !course.syllabus.length) return '<p class="text-sm text-slate-400 text-center py-4">Syllabus details not available yet.</p>';
+        let idx = 0;
+        return course.syllabus.map(s => {
+            const items = s.topics.map(t => {
+                idx++;
+                let state = 'locked', icon = 'fas fa-lock', label = '';
+                if (idx <= doneCount) { state = 'completed'; icon = 'fas fa-check'; label = '<span class="ml-auto text-[0.6rem] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded">Done</span>'; }
+                else if (idx === doneCount + 1) { state = 'current'; icon = 'fas fa-play'; label = '<span class="ml-auto text-[0.6rem] font-bold text-[#16a34a] bg-green-50 px-2 py-0.5 rounded animate-pulse">In Progress</span>'; }
+                return `<div class="module-item ${state}"><div class="mod-dot"><i class="${icon}"></i></div><span class="text-sm ${state === 'locked' ? 'text-slate-400' : 'text-slate-700'} font-medium">${t}</span>${label}</div>`;
+            }).join('');
+            return `<div class="mb-3"><p class="text-[0.65rem] font-bold text-[#16a34a] uppercase tracking-wider mb-1 px-1">${s.week}: ${s.title}</p>${items}</div>`;
+        }).join('');
+    }
+
+    async function loadAssignments(courseId) {
+        if (!currentUser) return;
+        try {
+            const q = query(collection(db, "learnAssignments"), where("userId", "==", currentUser.uid), where("courseId", "==", courseId), orderBy("submittedAt", "desc"));
+            const snap = await getDocs(q);
+            const assignments = snap.docs.map(d => d.data());
+            const area = document.getElementById('assignmentsArea');
+            if (assignments.length === 0) return;
+            area.innerHTML = assignments.map(a => `
+                <div class="flex items-center gap-3 p-3 rounded-lg border border-slate-100 mb-2">
+                    <div class="w-9 h-9 rounded-lg ${a.grade ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'} flex items-center justify-center flex-shrink-0"><i class="fas ${a.grade ? 'fa-check-circle' : 'fa-clock'}"></i></div>
+                    <div class="flex-grow min-w-0"><p class="text-sm font-bold text-slate-800 truncate">${a.title || 'Assignment'}</p><p class="text-[0.65rem] text-slate-400">Submitted ${a.submittedAt ? new Date(a.submittedAt.seconds * 1000).toLocaleDateString() : 'N/A'}</p></div>
+                    <div class="text-right flex-shrink-0">${a.grade ? `<span class="text-sm font-extrabold text-green-600">${a.grade}</span><p class="text-[0.6rem] text-slate-400">Graded</p>` : '<span class="text-[0.65rem] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded">Pending Review</span>'}</div>
+                </div>`).join('');
+        } catch(e) { console.log('Assignments:', e.message); }
+    }
+
+    async function loadPayments(email) {
+        const pList = document.getElementById('paymentsList');
+        try {
+            // Fetch from both collections
+            let raw = [];
+            try {
+                const pq = query(collection(db, "learnPayments"), where("email", "==", email), orderBy("timestamp", "desc"), limit(20));
+                const psnap = await getDocs(pq);
+                raw = psnap.docs.map(d => d.data());
+            } catch(e) { console.log('learnPayments fetch:', e.message); }
+            try {
+                const tq = query(collection(db, "transactions"), where("email", "==", email), orderBy("completedAt", "desc"), limit(20));
+                const tsnap = await getDocs(tq);
+                // Merge, avoid duplicates by checkoutRequestId
+                const existing = new Set(raw.map(p => p.checkoutRequestId).filter(Boolean));
+                tsnap.docs.forEach(d => {
+                    const data = d.data();
+                    if (!data.checkoutRequestId || !existing.has(data.checkoutRequestId)) raw.push(data);
+                });
+            } catch(e) { console.log('transactions fetch:', e.message); }
+
+            // Only successful payments
+            const successStatuses = ['completed','success','COMPLETED','SUCCESS'];
+            const payments = raw
+                .filter(p => successStatuses.includes(p.status))
+                .sort((a, b) => {
+                    const ta = a.completedAt || a.timestamp || '';
+                    const tb = b.completedAt || b.timestamp || '';
+                    return tb > ta ? 1 : tb < ta ? -1 : 0;
+                });
+
+            // Compute total paid
+            const totalPaid = payments.reduce((sum, p) => sum + (parseFloat(p.amount) || 0), 0);
+            document.getElementById('paidAmt').textContent = `KES ${totalPaid.toLocaleString()}`;
+
+            // Compute total course fee from enrolled applications
+            const totalFee = userApps.reduce((sum, a) => {
+                const course = allCourses.find(c => c.id === a.courseId);
+                return sum + (course ? (parseFloat(course.fee) || 0) : 0);
+            }, 0);
+            const balRemaining = Math.max(0, totalFee - totalPaid);
+
+            // Show balance bar if we have fee data
+            const bar = document.getElementById('balanceSummaryBar');
+            if (totalFee > 0) {
+                document.getElementById('balTotalFee').textContent  = `KES ${totalFee.toLocaleString()}`;
+                document.getElementById('balTotalPaid').textContent = `KES ${totalPaid.toLocaleString()}`;
+                document.getElementById('balRemaining').textContent = `KES ${balRemaining.toLocaleString()}`;
+                document.getElementById('balRemaining').className = balRemaining === 0
+                    ? 'text-sm font-extrabold text-green-600'
+                    : 'text-sm font-extrabold text-amber-600';
+                bar.classList.remove('hidden');
+            }
+
+            if (payments.length === 0) {
+                pList.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400 text-sm">No successful payments found.</td></tr>';
+                return;
+            }
+
+            pList.innerHTML = payments.map(p => {
+                const amt = parseFloat(p.amount) || 0;
+                // Format date
+                let dateStr = 'None';
+                const rawDate = p.completedAt || p.timestamp;
+                if (rawDate) {
+                    try {
+                        const d = rawDate.toDate ? rawDate.toDate() : new Date(rawDate);
+                        dateStr = d.toLocaleDateString('en-KE', { day:'2-digit', month:'short', year:'numeric' });
+                    } catch(_){}
+                }
+                // M-Pesa receipt code
+                const mpesa = p.mpesaReceiptNumber || p.transactionCode || 'None';
+                const desc = p.description || p.courseTitle || p.category || 'Course Fee';
+                return `<tr class="hover:bg-slate-50 transition-colors">
+                    <td class="p-3"><div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded bg-green-50 flex items-center justify-center text-green-500 flex-shrink-0"><i class="fas fa-check text-[0.6rem]"></i></div>
+                        <p class="text-xs font-bold text-slate-700">${desc}</p>
+                    </div></td>
+                    <td class="p-3 text-xs font-extrabold text-slate-900 whitespace-nowrap">KES ${amt.toLocaleString()}</td>
+                    <td class="p-3 text-xs text-slate-500 whitespace-nowrap">${dateStr}</td>
+                    <td class="p-3 text-xs font-mono text-slate-600">${mpesa}</td>
+                    <td class="p-3 text-right"><span class="text-[0.55rem] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-green-100 text-green-700">Paid</span></td>
+                </tr>`;
+            }).join('');
+        } catch(e) {
+            console.error('Payments load error:', e);
+            pList.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-slate-400 text-sm">No payments found.</td></tr>';
+        }
+    }
+
+    async function loadNotifications() {
+        if (!currentUser) return;
+        try {
+            const nSnap = await getDocs(query(collection(db, 'learnNotifications'), orderBy('createdAt', 'desc'), limit(30)));
+            const all = nSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+            // Show notifications addressed to 'all' or specifically to this user
+            const myEmail = currentUser.email;
+            const notices = all.filter(n => !n.target || n.target === 'all' || n.target === myEmail);
+
+            // Sidebar badge — only count unread (not in readBy)
+            const badge = document.getElementById('notifBadge');
+            const bnavBadge = document.getElementById('bnavBadge');
+            const uid = currentUser?.uid;
+            const unread = notices.filter(n => !((n.readBy || []).includes(uid)));
+            if (unread.length > 0) {
+                const label = unread.length > 9 ? '9+' : String(unread.length);
+                badge.textContent = label;
+                badge.classList.remove('hidden');
+                if (bnavBadge) { bnavBadge.textContent = label; bnavBadge.classList.remove('hidden'); }
+            } else {
+                badge.classList.add('hidden');
+                if (bnavBadge) bnavBadge.classList.add('hidden');
+            }
+
+            // Notifications tab content
+            const content = document.getElementById('notificationsContent');
+            if (notices.length === 0) {
+                content.innerHTML = `<div class="card p-8 text-center">
+                    <div class="w-12 h-12 rounded-xl bg-slate-50 flex items-center justify-center mx-auto mb-3"><i class="fas fa-bell-slash text-xl text-slate-300"></i></div>
+                    <p class="text-slate-400 text-sm font-medium">No notifications yet.</p>
+                    <p class="text-[0.7rem] text-slate-300 mt-1">We'll let you know about important updates here.</p>
+                </div>`;
+            } else {
+                const cntEl = document.getElementById('notifUnreadCount');
+                if (cntEl) { cntEl.textContent = `${notices.length} message${notices.length !== 1 ? 's' : ''}`; cntEl.classList.remove('hidden'); }
+                content.innerHTML = notices.map(n => {
+                    const ts = n.createdAt && n.createdAt.toDate
+                        ? n.createdAt.toDate().toLocaleDateString('en-KE', { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit' })
+                        : '';
+                    return `<div class="flex gap-3 p-4 rounded-xl bg-blue-50/80 border border-blue-100/60 hover:border-blue-200 transition-all">
+                        <div class="text-blue-500 mt-0.5 flex-shrink-0"><i class="fas fa-bell text-sm"></i></div>
+                        <div class="flex-grow min-w-0">
+                            <p class="text-sm text-slate-800 leading-relaxed">${n.message || ''}</p>
+                            ${ts ? `<p class="text-[0.65rem] text-slate-400 mt-1.5 font-medium">${ts}</p>` : ''}
+                        </div>
+                    </div>`;
+                }).join('');
+            }
+
+            // Overview #noticesArea — show latest 2
+            const noticesArea = document.getElementById('noticesArea');
+            if (notices.length > 0) {
+                noticesArea.innerHTML = notices.slice(0, 2).map(n =>
+                    `<div class="flex gap-3 p-3 rounded-lg bg-blue-50/80 border border-blue-100/50">
+                        <div class="text-blue-500 mt-0.5 text-sm flex-shrink-0"><i class="fas fa-info-circle"></i></div>
+                        <div>
+                            <p class="text-xs text-blue-800 leading-relaxed">${n.message || ''}</p>
+                            <button onclick="switchTab('notifications')" class="text-[0.65rem] font-bold text-blue-500 mt-1 hover:underline bg-transparent border-none cursor-pointer p-0">View all notifications</button>
+                        </div>
+                    </div>`).join('');
+            } else {
+                noticesArea.innerHTML = `<p class="text-xs text-slate-400 py-2">No notices yet. <button onclick="switchTab('notifications')" class="text-[#16a34a] font-bold hover:underline">View all notifications</button></p>`;
+            }
+        } catch (e) {
+            console.log('Notifications load:', e.message);
+            document.getElementById('noticesArea').innerHTML = `<div class="flex gap-3 p-3 rounded-lg bg-blue-50/80 border border-blue-100/50">
+                <div class="text-blue-500 mt-0.5 text-sm"><i class="fas fa-info-circle"></i></div>
+                <div><p class="text-xs font-bold text-blue-900">Welcome to Learn!</p><p class="text-[0.7rem] text-blue-700/70 mt-0.5">Submit an application to get started with your course.</p></div>
+            </div>`;
+        }
+    }
+
+    async function markNotificationsRead() {
+        if (!currentUser) return;
+        try {
+            const uid = currentUser.uid;
+            const nSnap = await getDocs(query(collection(db, 'learnNotifications'), orderBy('createdAt','desc'), limit(30)));
+            const unread = nSnap.docs.filter(d => !((d.data().readBy || []).includes(uid)));
+            if (unread.length === 0) return;
+            await Promise.all(unread.map(d => updateDoc(doc(db, 'learnNotifications', d.id), { readBy: arrayUnion(uid) })));
+            const badge = document.getElementById('notifBadge');
+            if (badge) badge.classList.add('hidden');
+            const bnavBadge = document.getElementById('bnavBadge');
+            if (bnavBadge) bnavBadge.classList.add('hidden');
+        } catch(e) { console.log('markRead:', e.message); }
+    }
+
+    window.openSettings = () => document.getElementById('settingsOverlay').classList.add('show');
+    window.closeSettings = () => document.getElementById('settingsOverlay').classList.remove('show');
+
+    // ═══ DARK / LIGHT THEME ═══
+    function applyTheme(dark) {
+        document.getElementById('appBody').classList.toggle('dark', dark);
+        const icon = document.getElementById('themeIcon');
+        if (icon) icon.className = dark ? 'fas fa-sun' : 'fas fa-moon';
+        localStorage.setItem('ccLearnDark', dark ? '1' : '0');
+    }
+    window.toggleDarkMode = () => applyTheme(!document.getElementById('appBody').classList.contains('dark'));
+    // Apply saved preference on load
+    (function(){
+        const saved = localStorage.getItem('ccLearnDark');
+        // Default to dark if not set and prefers-color-scheme dark
+        if (saved === '1' || (saved === null && window.matchMedia('(prefers-color-scheme:dark)').matches)) {
+            applyTheme(true);
+        }
+    })();
+
+    document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('setName').value.trim();
+        const phone = document.getElementById('setPhone').value.trim();
+        const location = document.getElementById('setLocation').value.trim();
+        const laptopRaw = document.querySelector('input[name="hasLaptop"]:checked')?.value;
+        const hasLaptop = laptopRaw === 'yes' ? true : laptopRaw === 'no' ? false : null;
+        if (!name) return Swal.fire({ icon:'warning', title:'Name Required', text:'Please enter your display name.' });
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+        try {
+            await updateProfile(currentUser, { displayName: name });
+            await setDoc(doc(db, 'learn_users', currentUser.uid), { name, phone, location, hasLaptop, email: currentUser.email, updatedAt: new Date() }, { merge: true });
+            document.getElementById('topBarName').textContent = name;
+            document.getElementById('userAvatar').textContent = name[0].toUpperCase();
+            Swal.fire({ icon:'success', title:'Saved!', text:'Your profile has been updated.', confirmButtonColor:'#16a34a', timer:2000 });
+            closeSettings();
+        } catch(err) { console.error(err); Swal.fire({ icon:'error', title:'Save Failed', text:'Please try again.', confirmButtonColor:'#16a34a' }); }
+        finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-check"></i> Save Changes'; }
+    });
+
+    window.switchTab = (tab) => {
+        ['overview','learning','certs','payments','notifications'].forEach(t => {
+            document.getElementById(`tab-${t}`).classList.toggle('hidden', t !== tab);
+            const nav = document.getElementById(`nav-${t}`);
+            if (nav) { nav.classList.toggle('active', t === tab); }
+            // Update bottom nav
+            const bnav = document.getElementById(`bnav-${t}`);
+            if (bnav) { bnav.classList.toggle('active', t === tab); }
+        });
+        closeSidebar();
+        if (tab === 'notifications') markNotificationsRead();
+    };
+
+    window.handleSignOut = async () => {
+        const r = await Swal.fire({ title:'Sign Out?', text:'Are you sure you want to end your session?', icon:'question', showCancelButton:true, confirmButtonColor:'#16a34a', confirmButtonText:'Yes, Sign Out', cancelButtonText:'Cancel' });
+        if (r.isConfirmed) { await signOut(auth); window.location.href = '../../index.html'; }
+    };
+
+    window.toggleSidebar = () => { document.getElementById('dashSidebar').classList.toggle('mobile-open'); document.getElementById('sidebarBackdrop').classList.toggle('show'); };
+    window.closeSidebar = () => { document.getElementById('dashSidebar').classList.remove('mobile-open'); document.getElementById('sidebarBackdrop').classList.remove('show'); };
+
+    function formatDate(ts) {
+        if (!ts) return '';
+        const d = ts.seconds ? new Date(ts.seconds * 1000) : new Date(ts);
+        return d.toLocaleDateString('en-KE', { month:'short', day:'numeric', year:'numeric' });
+    }
+</script>
 </body>
 </html>

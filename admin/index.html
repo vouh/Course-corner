@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+vv<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -138,9 +138,41 @@
         .animate-slide-in {
             animation: slide-in 0.3s ease;
         }
+
+        /* ═══ COMPACT LAYOUT FOR LAPTOP SCREENS ═══ */
+        @media (min-width:1024px) {
+            aside#sidebar { width:220px !important; }
+            .lg\:ml-72 { margin-left:220px !important; }
+        }
+        /* Sidebar header */
+        aside#sidebar > div:first-child { height:3.25rem !important; padding:.5rem 1rem !important; }
+        aside#sidebar > div:first-child img { width:1.75rem !important; height:1.75rem !important; border-radius:.5rem !important; }
+        aside#sidebar > div:first-child h1 { font-size:.875rem !important; }
+        aside#sidebar > div:first-child p { font-size:.6rem !important; }
+        /* Sidebar nav items */
+        aside#sidebar .nav-item { padding:.375rem .65rem !important; gap:.55rem !important; font-size:.78rem !important; border-radius:.6rem !important; }
+        aside#sidebar .nav-item > i:first-child { font-size:.78rem !important; width:.85rem !important; min-width:.85rem; }
+        aside#sidebar nav > div > p { font-size:.58rem !important; margin-bottom:.35rem !important; padding-left:.65rem !important; }
+        /* Top bar */
+        header.sticky.h-20 { height:3.25rem !important; padding-left:1.25rem !important; padding-right:1.25rem !important; }
+        header.sticky.h-20 #page-title { font-size:1.05rem !important; }
+        header.sticky.h-20 #page-subtitle { font-size:.68rem !important; }
+        header.sticky.h-20 button.p-3 { padding:.45rem !important; }
+        header.sticky.h-20 button.p-3 i { font-size:.8rem !important; }
+        header.sticky.h-20 #topbar-email { font-size:.75rem !important; max-width:120px !important; }
+        /* Stat cards */
+        [class*="stat-gradient-"] { width:2.25rem !important; height:2.25rem !important; border-radius:.6rem !important; }
+        [class*="stat-gradient-"] i { font-size:.8rem !important; }
+        .hover-lift { padding:.9rem !important; }
+        .hover-lift .mb-4 { margin-bottom:.6rem !important; }
+        #page-dashboard .text-4xl { font-size:1.5rem !important; line-height:1.2 !important; }
+        #page-dashboard .grid.gap-6 { gap:.9rem !important; margin-bottom:1.25rem !important; }
+        /* Main page padding */
+        main.p-4.lg\:p-8 { padding:1.25rem !important; }
+        main table th, main table td { padding:.6rem 1rem !important; font-size:.78rem !important; }
+        main table th { font-size:.65rem !important; }
     </style>
 </head>
-
 <body class="bg-gray-50 dark:bg-gray-900 min-h-screen transition-colors duration-300">
 
     <!-- Login Screen -->
@@ -217,7 +249,7 @@
                 </div>
             </div>
 
-            <nav class="p-4 space-y-2">
+            <nav class="p-4 space-y-2 overflow-y-auto" style="max-height: calc(100vh - 5rem);">
                 <!-- Main Tools Section -->
                 <div id="section-main">
                     <p class="px-4 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.15em] mb-2">Main Platform</p>
@@ -244,21 +276,17 @@
                 </div>
 
                 <div class="pt-4 mt-4 border-t border-gray-200 dark:border-gray-700">
+<<<<<<< HEAD
                     <p class="px-4 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.15em] mb-2">Learn Portal</p>
                     <a id="nav-learn" href="#" onclick="switchPage('learn'); return false;"
+=======
+                    <p class="px-4 text-[10px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-[0.15em] mb-2 px-4">Learn Portal</p>
+                    <a href="../Learn/admin/dashboard.html"
+>>>>>>> c53f5256f572226d3bd920fb38f72d131bd6038e
                         class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium">
-                        <i class="fas fa-university text-xl w-6"></i>
-                        <span>Manage Learn</span>
-                    </a>
-                    <a href="#" onclick="switchPage('learn-enrollments'); return false;" id="nav-learn-enroll"
-                        class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium ml-4 border-l-2 border-transparent">
-                        <i class="fas fa-user-graduate text-lg w-6"></i>
-                        <span class="text-sm">Enrollments</span>
-                    </a>
-                    <a href="#" onclick="switchPage('learn-packages'); return false;" id="nav-learn-pkg"
-                        class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium ml-4 border-l-2 border-transparent">
-                        <i class="fas fa-layer-group text-lg w-6"></i>
-                        <span class="text-sm">Course Packages</span>
+                        <i class="fas fa-graduation-cap text-xl w-6"></i>
+                        <span>Learn Admin</span>
+                        <i class="fas fa-arrow-right text-xs ml-auto opacity-40"></i>
                     </a>
                     <a href="../Learn/index.html" target="_blank"
                         class="nav-item flex items-center gap-4 px-4 py-3 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:text-primary-600 dark:hover:text-primary-400 transition-all font-medium opacity-60">
@@ -289,22 +317,11 @@
                 </div>
             </nav>
 
-            <div class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700">
-                <div class="flex items-center gap-3">
-                    <div
-                        class="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center">
-                        <i class="fas fa-user text-white"></i>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <p id="sidebar-email" class="text-sm font-medium text-gray-900 dark:text-white truncate">
-                            admin@email.com</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Administrator</p>
-                    </div>
-                    <button onclick="logout()" class="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                        title="Logout">
-                        <i class="fas fa-sign-out-alt"></i>
-                    </button>
-                </div>
+            <div class="p-4 border-t border-gray-200 dark:border-gray-700 mt-2">
+                <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all font-medium text-sm">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Sign Out</span>
+                </button>
             </div>
         </aside>
 
@@ -335,10 +352,22 @@
                         <i class="fas fa-sun text-lg dark:hidden"></i>
                         <i class="fas fa-moon text-lg hidden dark:inline"></i>
                     </button>
-                    <div class="hidden sm:flex items-center gap-3 pl-3 border-l border-gray-200 dark:border-gray-700">
-                        <div
-                            class="w-10 h-10 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center">
-                            <i class="fas fa-user text-white"></i>
+                    <div class="hidden sm:flex items-center gap-3 pl-3 border-l border-gray-200 dark:border-gray-700 relative" id="admin-account-area">
+                        <button onclick="document.getElementById('adminAccountDropdown').classList.toggle('hidden')" class="flex items-center gap-2 px-3 py-2 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                            <div class="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-white text-xs"></i>
+                            </div>
+                            <span id="topbar-email" class="text-sm font-medium text-gray-700 dark:text-gray-300 max-w-[160px] truncate">Admin</span>
+                            <i class="fas fa-chevron-down text-xs text-gray-400"></i>
+                        </button>
+                        <div id="adminAccountDropdown" class="hidden absolute top-[calc(100%+8px)] right-0 w-48 bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 z-50 py-1">
+                            <div class="px-4 py-2 border-b border-gray-100 dark:border-gray-700">
+                                <p id="dropdown-email" class="text-xs font-semibold text-gray-700 dark:text-gray-300 truncate">admin@email.com</p>
+                                <p class="text-[10px] text-gray-400">Administrator</p>
+                            </div>
+                            <button onclick="logout()" class="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
+                                <i class="fas fa-sign-out-alt"></i> Sign Out
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -817,13 +846,8 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
 
-        // API endpoints - Primary (Express server) and Fallback (Vercel serverless)
-        const API_PRIMARY = 'https://course-corner-server.vercel.app';
-        // Use deployed Vercel URL for fallback - replace with your actual domain
-        const API_FALLBACK = 'https://coursecornerkenya.com';
-        let API_BASE = API_PRIMARY; // Will switch to fallback if primary fails
-        console.log('🌐 API_PRIMARY:', API_PRIMARY);
-        console.log('🌐 API_FALLBACK:', API_FALLBACK);
+        // API endpoint - used for M-Pesa re-query operations only
+        const API_BASE = 'https://course-corner-server.vercel.app';
         let allTransactions = [], filteredTransactions = [], currentTransactionId = null;
         const db = firebase.firestore();
 
@@ -861,7 +885,10 @@
         function showDashboard(user) {
             document.getElementById('login-screen').classList.add('hidden');
             document.getElementById('dashboard').classList.remove('hidden');
-            document.getElementById('sidebar-email').textContent = user.email;
+            const emailEl = document.getElementById('topbar-email');
+            const dropdownEmailEl = document.getElementById('dropdown-email');
+            if (emailEl) emailEl.textContent = user.email;
+            if (dropdownEmailEl) dropdownEmailEl.textContent = user.email;
             
             // Check for section query
             const urlParams = new URL(window.location.href).searchParams;
@@ -973,76 +1000,68 @@
         async function loadData() { await loadTransactions(); }
         async function loadTransactions() {
             try {
-                // Try primary API first (Express server)
-                console.log(`🚀 [Admin] Trying PRIMARY: ${API_PRIMARY}/api/mpesa/admin/transactions?limit=200`);
+                console.log('📊 [Admin] Loading transactions from Firestore…');
 
-                let res, data;
-                let usedFallback = false;
-
-                try {
-                    res = await fetch(`${API_PRIMARY}/api/mpesa/admin/transactions?limit=200`, {
-                        signal: AbortSignal.timeout(10000) // 10 second timeout
-                    });
-                    data = await res.json();
-                    console.log(`📡 [Admin] PRIMARY response:`, data);
-                } catch (primaryError) {
-                    console.warn('⚠️ PRIMARY API failed, trying FALLBACK:', primaryError.message);
-                    usedFallback = true;
-                }
-
-                // If primary failed or returned no data, try fallback
-                if (usedFallback || !data?.success || (data?.data?.length === 0)) {
-                    console.log(`🔄 [Admin] Trying FALLBACK: ${API_FALLBACK}/api/admin/transactions?limit=200`);
-                    try {
-                        res = await fetch(`${API_FALLBACK}/api/admin/transactions?limit=200`);
-                        data = await res.json();
-                        console.log(`📡 [Admin] FALLBACK response:`, data);
-                        if (data.success) {
-                            API_BASE = API_FALLBACK;
-                            usedFallback = true;
+                // Query Firestore directly — no external API dependency
+                const snapshot = await db.collection('transactions')
+                    .orderBy('createdAt', 'desc')
+                    .limit(200)
+                    .get()
+                    .catch(async (err) => {
+                        // If index error, retry without ordering
+                        if (err.message && err.message.includes('index')) {
+                            console.warn('⚠️ Missing Firestore index, retrying without orderBy');
+                            return db.collection('transactions').limit(200).get();
                         }
-                    } catch (fallbackError) {
-                        console.error('❌ FALLBACK also failed:', fallbackError.message);
-                    }
-                }
-
-                if (usedFallback) {
-                    showToast('Using fallback API', 'warning');
-                }
-
-                console.log('📦 [Admin] Final data:', data);
-
-                if (data.success) {
-                    allTransactions = data.data || [];
-                    filteredTransactions = [...allTransactions];
-
-                    // DEBUG: Log all transactions with their status
-                    console.log('📊 [Admin] Transactions breakdown:');
-                    allTransactions.forEach((tx, idx) => {
-                        console.log(`  ${idx + 1}. ${tx.status.toUpperCase()} - ${tx.phoneNumber} - KSH ${tx.amount} - Receipt: ${tx.mpesaReceiptNumber || 'N/A'}`);
+                        throw err;
                     });
 
-                    // Calculate stats from transactions
-                    const s = { total: 0, completed: 0, pending: 0, failed: 0, completedAmount: 0 };
-                    allTransactions.forEach(tx => {
-                        s.total++;
-                        if (tx.status === 'completed') { s.completed++; s.completedAmount += tx.amount || 0; }
-                        else if (tx.status === 'pending') { s.pending++; }
-                        else if (tx.status === 'failed') { s.failed++; }
+                const raw = [];
+                snapshot.forEach(doc => {
+                    const d = doc.data();
+                    raw.push({
+                        id: doc.id,
+                        ...d,
+                        createdAt: d.createdAt?.toDate?.() ? d.createdAt.toDate().toISOString() : d.createdAt || null,
+                        updatedAt: d.updatedAt?.toDate?.() ? d.updatedAt.toDate().toISOString() : d.updatedAt || null
                     });
+                });
 
-                    console.log('📈 [Admin] Stats:', s);
+                // Exclude Learn portal transactions — they belong to the Learn admin only
+                allTransactions = raw.filter(tx => !String(tx.category || '').startsWith('learn-'));
 
-                    document.getElementById('stat-total').textContent = s.total;
-                    document.getElementById('stat-completed').textContent = s.completed;
-                    document.getElementById('stat-failed').textContent = s.failed;
-                    document.getElementById('stat-revenue').textContent = `KSH ${(s.completedAmount || 0).toLocaleString()}`;
-                    if (s.total > 0) document.getElementById('stat-completed-pct').textContent = `${Math.round((s.completed / s.total) * 100)}%`;
-                    renderRecentTransactions();
-                    renderTransactionsTable();
-                    updateResultsCount();
-                } else { showToast('Failed to load', 'error'); }
-            } catch (e) { console.error(e); showToast('Error connecting', 'error'); }
+                // Sort newest first (in case we fell back to unordered query)
+                allTransactions.sort((a, b) => {
+                    const da = a.createdAt ? new Date(a.createdAt) : new Date(0);
+                    const db2 = b.createdAt ? new Date(b.createdAt) : new Date(0);
+                    return db2 - da;
+                });
+
+                filteredTransactions = [...allTransactions];
+
+                console.log(`✅ [Admin] Loaded ${allTransactions.length} transactions (excluded ${raw.length - allTransactions.length} Learn transactions)`);
+
+                // Calculate stats
+                const s = { total: 0, completed: 0, pending: 0, failed: 0, completedAmount: 0 };
+                allTransactions.forEach(tx => {
+                    s.total++;
+                    if (tx.status === 'completed') { s.completed++; s.completedAmount += tx.amount || 0; }
+                    else if (tx.status === 'pending') { s.pending++; }
+                    else if (tx.status === 'failed') { s.failed++; }
+                });
+
+                document.getElementById('stat-total').textContent = s.total;
+                document.getElementById('stat-completed').textContent = s.completed;
+                document.getElementById('stat-failed').textContent = s.failed;
+                document.getElementById('stat-revenue').textContent = `KSH ${(s.completedAmount || 0).toLocaleString()}`;
+                if (s.total > 0) document.getElementById('stat-completed-pct').textContent = `${Math.round((s.completed / s.total) * 100)}%`;
+                renderRecentTransactions();
+                renderTransactionsTable();
+                updateResultsCount();
+            } catch (e) {
+                console.error('❌ [Admin] Firestore load error:', e);
+                showToast('Error loading transactions: ' + e.message, 'error');
+            }
         }
 
         function renderRecentTransactions() {

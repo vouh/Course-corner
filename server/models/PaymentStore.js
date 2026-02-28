@@ -6,11 +6,12 @@ class PaymentStore {
   }
 
   // Create a new payment record
-  createPayment(sessionId, category, phoneNumber, amount, referralCode = null) {
+  createPayment(sessionId, category, phoneNumber, amount, referralCode = null, email = null) {
     const payment = {
       sessionId,
       category,
       phoneNumber,
+      email: email || null,
       amount,
       status: 'pending',
       checkoutRequestId: null,

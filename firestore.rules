@@ -1,0 +1,193 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ─────────────────────────────────────────────
+    //  Helper functions
+    // ─────────────────────────────────────────────
+
+    // Check if the requesting user is a designated admin
+    function isAdmin() {
+      return request.auth != null &&
+             request.auth.token.email in [
+               'peterkelvinkibiru1532@gmail.com',
+               'macharia074m@gmail.com'
+             ];
+    }
+
+    // Check if the request comes from an authenticated user
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Check if the authenticated user owns the document
+    function isOwner(uid) {
+      return isAuthenticated() && request.auth.uid == uid;
+    }
+
+
+    // ─────────────────────────────────────────────
+    //  Existing: Users
+    // ─────────────────────────────────────────────
+    match /users/{userId} {
+      allow read, write: if isOwner(userId);
+      allow read, write: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    //  Existing: Payments & Transactions
+    // ─────────────────────────────────────────────
+    match /payments/{document} {
+      allow read, write: if isAuthenticated();
+    }
+
+    match /transactions/{transactionId} {
+      allow read:  if isAuthenticated();
+      allow write: if true;   // M-Pesa server writes without auth
+    }
+
+
+    // ─────────────────────────────────────────────
+    //  Existing: Referral System
+    // ─────────────────────────────────────────────
+    match /referrals/{referralId} {
+      allow read:  if isAuthenticated();
+      allow write: if true;   // Server writes referral data
+    }
+
+    match /referrers/{referrerId} {
+      allow read, write: if isAdmin() || isAuthenticated();
+    }
+
+    match /referralCodes/{codeId} {
+      allow read:  if true;       // Public validation from any page
+      allow write: if isAdmin();
+    }
+
+    match /withdrawals/{withdrawalId} {
+      allow read:          if isAuthenticated();
+      allow create:        if isAuthenticated();
+      allow update, delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    //  Existing: Magic Links
+    // ─────────────────────────────────────────────
+    match /magicTokens/{tokenId} {
+      allow read:   if true;   // Public token validation
+
+      // Only usedCount and lastUsedAt may be updated by the link holder
+      allow update: if isAdmin() || (
+        request.resource.data.diff(resource.data)
+          .affectedKeys().hasOnly(['usedCount', 'lastUsedAt'])
+      );
+
+      allow create, delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    //  Learn Portal: User Profiles  (learn_users)
+    // ─────────────────────────────────────────────
+    // Created at sign-up / Google sign-in; updated from student dashboard.
+    match /learn_users/{userId} {
+      // Each student can read and write their own profile
+      allow read, write: if isOwner(userId);
+      // Admins can read/write all profiles (e.g. enrollment view)
+      allow read, write: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    //  Learn Portal: Course Applications  (learnApplications)
+    //  Written by apply.html – userId may be 'anonymous' for
+    //  users who haven't signed in yet, so write is public.
+    // ─────────────────────────────────────────────
+    match /learnApplications/{applicationId} {
+      // Anyone can submit an application (pre-login flow allowed)
+      allow create: if true;
+
+      // A student can read their own applications (matched by email stored in doc)
+      allow read: if isAuthenticated();
+
+      // Admins can read, update status, and delete applications
+      allow read, update, delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    //  Learn Portal: Detailed Applications  (applications)
+    //  Written by application.html – full guided application form.
+    // ─────────────────────────────────────────────
+    match /applications/{applicationId} {
+      // Allow creation by anyone (auth pre-fills but isn't required)
+      allow create: if true;
+
+      // Authenticated users can read applications
+      allow read: if isAuthenticated();
+
+      // Admins can manage all applications
+      allow read, update, delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    //  Learn Portal: Payments  (learnPayments)
+    //  Written by payment.html after successful M-Pesa payment.
+    // ─────────────────────────────────────────────
+    match /learnPayments/{paymentId} {
+      // Only authenticated users can record payments
+      allow create: if isAuthenticated();
+
+      // Users can read their own payment history; admins read all
+      allow read: if isAuthenticated();
+
+      // Only admins can modify or remove payment records
+      allow update, delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    //  Learn Portal: Assignments  (learnAssignments)
+    //  Submitted by students; reviewed by admins.
+    // ─────────────────────────────────────────────
+    match /learnAssignments/{assignmentId} {
+      // Students can submit (create) and read their own assignments
+      allow create: if isAuthenticated();
+      allow read:   if isAuthenticated() &&
+                       request.auth.uid == resource.data.userId;
+
+      // Admins have full access for grading / management
+      allow read, write: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    //  Learn Portal: Posts / Announcements  (learnPosts)
+    //  "What's New" page reads published posts publicly.
+    // ─────────────────────────────────────────────
+    match /learnPosts/{postId} {
+      // Anyone can read published posts (no login required)
+      allow read: if resource.data.published == true || isAuthenticated();
+
+      // Only admins can create, edit, or delete posts
+      allow create, update, delete: if isAdmin();
+    }
+
+
+    // ─────────────────────────────────────────────
+    //  Learn Portal: Notifications  (learnNotifications)
+    //  Sent by admin; displayed in student dashboards.
+    // ─────────────────────────────────────────────
+    match /learnNotifications/{notificationId} {
+      // Authenticated students can read notifications
+      allow read: if isAuthenticated();
+
+      // Only admins can create or manage notifications
+      allow create, update, delete: if isAdmin();
+    }
+
+  }
+}

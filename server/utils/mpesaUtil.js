@@ -152,7 +152,6 @@ async function querySTKPushStatus(checkoutRequestId) {
       // M-Pesa error code 500.001.1001 means "The transaction is being processed"
       // Return it as a pending status rather than throwing
       if (errorData.errorCode === '500.001.1001' ||
-        errorData.ResultCode === '1' ||
         (errorData.errorMessage && errorData.errorMessage.includes('processing'))) {
         return {
           ResultCode: 'pending',

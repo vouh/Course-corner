@@ -1,5 +1,5 @@
 const axios = require('axios');
-const { saveTransaction, formatPhoneNumber } = require('../utils/firebase');
+const { saveTransaction, formatPhoneNumber, initializeFirebase } = require('../utils/firebase');
 
 // M-Pesa Configuration
 const CONSUMER_KEY = process.env.CONSUMER_KEY;
@@ -88,23 +88,33 @@ module.exports = async (req, res) => {
   }
 
   try {
-    const { phoneNumber, category, referralCode } = req.body;
+    const { phoneNumber, category, referralCode, learnAmount, email } = req.body;
 
-    console.log('📱 STK Push Request:', { phoneNumber, category, referralCode: referralCode || 'NONE' });
+    console.log('📱 STK Push Request:', { phoneNumber, category, referralCode: referralCode || 'NONE', learnAmount: learnAmount || null });
 
     // Validate input
     if (!phoneNumber) {
       return res.status(400).json({ success: false, message: 'Phone number is required' });
     }
 
-    if (!category || !PAYMENT_AMOUNTS[category]) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid category. Must be one of: ' + Object.keys(PAYMENT_AMOUNTS).join(', ')
-      });
-    }
+    // Support Learn portal payments with custom amounts
+    const isLearnPayment = category && category.startsWith('learn-');
+    let amount;
 
-    const amount = PAYMENT_AMOUNTS[category];
+    if (isLearnPayment) {
+      amount = parseInt(learnAmount);
+      if (!amount || amount < 1) {
+        return res.status(400).json({ success: false, message: 'Invalid learn payment amount' });
+      }
+    } else {
+      if (!category || !PAYMENT_AMOUNTS[category]) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid category. Must be one of: ' + Object.keys(PAYMENT_AMOUNTS).join(', ')
+        });
+      }
+      amount = PAYMENT_AMOUNTS[category];
+    }
     const sessionId = generateSessionId();
     const formattedPhone = formatPhoneNumber(phoneNumber);
     const accessToken = await getMpesaToken();
@@ -156,12 +166,37 @@ module.exports = async (req, res) => {
       checkoutRequestId: response.data.CheckoutRequestID,
       merchantRequestId: response.data.MerchantRequestID,
       referralCode: referralCode ? referralCode.toUpperCase() : null,
+      email: email || null,
+      isLearnPayment: isLearnPayment || false,
       createdAt: new Date(),
       status: 'awaiting_callback'
     };
     console.log('✅ STK Push initiated (in-memory only, waiting for callback):', sessionId);
     console.log('🎁 Referral Code:', referralCode ? referralCode.toUpperCase() : 'NONE');
     console.log('📋 Transaction will be saved to Firebase ONLY when callback arrives with result');
+
+    // Persist session to Firestore so callback can recover email across serverless instances
+    try {
+      const { db } = await initializeFirebase();
+      if (db) {
+        await db.collection('pendingSessions').doc(sessionId).set({
+          sessionId,
+          category,
+          phoneNumber: formattedPhone,
+          amount,
+          checkoutRequestId: response.data.CheckoutRequestID,
+          merchantRequestId: response.data.MerchantRequestID,
+          referralCode: referralCode ? referralCode.toUpperCase() : null,
+          email: email || null,
+          isLearnPayment: isLearnPayment || false,
+          createdAt: new Date(),
+          status: 'awaiting_callback'
+        });
+        console.log('💾 Session saved to Firestore pendingSessions (email preserved):', sessionId);
+      }
+    } catch (fsErr) {
+      console.warn('⚠️ Could not save session to Firestore pendingSessions (non-fatal):', fsErr.message);
+    }
 
     res.json({
       success: true,

@@ -9,6 +9,8 @@ const {
   getAllTransactions,
   getTransactionStats,
   getTransactionByMpesaCode,
+  getTransactionByCheckoutRequestId,
+  getTransactionBySessionId,
   markTransactionAsUsed,
   creditReferrer,
   bulkDeleteTransactions,
@@ -28,7 +30,7 @@ const PAYMENT_AMOUNTS = {
 // Initiate STK Push Payment
 router.post('/stkpush', async (req, res) => {
   try {
-    const { phoneNumber, category, amount: requestedAmount, referralCode } = req.body;
+    const { phoneNumber, category, amount: requestedAmount, referralCode, learnAmount, email } = req.body;
 
     console.log('📱 STK Push Request:', { phoneNumber, category, referralCode });
 
@@ -40,20 +42,34 @@ router.post('/stkpush', async (req, res) => {
       });
     }
 
-    if (!category || !PAYMENT_AMOUNTS[category]) {
-      return res.status(400).json({
-        success: false,
-        message: 'Invalid category. Must be one of: ' + Object.keys(PAYMENT_AMOUNTS).join(', ')
-      });
+    // Support Learn portal payments (category starts with "learn-")
+    const isLearnPayment = category && category.startsWith('learn-');
+    let amount;
+
+    if (isLearnPayment) {
+      amount = parseInt(learnAmount);
+      if (!amount || amount < 1) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid learn payment amount'
+        });
+      }
+    } else {
+      if (!category || !PAYMENT_AMOUNTS[category]) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid category. Must be one of: ' + Object.keys(PAYMENT_AMOUNTS).join(', ')
+        });
+      }
+      // Use requested amount if provided (for testing), otherwise use default
+      amount = requestedAmount || PAYMENT_AMOUNTS[category];
     }
 
-    // Use requested amount if provided (for testing), otherwise use default
-    const amount = requestedAmount || PAYMENT_AMOUNTS[category];
     const sessionId = generateSessionId();
 
     // Create payment record WITHOUT referral validation
     // Referral processing happens AFTER payment is confirmed in callback
-    PaymentStore.createPayment(sessionId, category, phoneNumber, amount, referralCode);
+    PaymentStore.createPayment(sessionId, category, phoneNumber, amount, referralCode, email);
 
     // Initiate STK Push
     const stkResult = await initiateSTKPush(
@@ -101,6 +117,7 @@ router.post('/stkpush', async (req, res) => {
 router.get('/status/:sessionId?', async (req, res) => {
   try {
     const sessionId = req.params.sessionId || req.query.sessionId;
+    const checkoutRequestId = req.query.checkoutRequestId;
 
     if (!sessionId) {
       return res.status(400).json({
@@ -109,9 +126,33 @@ router.get('/status/:sessionId?', async (req, res) => {
       });
     }
 
-    const payment = PaymentStore.getPaymentBySessionId(sessionId);
+    let payment = PaymentStore.getPaymentBySessionId(sessionId);
 
     if (!payment) {
+      // Fallback: recover status from Firebase if memory session is gone (serverless restarts)
+      const firebaseTx = checkoutRequestId
+        ? await getTransactionByCheckoutRequestId(checkoutRequestId)
+        : await getTransactionBySessionId(sessionId);
+
+      if (firebaseTx) {
+        return res.json({
+          success: true,
+          data: {
+            sessionId: firebaseTx.sessionId || sessionId,
+            category: firebaseTx.category,
+            amount: firebaseTx.amount,
+            status: firebaseTx.status || 'pending',
+            resultDesc: firebaseTx.resultDesc || firebaseTx.failureReason || null,
+            errorMessage: firebaseTx.resultDesc || firebaseTx.failureReason || null,
+            mpesaReceiptNumber: firebaseTx.mpesaReceiptNumber || null,
+            transactionCode: firebaseTx.transactionCode || firebaseTx.mpesaReceiptNumber || null,
+            createdAt: firebaseTx.createdAt,
+            updatedAt: firebaseTx.updatedAt,
+            metadata: firebaseTx.metadata || null
+          }
+        });
+      }
+
       return res.status(404).json({
         success: false,
         message: 'Payment session not found'
@@ -351,6 +392,7 @@ router.post('/callback', async (req, res) => {
         const transactionId = await savePaymentTransaction({
           sessionId: payment.sessionId,
           phoneNumber: payment.phoneNumber,
+          email: payment.email || null,
           amount: payment.amount,
           category: payment.category,
           status: 'completed',
@@ -391,6 +433,7 @@ router.post('/callback', async (req, res) => {
         await savePaymentTransaction({
           sessionId: payment.sessionId,
           phoneNumber: payment.phoneNumber,
+          email: payment.email || null,
           amount: payment.amount,
           category: payment.category,
           status: 'failed',
